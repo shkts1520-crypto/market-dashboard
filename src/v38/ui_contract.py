@@ -33,13 +33,40 @@ REQUIRED_VISUAL_TOKENS = (
 PRODUCTION_FORBIDDEN_PATTERNS = (
     r"Entry\s*\*\s*0\.75",
     r"entry\s*\*\s*0\.75",
-    r"SOXL",
     r"TQQQ\s*/\s*SOXL",
     r"隔週リバランス",
     r"21EMA.*Exit",
     r"10SMA.*Exit",
     r"ATR2",
     r"建値Stop",
+)
+
+_SCRIPT_RE = re.compile(
+    (
+        r"<script\b"
+        r"(?P<attrs>[^>]*)>"
+        r"(?P<body>.*?)"
+        r"</script\s*>"
+    ),
+    re.I | re.S,
+)
+
+_EVENT_RE = re.compile(
+    (
+        r"\s+on[a-zA-Z0-9_-]+"
+        r"\s*=\s*"
+        r"(?:"
+        r"\"[^\"]*\""
+        r"|'[^']*'"
+        r"|[^\s>]+"
+        r")"
+    ),
+    re.I | re.S,
+)
+
+_SRC_RE = re.compile(
+    r"\bsrc\s*=",
+    re.I,
 )
 
 
@@ -145,7 +172,10 @@ def inspect_shell(
     html: str,
 ) -> dict[str, Any]:
     if (
-        not isinstance(html, str)
+        not isinstance(
+            html,
+            str,
+        )
         or not html.strip()
     ):
         raise UIContractError(
@@ -161,27 +191,32 @@ def inspect_shell(
 
     missing_visual = [
         token
-        for token in REQUIRED_VISUAL_TOKENS
+        for token
+        in REQUIRED_VISUAL_TOKENS
         if token not in html
     ]
 
     missing_sections = [
         href[1:]
-        for _, href in EXPECTED_TABS
+        for _, href
+        in EXPECTED_TABS
         if href[1:]
         not in parser.section_ids
     ]
 
     forbidden_present = [
         label
-        for label, _ in parser.tabs
-        if label in FORBIDDEN_TABS
+        for label, _
+        in parser.tabs
+        if label
+        in FORBIDDEN_TABS
     ]
 
     return {
         "tabs": parser.tabs,
         "tabs_exact": (
-            parser.tabs == expected
+            parser.tabs
+            == expected
         ),
         "forbidden_tabs": (
             forbidden_present
@@ -198,7 +233,9 @@ def inspect_shell(
 def validate_canonical_shell(
     html: str,
 ) -> dict[str, Any]:
-    report = inspect_shell(html)
+    report = inspect_shell(
+        html
+    )
 
     problems: list[str] = []
 
@@ -231,15 +268,102 @@ def validate_canonical_shell(
 
     if problems:
         raise UIContractError(
-            "; ".join(problems)
+            "; ".join(
+                problems
+            )
         )
 
     return report
 
 
+def active_logic_fragments(
+    html: str,
+) -> list[str]:
+    """
+    Return executable inline fragments only.
+
+    Visible document prose is deliberately
+    excluded from legacy-logic scanning.
+    """
+    fragments: list[str] = []
+
+    for match in (
+        _SCRIPT_RE.finditer(
+            html
+        )
+    ):
+        if not _SRC_RE.search(
+            match.group(
+                "attrs"
+            )
+            or ""
+        ):
+            fragments.append(
+                match.group(
+                    "body"
+                )
+                or ""
+            )
+
+    for match in (
+        _EVENT_RE.finditer(
+            html
+        )
+    ):
+        fragments.append(
+            match.group(0)
+        )
+
+    return fragments
+
+
+def inspect_active_logic(
+    html: str,
+) -> dict[str, int]:
+    inline_scripts = 0
+    external_scripts = 0
+
+    for match in (
+        _SCRIPT_RE.finditer(
+            html
+        )
+    ):
+        if _SRC_RE.search(
+            match.group(
+                "attrs"
+            )
+            or ""
+        ):
+            external_scripts += 1
+        else:
+            inline_scripts += 1
+
+    return {
+        "inline_script_count": (
+            inline_scripts
+        ),
+        "external_script_count": (
+            external_scripts
+        ),
+        "inline_event_handler_count": (
+            len(
+                _EVENT_RE.findall(
+                    html
+                )
+            )
+        ),
+    }
+
+
 def scan_production_forbidden_logic(
     html: str,
 ) -> list[str]:
+    active = "\n".join(
+        active_logic_fragments(
+            html
+        )
+    )
+
     hits: list[str] = []
 
     for pattern in (
@@ -247,10 +371,15 @@ def scan_production_forbidden_logic(
     ):
         if re.search(
             pattern,
-            html,
-            flags=re.I | re.S,
+            active,
+            flags=(
+                re.I
+                | re.S
+            ),
         ):
-            hits.append(pattern)
+            hits.append(
+                pattern
+            )
 
     return hits
 
@@ -258,9 +387,31 @@ def scan_production_forbidden_logic(
 def validate_production_html(
     html: str,
 ) -> dict[str, Any]:
-    report = validate_canonical_shell(
+    report = (
+        validate_canonical_shell(
+            html
+        )
+    )
+
+    active = inspect_active_logic(
         html
     )
+
+    if active[
+        "inline_script_count"
+    ]:
+        raise UIContractError(
+            "production HTML must not "
+            "contain inline script"
+        )
+
+    if active[
+        "inline_event_handler_count"
+    ]:
+        raise UIContractError(
+            "production HTML must not "
+            "contain inline event handlers"
+        )
 
     hits = (
         scan_production_forbidden_logic(
@@ -270,11 +421,15 @@ def validate_production_html(
 
     if hits:
         raise UIContractError(
-            "legacy/forbidden production "
-            f"logic found: {hits}"
+            "legacy/forbidden "
+            "production logic found: "
+            f"{hits}"
         )
 
-    return report
+    return {
+        **report,
+        **active,
+    }
 
 
 def display_value(
@@ -288,14 +443,20 @@ def display_value(
     ):
         return "—"
 
-    if isinstance(value, bool):
+    if isinstance(
+        value,
+        bool,
+    ):
         return (
             "true"
             if value
             else "false"
         )
 
-    if isinstance(value, float):
+    if isinstance(
+        value,
+        float,
+    ):
         if (
             value != value
             or value
@@ -311,7 +472,8 @@ def display_value(
             value,
             (int, float),
         )
-        and decimals is not None
+        and decimals
+        is not None
     ):
         return f"{float(value):.{decimals}f}"
 
