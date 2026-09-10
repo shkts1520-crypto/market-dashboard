@@ -19,6 +19,49 @@ TAB_LABELS = (
 )
 
 
+def _view_model(page):
+    return page.evaluate(
+        """async () => {
+          const response = await fetch('data/ui_view_model.json', {cache: 'no-store'});
+          if (!response.ok) throw new Error('ui_view_model HTTP ' + response.status);
+          return response.json();
+        }"""
+    )
+
+
+def _assert_live_binding(page, view):
+    daily = view["daily"]
+    daily_card = page.locator(
+        '.v38-production-state[data-v38-section="t-market"]'
+    )
+    daily_text = daily_card.inner_text()
+    assert "Daily • " + view["session_date"] in daily_text
+
+    by_key = {row["key"]: row for row in daily["metrics"]}
+    for key in ("breadth50", "breadth200", "f2", "market_QQQ"):
+        row = by_key[key]
+        assert row["label"] in daily_text
+        assert row["display"] in daily_text
+
+    rs = view["rs"]
+    page.locator('a.tabx[href="#t-rs"]').click()
+    rs_card = page.locator(
+        '.v38-production-state[data-v38-section="t-rs"]'
+    )
+    rs_text = rs_card.inner_text()
+    assert "not Core 12" in rs_text
+
+    if rs["rows"]:
+        first = rs["rows"][0]
+        row = page.locator(
+            '[data-v38-rs-ticker="' + first["ticker"] + '"]'
+        ).first
+        assert row.is_visible()
+        text = row.inner_text()
+        assert first["ticker"] in text
+        assert first["rs189_display"] in text
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:8000/")
@@ -44,6 +87,9 @@ def main() -> int:
                 ]
                 assert labels == list(TAB_LABELS)
 
+                view = _view_model(page)
+                _assert_live_binding(page, view)
+
                 for i in range(9):
                     tab = tabs.nth(i)
                     href = tab.get_attribute("href")
@@ -52,12 +98,18 @@ def main() -> int:
                     tab.click()
                     section = page.locator("#" + section_id)
                     assert section.is_visible()
+                    assert tab.evaluate("el => el.classList.contains('on')")
+                    assert section.evaluate("el => el.classList.contains('on')")
                     assert (
                         section.locator(
                             ".v38-production-state"
                         ).count()
                         == 1
                     )
+                    visible_mock = section.locator(
+                        ':scope > :not(.v38-production-state):visible'
+                    ).count()
+                    assert visible_mock == 0
 
                 metrics = page.evaluate(
                     """() => ({

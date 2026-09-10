@@ -40,8 +40,8 @@ jobs:
           PYTHONPATH=src pytest -q
           COUNT="$(PYTHONPATH=src pytest -o addopts='' --collect-only -q | grep -c '::')"
           echo "Collected tests: $COUNT"
-          if [ "$COUNT" != "189" ]; then
-            echo "::error::Expected exactly 189 tests, got $COUNT"
+          if [ "$COUNT" != "200" ]; then
+            echo "::error::Expected exactly 200 tests, got $COUNT"
             exit 1
           fi
           python -m compileall -q src scripts
@@ -68,12 +68,19 @@ jobs:
             --output _site/data/ui_payload.json \
             --generated-at "$GENERATED_AT"
 
+          PYTHONPATH=src python scripts/build_ui_view_model.py \
+            --data-dir data \
+            --output _site/data/ui_view_model.json
+
           touch _site/.nojekyll
 
           test -s _site/index.html
           test -s _site/data/ui_payload.json
+          test -s _site/data/ui_view_model.json
           grep -q 'data-v38-production="shielded"' _site/index.html
           grep -q '"sections"' _site/data/ui_payload.json
+          grep -q '"daily"' _site/data/ui_view_model.json
+          grep -q '"rs"' _site/data/ui_view_model.json
 
       - name: Install Chromium
         shell: bash
