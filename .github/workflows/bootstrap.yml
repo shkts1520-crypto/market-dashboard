@@ -24,15 +24,15 @@ jobs:
           mkdir -p src/v38 scripts tests docs
           cat > src/v38/nqsar_engine.py <<'V38FILE_0'
           from __future__ import annotations
-          
+
           from typing import Any
-          
+
           from .reference_gates import DATA_REQUIRED, nqsar_reference_gate
-          
+
           CALCULATION_VERSION = "v38-nqsar-diagnostics-1.0.0"
           SCHEMA_VERSION = "v38.nqsar.readiness.1"
           VALID_STATES = {"Blue", "Green", "Yellow", "Red"}
-          
+
           NQSAR_SPEC = {
               "inputs": ["NQ", "PSAR", "EMA21", "WILDER_RSI14"],
               "psar": {"step": 0.02, "increment": 0.02, "max": 0.08},
@@ -42,18 +42,18 @@ jobs:
               "completed_bar_only": True,
               "exact_fsm_required": True,
           }
-          
-          
+
+
           class NQSARError(RuntimeError):
               """Raised when an NQSAR diagnostics contract is invalid."""
-          
-          
+
+
           def validate_state(state: Any) -> str:
               if state not in VALID_STATES:
                   raise NQSARError("state must be one of Blue/Green/Yellow/Red")
               return str(state)
-          
-          
+
+
           def readiness(
               *,
               session_date: str,
@@ -64,7 +64,7 @@ jobs:
                   raise NQSARError("session_date is required")
               if not generated_at:
                   raise NQSARError("generated_at is required")
-          
+
               gate = nqsar_reference_gate(reference)
               return {
                   "session_date": session_date,
@@ -83,8 +83,8 @@ jobs:
                       else "Reference package is present; exact FSM implementation may be validated against it."
                   ),
               }
-          
-          
+
+
           def authoritative_state(
               state: Any,
               *,
@@ -105,22 +105,23 @@ jobs:
                   "state": validate_state(state),
               }
           V38FILE_0
+
           cat > src/v38/mc57_engine.py <<'V38FILE_1'
           from __future__ import annotations
-          
+
           import math
           from typing import Any, Iterable
-          
+
           import numpy as np
           import pandas as pd
-          
+
           from .reference_gates import DATA_REQUIRED, mc57_reference_gate
-          
+
           CALCULATION_VERSION = "v38-mc57-diagnostics-1.0.0"
           SCHEMA_VERSION = "v38.mc57.readiness.1"
           CALIBRATION_LOOKBACK = 3780
           EXPECTED_METRIC_COUNT = 12
-          
+
           MC57_METRICS = (
               "close_gt_sma10",
               "close_gt_sma20",
@@ -135,19 +136,19 @@ jobs:
               "sma50_gt_sma50_shift20",
               "dd52_continuous_score",
           )
-          
-          
+
+
           class MC57Error(RuntimeError):
               """Raised when an MC57 diagnostics contract is invalid."""
-          
-          
+
+
           def mc57_logistic(z: float) -> float:
               z = float(z)
               if not math.isfinite(z):
                   return math.nan
               return 100.0 / (1.0 + 3.0 ** (-z))
-          
-          
+
+
           def dd52_score(dd52: float | None) -> float | None:
               if dd52 is None:
                   return None
@@ -155,8 +156,8 @@ jobs:
               if not math.isfinite(x):
                   return None
               return float(np.clip((x + 0.30) / 0.25 * 100.0, 0.0, 100.0))
-          
-          
+
+
           def binary_participation(values: Iterable[Any]) -> float | None:
               scored: list[float] = []
               for value in values:
@@ -167,8 +168,8 @@ jobs:
                   else:
                       raise MC57Error("binary participation accepts only bool/None")
               return float(np.mean(scored)) if scored else None
-          
-          
+
+
           def continuous_participation(values: Iterable[float | None]) -> float | None:
               scored: list[float] = []
               for value in values:
@@ -178,8 +179,8 @@ jobs:
                   if math.isfinite(x):
                       scored.append(x)
               return float(np.mean(scored)) if scored else None
-          
-          
+
+
           def raw_score(metric_scores: dict[str, float | None]) -> float | None:
               if set(metric_scores) != set(MC57_METRICS):
                   return None
@@ -187,22 +188,35 @@ jobs:
               if any(v is None or not math.isfinite(float(v)) for v in vals):
                   return None
               return float(np.mean([float(v) for v in vals]))
-          
-          
+
+
           def ema2(raw: pd.Series) -> pd.Series:
               return raw.astype(float).ewm(span=2, adjust=False).mean()
-          
-          
-          def calibrate_mc57(raw: pd.Series, lookback: int = CALIBRATION_LOOKBACK) -> pd.DataFrame:
+
+
+          def calibrate_mc57(
+              raw: pd.Series,
+              lookback: int = CALIBRATION_LOOKBACK,
+          ) -> pd.DataFrame:
               if lookback < 2:
                   raise MC57Error("lookback must be >=2")
               raw = raw.astype(float)
               smoothed = ema2(raw)
-              prior_mean = smoothed.shift(1).rolling(lookback, min_periods=lookback).mean()
-              prior_std = smoothed.shift(1).rolling(lookback, min_periods=lookback).std(ddof=0)
+              prior_mean = smoothed.shift(1).rolling(
+                  lookback,
+                  min_periods=lookback,
+              ).mean()
+              prior_std = smoothed.shift(1).rolling(
+                  lookback,
+                  min_periods=lookback,
+              ).std(ddof=0)
               z = (smoothed - prior_mean) / prior_std
               z = z.where(prior_std > 0)
-              mc57 = z.map(lambda x: mc57_logistic(x) if pd.notna(x) else np.nan)
+              mc57 = z.map(
+                  lambda x: mc57_logistic(x)
+                  if pd.notna(x)
+                  else np.nan
+              )
               return pd.DataFrame(
                   {
                       "raw": raw,
@@ -213,8 +227,8 @@ jobs:
                       "mc57": mc57,
                   }
               )
-          
-          
+
+
           def readiness(
               *,
               session_date: str,
@@ -225,7 +239,7 @@ jobs:
                   raise MC57Error("session_date is required")
               if not generated_at:
                   raise MC57Error("generated_at is required")
-          
+
               gate = mc57_reference_gate(reference)
               return {
                   "session_date": session_date,
@@ -260,15 +274,16 @@ jobs:
                   ),
               }
           V38FILE_1
+
           cat > src/v38/diagnostics.py <<'V38FILE_2'
           from __future__ import annotations
-          
+
           import json
           import os
           import tempfile
           from pathlib import Path
           from typing import Any
-          
+
           from .mc57_engine import readiness as mc57_readiness
           from .nqsar_engine import readiness as nqsar_readiness
           from .reference_gates import (
@@ -278,11 +293,11 @@ jobs:
               nqsar_reference_gate,
               overall_reference_status,
           )
-          
+
           CALCULATION_VERSION = "v38-diagnostics-1.0.0"
           SCHEMA_VERSION = "v38.diagnostics.1"
-          
-          
+
+
           def build_diagnostics(
               *,
               session_date: str,
@@ -293,7 +308,7 @@ jobs:
               nq_gate = nqsar_reference_gate(nqsar_reference)
               mc_gate = mc57_reference_gate(mc57_reference)
               status = overall_reference_status(nq_gate, mc_gate)
-          
+
               return {
                   "session_date": session_date,
                   "generated_at": generated_at,
@@ -314,16 +329,27 @@ jobs:
                       reference=mc57_reference,
                   ),
                   "blocked_components": [
-                      gate.name for gate in (nq_gate, mc_gate) if gate.status == DATA_REQUIRED
+                      gate.name
+                      for gate in (nq_gate, mc_gate)
+                      if gate.status == DATA_REQUIRED
                   ],
               }
-          
-          
+
+
           def atomic_write_json(path: str | Path, obj: dict[str, Any]) -> Path:
               p = Path(path)
               p.parent.mkdir(parents=True, exist_ok=True)
-              text = json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n"
-              fd, tmp = tempfile.mkstemp(prefix=p.name + ".", dir=p.parent)
+              text = json.dumps(
+                  obj,
+                  ensure_ascii=False,
+                  sort_keys=True,
+                  indent=2,
+                  allow_nan=False,
+              ) + "\n"
+              fd, tmp = tempfile.mkstemp(
+                  prefix=p.name + ".",
+                  dir=p.parent,
+              )
               try:
                   with os.fdopen(fd, "w", encoding="utf-8") as f:
                       f.write(text)
@@ -333,23 +359,24 @@ jobs:
                       os.unlink(tmp)
               return p
           V38FILE_2
+
           cat > src/v38/reference_gates.py <<'V38FILE_3'
           from __future__ import annotations
-          
+
           from dataclasses import dataclass
           from typing import Any
-          
+
           DATA_REQUIRED = "DATA_REQUIRED"
           READY = "READY"
-          
-          
+
+
           @dataclass(frozen=True)
           class ReferenceGate:
               name: str
               status: str
               missing: tuple[str, ...]
               details: dict[str, Any]
-          
+
               def as_dict(self) -> dict[str, Any]:
                   return {
                       "name": self.name,
@@ -357,19 +384,21 @@ jobs:
                       "missing": list(self.missing),
                       "details": dict(self.details),
                   }
-          
-          
-          def nqsar_reference_gate(reference: dict[str, Any] | None) -> ReferenceGate:
+
+
+          def nqsar_reference_gate(
+              reference: dict[str, Any] | None,
+          ) -> ReferenceGate:
               missing: list[str] = []
               ref = reference if isinstance(reference, dict) else {}
-          
+
               if not ref.get("verified"):
                   missing.append("VERIFIED_REFERENCE")
               if not ref.get("fsm_version"):
                   missing.append("FSM_VERSION")
               if not ref.get("golden_fixture_sha256"):
                   missing.append("GOLDEN_FIXTURE_SHA256")
-          
+
               return ReferenceGate(
                   name="NQSAR",
                   status=READY if not missing else DATA_REQUIRED,
@@ -380,22 +409,30 @@ jobs:
                       "source": ref.get("source"),
                   },
               )
-          
-          
-          def mc57_reference_gate(reference: dict[str, Any] | None) -> ReferenceGate:
+
+
+          def mc57_reference_gate(
+              reference: dict[str, Any] | None,
+          ) -> ReferenceGate:
               missing: list[str] = []
               ref = reference if isinstance(reference, dict) else {}
               tickers = ref.get("etf_universe")
-          
+
               if not ref.get("verified"):
                   missing.append("VERIFIED_REFERENCE")
               if not isinstance(tickers, list) or len(tickers) != 57:
                   missing.append("FIXED_57_ETF_UNIVERSE")
-              elif len({str(x).strip().upper() for x in tickers if str(x).strip()}) != 57:
+              elif len(
+                  {
+                      str(x).strip().upper()
+                      for x in tickers
+                      if str(x).strip()
+                  }
+              ) != 57:
                   missing.append("FIXED_57_ETF_UNIVERSE_UNIQUE")
               if not ref.get("golden_fixture_sha256"):
                   missing.append("GOLDEN_FIXTURE_SHA256")
-          
+
               return ReferenceGate(
                   name="MC57",
                   status=READY if not missing else DATA_REQUIRED,
@@ -406,21 +443,26 @@ jobs:
                       "source": ref.get("source"),
                   },
               )
-          
-          
+
+
           def overall_reference_status(*gates: ReferenceGate) -> str:
-              return READY if gates and all(g.status == READY for g in gates) else DATA_REQUIRED
+              return (
+                  READY
+                  if gates and all(g.status == READY for g in gates)
+                  else DATA_REQUIRED
+              )
           V38FILE_3
+
           cat > scripts/calculate_diagnostics.py <<'V38FILE_4'
           from __future__ import annotations
-          
+
           import argparse
           import json
           from pathlib import Path
-          
+
           from v38.diagnostics import atomic_write_json, build_diagnostics
-          
-          
+
+
           def _load_optional(path: Path) -> dict | None:
               if not path.exists():
                   return None
@@ -428,106 +470,171 @@ jobs:
               if not isinstance(obj, dict):
                   raise SystemExit(f"expected JSON object: {path}")
               return obj
-          
-          
+
+
           def main() -> int:
-              ap = argparse.ArgumentParser(description="Build isolated V38 NQSAR/MC57 readiness diagnostics.")
+              ap = argparse.ArgumentParser(
+                  description="Build isolated V38 NQSAR/MC57 readiness diagnostics."
+              )
               ap.add_argument("--session-date", required=True)
               ap.add_argument("--generated-at", required=True)
               ap.add_argument("--reference-dir", default="reference")
               ap.add_argument("--output-dir", default="data")
               ap.add_argument("--require-ready", action="store_true")
               args = ap.parse_args()
-          
+
               ref_dir = Path(args.reference_dir)
               out_dir = Path(args.output_dir)
-          
+
               result = build_diagnostics(
                   session_date=args.session_date,
                   generated_at=args.generated_at,
-                  nqsar_reference=_load_optional(ref_dir / "nqsar_reference.json"),
-                  mc57_reference=_load_optional(ref_dir / "mc57_reference.json"),
+                  nqsar_reference=_load_optional(
+                      ref_dir / "nqsar_reference.json"
+                  ),
+                  mc57_reference=_load_optional(
+                      ref_dir / "mc57_reference.json"
+                  ),
               )
-          
-              atomic_write_json(out_dir / "nqsar_readiness.json", result["nqsar"])
-              atomic_write_json(out_dir / "mc57_readiness.json", result["mc57"])
-              atomic_write_json(out_dir / "diagnostics.json", result)
-          
-              print(json.dumps({
-                  "status": result["status"],
-                  "production_ready": result["production_ready"],
-                  "blocked_components": result["blocked_components"],
-              }, ensure_ascii=False, sort_keys=True))
-          
-              return 2 if args.require_ready and not result["production_ready"] else 0
-          
-          
+
+              atomic_write_json(
+                  out_dir / "nqsar_readiness.json",
+                  result["nqsar"],
+              )
+              atomic_write_json(
+                  out_dir / "mc57_readiness.json",
+                  result["mc57"],
+              )
+              atomic_write_json(
+                  out_dir / "diagnostics.json",
+                  result,
+              )
+
+              print(
+                  json.dumps(
+                      {
+                          "status": result["status"],
+                          "production_ready": result["production_ready"],
+                          "blocked_components": result["blocked_components"],
+                      },
+                      ensure_ascii=False,
+                      sort_keys=True,
+                  )
+              )
+
+              return (
+                  2
+                  if args.require_ready
+                  and not result["production_ready"]
+                  else 0
+              )
+
+
           if __name__ == "__main__":
               raise SystemExit(main())
           V38FILE_4
+
           cat > tests/test_nqsar_engine.py <<'V38FILE_5'
           import pytest
-          
-          from v38.nqsar_engine import NQSARError, NQSAR_SPEC, authoritative_state, readiness, validate_state
-          
+
+          from v38.nqsar_engine import (
+              NQSARError,
+              NQSAR_SPEC,
+              authoritative_state,
+              readiness,
+              validate_state,
+          )
+
           SESSION = "2026-09-08"
           GENERATED = "2026-09-10T19:00:00+09:00"
-          
-          
+
+
           def test_readiness_is_data_required_without_exact_fsm_reference():
-              out = readiness(session_date=SESSION, generated_at=GENERATED)
+              out = readiness(
+                  session_date=SESSION,
+                  generated_at=GENERATED,
+              )
               assert out["status"] == "DATA_REQUIRED"
               assert out["state"] is None
-          
-          
+
+
           def test_partial_reference_does_not_unlock_nqsar():
               out = readiness(
                   session_date=SESSION,
                   generated_at=GENERATED,
-                  reference={"verified": True, "fsm_version": "v1"},
+                  reference={
+                      "verified": True,
+                      "fsm_version": "v1",
+                  },
               )
               assert out["status"] == "DATA_REQUIRED"
               assert "GOLDEN_FIXTURE_SHA256" in out["data_required"]
-          
-          
+
+
           def test_complete_reference_reports_ready_but_does_not_invent_state():
               out = readiness(
                   session_date=SESSION,
                   generated_at=GENERATED,
-                  reference={"verified": True, "fsm_version": "v1", "golden_fixture_sha256": "abc"},
+                  reference={
+                      "verified": True,
+                      "fsm_version": "v1",
+                      "golden_fixture_sha256": "abc",
+                  },
               )
               assert out["status"] == "READY"
               assert out["state"] is None
-          
-          
+
+
           def test_state_validation_accepts_only_four_canonical_states():
               for state in ("Blue", "Green", "Yellow", "Red"):
                   assert validate_state(state) == state
               with pytest.raises(NQSARError):
                   validate_state("BLUE")
-          
-          
+
+
           def test_known_nqsar_indicator_parameters_are_frozen():
-              assert NQSAR_SPEC["psar"] == {"step": 0.02, "increment": 0.02, "max": 0.08}
-              assert NQSAR_SPEC["ema"] == {"span": 21, "adjust": False}
-              assert NQSAR_SPEC["rsi"] == {"period": 14, "method": "Wilder"}
-          
-          
+              assert NQSAR_SPEC["psar"] == {
+                  "step": 0.02,
+                  "increment": 0.02,
+                  "max": 0.08,
+              }
+              assert NQSAR_SPEC["ema"] == {
+                  "span": 21,
+                  "adjust": False,
+              }
+              assert NQSAR_SPEC["rsi"] == {
+                  "period": 14,
+                  "method": "Wilder",
+              }
+
+
           def test_authoritative_state_requires_source_and_preserves_session():
               with pytest.raises(NQSARError):
-                  authoritative_state("Blue", session_date=SESSION, generated_at=GENERATED, source="")
-              out = authoritative_state("Green", session_date=SESSION, generated_at=GENERATED, source="golden-fixture")
+                  authoritative_state(
+                      "Blue",
+                      session_date=SESSION,
+                      generated_at=GENERATED,
+                      source="",
+                  )
+
+              out = authoritative_state(
+                  "Green",
+                  session_date=SESSION,
+                  generated_at=GENERATED,
+                  source="golden-fixture",
+              )
               assert out["state"] == "Green"
               assert out["session_date"] == SESSION
               assert out["source"] == "golden-fixture"
           V38FILE_5
+
           cat > tests/test_mc57_engine.py <<'V38FILE_6'
           import math
-          
+
           import numpy as np
           import pandas as pd
           import pytest
-          
+
           from v38.mc57_engine import (
               MC57Error,
               MC57_METRICS,
@@ -540,101 +647,173 @@ jobs:
               raw_score,
               readiness,
           )
-          
-          
+
+
           def test_logistic_exact_anchor_points():
-              assert mc57_logistic(-1) == pytest.approx(25.0, abs=1e-10)
-              assert mc57_logistic(0) == pytest.approx(50.0, abs=1e-10)
-              assert mc57_logistic(1) == pytest.approx(75.0, abs=1e-10)
-          
-          
+              assert mc57_logistic(-1) == pytest.approx(
+                  25.0,
+                  abs=1e-10,
+              )
+              assert mc57_logistic(0) == pytest.approx(
+                  50.0,
+                  abs=1e-10,
+              )
+              assert mc57_logistic(1) == pytest.approx(
+                  75.0,
+                  abs=1e-10,
+              )
+
+
           def test_dd52_continuous_score_clips_to_zero_and_hundred():
               assert dd52_score(-0.30) == 0.0
               assert dd52_score(-0.05) == 100.0
               assert dd52_score(-0.175) == pytest.approx(50.0)
-          
-          
+
+
           def test_binary_participation_excludes_missing_from_denominator():
-              assert binary_participation([True, True, False, None]) == pytest.approx(200 / 3)
-          
-          
+              assert binary_participation(
+                  [True, True, False, None]
+              ) == pytest.approx(200 / 3)
+
+
           def test_continuous_participation_ignores_missing_and_nan():
-              assert continuous_participation([0.0, 50.0, 100.0, None, math.nan]) == 50.0
-          
-          
+              assert continuous_participation(
+                  [0.0, 50.0, 100.0, None, math.nan]
+              ) == 50.0
+
+
           def test_raw_score_is_equal_weight_across_exact_12_metrics():
-              scores = {name: float(i) for i, name in enumerate(MC57_METRICS, start=1)}
+              scores = {
+                  name: float(i)
+                  for i, name in enumerate(
+                      MC57_METRICS,
+                      start=1,
+                  )
+              }
               assert raw_score(scores) == pytest.approx(6.5)
-          
-          
+
+
           def test_raw_score_returns_none_when_any_metric_missing():
-              scores = {name: 50.0 for name in MC57_METRICS}
+              scores = {
+                  name: 50.0
+                  for name in MC57_METRICS
+              }
               scores.pop(MC57_METRICS[-1])
               assert raw_score(scores) is None
-          
-          
+
+
           def test_ema2_uses_span_two_adjust_false():
               s = pd.Series([0.0, 100.0, 100.0])
-              expected = s.ewm(span=2, adjust=False).mean()
-              pd.testing.assert_series_equal(ema2(s), expected)
-          
-          
+              expected = s.ewm(
+                  span=2,
+                  adjust=False,
+              ).mean()
+              pd.testing.assert_series_equal(
+                  ema2(s),
+                  expected,
+              )
+
+
           def test_calibration_excludes_current_and_uses_ddof_zero():
-              raw = pd.Series([10.0, 20.0, 30.0, 40.0, 80.0])
-              out = calibrate_mc57(raw, lookback=4)
+              raw = pd.Series(
+                  [10.0, 20.0, 30.0, 40.0, 80.0]
+              )
+              out = calibrate_mc57(
+                  raw,
+                  lookback=4,
+              )
               prior = ema2(raw).iloc[:4]
-              assert out.loc[4, "mu_prior"] == pytest.approx(prior.mean())
-              assert out.loc[4, "sigma_prior"] == pytest.approx(prior.std(ddof=0))
-          
-          
+              assert out.loc[
+                  4,
+                  "mu_prior",
+              ] == pytest.approx(prior.mean())
+              assert out.loc[
+                  4,
+                  "sigma_prior",
+              ] == pytest.approx(prior.std(ddof=0))
+
+
           def test_calibration_is_null_when_history_insufficient_or_sigma_zero():
-              short = calibrate_mc57(pd.Series([1.0, 2.0, 3.0]), lookback=4)
+              short = calibrate_mc57(
+                  pd.Series([1.0, 2.0, 3.0]),
+                  lookback=4,
+              )
               assert short["mc57"].isna().all()
-              flat = calibrate_mc57(pd.Series([5.0] * 6), lookback=4)
-              assert np.isnan(flat.loc[4, "mc57"])
-          
-          
+
+              flat = calibrate_mc57(
+                  pd.Series([5.0] * 6),
+                  lookback=4,
+              )
+              assert np.isnan(
+                  flat.loc[4, "mc57"]
+              )
+
+
           def test_mc57_readiness_never_guesses_fixed_57_universe():
-              out = readiness(session_date="2026-09-08", generated_at="2026-09-10T19:00:00+09:00")
+              out = readiness(
+                  session_date="2026-09-08",
+                  generated_at="2026-09-10T19:00:00+09:00",
+              )
               assert out["status"] == "DATA_REQUIRED"
               assert out["mc57"] is None
-              assert "FIXED_57_ETF_UNIVERSE" in out["data_required"]
+              assert (
+                  "FIXED_57_ETF_UNIVERSE"
+                  in out["data_required"]
+              )
           V38FILE_6
+
           cat > tests/test_diagnostics.py <<'V38FILE_7'
           import json
-          
+
           from v38.diagnostics import atomic_write_json, build_diagnostics
-          
+
           SESSION = "2026-09-08"
           GENERATED = "2026-09-10T19:00:00+09:00"
-          
-          
+
+
           def good_nq():
-              return {"verified": True, "fsm_version": "v1", "golden_fixture_sha256": "abc"}
-          
-          
+              return {
+                  "verified": True,
+                  "fsm_version": "v1",
+                  "golden_fixture_sha256": "abc",
+              }
+
+
           def good_mc():
               return {
                   "verified": True,
-                  "etf_universe": [f"ETF{i:02d}" for i in range(57)],
+                  "etf_universe": [
+                      f"ETF{i:02d}"
+                      for i in range(57)
+                  ],
                   "golden_fixture_sha256": "def",
               }
-          
-          
+
+
           def test_diagnostics_blocks_both_components_without_references():
-              out = build_diagnostics(session_date=SESSION, generated_at=GENERATED)
+              out = build_diagnostics(
+                  session_date=SESSION,
+                  generated_at=GENERATED,
+              )
               assert out["status"] == "DATA_REQUIRED"
               assert out["production_ready"] is False
-              assert out["blocked_components"] == ["NQSAR", "MC57"]
-          
-          
+              assert out["blocked_components"] == [
+                  "NQSAR",
+                  "MC57",
+              ]
+
+
           def test_diagnostics_keeps_components_separate():
-              out = build_diagnostics(session_date=SESSION, generated_at=GENERATED, nqsar_reference=good_nq())
+              out = build_diagnostics(
+                  session_date=SESSION,
+                  generated_at=GENERATED,
+                  nqsar_reference=good_nq(),
+              )
               assert out["nqsar"]["status"] == "READY"
               assert out["mc57"]["status"] == "DATA_REQUIRED"
               assert out["blocked_components"] == ["MC57"]
-          
-          
+
+
           def test_diagnostics_ready_requires_both_authoritative_packages():
               out = build_diagnostics(
                   session_date=SESSION,
@@ -645,21 +824,43 @@ jobs:
               assert out["status"] == "READY"
               assert out["production_ready"] is True
               assert out["blocked_components"] == []
-          
-          
+
+
           def test_diagnostics_preserves_common_session_metadata():
-              out = build_diagnostics(session_date=SESSION, generated_at=GENERATED)
-              assert out["session_date"] == out["nqsar"]["session_date"] == out["mc57"]["session_date"]
-              assert out["generated_at"] == out["nqsar"]["generated_at"] == out["mc57"]["generated_at"]
-          
-          
+              out = build_diagnostics(
+                  session_date=SESSION,
+                  generated_at=GENERATED,
+              )
+              assert (
+                  out["session_date"]
+                  == out["nqsar"]["session_date"]
+                  == out["mc57"]["session_date"]
+              )
+              assert (
+                  out["generated_at"]
+                  == out["nqsar"]["generated_at"]
+                  == out["mc57"]["generated_at"]
+              )
+
+
           def test_atomic_json_is_valid_and_contains_no_nan(tmp_path):
-              out = build_diagnostics(session_date=SESSION, generated_at=GENERATED)
-              path = atomic_write_json(tmp_path / "diagnostics.json", out)
-              loaded = json.loads(path.read_text(encoding="utf-8"))
+              out = build_diagnostics(
+                  session_date=SESSION,
+                  generated_at=GENERATED,
+              )
+              path = atomic_write_json(
+                  tmp_path / "diagnostics.json",
+                  out,
+              )
+              loaded = json.loads(
+                  path.read_text(encoding="utf-8")
+              )
               assert loaded["status"] == "DATA_REQUIRED"
-              assert "NaN" not in path.read_text(encoding="utf-8")
+              assert "NaN" not in path.read_text(
+                  encoding="utf-8"
+              )
           V38FILE_7
+
           cat > tests/test_reference_gates.py <<'V38FILE_8'
           from v38.reference_gates import (
               DATA_REQUIRED,
@@ -668,14 +869,14 @@ jobs:
               nqsar_reference_gate,
               overall_reference_status,
           )
-          
-          
+
+
           def test_nqsar_gate_blocks_missing_reference():
               gate = nqsar_reference_gate(None)
               assert gate.status == DATA_REQUIRED
               assert "FSM_VERSION" in gate.missing
-          
-          
+
+
           def test_nqsar_gate_ready_only_with_verified_fixture():
               gate = nqsar_reference_gate({
                   "verified": True,
@@ -684,31 +885,52 @@ jobs:
                   "source": "fixture",
               })
               assert gate.status == READY
-          
-          
+
+
           def test_mc57_gate_requires_exactly_57_unique_tickers():
               gate = mc57_reference_gate({
                   "verified": True,
-                  "etf_universe": [f"E{i}" for i in range(56)],
+                  "etf_universe": [
+                      f"E{i}"
+                      for i in range(56)
+                  ],
                   "golden_fixture_sha256": "abc",
               })
               assert gate.status == DATA_REQUIRED
               assert "FIXED_57_ETF_UNIVERSE" in gate.missing
-          
-          
+
+
           def test_overall_reference_status_requires_all_ready():
-              nq = nqsar_reference_gate({"verified": True, "fsm_version": "v1", "golden_fixture_sha256": "a"})
-              mc = mc57_reference_gate({"verified": True, "etf_universe": [f"E{i}" for i in range(57)], "golden_fixture_sha256": "b"})
+              nq = nqsar_reference_gate({
+                  "verified": True,
+                  "fsm_version": "v1",
+                  "golden_fixture_sha256": "a",
+              })
+              mc = mc57_reference_gate({
+                  "verified": True,
+                  "etf_universe": [
+                      f"E{i}"
+                      for i in range(57)
+                  ],
+                  "golden_fixture_sha256": "b",
+              })
               assert overall_reference_status(nq, mc) == READY
-              assert overall_reference_status(nq, mc57_reference_gate(None)) == DATA_REQUIRED
+              assert (
+                  overall_reference_status(
+                      nq,
+                      mc57_reference_gate(None),
+                  )
+                  == DATA_REQUIRED
+              )
           V38FILE_8
+
           cat > docs/DIAGNOSTICS.md <<'V38FILE_9'
           # V38 NQSAR / MC57 Diagnostics
-          
+
           This package is intentionally isolated from the production trading path.
-          
+
           ## Implemented from the 2026-09-10 master specification
-          
+
           - MC57 mathematical contract:
             - fixed 57-ETF design contract; the actual ticker set is **not guessed**
             - 12 equal-weight participation metrics
@@ -723,18 +945,18 @@ jobs:
             - Blue / Green / Yellow / Red
             - completed bars only
           - Explicit readiness gates.
-          
+
           ## Intentionally DATA_REQUIRED
-          
+
           The following are never inferred:
-          
+
           1. NQSAR exact FSM / `_onimine_state` transition logic and golden fixture.
           2. MC57 exact fixed 57-ETF ticker universe, replacement policy, and golden fixture.
-          
+
           Until those references are frozen, diagnostics return `DATA_REQUIRED` and never publish a fabricated NQSAR state or MC57 value.
-          
+
           ## CLI
-          
+
           ```bash
           PYTHONPATH=src python scripts/calculate_diagnostics.py \
             --session-date 2026-09-08 \
@@ -742,14 +964,14 @@ jobs:
             --reference-dir reference \
             --output-dir data
           ```
-          
+
           Optional reference files:
-          
+
           - `reference/nqsar_reference.json`
           - `reference/mc57_reference.json`
-          
+
           Use `--require-ready` when CI should fail until both authoritative reference packages are present.
-          
+
           This module does not alter Normal Stock, TQQQ, Panic Reset, F1/F2/F3, ranking, positions, or any production shard.
           V38FILE_9
 
@@ -768,11 +990,29 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           PYTHONPATH=src pytest -q
-          COUNT="$(PYTHONPATH=src pytest --collect-only -q | sed -nE 's/^([0-9]+) tests? collected.*$/\1/p' | tail -1)"
-          echo "Collected tests: ${COUNT:-UNKNOWN}"
-          test "${COUNT:-}" = "73"
+
+          COUNT="$(
+            PYTHONPATH=src \
+            pytest \
+              -o addopts='' \
+              --collect-only \
+              -q \
+            | grep -c '::'
+          )"
+
+          echo "Collected tests: $COUNT"
+
+          if [ "$COUNT" != "73" ]; then
+            echo "::error::Expected exactly 73 tests, got $COUNT"
+            exit 1
+          fi
+
           python -m compileall -q src scripts
+
+          echo "73 tests passed."
+          echo "compileall passed."
 
       - name: Guard changed files
         shell: bash
@@ -781,8 +1021,10 @@ jobs:
           ALLOWED_RE="^(src/v38/(nqsar_engine|mc57_engine|diagnostics|reference_gates)\.py|scripts/calculate_diagnostics\.py|tests/test_(nqsar_engine|mc57_engine|diagnostics|reference_gates)\.py|docs/DIAGNOSTICS\.md)$"
           CHANGED="$( { git diff --name-only; git ls-files --others --exclude-standard; } | sort -u )"
           printf '%s\n' "$CHANGED"
+
           while IFS= read -r path; do
             [ -z "$path" ] && continue
+
             if ! printf '%s\n' "$path" | grep -Eq "$ALLOWED_RE"; then
               echo "::error::Unexpected changed file: $path"
               exit 1
@@ -793,15 +1035,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           find . -type d -name __pycache__ -prune -exec rm -rf {} +
           rm -rf .pytest_cache src/*.egg-info *.egg-info
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- src/v38/nqsar_engine.py src/v38/mc57_engine.py src/v38/diagnostics.py src/v38/reference_gates.py scripts/calculate_diagnostics.py tests/test_nqsar_engine.py tests/test_mc57_engine.py tests/test_diagnostics.py tests/test_reference_gates.py docs/DIAGNOSTICS.md
+
+          git add -- \
+            src/v38/nqsar_engine.py \
+            src/v38/mc57_engine.py \
+            src/v38/diagnostics.py \
+            src/v38/reference_gates.py \
+            scripts/calculate_diagnostics.py \
+            tests/test_nqsar_engine.py \
+            tests/test_mc57_engine.py \
+            tests/test_diagnostics.py \
+            tests/test_reference_gates.py \
+            docs/DIAGNOSTICS.md
+
           git diff --cached --name-only
+
           if git diff --cached --quiet; then
             echo "Diagnostics already current."
             exit 0
           fi
-          git commit -m "Add isolated V38 NQSAR MC57 diagnostics and readiness gates"
+
+          git commit \
+            -m "Add isolated V38 NQSAR MC57 diagnostics and readiness gates"
+
           git push origin HEAD:main
