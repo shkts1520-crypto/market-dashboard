@@ -1,0 +1,33 @@
+name: Bootstrap V38 Market Dashboard
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify write access
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          mkdir -p data
+          echo "V38 GitHub Actions write path enabled" > data/bootstrap-status.txt
+
+          git add data/bootstrap-status.txt
+          git commit -m "Enable V38 Actions write path"
+
+          git push origin HEAD:main
