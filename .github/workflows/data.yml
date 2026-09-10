@@ -1,6 +1,13 @@
 name: V38 Live Data Acquisition
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/v38/live_acquisition.py'
+      - 'scripts/fetch_live_data.py'
+      - '.github/workflows/data.yml'
   schedule:
     - cron: '17 22 * * 1-5'
     - cron: '17 4 * * 2-6'
