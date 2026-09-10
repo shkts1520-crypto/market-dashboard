@@ -1,4 +1,4 @@
-name: Install V38 Diagnostics v5
+name: Install V38 Reference Recovery v6
 
 on:
   workflow_dispatch:
@@ -17,22 +17,46 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Write diagnostics files
+      - name: Verify diagnostics baseline
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p src/v38 scripts tests docs
+          test -f src/v38/nqsar_engine.py
+          test -f src/v38/mc57_engine.py
+          test -f src/v38/reference_gates.py
+          test -f tests/test_nqsar_engine.py
 
-          cat > src/v38/nqsar_engine.py <<'V38FILE_0'
+      - name: Write reference recovery files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p src/v38 tests docs
+
+          cat > src/v38/nqsar_engine.py <<'V38REF_0'
           from __future__ import annotations
 
-          from typing import Any
+          from datetime import date, datetime
+          import json
+          import re
+          from typing import Any, Mapping
 
           from .reference_gates import DATA_REQUIRED, nqsar_reference_gate
 
-          CALCULATION_VERSION = "v38-nqsar-diagnostics-1.0.0"
+          CALCULATION_VERSION = "v38-nqsar-diagnostics-1.1.0"
           SCHEMA_VERSION = "v38.nqsar.readiness.1"
           VALID_STATES = {"Blue", "Green", "Yellow", "Red"}
+
+          AUTHORITATIVE_SOURCE_PRIORITY = (
+              "sar_state.txt",
+              "EXP_STATE_ID",
+          )
+
+          EXP_STATE_ID_TO_STATE = {
+              1: "Blue",
+              2: "Yellow",
+              3: "Red",
+              4: "Green",
+          }
 
           NQSAR_SPEC = {
               "inputs": ["NQ", "PSAR", "EMA21", "WILDER_RSI14"],
@@ -46,13 +70,108 @@ jobs:
 
 
           class NQSARError(RuntimeError):
-              """Raised when an NQSAR diagnostics contract is invalid."""
+              """Raised when an NQSAR diagnostics or authoritative-input contract is invalid."""
 
 
           def validate_state(state: Any) -> str:
               if state not in VALID_STATES:
                   raise NQSARError("state must be one of Blue/Green/Yellow/Red")
               return str(state)
+
+
+          def _parse_iso_date(value: Any, field: str) -> date:
+              if not isinstance(value, str) or not value.strip():
+                  raise NQSARError(f"{field} is required")
+              text = value.strip()
+              try:
+                  parsed = date.fromisoformat(text)
+              except ValueError as exc:
+                  raise NQSARError(f"{field} must be YYYY-MM-DD") from exc
+              if parsed.isoformat() != text:
+                  raise NQSARError(f"{field} must be YYYY-MM-DD")
+              return parsed
+
+
+          def _parse_aware_datetime(value: Any, field: str) -> datetime:
+              if not isinstance(value, str) or not value.strip():
+                  raise NQSARError(f"{field} is required")
+              text = value.strip()
+              normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+              try:
+                  parsed = datetime.fromisoformat(normalized)
+              except ValueError as exc:
+                  raise NQSARError(f"{field} must be an ISO-8601 datetime") from exc
+              if parsed.utcoffset() is None:
+                  raise NQSARError(f"{field} must include a timezone offset")
+              return parsed
+
+
+          def _normalize_recovered_color(value: Any) -> str | None:
+              if value is None:
+                  return None
+              text = str(value).strip()
+              if not text:
+                  return None
+              normalized = text[:1].upper() + text[1:].lower()
+              return normalized if normalized in VALID_STATES else None
+
+
+          def parse_sar_state_text(
+              raw: str,
+              *,
+              generated_at: str,
+              expected_session_date: str,
+              as_of: str,
+              source: str = "sar_state.txt",
+          ) -> dict[str, Any]:
+              """Parse the recovered dated sar_state.txt formats and fail closed.
+
+              Recovered accepted shapes are a JSON object carrying color/state/sar plus
+              asof/date/session, or CSV-ish/plain text containing one YYYY-MM-DD date
+              and one Blue/Green/Yellow/Red token. An embedded date is mandatory.
+              """
+              text = (raw or "").strip()
+              if not text:
+                  raise NQSARError("sar_state text is empty")
+
+              state: str | None = None
+              session_date: str | None = None
+
+              try:
+                  obj = json.loads(text)
+              except Exception:
+                  obj = None
+
+              if isinstance(obj, dict):
+                  state = _normalize_recovered_color(
+                      obj.get("color") or obj.get("state") or obj.get("sar")
+                  )
+                  raw_date = obj.get("asof") or obj.get("date") or obj.get("session")
+                  if raw_date is not None:
+                      session_date = str(raw_date).strip()
+              else:
+                  date_match = re.search(r"([0-9]{4}-[0-9]{2}-[0-9]{2})", text)
+                  color_match = re.search(r"\b(Blue|Green|Yellow|Red)\b", text, re.I)
+                  if date_match:
+                      session_date = date_match.group(1)
+                  if color_match:
+                      state = _normalize_recovered_color(color_match.group(1))
+
+              if state is None:
+                  raise NQSARError("sar_state text has no valid state")
+              if not session_date:
+                  raise NQSARError("sar_state text has no embedded session date")
+
+              return parse_authoritative_input(
+                  {
+                      "session_date": session_date,
+                      "generated_at": generated_at,
+                      "source": source,
+                      "state": state,
+                  },
+                  expected_session_date=expected_session_date,
+                  as_of=as_of,
+              )
 
 
           def readiness(
@@ -105,585 +224,90 @@ jobs:
                   "status": "AUTHORITATIVE_INPUT",
                   "state": validate_state(state),
               }
-          V38FILE_0
-
-          cat > src/v38/mc57_engine.py <<'V38FILE_1'
-          from __future__ import annotations
-
-          import math
-          from typing import Any, Iterable
-
-          import numpy as np
-          import pandas as pd
-
-          from .reference_gates import DATA_REQUIRED, mc57_reference_gate
-
-          CALCULATION_VERSION = "v38-mc57-diagnostics-1.0.0"
-          SCHEMA_VERSION = "v38.mc57.readiness.1"
-          CALIBRATION_LOOKBACK = 3780
-          EXPECTED_METRIC_COUNT = 12
-
-          MC57_METRICS = (
-              "close_gt_sma10",
-              "close_gt_sma20",
-              "close_gt_sma50",
-              "close_gt_sma200",
-              "ret5_gt_0",
-              "ret21_gt_0",
-              "ret63_gt_0",
-              "ret252_gt_0",
-              "sma20_gt_sma50",
-              "sma50_gt_sma200",
-              "sma50_gt_sma50_shift20",
-              "dd52_continuous_score",
-          )
 
 
-          class MC57Error(RuntimeError):
-              """Raised when an MC57 diagnostics contract is invalid."""
-
-
-          def mc57_logistic(z: float) -> float:
-              z = float(z)
-              if not math.isfinite(z):
-                  return math.nan
-              return 100.0 / (1.0 + 3.0 ** (-z))
-
-
-          def dd52_score(dd52: float | None) -> float | None:
-              if dd52 is None:
-                  return None
-              x = float(dd52)
-              if not math.isfinite(x):
-                  return None
-              return float(np.clip((x + 0.30) / 0.25 * 100.0, 0.0, 100.0))
-
-
-          def binary_participation(values: Iterable[Any]) -> float | None:
-              scored: list[float] = []
-              for value in values:
-                  if value is None or (
-                      isinstance(value, float)
-                      and math.isnan(value)
-                  ):
-                      continue
-                  if isinstance(value, (bool, np.bool_)):
-                      scored.append(100.0 if bool(value) else 0.0)
-                  else:
-                      raise MC57Error(
-                          "binary participation accepts only bool/None"
-                      )
-              return float(np.mean(scored)) if scored else None
-
-
-          def continuous_participation(
-              values: Iterable[float | None],
-          ) -> float | None:
-              scored: list[float] = []
-              for value in values:
-                  if value is None:
-                      continue
-                  x = float(value)
-                  if math.isfinite(x):
-                      scored.append(x)
-              return float(np.mean(scored)) if scored else None
-
-
-          def raw_score(
-              metric_scores: dict[str, float | None],
-          ) -> float | None:
-              if set(metric_scores) != set(MC57_METRICS):
-                  return None
-              vals = [
-                  metric_scores[name]
-                  for name in MC57_METRICS
-              ]
-              if any(
-                  v is None
-                  or not math.isfinite(float(v))
-                  for v in vals
-              ):
-                  return None
-              return float(
-                  np.mean(
-                      [float(v) for v in vals]
-                  )
-              )
-
-
-          def ema2(raw: pd.Series) -> pd.Series:
-              return raw.astype(float).ewm(
-                  span=2,
-                  adjust=False,
-              ).mean()
-
-
-          def calibrate_mc57(
-              raw: pd.Series,
-              lookback: int = CALIBRATION_LOOKBACK,
-          ) -> pd.DataFrame:
-              if lookback < 2:
-                  raise MC57Error("lookback must be >=2")
-
-              raw = raw.astype(float)
-              smoothed = ema2(raw)
-
-              prior_mean = (
-                  smoothed
-                  .shift(1)
-                  .rolling(
-                      lookback,
-                      min_periods=lookback,
-                  )
-                  .mean()
-              )
-
-              prior_std = (
-                  smoothed
-                  .shift(1)
-                  .rolling(
-                      lookback,
-                      min_periods=lookback,
-                  )
-                  .std(ddof=0)
-              )
-
-              z = (
-                  smoothed - prior_mean
-              ) / prior_std
-
-              z = z.where(prior_std > 0)
-
-              mc57 = z.map(
-                  lambda x:
-                  mc57_logistic(x)
-                  if pd.notna(x)
-                  else np.nan
-              )
-
-              return pd.DataFrame(
-                  {
-                      "raw": raw,
-                      "ema2_raw": smoothed,
-                      "mu_prior": prior_mean,
-                      "sigma_prior": prior_std,
-                      "z": z,
-                      "mc57": mc57,
-                  }
-              )
-
-
-          def readiness(
+          def parse_authoritative_input(
+              record: Mapping[str, Any],
               *,
-              session_date: str,
-              generated_at: str,
-              reference: dict[str, Any] | None = None,
+              expected_session_date: str,
+              as_of: str,
           ) -> dict[str, Any]:
-              if not session_date:
-                  raise MC57Error("session_date is required")
-              if not generated_at:
-                  raise MC57Error("generated_at is required")
+              """Validate a direct NQSAR label without reconstructing or inferring the FSM."""
+              if not isinstance(record, Mapping):
+                  raise NQSARError("authoritative input must be a mapping")
 
-              gate = mc57_reference_gate(reference)
-
-              return {
-                  "session_date": session_date,
-                  "generated_at": generated_at,
-                  "coverage": None,
-                  "source": "reference-gate:mc57",
-                  "schema_version": SCHEMA_VERSION,
-                  "calculation_version": CALCULATION_VERSION,
-                  "status": gate.status,
-                  "mc57": None,
-                  "raw": None,
-                  "ema2_raw": None,
-                  "mu_prior": None,
-                  "sigma_prior": None,
-                  "z": None,
-                  "data_required": gate.as_dict()["missing"],
-                  "spec": {
-                      "fixed_etf_count": 57,
-                      "metrics": list(MC57_METRICS),
-                      "metric_weighting": "equal",
-                      "ema_span": 2,
-                      "ema_adjust": False,
-                      "calibration_lookback_sessions": CALIBRATION_LOOKBACK,
-                      "calibration_excludes_current": True,
-                      "std_ddof": 0,
-                      "transform": "100/(1+3**(-Z))",
-                  },
-                  "reason": (
-                      "Fixed 57-ETF universe and MC57 golden fixture are not frozen; production MC57 must remain null."
-                      if gate.status == DATA_REQUIRED
-                      else "Reference package is present; MC57 implementation may be validated against it."
-                  ),
-              }
-          V38FILE_1
-
-          cat > src/v38/diagnostics.py <<'V38FILE_2'
-          from __future__ import annotations
-
-          import json
-          import os
-          import tempfile
-          from pathlib import Path
-          from typing import Any
-
-          from .mc57_engine import readiness as mc57_readiness
-          from .nqsar_engine import readiness as nqsar_readiness
-          from .reference_gates import (
-              DATA_REQUIRED,
-              READY,
-              mc57_reference_gate,
-              nqsar_reference_gate,
-              overall_reference_status,
-          )
-
-          CALCULATION_VERSION = "v38-diagnostics-1.0.0"
-          SCHEMA_VERSION = "v38.diagnostics.1"
-
-
-          def build_diagnostics(
-              *,
-              session_date: str,
-              generated_at: str,
-              nqsar_reference: dict[str, Any] | None = None,
-              mc57_reference: dict[str, Any] | None = None,
-          ) -> dict[str, Any]:
-              nq_gate = nqsar_reference_gate(nqsar_reference)
-              mc_gate = mc57_reference_gate(mc57_reference)
-              status = overall_reference_status(
-                  nq_gate,
-                  mc_gate,
-              )
-
-              return {
-                  "session_date": session_date,
-                  "generated_at": generated_at,
-                  "coverage": None,
-                  "source": "derived:reference-readiness",
-                  "schema_version": SCHEMA_VERSION,
-                  "calculation_version": CALCULATION_VERSION,
-                  "status": status,
-                  "production_ready": status == READY,
-                  "nqsar": nqsar_readiness(
-                      session_date=session_date,
-                      generated_at=generated_at,
-                      reference=nqsar_reference,
-                  ),
-                  "mc57": mc57_readiness(
-                      session_date=session_date,
-                      generated_at=generated_at,
-                      reference=mc57_reference,
-                  ),
-                  "blocked_components": [
-                      gate.name
-                      for gate in (nq_gate, mc_gate)
-                      if gate.status == DATA_REQUIRED
-                  ],
-              }
-
-
-          def atomic_write_json(
-              path: str | Path,
-              obj: dict[str, Any],
-          ) -> Path:
-              p = Path(path)
-
-              p.parent.mkdir(
-                  parents=True,
-                  exist_ok=True,
-              )
-
-              text = (
-                  json.dumps(
-                      obj,
-                      ensure_ascii=False,
-                      sort_keys=True,
-                      indent=2,
-                      allow_nan=False,
-                  )
-                  + "\n"
-              )
-
-              fd, tmp = tempfile.mkstemp(
-                  prefix=p.name + ".",
-                  dir=p.parent,
-              )
-
-              try:
-                  with os.fdopen(
-                      fd,
-                      "w",
-                      encoding="utf-8",
-                  ) as f:
-                      f.write(text)
-
-                  os.replace(tmp, p)
-
-              finally:
-                  if os.path.exists(tmp):
-                      os.unlink(tmp)
-
-              return p
-          V38FILE_2
-
-          cat > src/v38/reference_gates.py <<'V38FILE_3'
-          from __future__ import annotations
-
-          from dataclasses import dataclass
-          from typing import Any
-
-          DATA_REQUIRED = "DATA_REQUIRED"
-          READY = "READY"
-
-
-          @dataclass(frozen=True)
-          class ReferenceGate:
-              name: str
-              status: str
-              missing: tuple[str, ...]
-              details: dict[str, Any]
-
-              def as_dict(self) -> dict[str, Any]:
-                  return {
-                      "name": self.name,
-                      "status": self.status,
-                      "missing": list(self.missing),
-                      "details": dict(self.details),
-                  }
-
-
-          def nqsar_reference_gate(
-              reference: dict[str, Any] | None,
-          ) -> ReferenceGate:
-              missing: list[str] = []
-              ref = (
-                  reference
-                  if isinstance(reference, dict)
-                  else {}
-              )
-
-              if not ref.get("verified"):
-                  missing.append("VERIFIED_REFERENCE")
-
-              if not ref.get("fsm_version"):
-                  missing.append("FSM_VERSION")
-
-              if not ref.get("golden_fixture_sha256"):
-                  missing.append("GOLDEN_FIXTURE_SHA256")
-
-              return ReferenceGate(
-                  name="NQSAR",
-                  status=(
-                      READY
-                      if not missing
-                      else DATA_REQUIRED
-                  ),
-                  missing=tuple(missing),
-                  details={
-                      "requires_exact_fsm": True,
-                      "requires_golden_fixture": True,
-                      "source": ref.get("source"),
-                  },
-              )
-
-
-          def mc57_reference_gate(
-              reference: dict[str, Any] | None,
-          ) -> ReferenceGate:
-              missing: list[str] = []
-              ref = (
-                  reference
-                  if isinstance(reference, dict)
-                  else {}
-              )
-
-              tickers = ref.get("etf_universe")
-
-              if not ref.get("verified"):
-                  missing.append("VERIFIED_REFERENCE")
-
-              if (
-                  not isinstance(tickers, list)
-                  or len(tickers) != 57
-              ):
-                  missing.append("FIXED_57_ETF_UNIVERSE")
-
-              elif len(
-                  {
-                      str(x).strip().upper()
-                      for x in tickers
-                      if str(x).strip()
-                  }
-              ) != 57:
-                  missing.append(
-                      "FIXED_57_ETF_UNIVERSE_UNIQUE"
+              expected = _parse_iso_date(expected_session_date, "expected_session_date")
+              session = _parse_iso_date(record.get("session_date"), "session_date")
+              if session != expected:
+                  relation = "stale" if session < expected else "future"
+                  raise NQSARError(
+                      f"{relation} session_date: expected {expected.isoformat()}, got {session.isoformat()}"
                   )
 
-              if not ref.get("golden_fixture_sha256"):
-                  missing.append("GOLDEN_FIXTURE_SHA256")
+              generated = _parse_aware_datetime(record.get("generated_at"), "generated_at")
+              cutoff = _parse_aware_datetime(as_of, "as_of")
+              if generated > cutoff:
+                  raise NQSARError("generated_at is in the future relative to as_of")
 
-              return ReferenceGate(
-                  name="MC57",
-                  status=(
-                      READY
-                      if not missing
-                      else DATA_REQUIRED
-                  ),
-                  missing=tuple(missing),
-                  details={
-                      "requires_fixed_57_etfs": True,
-                      "requires_golden_fixture": True,
-                      "source": ref.get("source"),
-                  },
+              source_value = record.get("source")
+              if not isinstance(source_value, str) or not source_value.strip():
+                  raise NQSARError("source is required")
+              source = source_value.strip()
+
+              has_state = record.get("state") not in (None, "")
+              has_exp_id = record.get("exp_state_id") not in (None, "")
+              if not has_state and not has_exp_id:
+                  raise NQSARError("authoritative input requires state or exp_state_id")
+
+              state_from_label: str | None = None
+              if has_state:
+                  state_from_label = validate_state(record.get("state"))
+
+              state_from_id: str | None = None
+              exp_state_id: int | None = None
+              if has_exp_id:
+                  raw_id = record.get("exp_state_id")
+                  if isinstance(raw_id, bool) or not isinstance(raw_id, int):
+                      raise NQSARError("exp_state_id must be an integer 1..4")
+                  if raw_id not in EXP_STATE_ID_TO_STATE:
+                      raise NQSARError("exp_state_id must be one of 1,2,3,4")
+                  exp_state_id = raw_id
+                  state_from_id = EXP_STATE_ID_TO_STATE[raw_id]
+
+              if state_from_label is not None and state_from_id is not None:
+                  if state_from_label != state_from_id:
+                      raise NQSARError("state conflicts with exp_state_id")
+
+              state = state_from_label or state_from_id
+              if state is None:
+                  raise NQSARError("authoritative state is unavailable")
+
+              out = authoritative_state(
+                  state,
+                  session_date=session.isoformat(),
+                  generated_at=record["generated_at"].strip(),
+                  source=source,
               )
-
-
-          def overall_reference_status(
-              *gates: ReferenceGate,
-          ) -> str:
-              return (
-                  READY
-                  if gates
-                  and all(
-                      gate.status == READY
-                      for gate in gates
-                  )
-                  else DATA_REQUIRED
+              out["input_kind"] = (
+                  "state"
+                  if state_from_label is not None
+                  else "EXP_STATE_ID"
               )
-          V38FILE_3
+              if exp_state_id is not None:
+                  out["exp_state_id"] = exp_state_id
+              return out
+          V38REF_0
 
-          cat > scripts/calculate_diagnostics.py <<'V38FILE_4'
-          from __future__ import annotations
-
-          import argparse
-          import json
-          from pathlib import Path
-
-          from v38.diagnostics import (
-              atomic_write_json,
-              build_diagnostics,
-          )
-
-
-          def _load_optional(path: Path) -> dict | None:
-              if not path.exists():
-                  return None
-
-              obj = json.loads(
-                  path.read_text(
-                      encoding="utf-8"
-                  )
-              )
-
-              if not isinstance(obj, dict):
-                  raise SystemExit(
-                      f"expected JSON object: {path}"
-                  )
-
-              return obj
-
-
-          def main() -> int:
-              ap = argparse.ArgumentParser(
-                  description=(
-                      "Build isolated V38 "
-                      "NQSAR/MC57 readiness diagnostics."
-                  )
-              )
-
-              ap.add_argument(
-                  "--session-date",
-                  required=True,
-              )
-
-              ap.add_argument(
-                  "--generated-at",
-                  required=True,
-              )
-
-              ap.add_argument(
-                  "--reference-dir",
-                  default="reference",
-              )
-
-              ap.add_argument(
-                  "--output-dir",
-                  default="data",
-              )
-
-              ap.add_argument(
-                  "--require-ready",
-                  action="store_true",
-              )
-
-              args = ap.parse_args()
-
-              ref_dir = Path(args.reference_dir)
-              out_dir = Path(args.output_dir)
-
-              result = build_diagnostics(
-                  session_date=args.session_date,
-                  generated_at=args.generated_at,
-                  nqsar_reference=_load_optional(
-                      ref_dir / "nqsar_reference.json"
-                  ),
-                  mc57_reference=_load_optional(
-                      ref_dir / "mc57_reference.json"
-                  ),
-              )
-
-              atomic_write_json(
-                  out_dir / "nqsar_readiness.json",
-                  result["nqsar"],
-              )
-
-              atomic_write_json(
-                  out_dir / "mc57_readiness.json",
-                  result["mc57"],
-              )
-
-              atomic_write_json(
-                  out_dir / "diagnostics.json",
-                  result,
-              )
-
-              print(
-                  json.dumps(
-                      {
-                          "status": result["status"],
-                          "production_ready": result[
-                              "production_ready"
-                          ],
-                          "blocked_components": result[
-                              "blocked_components"
-                          ],
-                      },
-                      ensure_ascii=False,
-                      sort_keys=True,
-                  )
-              )
-
-              return (
-                  2
-                  if args.require_ready
-                  and not result["production_ready"]
-                  else 0
-              )
-
-
-          if __name__ == "__main__":
-              raise SystemExit(main())
-          V38FILE_4
-
-          cat > tests/test_nqsar_engine.py <<'V38FILE_5'
+          cat > tests/test_nqsar_engine.py <<'V38REF_1'
           import pytest
 
           from v38.nqsar_engine import (
+              EXP_STATE_ID_TO_STATE,
               NQSARError,
               NQSAR_SPEC,
               authoritative_state,
+              parse_authoritative_input,
+              parse_sar_state_text,
               readiness,
               validate_state,
           )
@@ -697,7 +321,6 @@ jobs:
                   session_date=SESSION,
                   generated_at=GENERATED,
               )
-
               assert out["status"] == "DATA_REQUIRED"
               assert out["state"] is None
 
@@ -711,7 +334,6 @@ jobs:
                       "fsm_version": "v1",
                   },
               )
-
               assert out["status"] == "DATA_REQUIRED"
               assert (
                   "GOLDEN_FIXTURE_SHA256"
@@ -729,7 +351,6 @@ jobs:
                       "golden_fixture_sha256": "abc",
                   },
               )
-
               assert out["status"] == "READY"
               assert out["state"] is None
 
@@ -753,12 +374,10 @@ jobs:
                   "increment": 0.02,
                   "max": 0.08,
               }
-
               assert NQSAR_SPEC["ema"] == {
                   "span": 21,
                   "adjust": False,
               }
-
               assert NQSAR_SPEC["rsi"] == {
                   "period": 14,
                   "method": "Wilder",
@@ -784,465 +403,218 @@ jobs:
               assert out["state"] == "Green"
               assert out["session_date"] == SESSION
               assert out["source"] == "golden-fixture"
-          V38FILE_5
 
-          cat > tests/test_mc57_engine.py <<'V38FILE_6'
-          import math
 
-          import numpy as np
-          import pandas as pd
-          import pytest
-
-          from v38.mc57_engine import (
-              MC57_METRICS,
-              binary_participation,
-              calibrate_mc57,
-              continuous_participation,
-              dd52_score,
-              ema2,
-              mc57_logistic,
-              raw_score,
-              readiness,
+          @pytest.mark.parametrize(
+              ("exp_state_id", "expected"),
+              sorted(EXP_STATE_ID_TO_STATE.items()),
           )
-
-
-          def test_logistic_exact_anchor_points():
-              assert mc57_logistic(-1) == pytest.approx(
-                  25.0,
-                  abs=1e-10,
+          def test_parse_authoritative_exp_state_ids(
+              exp_state_id,
+              expected,
+          ):
+              out = parse_authoritative_input(
+                  {
+                      "session_date": SESSION,
+                      "generated_at": "2026-09-08T16:05:00-04:00",
+                      "source": "NQ.csv:EXP_STATE_ID",
+                      "exp_state_id": exp_state_id,
+                  },
+                  expected_session_date=SESSION,
+                  as_of=GENERATED,
               )
 
-              assert mc57_logistic(0) == pytest.approx(
-                  50.0,
-                  abs=1e-10,
-              )
-
-              assert mc57_logistic(1) == pytest.approx(
-                  75.0,
-                  abs=1e-10,
-              )
+              assert out["state"] == expected
+              assert out["exp_state_id"] == exp_state_id
+              assert out["input_kind"] == "EXP_STATE_ID"
 
 
-          def test_dd52_continuous_score_clips_to_zero_and_hundred():
-              assert dd52_score(-0.30) == 0.0
-              assert dd52_score(-0.05) == 100.0
-
-              assert dd52_score(
-                  -0.175
-              ) == pytest.approx(
-                  50.0
-              )
-
-
-          def test_binary_participation_excludes_missing_from_denominator():
-              assert binary_participation(
-                  [
-                      True,
-                      True,
-                      False,
-                      None,
-                  ]
-              ) == pytest.approx(
-                  200 / 3
-              )
-
-
-          def test_continuous_participation_ignores_missing_and_nan():
-              assert continuous_participation(
-                  [
-                      0.0,
-                      50.0,
-                      100.0,
-                      None,
-                      math.nan,
-                  ]
-              ) == 50.0
-
-
-          def test_raw_score_is_equal_weight_across_exact_12_metrics():
-              scores = {
-                  name: float(i)
-                  for i, name
-                  in enumerate(
-                      MC57_METRICS,
-                      start=1,
+          @pytest.mark.parametrize(
+              "bad_session",
+              [
+                  "2026-09-07",
+                  "2026-09-09",
+              ],
+          )
+          def test_parse_authoritative_input_rejects_stale_or_future_session(
+              bad_session,
+          ):
+              with pytest.raises(NQSARError):
+                  parse_authoritative_input(
+                      {
+                          "session_date": bad_session,
+                          "generated_at": "2026-09-08T16:05:00-04:00",
+                          "source": "sar_state.txt",
+                          "state": "Blue",
+                      },
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
                   )
-              }
-
-              assert raw_score(
-                  scores
-              ) == pytest.approx(
-                  6.5
-              )
 
 
-          def test_raw_score_returns_none_when_any_metric_missing():
-              scores = {
-                  name: 50.0
-                  for name
-                  in MC57_METRICS
-              }
+          def test_parse_authoritative_input_rejects_missing_future_and_conflicting_metadata():
+              with pytest.raises(NQSARError):
+                  parse_authoritative_input(
+                      {
+                          "generated_at": "2026-09-08T16:05:00-04:00",
+                          "source": "sar_state.txt",
+                          "state": "Blue",
+                      },
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
+                  )
 
-              scores.pop(
-                  MC57_METRICS[-1]
-              )
+              with pytest.raises(NQSARError):
+                  parse_authoritative_input(
+                      {
+                          "session_date": SESSION,
+                          "generated_at": "2026-09-11T00:00:00+09:00",
+                          "source": "sar_state.txt",
+                          "state": "Blue",
+                      },
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
+                  )
 
-              assert raw_score(scores) is None
-
-
-          def test_ema2_uses_span_two_adjust_false():
-              s = pd.Series(
-                  [
-                      0.0,
-                      100.0,
-                      100.0,
-                  ]
-              )
-
-              expected = s.ewm(
-                  span=2,
-                  adjust=False,
-              ).mean()
-
-              pd.testing.assert_series_equal(
-                  ema2(s),
-                  expected,
-              )
-
-
-          def test_calibration_excludes_current_and_uses_ddof_zero():
-              raw = pd.Series(
-                  [
-                      10.0,
-                      20.0,
-                      30.0,
-                      40.0,
-                      80.0,
-                  ]
-              )
-
-              out = calibrate_mc57(
-                  raw,
-                  lookback=4,
-              )
-
-              prior = ema2(raw).iloc[:4]
-
-              assert out.loc[
-                  4,
-                  "mu_prior",
-              ] == pytest.approx(
-                  prior.mean()
-              )
-
-              assert out.loc[
-                  4,
-                  "sigma_prior",
-              ] == pytest.approx(
-                  prior.std(ddof=0)
-              )
+              with pytest.raises(NQSARError):
+                  parse_authoritative_input(
+                      {
+                          "session_date": SESSION,
+                          "generated_at": "2026-09-08T16:05:00-04:00",
+                          "source": "NQ.csv:EXP_STATE_ID",
+                          "state": "Blue",
+                          "exp_state_id": 3,
+                      },
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
+                  )
 
 
-          def test_calibration_is_null_when_history_insufficient_or_sigma_zero():
-              short = calibrate_mc57(
-                  pd.Series(
-                      [
-                          1.0,
-                          2.0,
-                          3.0,
-                      ]
-                  ),
-                  lookback=4,
-              )
-
-              assert short["mc57"].isna().all()
-
-              flat = calibrate_mc57(
-                  pd.Series(
-                      [5.0] * 6
-                  ),
-                  lookback=4,
-              )
-
-              assert np.isnan(
-                  flat.loc[
-                      4,
-                      "mc57",
-                  ]
-              )
-
-
-          def test_mc57_readiness_never_guesses_fixed_57_universe():
-              out = readiness(
-                  session_date="2026-09-08",
-                  generated_at="2026-09-10T19:00:00+09:00",
-              )
-
-              assert out["status"] == "DATA_REQUIRED"
-              assert out["mc57"] is None
-
-              assert (
-                  "FIXED_57_ETF_UNIVERSE"
-                  in out["data_required"]
-              )
-          V38FILE_6
-
-          cat > tests/test_diagnostics.py <<'V38FILE_7'
-          import json
-
-          from v38.diagnostics import (
-              atomic_write_json,
-              build_diagnostics,
-          )
-
-          SESSION = "2026-09-08"
-          GENERATED = "2026-09-10T19:00:00+09:00"
-
-
-          def good_nq():
-              return {
-                  "verified": True,
-                  "fsm_version": "v1",
-                  "golden_fixture_sha256": "abc",
-              }
-
-
-          def good_mc():
-              return {
-                  "verified": True,
-                  "etf_universe": [
-                      f"ETF{i:02d}"
-                      for i in range(57)
-                  ],
-                  "golden_fixture_sha256": "def",
-              }
-
-
-          def test_diagnostics_blocks_both_components_without_references():
-              out = build_diagnostics(
-                  session_date=SESSION,
-                  generated_at=GENERATED,
-              )
-
-              assert out["status"] == "DATA_REQUIRED"
-              assert out["production_ready"] is False
-
-              assert out["blocked_components"] == [
-                  "NQSAR",
-                  "MC57",
+          def test_parse_sar_state_text_accepts_recovered_json_aliases():
+              samples = [
+                  '{"asof":"2026-09-08","color":"blue"}',
+                  '{"date":"2026-09-08","state":"Green"}',
+                  '{"session":"2026-09-08","sar":"YELLOW"}',
               ]
 
+              expected = [
+                  "Blue",
+                  "Green",
+                  "Yellow",
+              ]
 
-          def test_diagnostics_keeps_components_separate():
-              out = build_diagnostics(
-                  session_date=SESSION,
-                  generated_at=GENERATED,
-                  nqsar_reference=good_nq(),
-              )
-
-              assert out["nqsar"]["status"] == "READY"
-              assert out["mc57"]["status"] == "DATA_REQUIRED"
-              assert out["blocked_components"] == ["MC57"]
-
-
-          def test_diagnostics_ready_requires_both_authoritative_packages():
-              out = build_diagnostics(
-                  session_date=SESSION,
-                  generated_at=GENERATED,
-                  nqsar_reference=good_nq(),
-                  mc57_reference=good_mc(),
-              )
-
-              assert out["status"] == "READY"
-              assert out["production_ready"] is True
-              assert out["blocked_components"] == []
-
-
-          def test_diagnostics_preserves_common_session_metadata():
-              out = build_diagnostics(
-                  session_date=SESSION,
-                  generated_at=GENERATED,
-              )
-
-              assert (
-                  out["session_date"]
-                  == out["nqsar"]["session_date"]
-                  == out["mc57"]["session_date"]
-              )
-
-              assert (
-                  out["generated_at"]
-                  == out["nqsar"]["generated_at"]
-                  == out["mc57"]["generated_at"]
-              )
-
-
-          def test_atomic_json_is_valid_and_contains_no_nan(
-              tmp_path,
-          ):
-              out = build_diagnostics(
-                  session_date=SESSION,
-                  generated_at=GENERATED,
-              )
-
-              path = atomic_write_json(
-                  tmp_path / "diagnostics.json",
-                  out,
-              )
-
-              loaded = json.loads(
-                  path.read_text(
-                      encoding="utf-8"
+              for raw, state in zip(
+                  samples,
+                  expected,
+                  strict=True,
+              ):
+                  out = parse_sar_state_text(
+                      raw,
+                      generated_at="2026-09-08T16:05:00-04:00",
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
                   )
+
+                  assert out["state"] == state
+                  assert out["source"] == "sar_state.txt"
+
+
+          def test_parse_sar_state_text_accepts_recovered_csvish_format():
+              out = parse_sar_state_text(
+                  "2026-09-08,Red",
+                  generated_at="2026-09-08T16:05:00-04:00",
+                  expected_session_date=SESSION,
+                  as_of=GENERATED,
               )
 
-              assert loaded["status"] == "DATA_REQUIRED"
+              assert out["state"] == "Red"
+              assert out["session_date"] == SESSION
 
-              assert (
-                  "NaN"
-                  not in path.read_text(
-                      encoding="utf-8"
+
+          def test_parse_sar_state_text_rejects_undated_stale_and_future_text():
+              with pytest.raises(NQSARError):
+                  parse_sar_state_text(
+                      "Blue",
+                      generated_at="2026-09-08T16:05:00-04:00",
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
                   )
-              )
-          V38FILE_7
 
-          cat > tests/test_reference_gates.py <<'V38FILE_8'
-          from v38.reference_gates import (
-              DATA_REQUIRED,
-              READY,
-              mc57_reference_gate,
-              nqsar_reference_gate,
-              overall_reference_status,
-          )
-
-
-          def test_nqsar_gate_blocks_missing_reference():
-              gate = nqsar_reference_gate(None)
-
-              assert gate.status == DATA_REQUIRED
-              assert "FSM_VERSION" in gate.missing
-
-
-          def test_nqsar_gate_ready_only_with_verified_fixture():
-              gate = nqsar_reference_gate(
-                  {
-                      "verified": True,
-                      "fsm_version": "authoritative-v1",
-                      "golden_fixture_sha256": "abc",
-                      "source": "fixture",
-                  }
-              )
-
-              assert gate.status == READY
-
-
-          def test_mc57_gate_requires_exactly_57_unique_tickers():
-              gate = mc57_reference_gate(
-                  {
-                      "verified": True,
-                      "etf_universe": [
-                          f"E{i}"
-                          for i in range(56)
-                      ],
-                      "golden_fixture_sha256": "abc",
-                  }
-              )
-
-              assert gate.status == DATA_REQUIRED
-
-              assert (
-                  "FIXED_57_ETF_UNIVERSE"
-                  in gate.missing
-              )
-
-
-          def test_overall_reference_status_requires_all_ready():
-              nq = nqsar_reference_gate(
-                  {
-                      "verified": True,
-                      "fsm_version": "v1",
-                      "golden_fixture_sha256": "a",
-                  }
-              )
-
-              mc = mc57_reference_gate(
-                  {
-                      "verified": True,
-                      "etf_universe": [
-                          f"E{i}"
-                          for i in range(57)
-                      ],
-                      "golden_fixture_sha256": "b",
-                  }
-              )
-
-              assert (
-                  overall_reference_status(
-                      nq,
-                      mc,
+              with pytest.raises(NQSARError):
+                  parse_sar_state_text(
+                      "2026-09-07,Blue",
+                      generated_at="2026-09-08T16:05:00-04:00",
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
                   )
-                  == READY
-              )
 
-              assert (
-                  overall_reference_status(
-                      nq,
-                      mc57_reference_gate(None),
+              with pytest.raises(NQSARError):
+                  parse_sar_state_text(
+                      '{"asof":"2026-09-09","color":"Blue"}',
+                      generated_at="2026-09-08T16:05:00-04:00",
+                      expected_session_date=SESSION,
+                      as_of=GENERATED,
                   )
-                  == DATA_REQUIRED
-              )
-          V38FILE_8
+          V38REF_1
 
-          cat > docs/DIAGNOSTICS.md <<'V38FILE_9'
-          # V38 NQSAR / MC57 Diagnostics
+          cat > docs/REFERENCE_RECOVERY.md <<'V38REF_2'
+          # V38 Authoritative Reference Recovery
 
-          This package is intentionally isolated from the production trading path.
+          Status date: 2026-09-10
 
-          ## Implemented from the 2026-09-10 master specification
+          This document records only source hierarchy and contracts recovered from prior V38 materials. It does not promote reconstructed logic into production.
 
-          - MC57 mathematical contract:
-            - fixed 57-ETF design contract; the actual ticker set is **not guessed**
-            - 12 equal-weight participation metrics
-            - binary metrics: True=100 / False=0; missing observations excluded
-            - DD52 continuous score: `clip((DD52 + 0.30) / 0.25 * 100, 0, 100)`
-            - Raw = equal-weight mean of all 12 metric scores
-            - EMA2: `span=2, adjust=False`
-            - calibration: immediately preceding 3780 sessions, current day excluded, `ddof=0`
-            - `MC57 = 100 / (1 + 3**(-Z))`
-          - NQSAR known contract metadata:
-            - NQ, PSAR(step=.02, increment=.02, max=.08), EMA21, Wilder RSI14
-            - Blue / Green / Yellow / Red
-            - completed bars only
-          - Explicit readiness gates.
+          ## NQSAR
 
-          ## Intentionally DATA_REQUIRED
+          Recovered authoritative hierarchy:
 
-          The following are never inferred:
+          1. `sar_state.txt` produced by the TradingView -> Pipedream path is the preferred direct state source.
+          2. `EXP_STATE_ID` in the NQ CSV is a deeper fallback direct label source.
+          3. Reconstructed `_onimine_state` logic is research/recovery material only and is not authoritative production logic.
 
-          1. NQSAR exact FSM / `_onimine_state` transition logic and golden fixture.
-          2. MC57 exact fixed 57-ETF ticker universe, replacement policy, and golden fixture.
+          Recovered `EXP_STATE_ID` mapping:
 
-          Until those references are frozen, diagnostics return `DATA_REQUIRED` and never publish a fabricated NQSAR state or MC57 value.
+          - 1 = Blue
+          - 2 = Yellow
+          - 3 = Red
+          - 4 = Green
 
-          ## CLI
+          Known frozen indicator metadata remains:
 
-          ```bash
-          PYTHONPATH=src python scripts/calculate_diagnostics.py \
-            --session-date 2026-09-08 \
-            --generated-at 2026-09-10T19:00:00+09:00 \
-            --reference-dir reference \
-            --output-dir data
-          ```
+          - instrument: NQ
+          - PSAR step 0.02 / increment 0.02 / max 0.08
+          - EMA21
+          - Wilder RSI14
+          - states: Blue / Green / Yellow / Red
+          - completed bars only
 
-          Optional reference files:
+          The exact authoritative FSM and golden fixture are still missing. Therefore the NQSAR readiness gate remains `DATA_REQUIRED` until a verified reference package supplies `fsm_version` and `golden_fixture_sha256`.
 
-          - `reference/nqsar_reference.json`
-          - `reference/mc57_reference.json`
+          `parse_authoritative_input()` validates already-authoritative labels only. It does not calculate PSAR, EMA, RSI, or state transitions. It rejects missing session metadata, stale/future session dates, future generation timestamps, missing sources, invalid state IDs, and conflicting state labels.
 
-          Use `--require-ready` when CI should fail until both authoritative reference packages are present.
+          Recovered production code also establishes the accepted dated `sar_state.txt` parsing contract. `parse_sar_state_text()` accepts:
 
-          This module does not alter Normal Stock, TQQQ, Panic Reset, F1/F2/F3, ranking, positions, or any production shard.
-          V38FILE_9
+          - JSON objects using `color` / `state` / `sar` and `asof` / `date` / `session` aliases.
+          - CSV-ish/plain text containing a `YYYY-MM-DD` date and one Blue/Green/Yellow/Red token, including `2026-07-10,Blue`.
+
+          Unlike the legacy compatibility path, the recovered production guard is kept fail-closed here: an embedded session date is mandatory. Undated plain-color files are not enabled.
+
+          ## MC57
+
+          The mathematical contract is frozen in `mc57_engine.py`, but the exact fixed 57-ETF universe and golden fixture remain unrecovered. No older MRI/MC15 ETF list is promoted or substituted.
+
+          Required before MC57 can become `READY`:
+
+          - verified exact 57 unique ETF tickers
+          - authoritative source/provenance
+          - golden fixture SHA-256
+
+          Until then MC57 stays `DATA_REQUIRED` and production values remain null rather than guessed.
+
+          ## Production safety
+
+          This recovery work does not change Normal Stock, Panic Reset, TQQQ Panic, F1/F2/F3, portfolio allocation, exits, ranking, or any production shard. NQSAR and MC57 readiness gates are intentionally unchanged.
+          V38REF_2
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -1253,13 +625,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . pytest
 
-          python -m pip install \
-            --disable-pip-version-check \
-            -e . \
-            pytest
-
-      - name: Validate recovered suite
+      - name: Validate full suite
         shell: bash
         run: |
           set -euo pipefail
@@ -1268,31 +636,62 @@ jobs:
 
           COUNT="$(
             PYTHONPATH=src \
-            pytest \
-              -o addopts='' \
-              --collect-only \
-              -q \
+            pytest -o addopts='' --collect-only -q \
             | grep -c '::'
           )"
 
           echo "Collected tests: $COUNT"
-
-          if [ "$COUNT" != "73" ]; then
-            echo "::error::Expected exactly 73 tests, got $COUNT"
+          if [ "$COUNT" != "83" ]; then
+            echo "::error::Expected exactly 83 tests, got $COUNT"
             exit 1
           fi
 
           python -m compileall -q src scripts
 
-          echo "73 tests passed."
+          TMP_DIAG="$RUNNER_TEMP/v38-reference-recovery-diagnostics"
+          rm -rf "$TMP_DIAG"
+
+          PYTHONPATH=src python scripts/calculate_diagnostics.py \
+            --session-date 2026-09-08 \
+            --generated-at 2026-09-10T19:00:00+09:00 \
+            --output-dir "$TMP_DIAG"
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          p = (
+              Path(os.environ["RUNNER_TEMP"])
+              / "v38-reference-recovery-diagnostics"
+              / "diagnostics.json"
+          )
+
+          obj = json.loads(
+              p.read_text(
+                  encoding="utf-8"
+              )
+          )
+
+          assert obj["status"] == "DATA_REQUIRED"
+          assert obj["production_ready"] is False
+          assert set(
+              obj["blocked_components"]
+          ) == {
+              "NQSAR",
+              "MC57",
+          }
+          PY
+
+          echo "83 tests passed."
           echo "compileall passed."
+          echo "diagnostics fail-closed smoke passed."
 
       - name: Guard changed files
         shell: bash
         run: |
           set -euo pipefail
 
-          # Remove files generated by pytest/pip/compileall.
           find . \
             -type d \
             -name __pycache__ \
@@ -1304,7 +703,7 @@ jobs:
             src/*.egg-info \
             *.egg-info
 
-          ALLOWED_RE="^(src/v38/(nqsar_engine|mc57_engine|diagnostics|reference_gates)\.py|scripts/calculate_diagnostics\.py|tests/test_(nqsar_engine|mc57_engine|diagnostics|reference_gates)\.py|docs/DIAGNOSTICS\.md)$"
+          ALLOWED_RE="^(src/v38/nqsar_engine\.py|tests/test_nqsar_engine\.py|docs/REFERENCE_RECOVERY\.md)$"
 
           CHANGED="$(
             {
@@ -1319,29 +718,33 @@ jobs:
           while IFS= read -r path; do
             [ -z "$path" ] && continue
 
-            if ! printf '%s\n' "$path" | grep -Eq "$ALLOWED_RE"; then
+            if ! printf '%s\n' "$path" \
+              | grep -Eq "$ALLOWED_RE"
+            then
               echo "::error::Unexpected changed file: $path"
               exit 1
             fi
           done <<< "$CHANGED"
 
-          echo "Changed-file allowlist passed."
+          EXPECTED="$(
+            printf '%s\n' \
+              docs/REFERENCE_RECOVERY.md \
+              src/v38/nqsar_engine.py \
+              tests/test_nqsar_engine.py \
+            | sort
+          )"
 
-      - name: Commit diagnostics only
+          if [ "$CHANGED" != "$EXPECTED" ]; then
+            echo "::error::Expected exactly three reference-recovery files"
+            exit 1
+          fi
+
+          echo "Changed-file guard passed."
+
+      - name: Commit reference recovery only
         shell: bash
         run: |
           set -euo pipefail
-
-          find . \
-            -type d \
-            -name __pycache__ \
-            -prune \
-            -exec rm -rf {} +
-
-          rm -rf \
-            .pytest_cache \
-            src/*.egg-info \
-            *.egg-info
 
           git config \
             user.name \
@@ -1353,49 +756,33 @@ jobs:
 
           git add -- \
             src/v38/nqsar_engine.py \
-            src/v38/mc57_engine.py \
-            src/v38/diagnostics.py \
-            src/v38/reference_gates.py \
-            scripts/calculate_diagnostics.py \
             tests/test_nqsar_engine.py \
-            tests/test_mc57_engine.py \
-            tests/test_diagnostics.py \
-            tests/test_reference_gates.py \
-            docs/DIAGNOSTICS.md
+            docs/REFERENCE_RECOVERY.md
 
           STAGED="$(
             git diff \
               --cached \
-              --name-only
+              --name-only \
+            | sort
+          )"
+
+          EXPECTED="$(
+            printf '%s\n' \
+              docs/REFERENCE_RECOVERY.md \
+              src/v38/nqsar_engine.py \
+              tests/test_nqsar_engine.py \
+            | sort
           )"
 
           echo "Staged files:"
           printf '%s\n' "$STAGED"
 
-          if printf '%s\n' "$STAGED" \
-            | grep -q '^\.github/workflows/'
-          then
-            echo "::error::Workflow modification staged"
+          if [ "$STAGED" != "$EXPECTED" ]; then
+            echo "::error::Unexpected staged file set"
             exit 1
-          fi
-
-          if printf '%s\n' "$STAGED" \
-            | grep -Eq \
-              '^data/(rs|breadth|f123|market_state|core12)\.json$'
-          then
-            echo "::error::Production shard modification staged"
-            exit 1
-          fi
-
-          if git diff \
-            --cached \
-            --quiet
-          then
-            echo "Diagnostics already current."
-            exit 0
           fi
 
           git commit \
-            -m "Add isolated V38 NQSAR MC57 diagnostics and readiness gates"
+            -m "Add strict NQSAR authoritative input recovery guard"
 
           git push origin HEAD:main
