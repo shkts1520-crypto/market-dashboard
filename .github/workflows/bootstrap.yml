@@ -1,4 +1,4 @@
-name: Install V38 UI Preflight v8
+name: Install V38 Safe UI Shell v9
 
 on:
   workflow_dispatch:
@@ -28,408 +28,68 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check -e . pytest
 
-      - name: Verify v7 baseline
+      - name: Verify v8 baseline and canonical
         shell: bash
         run: |
           set -euo pipefail
-          test -f src/v38/nqsar_input.py
-          test -f src/v38/positions_engine.py
-          test -f src/v38/panic_reset_engine.py
-          test -f src/v38/tqqq_engine.py
+
           PYTHONPATH=src pytest -q
-          BASE_COUNT="$(PYTHONPATH=src pytest -o addopts='' --collect-only -q | grep -c '::')"
+
+          BASE_COUNT="$(
+            PYTHONPATH=src \
+            pytest \
+              -o addopts='' \
+              --collect-only \
+              -q \
+            | grep -c '::'
+          )"
+
           echo "Baseline tests: $BASE_COUNT"
-          if [ "$BASE_COUNT" != "126" ]; then
-            echo "::error::Expected v7 baseline of exactly 126 tests, got $BASE_COUNT"
+
+          if [ "$BASE_COUNT" != "148" ]; then
+            echo "::error::Expected v8 baseline of exactly 148 tests, got $BASE_COUNT"
             exit 1
           fi
 
-      - name: Write v8 UI preflight files
+          test -f V38_Command_Center_mock_v5.html
+
+          SHA="$(
+            git hash-object \
+              V38_Command_Center_mock_v5.html
+          )"
+
+          SIZE="$(
+            wc -c \
+              < V38_Command_Center_mock_v5.html \
+            | tr -d '[:space:]'
+          )"
+
+          echo "Canonical blob SHA: $SHA"
+          echo "Canonical bytes: $SIZE"
+
+          if [ "$SHA" != "966fe157e3d35344f6e373877b3de5689409dd67" ]; then
+            echo "::error::Canonical v5 blob SHA mismatch"
+            exit 1
+          fi
+
+          if [ "$SIZE" != "1412062" ]; then
+            echo "::error::Canonical v5 byte-size mismatch"
+            exit 1
+          fi
+
+      - name: Write v9 safe shell builder
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p src/v38 scripts assets tests docs
 
-          cat > src/v38/freshness.py <<'V38V8_0'
-          from __future__ import annotations
+          mkdir -p \
+            src/v38 \
+            scripts \
+            assets \
+            tests \
+            docs
 
-          import json
-          import math
-          import os
-          import tempfile
-          from datetime import date
-          from pathlib import Path
-          from typing import Any, Iterable
-
-          CALCULATION_VERSION = "v38-freshness-1.0.0"
-          SCHEMA_VERSION = "v38.freshness.1"
-
-          READY = "READY"
-          STALE = "STALE"
-          DATA_REQUIRED = "DATA_REQUIRED"
-
-          DEFAULT_UI_SHARDS = (
-              "market_state.json",
-              "breadth.json",
-              "mc57.json",
-              "f123.json",
-              "core12.json",
-              "positions.json",
-              "rotation.json",
-              "rs.json",
-              "weekly.json",
-              "options/index.json",
-          )
-
-          REQUIRED_META = (
-              "session_date",
-              "generated_at",
-              "coverage",
-              "source",
-              "schema_version",
-              "calculation_version",
-          )
-
-
-          class FreshnessError(RuntimeError):
-              """Raised when the freshness contract itself is invalid."""
-
-
-          def _date(value: Any, field: str) -> str:
-              if not isinstance(value, str) or not value.strip():
-                  raise FreshnessError(f"{field} is required")
-
-              text = value.strip()
-
-              try:
-                  parsed = date.fromisoformat(text)
-              except ValueError as exc:
-                  raise FreshnessError(
-                      f"{field} must be YYYY-MM-DD"
-                  ) from exc
-
-              if parsed.isoformat() != text:
-                  raise FreshnessError(
-                      f"{field} must be YYYY-MM-DD"
-                  )
-
-              return text
-
-
-          def _finite_or_none(value: Any) -> float | None:
-              if value is None or isinstance(value, bool):
-                  return None
-
-              if isinstance(value, (int, float)):
-                  x = float(value)
-                  return x if math.isfinite(x) else None
-
-              return None
-
-
-          def assess_shard_object(
-              obj: Any,
-              *,
-              name: str,
-              target_session: str,
-          ) -> dict[str, Any]:
-              target = _date(
-                  target_session,
-                  "target_session",
-              )
-
-              if not isinstance(obj, dict):
-                  return {
-                      "name": name,
-                      "status": DATA_REQUIRED,
-                      "reason": "EXPECTED_JSON_OBJECT",
-                      "session_date": None,
-                      "coverage": None,
-                  }
-
-              missing = [
-                  key
-                  for key in REQUIRED_META
-                  if key not in obj
-              ]
-
-              if missing:
-                  return {
-                      "name": name,
-                      "status": DATA_REQUIRED,
-                      "reason": "MISSING_METADATA",
-                      "missing": missing,
-                      "session_date": obj.get(
-                          "session_date"
-                      ),
-                      "coverage": _finite_or_none(
-                          obj.get("coverage")
-                      ),
-                  }
-
-              session = obj.get("session_date")
-
-              try:
-                  session = _date(
-                      session,
-                      f"{name}.session_date",
-                  )
-              except FreshnessError:
-                  return {
-                      "name": name,
-                      "status": DATA_REQUIRED,
-                      "reason": "INVALID_SESSION_DATE",
-                      "session_date": session,
-                      "coverage": _finite_or_none(
-                          obj.get("coverage")
-                      ),
-                  }
-
-              base = {
-                  "name": name,
-                  "session_date": session,
-                  "generated_at": obj.get(
-                      "generated_at"
-                  ),
-                  "coverage": _finite_or_none(
-                      obj.get("coverage")
-                  ),
-                  "source": obj.get("source"),
-                  "schema_version": obj.get(
-                      "schema_version"
-                  ),
-                  "calculation_version": obj.get(
-                      "calculation_version"
-                  ),
-              }
-
-              if session != target:
-                  return {
-                      **base,
-                      "status": STALE,
-                      "reason": "SESSION_MISMATCH",
-                      "target_session": target,
-                  }
-
-              for key in (
-                  "generated_at",
-                  "source",
-                  "schema_version",
-                  "calculation_version",
-              ):
-                  if (
-                      not isinstance(
-                          obj.get(key),
-                          str,
-                      )
-                      or not obj[key].strip()
-                  ):
-                      return {
-                          **base,
-                          "status": DATA_REQUIRED,
-                          "reason": (
-                              f"INVALID_{key.upper()}"
-                          ),
-                      }
-
-              return {
-                  **base,
-                  "status": READY,
-                  "reason": "CURRENT_SESSION",
-              }
-
-
-          def assess_shard_file(
-              path: str | Path,
-              *,
-              name: str | None = None,
-              target_session: str,
-          ) -> dict[str, Any]:
-              p = Path(path)
-              label = name or p.as_posix()
-
-              if not p.exists():
-                  return {
-                      "name": label,
-                      "status": DATA_REQUIRED,
-                      "reason": "FILE_MISSING",
-                      "session_date": None,
-                      "coverage": None,
-                  }
-
-              try:
-                  obj = json.loads(
-                      p.read_text(
-                          encoding="utf-8"
-                      )
-                  )
-              except (
-                  OSError,
-                  UnicodeDecodeError,
-                  json.JSONDecodeError,
-              ):
-                  return {
-                      "name": label,
-                      "status": DATA_REQUIRED,
-                      "reason": "INVALID_JSON",
-                      "session_date": None,
-                      "coverage": None,
-                  }
-
-              return assess_shard_object(
-                  obj,
-                  name=label,
-                  target_session=target_session,
-              )
-
-
-          def build_freshness(
-              data_dir: str | Path,
-              *,
-              target_session: str,
-              generated_at: str,
-              shard_names: Iterable[str] = DEFAULT_UI_SHARDS,
-          ) -> dict[str, Any]:
-              target = _date(
-                  target_session,
-                  "target_session",
-              )
-
-              if (
-                  not isinstance(
-                      generated_at,
-                      str,
-                  )
-                  or not generated_at.strip()
-              ):
-                  raise FreshnessError(
-                      "generated_at is required"
-                  )
-
-              root = Path(data_dir)
-
-              names = tuple(
-                  str(x)
-                  for x in shard_names
-              )
-
-              if not names:
-                  raise FreshnessError(
-                      "at least one shard is required"
-                  )
-
-              if (
-                  len(set(names))
-                  != len(names)
-              ):
-                  raise FreshnessError(
-                      "duplicate shard names are not allowed"
-                  )
-
-              shards = [
-                  assess_shard_file(
-                      root / name,
-                      name=name,
-                      target_session=target,
-                  )
-                  for name in names
-              ]
-
-              statuses = [
-                  row["status"]
-                  for row in shards
-              ]
-
-              if STALE in statuses:
-                  overall = STALE
-              elif DATA_REQUIRED in statuses:
-                  overall = DATA_REQUIRED
-              else:
-                  overall = READY
-
-              return {
-                  "session_date": target,
-                  "generated_at": generated_at,
-                  "coverage": (
-                      sum(
-                          1
-                          for row in shards
-                          if row["status"] == READY
-                      )
-                      / len(shards)
-                  ),
-                  "source": "derived:shard-freshness",
-                  "schema_version": SCHEMA_VERSION,
-                  "calculation_version": CALCULATION_VERSION,
-                  "status": overall,
-                  "ready_count": sum(
-                      1
-                      for row in shards
-                      if row["status"] == READY
-                  ),
-                  "stale_count": sum(
-                      1
-                      for row in shards
-                      if row["status"] == STALE
-                  ),
-                  "data_required_count": sum(
-                      1
-                      for row in shards
-                      if row["status"]
-                      == DATA_REQUIRED
-                  ),
-                  "shards": shards,
-              }
-
-
-          def atomic_write_json(
-              path: str | Path,
-              obj: dict[str, Any],
-          ) -> Path:
-              p = Path(path)
-
-              p.parent.mkdir(
-                  parents=True,
-                  exist_ok=True,
-              )
-
-              text = (
-                  json.dumps(
-                      obj,
-                      ensure_ascii=False,
-                      sort_keys=True,
-                      indent=2,
-                      allow_nan=False,
-                  )
-                  + "\n"
-              )
-
-              fd, tmp = tempfile.mkstemp(
-                  prefix=p.name + ".",
-                  dir=p.parent,
-              )
-
-              try:
-                  with os.fdopen(
-                      fd,
-                      "w",
-                      encoding="utf-8",
-                  ) as f:
-                      f.write(text)
-
-                  os.replace(
-                      tmp,
-                      p,
-                  )
-
-              finally:
-                  if os.path.exists(tmp):
-                      os.unlink(tmp)
-
-              return p
-          V38V8_0
-
-          cat > src/v38/ui_contract.py <<'V38V8_1'
+          cat > src/v38/ui_contract.py <<'V38V9_0'
           from __future__ import annotations
 
           import re
@@ -465,13 +125,40 @@ jobs:
           PRODUCTION_FORBIDDEN_PATTERNS = (
               r"Entry\s*\*\s*0\.75",
               r"entry\s*\*\s*0\.75",
-              r"SOXL",
               r"TQQQ\s*/\s*SOXL",
               r"隔週リバランス",
               r"21EMA.*Exit",
               r"10SMA.*Exit",
               r"ATR2",
               r"建値Stop",
+          )
+
+          _SCRIPT_RE = re.compile(
+              (
+                  r"<script\b"
+                  r"(?P<attrs>[^>]*)>"
+                  r"(?P<body>.*?)"
+                  r"</script\s*>"
+              ),
+              re.I | re.S,
+          )
+
+          _EVENT_RE = re.compile(
+              (
+                  r"\s+on[a-zA-Z0-9_-]+"
+                  r"\s*=\s*"
+                  r"(?:"
+                  r"\"[^\"]*\""
+                  r"|'[^']*'"
+                  r"|[^\s>]+"
+                  r")"
+              ),
+              re.I | re.S,
+          )
+
+          _SRC_RE = re.compile(
+              r"\bsrc\s*=",
+              re.I,
           )
 
 
@@ -577,7 +264,10 @@ jobs:
               html: str,
           ) -> dict[str, Any]:
               if (
-                  not isinstance(html, str)
+                  not isinstance(
+                      html,
+                      str,
+                  )
                   or not html.strip()
               ):
                   raise UIContractError(
@@ -593,27 +283,32 @@ jobs:
 
               missing_visual = [
                   token
-                  for token in REQUIRED_VISUAL_TOKENS
+                  for token
+                  in REQUIRED_VISUAL_TOKENS
                   if token not in html
               ]
 
               missing_sections = [
                   href[1:]
-                  for _, href in EXPECTED_TABS
+                  for _, href
+                  in EXPECTED_TABS
                   if href[1:]
                   not in parser.section_ids
               ]
 
               forbidden_present = [
                   label
-                  for label, _ in parser.tabs
-                  if label in FORBIDDEN_TABS
+                  for label, _
+                  in parser.tabs
+                  if label
+                  in FORBIDDEN_TABS
               ]
 
               return {
                   "tabs": parser.tabs,
                   "tabs_exact": (
-                      parser.tabs == expected
+                      parser.tabs
+                      == expected
                   ),
                   "forbidden_tabs": (
                       forbidden_present
@@ -630,7 +325,9 @@ jobs:
           def validate_canonical_shell(
               html: str,
           ) -> dict[str, Any]:
-              report = inspect_shell(html)
+              report = inspect_shell(
+                  html
+              )
 
               problems: list[str] = []
 
@@ -663,15 +360,102 @@ jobs:
 
               if problems:
                   raise UIContractError(
-                      "; ".join(problems)
+                      "; ".join(
+                          problems
+                      )
                   )
 
               return report
 
 
+          def active_logic_fragments(
+              html: str,
+          ) -> list[str]:
+              """
+              Return executable inline fragments only.
+
+              Visible document prose is deliberately
+              excluded from legacy-logic scanning.
+              """
+              fragments: list[str] = []
+
+              for match in (
+                  _SCRIPT_RE.finditer(
+                      html
+                  )
+              ):
+                  if not _SRC_RE.search(
+                      match.group(
+                          "attrs"
+                      )
+                      or ""
+                  ):
+                      fragments.append(
+                          match.group(
+                              "body"
+                          )
+                          or ""
+                      )
+
+              for match in (
+                  _EVENT_RE.finditer(
+                      html
+                  )
+              ):
+                  fragments.append(
+                      match.group(0)
+                  )
+
+              return fragments
+
+
+          def inspect_active_logic(
+              html: str,
+          ) -> dict[str, int]:
+              inline_scripts = 0
+              external_scripts = 0
+
+              for match in (
+                  _SCRIPT_RE.finditer(
+                      html
+                  )
+              ):
+                  if _SRC_RE.search(
+                      match.group(
+                          "attrs"
+                      )
+                      or ""
+                  ):
+                      external_scripts += 1
+                  else:
+                      inline_scripts += 1
+
+              return {
+                  "inline_script_count": (
+                      inline_scripts
+                  ),
+                  "external_script_count": (
+                      external_scripts
+                  ),
+                  "inline_event_handler_count": (
+                      len(
+                          _EVENT_RE.findall(
+                              html
+                          )
+                      )
+                  ),
+              }
+
+
           def scan_production_forbidden_logic(
               html: str,
           ) -> list[str]:
+              active = "\n".join(
+                  active_logic_fragments(
+                      html
+                  )
+              )
+
               hits: list[str] = []
 
               for pattern in (
@@ -679,10 +463,15 @@ jobs:
               ):
                   if re.search(
                       pattern,
-                      html,
-                      flags=re.I | re.S,
+                      active,
+                      flags=(
+                          re.I
+                          | re.S
+                      ),
                   ):
-                      hits.append(pattern)
+                      hits.append(
+                          pattern
+                      )
 
               return hits
 
@@ -690,9 +479,31 @@ jobs:
           def validate_production_html(
               html: str,
           ) -> dict[str, Any]:
-              report = validate_canonical_shell(
+              report = (
+                  validate_canonical_shell(
+                      html
+                  )
+              )
+
+              active = inspect_active_logic(
                   html
               )
+
+              if active[
+                  "inline_script_count"
+              ]:
+                  raise UIContractError(
+                      "production HTML must not "
+                      "contain inline script"
+                  )
+
+              if active[
+                  "inline_event_handler_count"
+              ]:
+                  raise UIContractError(
+                      "production HTML must not "
+                      "contain inline event handlers"
+                  )
 
               hits = (
                   scan_production_forbidden_logic(
@@ -702,11 +513,15 @@ jobs:
 
               if hits:
                   raise UIContractError(
-                      "legacy/forbidden production "
-                      f"logic found: {hits}"
+                      "legacy/forbidden "
+                      "production logic found: "
+                      f"{hits}"
                   )
 
-              return report
+              return {
+                  **report,
+                  **active,
+              }
 
 
           def display_value(
@@ -720,14 +535,20 @@ jobs:
               ):
                   return "—"
 
-              if isinstance(value, bool):
+              if isinstance(
+                  value,
+                  bool,
+              ):
                   return (
                       "true"
                       if value
                       else "false"
                   )
 
-              if isinstance(value, float):
+              if isinstance(
+                  value,
+                  float,
+              ):
                   if (
                       value != value
                       or value
@@ -743,14 +564,487 @@ jobs:
                       value,
                       (int, float),
                   )
-                  and decimals is not None
+                  and decimals
+                  is not None
               ):
-                  return f"{float(value):.{decimals}f}"
+                  return (
+                      f"{float(value):."
+                      f"{decimals}f}"
+                  )
 
               return str(value)
-          V38V8_1
+          V38V9_0
 
-          cat > scripts/preflight_ui.py <<'V38V8_2'
+          cat > src/v38/site_builder.py <<'V38V9_1'
+          from __future__ import annotations
+
+          import hashlib
+          import re
+          from pathlib import Path
+
+          from .ui_contract import (
+              EXPECTED_TABS,
+              validate_canonical_shell,
+              validate_production_html,
+          )
+
+          CALCULATION_VERSION = (
+              "v38-safe-site-builder-1.0.0"
+          )
+
+          CANONICAL_BLOB_SHA = (
+              "966fe157e3d35344f6e373877b3de5689409dd67"
+          )
+
+          CANONICAL_SIZE = 1412062
+
+          _SCRIPT_RE = re.compile(
+              (
+                  r"<script\b[^>]*>"
+                  r".*?"
+                  r"</script\s*>"
+              ),
+              re.I | re.S,
+          )
+
+          _EVENT_RE = re.compile(
+              (
+                  r"\s+on[a-zA-Z0-9_-]+"
+                  r"\s*=\s*"
+                  r"(?:"
+                  r"\"[^\"]*\""
+                  r"|'[^']*'"
+                  r"|[^\s>]+"
+                  r")"
+              ),
+              re.I | re.S,
+          )
+
+          _STYLE_RE = re.compile(
+              (
+                  r"<style\b[^>]*>"
+                  r".*?"
+                  r"</style\s*>"
+              ),
+              re.I | re.S,
+          )
+
+          _BODY_RE = re.compile(
+              (
+                  r"<body\b"
+                  r"(?P<attrs>[^>]*)>"
+              ),
+              re.I | re.S,
+          )
+
+          _HEAD_END_RE = re.compile(
+              r"</head\s*>",
+              re.I,
+          )
+
+          _BODY_END_RE = re.compile(
+              r"</body\s*>",
+              re.I,
+          )
+
+          SECTION_IDS = tuple(
+              href[1:]
+              for _, href
+              in EXPECTED_TABS
+          )
+
+          SHIELD_STYLE = """<style id="v38-production-shield">
+          body[data-v38-production="shielded"] #t-market > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-alloc > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-port > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-rotation > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-rs > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-weekly > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-options > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-post1 > :not(.v38-production-state),
+          body[data-v38-production="shielded"] #t-rules > :not(.v38-production-state){visibility:hidden!important}
+          .v38-production-state{visibility:visible!important;min-height:84px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+          .v38-production-state b{font-size:14px}
+          .v38-production-state span{font-size:11px;opacity:.75}
+          </style>"""
+
+          RUNTIME_SCRIPTS = (
+              '<script '
+              'src="assets/v38-runtime.js" '
+              'defer></script>\n'
+              '<script '
+              'src="assets/v38-site.js" '
+              'defer></script>'
+          )
+
+
+          class SiteBuildError(
+              RuntimeError
+          ):
+              pass
+
+
+          def git_blob_sha(
+              data: bytes,
+          ) -> str:
+              header = (
+                  f"blob {len(data)}\0"
+              ).encode(
+                  "ascii"
+              )
+
+              return hashlib.sha1(
+                  header + data
+              ).hexdigest()
+
+
+          def canonical_fingerprint(
+              data: bytes,
+          ) -> dict[str, object]:
+              return {
+                  "size": len(data),
+                  "blob_sha": (
+                      git_blob_sha(
+                          data
+                      )
+                  ),
+              }
+
+
+          def verify_canonical_bytes(
+              data: bytes,
+          ) -> None:
+              fp = canonical_fingerprint(
+                  data
+              )
+
+              if (
+                  fp["size"]
+                  != CANONICAL_SIZE
+              ):
+                  raise SiteBuildError(
+                      "canonical size mismatch: "
+                      f"{fp['size']} != "
+                      f"{CANONICAL_SIZE}"
+                  )
+
+              if (
+                  fp["blob_sha"]
+                  != CANONICAL_BLOB_SHA
+              ):
+                  raise SiteBuildError(
+                      "canonical blob mismatch: "
+                      f"{fp['blob_sha']} != "
+                      f"{CANONICAL_BLOB_SHA}"
+                  )
+
+
+          def _style_blocks(
+              html: str,
+          ) -> tuple[str, ...]:
+              return tuple(
+                  _STYLE_RE.findall(
+                      html
+                  )
+              )
+
+
+          def _strip_active_inline_logic(
+              html: str,
+          ) -> str:
+              without_scripts = (
+                  _SCRIPT_RE.sub(
+                      "",
+                      html,
+                  )
+              )
+
+              return _EVENT_RE.sub(
+                  "",
+                  without_scripts,
+              )
+
+
+          def _mark_body_shielded(
+              html: str,
+          ) -> str:
+              match = _BODY_RE.search(
+                  html
+              )
+
+              if not match:
+                  raise SiteBuildError(
+                      "canonical body element "
+                      "is missing"
+                  )
+
+              attrs = (
+                  match.group(
+                      "attrs"
+                  )
+                  or ""
+              )
+
+              if (
+                  "data-v38-production"
+                  in attrs
+              ):
+                  raise SiteBuildError(
+                      "canonical unexpectedly "
+                      "already contains "
+                      "production marker"
+                  )
+
+              replacement = (
+                  '<body '
+                  'data-v38-production="shielded"'
+                  f"{attrs}>"
+              )
+
+              return (
+                  html[
+                      : match.start()
+                  ]
+                  + replacement
+                  + html[
+                      match.end() :
+                  ]
+              )
+
+
+          def _insert_section_state(
+              html: str,
+              section_id: str,
+          ) -> str:
+              pattern = re.compile(
+                  (
+                      r"(<section\b"
+                      r"(?=[^>]*\bid\s*=\s*"
+                      r"[\"']"
+                      + re.escape(
+                          section_id
+                      )
+                      + r"[\"'])"
+                      r"[^>]*>)"
+                  ),
+                  re.I | re.S,
+              )
+
+              state = (
+                  '<div '
+                  'class="card '
+                  'v38-production-state" '
+                  'role="status" '
+                  'data-v38-section="'
+                  f"{section_id}"
+                  '">'
+                  '<b>DATA_REQUIRED</b>'
+                  '<span>'
+                  'Authoritative data binding '
+                  'is not ready. '
+                  'Mock values are shielded.'
+                  '</span>'
+                  '</div>'
+              )
+
+              out, count = (
+                  pattern.subn(
+                      lambda m: (
+                          m.group(1)
+                          + state
+                      ),
+                      html,
+                      count=1,
+                  )
+              )
+
+              if count != 1:
+                  raise SiteBuildError(
+                      "section insertion "
+                      "failed: "
+                      f"{section_id}"
+                  )
+
+              return out
+
+
+          def build_safe_shell(
+              canonical_html: str,
+          ) -> str:
+              validate_canonical_shell(
+                  canonical_html
+              )
+
+              original_styles = (
+                  _style_blocks(
+                      canonical_html
+                  )
+              )
+
+              out = (
+                  _strip_active_inline_logic(
+                      canonical_html
+                  )
+              )
+
+              out = _mark_body_shielded(
+                  out
+              )
+
+              for section_id in (
+                  SECTION_IDS
+              ):
+                  out = (
+                      _insert_section_state(
+                          out,
+                          section_id,
+                      )
+                  )
+
+              if not _HEAD_END_RE.search(
+                  out
+              ):
+                  raise SiteBuildError(
+                      "head end tag is missing"
+                  )
+
+              out = _HEAD_END_RE.sub(
+                  (
+                      SHIELD_STYLE
+                      + "\n</head>"
+                  ),
+                  out,
+                  count=1,
+              )
+
+              if not _BODY_END_RE.search(
+                  out
+              ):
+                  raise SiteBuildError(
+                      "body end tag is missing"
+                  )
+
+              out = _BODY_END_RE.sub(
+                  (
+                      RUNTIME_SCRIPTS
+                      + "\n</body>"
+                  ),
+                  out,
+                  count=1,
+              )
+
+              generated_styles = tuple(
+                  block
+                  for block
+                  in _style_blocks(
+                      out
+                  )
+                  if (
+                      'id="v38-production-shield"'
+                      not in block
+                  )
+              )
+
+              if (
+                  generated_styles
+                  != original_styles
+              ):
+                  raise SiteBuildError(
+                      "canonical style blocks "
+                      "changed during build"
+                  )
+
+              report = (
+                  validate_production_html(
+                      out
+                  )
+              )
+
+              if (
+                  report[
+                      "external_script_count"
+                  ]
+                  != 2
+              ):
+                  raise SiteBuildError(
+                      "production HTML must "
+                      "contain exactly two "
+                      "external scripts"
+                  )
+
+              if (
+                  out.count(
+                      'class="card '
+                      'v38-production-state"'
+                  )
+                  != len(
+                      SECTION_IDS
+                  )
+              ):
+                  raise SiteBuildError(
+                      "all nine sections "
+                      "must be fail-closed "
+                      "shielded"
+                  )
+
+              if (
+                  'data-v38-production="shielded"'
+                  not in out
+              ):
+                  raise SiteBuildError(
+                      "production shield "
+                      "marker missing"
+                  )
+
+              return out
+
+
+          def build_site(
+              canonical_path: str | Path,
+              output_path: str | Path,
+          ) -> Path:
+              src = Path(
+                  canonical_path
+              )
+
+              raw = src.read_bytes()
+
+              verify_canonical_bytes(
+                  raw
+              )
+
+              try:
+                  html = raw.decode(
+                      "utf-8"
+                  )
+
+              except UnicodeDecodeError as exc:
+                  raise SiteBuildError(
+                      "canonical must be UTF-8"
+                  ) from exc
+
+              out_html = build_safe_shell(
+                  html
+              )
+
+              dst = Path(
+                  output_path
+              )
+
+              dst.parent.mkdir(
+                  parents=True,
+                  exist_ok=True,
+              )
+
+              dst.write_text(
+                  out_html,
+                  encoding="utf-8",
+              )
+
+              return dst
+          V38V9_1
+
+          cat > scripts/build_site.py <<'V38V9_2'
           #!/usr/bin/env python3
           from __future__ import annotations
 
@@ -758,23 +1052,23 @@ jobs:
           import json
           from pathlib import Path
 
-          from v38.freshness import (
-              atomic_write_json,
-              build_freshness,
+          from v38.site_builder import (
+              CANONICAL_BLOB_SHA,
+              CANONICAL_SIZE,
+              build_site,
           )
 
           from v38.ui_contract import (
-              UIContractError,
-              validate_canonical_shell,
+              validate_production_html,
           )
 
 
           def main() -> int:
               p = argparse.ArgumentParser(
                   description=(
-                      "Validate V38 canonical UI shell "
-                      "and shard freshness before "
-                      "renderer work"
+                      "Build fail-closed V38 "
+                      "production shell from "
+                      "canonical v5"
                   )
               )
 
@@ -786,576 +1080,351 @@ jobs:
               )
 
               p.add_argument(
-                  "--data-dir",
-                  default="data",
+                  "--output",
+                  default="index.html",
               )
 
-              p.add_argument(
-                  "--session-date",
-                  required=True,
+              args = p.parse_args()
+
+              out = build_site(
+                  args.canonical,
+                  args.output,
               )
 
-              p.add_argument(
-                  "--generated-at",
-                  required=True,
-              )
-
-              p.add_argument(
-                  "--freshness-output",
-              )
-
-              p.add_argument(
-                  "--require-all-ready",
-                  action="store_true",
-              )
-
-              a = p.parse_args()
-
-              canonical = Path(
-                  a.canonical
-              )
-
-              if not canonical.exists():
-                  print(
-                      json.dumps(
-                          {
-                              "status": (
-                                  "DATA_REQUIRED"
-                              ),
-                              "reason": (
-                                  "CANONICAL_V5_MISSING"
-                              ),
-                              "path": str(
-                                  canonical
-                              ),
-                          },
-                          sort_keys=True,
+              report = (
+                  validate_production_html(
+                      out.read_text(
+                          encoding="utf-8"
                       )
                   )
-
-                  return 3
-
-              try:
-                  shell = (
-                      validate_canonical_shell(
-                          canonical.read_text(
-                              encoding="utf-8"
-                          )
-                      )
-                  )
-
-              except (
-                  OSError,
-                  UnicodeDecodeError,
-                  UIContractError,
-              ) as exc:
-                  print(
-                      json.dumps(
-                          {
-                              "status": "FAILED",
-                              "reason": (
-                                  "CANONICAL_V5_INVALID"
-                              ),
-                              "detail": str(exc),
-                          },
-                          ensure_ascii=False,
-                          sort_keys=True,
-                      )
-                  )
-
-                  return 4
-
-              freshness = build_freshness(
-                  a.data_dir,
-                  target_session=(
-                      a.session_date
-                  ),
-                  generated_at=(
-                      a.generated_at
-                  ),
               )
-
-              if a.freshness_output:
-                  atomic_write_json(
-                      a.freshness_output,
-                      freshness,
-                  )
-
-              result = {
-                  "status": freshness[
-                      "status"
-                  ],
-                  "canonical": "OK",
-                  "tabs": [
-                      label
-                      for label, _
-                      in shell["tabs"]
-                  ],
-                  "freshness": freshness,
-              }
 
               print(
                   json.dumps(
-                      result,
+                      {
+                          "status": (
+                              "SAFE_SHELL_READY"
+                          ),
+                          "output": str(
+                              out
+                          ),
+                          "canonical_blob_sha": (
+                              CANONICAL_BLOB_SHA
+                          ),
+                          "canonical_size": (
+                              CANONICAL_SIZE
+                          ),
+                          "tabs": [
+                              label
+                              for label, _
+                              in report["tabs"]
+                          ],
+                          "inline_script_count": (
+                              report[
+                                  "inline_script_count"
+                              ]
+                          ),
+                          "inline_event_handler_count": (
+                              report[
+                                  "inline_event_handler_count"
+                              ]
+                          ),
+                          "external_script_count": (
+                              report[
+                                  "external_script_count"
+                              ]
+                          ),
+                          "mock_values_shielded": (
+                              True
+                          ),
+                      },
                       ensure_ascii=False,
                       sort_keys=True,
-                      allow_nan=False,
                   )
               )
-
-              if (
-                  a.require_all_ready
-                  and freshness["status"]
-                  != "READY"
-              ):
-                  return 2
 
               return 0
 
 
           if __name__ == "__main__":
-              raise SystemExit(main())
-          V38V8_2
+              raise SystemExit(
+                  main()
+              )
+          V38V9_2
 
-          cat > assets/v38-runtime.js <<'V38V8_3'
-          (function (global) {
+          cat > assets/v38-site.js <<'V38V9_3'
+          (function () {
             'use strict';
 
-            const REQUIRED_META = [
-              'session_date',
-              'generated_at',
-              'coverage',
-              'source',
-              'schema_version',
-              'calculation_version'
+            const TAB_SELECTOR =
+              'a.tabx[data-target]';
+
+            const SECTION_IDS = [
+              't-market',
+              't-alloc',
+              't-port',
+              't-rotation',
+              't-rs',
+              't-weekly',
+              't-options',
+              't-post1',
+              't-rules'
             ];
 
-            function missing(value) {
-              return value === null ||
-                value === undefined ||
-                value === '' ||
-                (
-                  typeof value === 'number' &&
-                  !Number.isFinite(value)
-                );
-            }
-
-            function display(
-              value,
-              decimals
+            function activate(
+              targetId,
+              updateHash
             ) {
-              if (missing(value)) {
-                return '—';
-              }
+              const tabs = Array.from(
+                document.querySelectorAll(
+                  TAB_SELECTOR
+                )
+              );
 
-              if (
-                typeof value === 'number' &&
-                Number.isInteger(decimals)
-              ) {
-                return value.toFixed(
-                  decimals
-                );
-              }
+              const valid =
+                SECTION_IDS.includes(
+                  targetId
+                )
+                  ? targetId
+                  : 't-market';
 
-              return String(value);
-            }
+              tabs.forEach(
+                (tab) => {
+                  const active =
+                    tab.dataset.target
+                    === valid;
 
-            function assessShard(
-              obj,
-              targetSession
-            ) {
-              if (
-                !obj ||
-                typeof obj !== 'object' ||
-                Array.isArray(obj)
-              ) {
-                return {
-                  status: 'DATA_REQUIRED',
-                  reason: 'EXPECTED_JSON_OBJECT'
-                };
-              }
+                  tab.classList.toggle(
+                    'active',
+                    active
+                  );
 
-              const absent =
-                REQUIRED_META.filter(
-                  (key) => !(key in obj)
-                );
-
-              if (absent.length) {
-                return {
-                  status: 'DATA_REQUIRED',
-                  reason: 'MISSING_METADATA',
-                  missing: absent
-                };
-              }
-
-              if (
-                obj.session_date !==
-                targetSession
-              ) {
-                return {
-                  status: 'STALE',
-                  reason: 'SESSION_MISMATCH',
-                  session_date:
-                    obj.session_date
-                };
-              }
-
-              return {
-                status: 'READY',
-                reason: 'CURRENT_SESSION'
-              };
-            }
-
-            async function loadJson(path) {
-              const response =
-                await fetch(
-                  path,
-                  {
-                    cache: 'no-store'
-                  }
-                );
-
-              if (!response.ok) {
-                throw new Error(
-                  'HTTP ' +
-                  response.status +
-                  ' for ' +
-                  path
-                );
-              }
-
-              return response.json();
-            }
-
-            global.V38Runtime =
-              Object.freeze(
-                {
-                  missing,
-                  display,
-                  assessShard,
-                  loadJson
+                  tab.setAttribute(
+                    'aria-selected',
+                    active
+                      ? 'true'
+                      : 'false'
+                  );
                 }
               );
-          })(window);
-          V38V8_3
 
-          cat > tests/test_freshness.py <<'V38V8_4'
-          import json
+              SECTION_IDS.forEach(
+                (id) => {
+                  const section =
+                    document.getElementById(
+                      id
+                    );
 
-          import pytest
+                  if (!section) {
+                    return;
+                  }
 
-          from v38.freshness import (
-              DATA_REQUIRED,
-              READY,
-              STALE,
-              FreshnessError,
-              assess_shard_file,
-              assess_shard_object,
-              atomic_write_json,
-              build_freshness,
-          )
+                  const active =
+                    id === valid;
 
-          SESSION = "2026-09-08"
-          GENERATED = (
-              "2026-09-09T05:00:00+09:00"
-          )
+                  section.classList.toggle(
+                    'active',
+                    active
+                  );
 
+                  section.hidden =
+                    !active;
+                }
+              );
 
-          def shard(
-              session=SESSION,
-              **updates,
-          ):
-              x = {
-                  "session_date": session,
-                  "generated_at": GENERATED,
-                  "coverage": 1.0,
-                  "source": "fixture",
-                  "schema_version": "x",
-                  "calculation_version": "x",
+              if (
+                updateHash
+                && window.location.hash
+                !== '#' + valid
+              ) {
+                history.replaceState(
+                  null,
+                  '',
+                  '#' + valid
+                );
               }
+            }
 
-              x.update(updates)
+            function setSafeState(
+              status,
+              detail
+            ) {
+              document
+                .querySelectorAll(
+                  '.v38-production-state'
+                )
+                .forEach(
+                  (node) => {
+                    const title =
+                      node.querySelector(
+                        'b'
+                      );
 
-              return x
+                    const body =
+                      node.querySelector(
+                        'span'
+                      );
 
+                    if (title) {
+                      title.textContent =
+                        status;
+                    }
 
-          def test_current_shard_is_ready():
-              out = assess_shard_object(
-                  shard(),
-                  name="rs.json",
-                  target_session=SESSION,
-              )
+                    if (body) {
+                      body.textContent =
+                        detail;
+                    }
+                  }
+                );
+            }
 
-              assert (
-                  out["status"]
-                  == READY
-              )
+            async function inspectPayload() {
+              const runtime =
+                window.V38Runtime;
 
-
-          def test_session_mismatch_is_stale_not_success():
-              out = assess_shard_object(
-                  shard("2026-09-07"),
-                  name="rs.json",
-                  target_session=SESSION,
-              )
-
-              assert (
-                  out["status"]
-                  == STALE
-              )
-
-              assert (
-                  out["reason"]
-                  == "SESSION_MISMATCH"
-              )
-
-
-          def test_missing_metadata_is_data_required():
-              obj = shard()
-              obj.pop("source")
-
-              out = assess_shard_object(
-                  obj,
-                  name="rs.json",
-                  target_session=SESSION,
-              )
-
-              assert (
-                  out["status"]
-                  == DATA_REQUIRED
-              )
-
-              assert (
-                  "source"
-                  in out["missing"]
-              )
-
-
-          def test_missing_file_is_data_required(
-              tmp_path,
-          ):
-              out = assess_shard_file(
-                  tmp_path
-                  / "missing.json",
-                  name="missing.json",
-                  target_session=SESSION,
-              )
-
-              assert (
-                  out["status"]
-                  == DATA_REQUIRED
-              )
-
-              assert (
-                  out["reason"]
-                  == "FILE_MISSING"
-              )
-
-
-          def test_invalid_json_is_data_required(
-              tmp_path,
-          ):
-              p = tmp_path / "bad.json"
-
-              p.write_text(
-                  "{bad",
-                  encoding="utf-8",
-              )
-
-              out = assess_shard_file(
-                  p,
-                  name="bad.json",
-                  target_session=SESSION,
-              )
-
-              assert (
-                  out["status"]
-                  == DATA_REQUIRED
-              )
-
-              assert (
-                  out["reason"]
-                  == "INVALID_JSON"
-              )
-
-
-          def test_stale_dominates_overall_status(
-              tmp_path,
-          ):
-              (
-                  tmp_path
-                  / "a.json"
-              ).write_text(
-                  json.dumps(
-                      shard(
-                          "2026-09-07"
-                      )
-                  ),
-                  encoding="utf-8",
-              )
-
-              out = build_freshness(
-                  tmp_path,
-                  target_session=SESSION,
-                  generated_at=GENERATED,
-                  shard_names=(
-                      "a.json",
-                      "missing.json",
-                  ),
-              )
-
-              assert (
-                  out["status"]
-                  == STALE
-              )
-
-              assert (
-                  out["stale_count"]
-                  == 1
-              )
-
-              assert (
-                  out[
-                      "data_required_count"
-                  ]
-                  == 1
-              )
-
-
-          def test_missing_without_stale_is_data_required(
-              tmp_path,
-          ):
-              (
-                  tmp_path
-                  / "a.json"
-              ).write_text(
-                  json.dumps(
-                      shard()
-                  ),
-                  encoding="utf-8",
-              )
-
-              out = build_freshness(
-                  tmp_path,
-                  target_session=SESSION,
-                  generated_at=GENERATED,
-                  shard_names=(
-                      "a.json",
-                      "missing.json",
-                  ),
-              )
-
-              assert (
-                  out["status"]
-                  == DATA_REQUIRED
-              )
-
-              assert (
-                  out["ready_count"]
-                  == 1
-              )
-
-
-          def test_all_current_is_ready(
-              tmp_path,
-          ):
-              for name in (
-                  "a.json",
-                  "b.json",
-              ):
+              if (
+                !runtime
+                || typeof runtime.loadJson
+                !== 'function'
+              ) {
+                setSafeState(
+                  'DATA_REQUIRED',
                   (
-                      tmp_path
-                      / name
-                  ).write_text(
-                      json.dumps(
-                          shard()
-                      ),
-                      encoding="utf-8",
+                    'Runtime unavailable. '
+                    + 'Mock values remain '
+                    + 'shielded.'
                   )
+                );
 
-              out = build_freshness(
-                  tmp_path,
-                  target_session=SESSION,
-                  generated_at=GENERATED,
-                  shard_names=(
-                      "a.json",
-                      "b.json",
-                  ),
-              )
-
-              assert (
-                  out["status"]
-                  == READY
-              )
-
-              assert (
-                  out["coverage"]
-                  == 1.0
-              )
-
-
-          def test_duplicate_shard_names_are_rejected(
-              tmp_path,
-          ):
-              with pytest.raises(
-                  FreshnessError
-              ):
-                  build_freshness(
-                      tmp_path,
-                      target_session=SESSION,
-                      generated_at=GENERATED,
-                      shard_names=(
-                          "a",
-                          "a",
-                      ),
-                  )
-
-
-          def test_atomic_write_never_emits_nan(
-              tmp_path,
-          ):
-              p = atomic_write_json(
-                  tmp_path
-                  / "freshness.json",
-                  {
-                      "x": None
-                  },
-              )
-
-              assert json.loads(
-                  p.read_text(
-                      encoding="utf-8"
-                  )
-              ) == {
-                  "x": None
+                return;
               }
 
-              assert (
-                  "NaN"
-                  not in p.read_text(
-                      encoding="utf-8"
-                  )
-              )
-          V38V8_4
+              try {
+                const payload =
+                  await runtime.loadJson(
+                    'data/ui_payload.json'
+                  );
 
-          cat > tests/test_ui_contract.py <<'V38V8_5'
+                const status =
+                  payload
+                  && typeof payload.status
+                  === 'string'
+                    ? payload.status
+                    : 'DATA_REQUIRED';
+
+                setSafeState(
+                  status,
+                  status === 'READY'
+                    ? (
+                        'Authoritative payload '
+                        + 'detected. Card binding '
+                        + 'is intentionally '
+                        + 'pending the next '
+                        + 'verified stage.'
+                      )
+                    : (
+                        'Authoritative payload '
+                        + 'is not ready. '
+                        + 'Mock values remain '
+                        + 'shielded.'
+                      )
+                );
+
+              } catch (_) {
+                setSafeState(
+                  'DATA_REQUIRED',
+                  (
+                    'Authoritative '
+                    + 'ui_payload.json is '
+                    + 'unavailable. '
+                    + 'Mock values remain '
+                    + 'shielded.'
+                  )
+                );
+              }
+            }
+
+            document.addEventListener(
+              'DOMContentLoaded',
+              () => {
+                document
+                  .querySelectorAll(
+                    TAB_SELECTOR
+                  )
+                  .forEach(
+                    (tab) => {
+                      tab.addEventListener(
+                        'click',
+                        (event) => {
+                          event.preventDefault();
+
+                          activate(
+                            tab.dataset.target,
+                            true
+                          );
+                        }
+                      );
+                    }
+                  );
+
+                const requested =
+                  window.location.hash
+                    ? window.location.hash.slice(
+                        1
+                      )
+                    : '';
+
+                const initiallyActive =
+                  document.querySelector(
+                    TAB_SELECTOR
+                    + '.active'
+                  );
+
+                activate(
+                  SECTION_IDS.includes(
+                    requested
+                  )
+                    ? requested
+                    : (
+                        initiallyActive
+                          ? initiallyActive
+                              .dataset
+                              .target
+                          : 't-market'
+                      ),
+                  false
+                );
+
+                inspectPayload();
+              }
+            );
+          })();
+          V38V9_3
+
+          cat > tests/test_site_builder.py <<'V38V9_4'
+          import hashlib
+          import re
+
           import pytest
+
+          import v38.site_builder as sb
+
+          from v38.site_builder import (
+              SiteBuildError,
+              build_safe_shell,
+              canonical_fingerprint,
+              git_blob_sha,
+          )
 
           from v38.ui_contract import (
               EXPECTED_TABS,
-              UIContractError,
-              display_value,
-              inspect_shell,
-              scan_production_forbidden_logic,
-              validate_canonical_shell,
               validate_production_html,
           )
 
 
           def shell(
-              *,
-              extra_nav="",
-              omit_visual="",
+              extra_script="",
+              extra_attr="",
           ):
               visual = (
                   "<style>"
@@ -1368,32 +1437,50 @@ jobs:
                   "</style>"
               )
 
-              if omit_visual:
-                  visual = visual.replace(
-                      omit_visual,
-                      "",
-                  )
-
               nav = (
                   "<nav>"
                   + "".join(
                       (
-                          '<a class="tabx" '
-                          f'href="{href}">'
-                          f"{label}</a>"
+                          '<a class="tabx'
+                          + (
+                              " active"
+                              if i == 0
+                              else ""
+                          )
+                          + '" '
+                          + f'href="{href}" '
+                          + (
+                              'data-target="'
+                              + href[1:]
+                              + '">'
+                          )
+                          + label
+                          + "</a>"
                       )
-                      for label, href
-                      in EXPECTED_TABS
+                      for i, (
+                          label,
+                          href,
+                      )
+                      in enumerate(
+                          EXPECTED_TABS
+                      )
                   )
-                  + extra_nav
                   + "</nav>"
               )
 
               sections = "".join(
                   (
                       '<section id="'
-                      f'{href[1:]}">'
-                      "</section>"
+                      + href[1:]
+                      + '"'
+                      + extra_attr
+                      + '>'
+                      + (
+                          '<div class="mock">'
+                          '123'
+                          '</div>'
+                      )
+                      + '</section>'
                   )
                   for _, href
                   in EXPECTED_TABS
@@ -1401,301 +1488,356 @@ jobs:
 
               return (
                   "<!doctype html>"
-                  "<html><head>"
+                  "<html>"
+                  "<head>"
                   f"{visual}"
-                  "</head><body>"
+                  "</head>"
+                  "<body>"
                   f"{nav}"
                   f"{sections}"
-                  "</body></html>"
+                  f"{extra_script}"
+                  "</body>"
+                  "</html>"
               )
 
 
-          def test_exact_nine_tab_shell_passes():
-              out = validate_canonical_shell(
+          def test_git_blob_sha_matches_git_object_formula():
+              data = b"abc"
+
+              expected = hashlib.sha1(
+                  b"blob 3\0abc"
+              ).hexdigest()
+
+              assert (
+                  git_blob_sha(
+                      data
+                  )
+                  == expected
+              )
+
+              assert (
+                  canonical_fingerprint(
+                      data
+                  )
+                  == {
+                      "size": 3,
+                      "blob_sha": expected,
+                  }
+              )
+
+
+          def test_builder_strips_inline_scripts_and_event_handlers():
+              html = shell(
+                  (
+                      "<script>"
+                      "var x=Entry*0.75;"
+                      "</script>"
+                  ),
+                  ' onclick="bad()"',
+              )
+
+              out = build_safe_shell(
+                  html
+              )
+
+              report = (
+                  validate_production_html(
+                      out
+                  )
+              )
+
+              assert (
+                  report[
+                      "inline_script_count"
+                  ]
+                  == 0
+              )
+
+              assert (
+                  report[
+                      "inline_event_handler_count"
+                  ]
+                  == 0
+              )
+
+
+          def test_builder_preserves_original_style_block_bytes():
+              html = shell(
+                  (
+                      "<script>"
+                      "console.log(1)"
+                      "</script>"
+                  )
+              )
+
+              original = re.findall(
+                  (
+                      r"<style\b[^>]*>"
+                      r".*?"
+                      r"</style\s*>"
+                  ),
+                  html,
+                  flags=re.I | re.S,
+              )
+
+              out = build_safe_shell(
+                  html
+              )
+
+              generated = [
+                  x
+                  for x
+                  in re.findall(
+                      (
+                          r"<style\b[^>]*>"
+                          r".*?"
+                          r"</style\s*>"
+                      ),
+                      out,
+                      flags=re.I | re.S,
+                  )
+                  if (
+                      "v38-production-shield"
+                      not in x
+                  )
+              ]
+
+              assert (
+                  generated
+                  == original
+              )
+
+
+          def test_builder_keeps_exact_nine_tabs_and_sections():
+              out = build_safe_shell(
+                  shell()
+              )
+
+              report = (
+                  validate_production_html(
+                      out
+                  )
+              )
+
+              assert (
+                  report["tabs"]
+                  == list(
+                      EXPECTED_TABS
+                  )
+              )
+
+              assert (
+                  out.count(
+                      'class="card '
+                      'v38-production-state"'
+                  )
+                  == 9
+              )
+
+
+          def test_builder_hides_mock_content_by_default():
+              out = build_safe_shell(
                   shell()
               )
 
               assert (
-                  out["tabs"]
-                  == list(EXPECTED_TABS)
+                  'data-v38-production="shielded"'
+                  in out
+              )
+
+              assert (
+                  "Mock values are shielded."
+                  in out
+              )
+
+              assert (
+                  "#t-market > "
+                  ":not(.v38-production-state)"
+                  in out
               )
 
 
-          def test_tab_order_is_contract_not_set_membership():
-              bad = shell().replace(
-                  "Daily</a>",
-                  "X</a>",
-                  1,
+          def test_builder_injects_only_two_external_runtime_scripts():
+              out = build_safe_shell(
+                  shell()
               )
 
-              with pytest.raises(
-                  UIContractError,
-                  match="tabs must equal",
-              ):
-                  validate_canonical_shell(
-                      bad
-                  )
-
-
-          def test_setups_and_movers_are_forbidden_in_nav():
-              bad = shell(
-                  extra_nav=(
-                      '<a class="tabx" '
-                      'href="#x">'
-                      "Setups</a>"
+              report = (
+                  validate_production_html(
+                      out
                   )
               )
 
-              with pytest.raises(
-                  UIContractError
-              ):
-                  validate_canonical_shell(
-                      bad
-                  )
+              assert (
+                  report[
+                      "external_script_count"
+                  ]
+                  == 2
+              )
+
+              assert (
+                  'src="assets/v38-runtime.js"'
+                  in out
+              )
+
+              assert (
+                  'src="assets/v38-site.js"'
+                  in out
+              )
 
 
-          def test_all_nine_sections_are_required():
+          def test_builder_fails_if_required_section_missing():
               bad = shell().replace(
                   (
                       '<section '
                       'id="t-options">'
-                      "</section>"
+                      '<div class="mock">'
+                      '123'
+                      '</div>'
+                      '</section>'
                   ),
                   "",
               )
 
               with pytest.raises(
-                  UIContractError,
+                  Exception
+              ):
+                  build_safe_shell(
+                      bad
+                  )
+
+
+          def test_verify_canonical_bytes_fails_on_any_different_file():
+              with pytest.raises(
+                  SiteBuildError,
                   match=(
-                      "missing tab sections"
+                      "canonical size mismatch"
                   ),
               ):
-                  validate_canonical_shell(
-                      bad
+                  sb.verify_canonical_bytes(
+                      b"not canonical"
                   )
+          V38V9_4
+
+          cat > tests/test_ui_contract_v9.py <<'V38V9_5'
+          import pytest
+
+          from v38.ui_contract import (
+              UIContractError,
+              scan_production_forbidden_logic,
+              validate_production_html,
+          )
+
+          from test_site_builder import (
+              shell,
+          )
 
 
-          def test_visual_vocabulary_is_guarded():
-              bad = shell(
-                  omit_visual=(
-                      ".rsx-card{}"
-                  )
+          def test_visible_rules_text_is_not_treated_as_active_logic():
+              html = shell().replace(
+                  "</body>",
+                  (
+                      "<p>"
+                      "SOXLは使わない。"
+                      "ATR2も使わない。"
+                      "</p>"
+                      "</body>"
+                  ),
               )
 
-              with pytest.raises(
-                  UIContractError,
-                  match="visual tokens",
-              ):
-                  validate_canonical_shell(
-                      bad
+              assert (
+                  scan_production_forbidden_logic(
+                      html
                   )
+                  == []
+              )
 
 
-          def test_inspection_does_not_mutate_html():
-              html = shell()
-              before = html[:]
-
-              inspect_shell(html)
-
-              assert html == before
-
-
-          def test_production_forbidden_logic_is_detected():
-              bad = (
-                  shell()
-                  + (
+          def test_inline_forbidden_logic_is_detected():
+              html = shell(
+                  (
                       "<script>"
-                      "var x=Entry*0.75;"
+                      "const x = "
+                      "Entry * 0.75;"
                       "</script>"
                   )
               )
 
-              hits = (
+              assert (
                   scan_production_forbidden_logic(
-                      bad
+                      html
                   )
               )
 
-              assert hits
 
+          def test_production_validator_rejects_even_benign_inline_script():
               with pytest.raises(
-                  UIContractError
+                  UIContractError,
+                  match="inline script",
               ):
                   validate_production_html(
-                      bad
-                  )
-
-
-          def test_null_nan_and_empty_display_as_dash():
-              assert (
-                  display_value(None)
-                  == "—"
-              )
-
-              assert (
-                  display_value("")
-                  == "—"
-              )
-
-              assert (
-                  display_value(
-                      float("nan")
-                  )
-                  == "—"
-              )
-
-
-          def test_zero_is_not_confused_with_missing():
-              assert (
-                  display_value(
-                      0,
-                      decimals=2,
-                  )
-                  == "0.00"
-              )
-          V38V8_5
-
-          cat > tests/test_ui_preflight.py <<'V38V8_6'
-          from pathlib import Path
-
-          from v38.ui_contract import (
-              EXPECTED_TABS,
-          )
-
-
-          def canonical_text():
-              nav = (
-                  "<nav>"
-                  + "".join(
-                      (
-                          '<a class="tabx" '
-                          f'href="{href}">'
-                          f"{label}</a>"
+                      shell(
+                          (
+                              "<script>"
+                              'console.log("ui")'
+                              "</script>"
+                          )
                       )
-                      for label, href
-                      in EXPECTED_TABS
                   )
-                  + "</nav>"
-              )
-
-              sections = "".join(
-                  (
-                      '<section id="'
-                      f'{href[1:]}">'
-                      "</section>"
-                  )
-                  for _, href
-                  in EXPECTED_TABS
-              )
-
-              return (
-                  "<style>"
-                  ".card{}"
-                  ".chart{}"
-                  ".rsx-card{}"
-                  ".rsx-item{}"
-                  ".mrow{}"
-                  ".bflags{}"
-                  "</style>"
-                  + nav
-                  + sections
-              )
 
 
-          def test_preflight_script_exists_and_is_not_a_renderer():
-              script = Path(
-                  "scripts/preflight_ui.py"
-              ).read_text(
-                  encoding="utf-8"
-              )
-
-              assert (
-                  "validate_canonical_shell"
-                  in script
-              )
-
-              assert (
-                  "CANONICAL_V5_MISSING"
-                  in script
-              )
-
-              assert (
-                  "replace("
-                  not in script
-              )
-
-
-          def test_runtime_has_no_trading_rule_engine():
-              js = Path(
-                  "assets/v38-runtime.js"
-              ).read_text(
-                  encoding="utf-8"
-              )
-
-              for forbidden in (
-                  "0.92",
-                  "1.24",
-                  "0.70",
-                  "RS189",
-                  "MC57",
-                  "panic_seed",
+          def test_production_validator_rejects_inline_event_handler():
+              with pytest.raises(
+                  UIContractError,
+                  match=(
+                      "inline event handlers"
+                  ),
               ):
-                  assert (
-                      forbidden
-                      not in js
+                  validate_production_html(
+                      shell(
+                          extra_attr=(
+                              ' onclick="tab()"'
+                          )
+                      )
                   )
+          V38V9_5
 
-
-          def test_runtime_missing_values_use_dash_not_fake_zero():
-              js = Path(
-                  "assets/v38-runtime.js"
-              ).read_text(
-                  encoding="utf-8"
-              )
-
-              assert (
-                  "return '—'"
-                  in js
-              )
-
-              assert (
-                  "|| 0"
-                  not in js
-              )
-          V38V8_6
-
-          cat > docs/UI_PREFLIGHT.md <<'V38V8_7'
-          # V38 UI Preflight
+          cat > docs/SITE_BUILD.md <<'V38V9_6'
+          # V38 Safe Site Build v9
 
           Status date: 2026-09-10
 
-          This layer deliberately does **not** redesign or regenerate the V38 Command Center.
-          The only visual authority remains `V38_Command_Center_mock_v5.html`.
+          `V38_Command_Center_mock_v5.html` remains the immutable visual authority. v9 pins the exact Git blob SHA and byte length before building.
 
-          Implemented in this stage:
+          v9 produces `index.html` as a **fail-closed production shell**:
 
-          - exact 9-tab contract: Daily / Positions / Core 12 / Rotation / RS / Weekly / Options / Publish / Rules
-          - required v5 visual vocabulary guard
-          - Setups / Movers rejection in the navigation
-          - shard `session_date` freshness assessment
-          - missing/corrupt shard -> `DATA_REQUIRED`
-          - mismatched shard date -> `STALE`
-          - null/undefined/empty/NaN display helper -> `—`
-          - small browser runtime that only loads/validates/formats data; it contains no trading rule engine
+          - preserves the canonical v5 style blocks byte-for-byte
+          - preserves the exact 9-tab order and section IDs
+          - removes every canonical inline `<script>` block
+          - removes inline `on*=` event handlers
+          - injects only external UI runtimes (`assets/v38-runtime.js`, `assets/v38-site.js`)
+          - keeps all canonical Mock values shielded from view
+          - shows `DATA_REQUIRED` until authoritative card bindings are verified
+          - performs no trading calculation in browser JavaScript
 
-          Not implemented in this stage:
+          This stage intentionally does not unshield canonical Mock content when a payload merely exists. The next binding stage must map verified server-produced shards into each card before any section can become visible as production data.
+          V38V9_6
 
-          - no alternate UI
-          - no fabricated `index.html`
-          - no promotion of v5 mock numbers into production
-          - no inferred MC57 value
-          - no inferred NQSAR FSM
-          - no renderer-side trading decisions
+      - name: Build v9 index candidate
+        shell: bash
+        run: |
+          set -euo pipefail
 
-          The next build stage may run only after the canonical v5 HTML exists in the repository. The production build must preserve its DOM/CSS and remove/disconnect legacy trading logic before publishing.
-          V38V8_7
+          PYTHONPATH=src \
+          python scripts/build_site.py \
+            --canonical V38_Command_Center_mock_v5.html \
+            --output index.html
 
-      - name: Validate v8 full suite
+          git diff \
+            --exit-code \
+            -- V38_Command_Center_mock_v5.html
+
+      - name: Validate v9 full suite
         shell: bash
         run: |
           set -euo pipefail
@@ -1713,53 +1855,116 @@ jobs:
 
           echo "Collected tests: $COUNT"
 
-          if [ "$COUNT" != "148" ]; then
-            echo "::error::Expected exactly 148 tests, got $COUNT"
+          if [ "$COUNT" != "160" ]; then
+            echo "::error::Expected exactly 160 tests, got $COUNT"
             exit 1
           fi
 
-          python -m compileall -q src scripts
+          python -m compileall \
+            -q \
+            src \
+            scripts
 
           node --check \
             assets/v38-runtime.js
 
-          python - <<'PY'
-          from v38.freshness import (
-              assess_shard_object,
+          node --check \
+            assets/v38-site.js
+
+          PYTHONPATH=src python - <<'PY'
+          from pathlib import Path
+
+          from v38.site_builder import (
+              CANONICAL_BLOB_SHA,
+              CANONICAL_SIZE,
+              canonical_fingerprint,
           )
 
           from v38.ui_contract import (
-              display_value,
+              validate_production_html,
           )
 
-          obj = {
-              "session_date": "2026-09-07",
-              "generated_at": "x",
-              "coverage": 1.0,
-              "source": "x",
-              "schema_version": "x",
-              "calculation_version": "x",
-          }
+          canonical = Path(
+              "V38_Command_Center_mock_v5.html"
+          ).read_bytes()
 
           assert (
-              assess_shard_object(
-                  obj,
-                  name="x",
-                  target_session=(
-                      "2026-09-08"
-                  ),
-              )["status"]
-              == "STALE"
+              canonical_fingerprint(
+                  canonical
+              )
+              == {
+                  "size": CANONICAL_SIZE,
+                  "blob_sha": CANONICAL_BLOB_SHA,
+              }
+          )
+
+          html = Path(
+              "index.html"
+          ).read_text(
+              encoding="utf-8"
+          )
+
+          report = (
+              validate_production_html(
+                  html
+              )
           )
 
           assert (
-              display_value(None)
-              == "—"
+              report[
+                  "inline_script_count"
+              ]
+              == 0
+          )
+
+          assert (
+              report[
+                  "inline_event_handler_count"
+              ]
+              == 0
+          )
+
+          assert (
+              report[
+                  "external_script_count"
+              ]
+              == 2
+          )
+
+          assert (
+              html.count(
+                  'class="card '
+                  'v38-production-state"'
+              )
+              == 9
+          )
+
+          assert (
+              'data-v38-production="shielded"'
+              in html
+          )
+
+          assert (
+              (
+                  '<script '
+                  'src="assets/v38-runtime.js" '
+                  'defer></script>'
+              )
+              in html
+          )
+
+          assert (
+              (
+                  '<script '
+                  'src="assets/v38-site.js" '
+                  'defer></script>'
+              )
+              in html
           )
           PY
 
-          echo "148 tests passed."
-          echo "v8 UI preflight smoke passed."
+          echo "160 tests passed."
+          echo "v9 safe shell acceptance passed."
 
       - name: Guard changed files
         shell: bash
@@ -1779,14 +1984,14 @@ jobs:
 
           EXPECTED="$(
             printf '%s\n' \
-              src/v38/freshness.py \
+              assets/v38-site.js \
+              docs/SITE_BUILD.md \
+              index.html \
+              scripts/build_site.py \
+              src/v38/site_builder.py \
               src/v38/ui_contract.py \
-              scripts/preflight_ui.py \
-              assets/v38-runtime.js \
-              tests/test_freshness.py \
-              tests/test_ui_contract.py \
-              tests/test_ui_preflight.py \
-              docs/UI_PREFLIGHT.md \
+              tests/test_site_builder.py \
+              tests/test_ui_contract_v9.py \
             | sort
           )"
 
@@ -1802,10 +2007,8 @@ jobs:
           echo "Changed files:"
           printf '%s\n' "$CHANGED"
 
-          if [
-            "$CHANGED" != "$EXPECTED"
-          ]; then
-            echo "::error::v8 changed-file set does not match exact allowlist"
+          if [ "$CHANGED" != "$EXPECTED" ]; then
+            echo "::error::v9 changed-file set does not match exact 8-file allowlist"
 
             diff -u \
               <(
@@ -1821,9 +2024,17 @@ jobs:
             exit 1
           fi
 
-          echo "v8 changed-file guard passed."
+          if ! git diff \
+            --quiet \
+            -- V38_Command_Center_mock_v5.html
+          then
+            echo "::error::Canonical v5 was modified"
+            exit 1
+          fi
 
-      - name: Commit v8 only
+          echo "v9 changed-file guard passed."
+
+      - name: Commit v9 only
         shell: bash
         run: |
           set -euo pipefail
@@ -1837,14 +2048,14 @@ jobs:
             "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add -- \
-            src/v38/freshness.py \
+            assets/v38-site.js \
+            docs/SITE_BUILD.md \
+            index.html \
+            scripts/build_site.py \
+            src/v38/site_builder.py \
             src/v38/ui_contract.py \
-            scripts/preflight_ui.py \
-            assets/v38-runtime.js \
-            tests/test_freshness.py \
-            tests/test_ui_contract.py \
-            tests/test_ui_preflight.py \
-            docs/UI_PREFLIGHT.md
+            tests/test_site_builder.py \
+            tests/test_ui_contract_v9.py
 
           STAGED="$(
             git diff \
@@ -1855,25 +2066,45 @@ jobs:
 
           EXPECTED="$(
             printf '%s\n' \
-              src/v38/freshness.py \
+              assets/v38-site.js \
+              docs/SITE_BUILD.md \
+              index.html \
+              scripts/build_site.py \
+              src/v38/site_builder.py \
               src/v38/ui_contract.py \
-              scripts/preflight_ui.py \
-              assets/v38-runtime.js \
-              tests/test_freshness.py \
-              tests/test_ui_contract.py \
-              tests/test_ui_preflight.py \
-              docs/UI_PREFLIGHT.md \
+              tests/test_site_builder.py \
+              tests/test_ui_contract_v9.py \
             | sort
           )"
 
-          if [
-            "$STAGED" != "$EXPECTED"
-          ]; then
+          if [ "$STAGED" != "$EXPECTED" ]; then
             echo "::error::Unexpected staged file set"
+
+            diff -u \
+              <(
+                printf '%s\n' \
+                  "$EXPECTED"
+              ) \
+              <(
+                printf '%s\n' \
+                  "$STAGED"
+              ) \
+              || true
+
+            exit 1
+          fi
+
+          if git diff \
+            --cached \
+            --name-only \
+            | grep -qx \
+              'V38_Command_Center_mock_v5.html'
+          then
+            echo "::error::Canonical v5 must never be staged"
             exit 1
           fi
 
           git commit \
-            -m "Add V38 UI and freshness preflight contracts"
+            -m "Build fail-closed V38 canonical UI shell"
 
           git push origin HEAD:main
