@@ -9,10 +9,11 @@ from pathlib import Path
 from typing import Any
 
 from .f123_engine import calculate_f123_from_files
-from .market_engine import calculate_market_from_files
+from .market_engine import MarketEngineError, calculate_market_from_files
+from .nqsar_input import NQSARInputError, normalize_nqsar_file
 from .stock_adapter import calculate_from_files
 
-CALCULATION_VERSION = "v38-calculate-pipeline-1.0.0"
+CALCULATION_VERSION = "v38-calculate-pipeline-1.1.0"
 REQUIRED_META = (
     "session_date",
     "generated_at",
@@ -89,16 +90,31 @@ def calculate_pipeline(
     classifications_path: str | Path | None = None,
     theme_scores_path: str | Path | None = None,
 ) -> tuple[Path, ...]:
-    """Run the currently auditable calculate slice, validate, then publish files.
+    """Run the auditable calculate slice, validate, then publish atomically.
 
-    No renderer/UI code is invoked here. Inputs flow only toward calculated JSON.
-    NQSAR is consumed as an upstream state because the exact FSM golden fixture is
-    still a declared DATA_REQUIRED blocker and is not re-invented in this package.
+    NQSAR may be a dated sar_state.txt, authoritative NQSAR JSON shard, or
+    EXP_STATE_ID JSON record. It is normalized and freshness-checked before any
+    market output can be published. The missing exact FSM is never reconstructed.
     """
     out = Path(output_dir)
     out.parent.mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=".v38-calc-stage-", dir=out.parent))
     try:
+        try:
+            normalized_nqsar = normalize_nqsar_file(
+                nqsar_path,
+                stage / "_nqsar_authoritative.json",
+                expected_session_date=session_date,
+                as_of=generated_at,
+            )
+        except NQSARInputError as exc:
+            msg = str(exc)
+            if "stale session_date" in msg or "future session_date" in msg:
+                raise MarketEngineError(
+                    f"STALE shard session mismatch: nqsar authoritative input rejected: {msg}"
+                ) from exc
+            raise MarketEngineError(f"NQSAR authoritative input rejected: {msg}") from exc
+
         rs_path, breadth_path = calculate_from_files(
             ohlcv_path,
             universe_path,
@@ -116,7 +132,7 @@ def calculate_pipeline(
         calculate_market_from_files(
             rs_path,
             breadth_path,
-            nqsar_path,
+            normalized_nqsar,
             stage,
             generated_at=generated_at,
             classifications_path=classifications_path,
@@ -129,8 +145,6 @@ def calculate_pipeline(
         for name in OUTPUT_NAMES:
             src = stage / name
             dst = out / name
-            # os.replace keeps each file update atomic; no staged file is exposed
-            # until the full calculation set has passed validation.
             os.replace(src, dst)
             published.append(dst)
         return tuple(published)
