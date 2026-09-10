@@ -11,225 +11,187 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
 
+    env:
+      PAYLOAD_COMMIT: 29b781392549435f67a831a082e7bf538a0d9330
+      EXPECTED_SHA256: f7a28caed4d99957c288d8714b46d9ed4dd1f331a9f0d390fdf3a378677169a0
+
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Restore diagnostics payload
+      - name: Restore diagnostics payload safely
         shell: bash
-        env:
-          V38_DIAGNOSTICS_PAYLOAD_B64: |
-            H4sIAAAAAAAAA+w8a3PbRpL5rF8xx9RWQJuESFq0s9owtYpMJbqLZUeSd5PTsRCIGEqIQYALgJZkr++3Xz9mBjMASEsbr28/rCox
-            wXl09/T09GsaLPL57tsnX++mfyvCPJDpVZxKf3X3xaf8G8Df0709+oQ//Bw+Gw/Vd3h8OvhiOB6NB3tPnj3de/bFYDgePh1/IQaf
-            lIoNf+uiDHMhvsizrNw2LgvjoLgOcxl9Dqo+298iz5YiCBbrcp3LIBDxcpXlpQjTNCvDMs7SYmdHtS3D8nqHxpd3qzi90mMP0jsz
-            Jl0vV3ciLES60k2rMI2gAf5bRTs7hwc/Hr7+8eD8+OVJ8Jfp6Rl8ionogAj2SQT7cxgeR2Ep+0N/4A86O2eHP0xfHNQG+zTYN4P9
-            YWfnLwc/Hj8Pzs4PzqdnMOx957tkLTs90fk+lzLFh19kkmQ3+HQqo86HnZ2deRIWhTj56ezgdJrnWe6drtMyXkr60t3fEfDX6XRO
-            w7iQkbi5lqkor6XI5Tx7K0EWeKowdIh5lpZ5OC9FXIi3cZZAW+QDBMAVyYUIwiJYJFlYBmGeh3fe2xBoLPaRh13R/xbY5gO3sItx
-            Z+sSlgKtYWFP6IkI9kBOCFSXRsYLHAyz46X4j4kY8nz8y5F4e40dJjpOV+uyEEs4AeJSiiyVfZgs0wJ2PUw6DDaXIBgpglYrWAEh
-            3nV8dU1E9wQwVD3Nk6yQ6vlRTxSlXO0LohCWAFs56oEI3cbL9dJp/rp14ch0w+S/gIJ6mcYvQDeJV0T6cpVIIJVF1N+hKefXwPM4
-            LaGZVpDcAfWrPIvWc1nQtsGAMsvjeZjUIIg1bu/lHWL6E7OTdhAOAcJIwjl3hyKJL/Mwv2MywhWAhxUxFUK8ImQEMJzP5aoM07kk
-            cEUZJwmA+ts6zhUxkQThq0ToKksikK5FfIsn0ddMoM9r4FRdcnALeIuSll7YFe6ct3TSRhmpwTV6iUy9666YTAQ+JeZp3u1uEyQk
-            Yhdw7RJInHFVXhciihcLmXcMCoaEMAcWNJYslG2i6mLWLtUoR+IbmCqyXAuQ+IbFawtpcQpHJY54o1ZhHi5lKfOi464bsMfFIk7j
-            UsL6fRAarwvKLxJ2R7KpY646tvLolXXWUDuEMSw6S/sMQ/CBtsgCfqSwvbDE5KO8x0Gg0Lo7rrJYrIEqZnqPTlaYtvD2EkbB+PN8
-            rWQU7OCET6aXXAxmPOpLMb1FfWadHfs44iJiYPQ7OgP7YvpKoEGFtZKlAOoAkq8g0QlNsuxNIdbpulgDrAVsasikFFJGPXgsxfw6
-            REfkCk9hmQlcKUDhZlkoYK4eLmQew8HCHYrpfOUSQEva5RC1PqhhmgjC1FxkuDCNKFddzU7EOkHGUAPSGsOKYTOADm/Yax4R5iH+
-            +xiBPhIe4OtjQ9eMgU3G9VaTVKMmKp51Ub7D3B1hbdlRmBSy0cm45arR4Sw5nnUbA1qXb2YnhrZrou1bYZ+8FiTXm5Es49TjQeok
-            g4BCx2MbezVVwjI3sEmTso1NRrIfyqUtC7gHl/QOfoRLW7biYVxCOY1tOW3Y7JsYbEse5EU83PMqM91qeNFgrCL/jM6T12462hX1
-            3JfLVXn3QA0fAb65jxbD44Y1sijy50m8QjMm8wk4CWpsdpNCZ1/1rlcruzdfQ9965cubpRcmq+twAh6k2BXDPX8A/It+A0dnQken
-            6y9lmCp8OVKAkB88sYCJgHQXQFj6dzgAiuDM8+eu8BDYYxhdd6j8MgvIX/YcpvCWZWkMUiADUKYl7IPtW6HI85NchqOheobNrTY1
-            AWV9UZT5rMWZArsTJv2ivEuk+DVw8PwqwHcF/488mBW4+z0BHBaX4GlrV+Qj/kTR0m2Un2zppCUozrR0w6qajsrcuCeFeZLmKd9u
-            jmmhbI//IX/lYsbGNrwEfqLsohJSPh5Cnuh4g/R8liUejURTQ/rMRCFsg8O8CIoY3MSA5P6Pf6w3K5lXHatcvg1oq9mD/rs4Ab8d
-            +vGjogIiCiMC0KlprhmwhvWqUzPANXgxrHBAlpVXArqGHCG0rNyA0q6X58J4LIZt0NWi6vA9C+asa6PcgIHg2Dgi4A0AVtozJzB9
-            w7Uu4tNftH9PDCTAcF53bCutKWmYILXTsNUUYjbVfIsozJFvYBTwg+WA5taMSN3eOcBoArEMFwZcG498ZpzL9G8nYkTNxA1wnZ+A
-            ilRImaDtFrZaHobJWwhSkoxzNEWo8xgTzn3I6nB8tbhvxN6z5uJov93lwbe+tT77cBnwhQ+Rmkwjj75VltOIgrbJubHJ6rTzdKWT
-            wfedrzGiD0y8H7Df6S0wvthHw/k8LMMj/EaK2G4wuvhQw/lILgGU8DzDOLVEx5jDmZOfiB8q5D3NbsDndd1c9Jgv8zi6ksAkOOwa
-            xK6OiCxPHjU7Bs6sOqAlAXVfXGfrJALmZG/jCIBQ1BJfrbN1UdEjojCGAFu53ahYOKYtIL5la1jIouCwmNz+xTrlyBieI/CWLmUO
-            awQQSPoNzsLYPROrKobGVEwiQoLmhscCGBYvYhVJVxw8OnshYJ/7ZdaHDzeIVsF3RKkh5C/mgTC0wE+VFiJL1vlA45cx0A8xCPhV
-            WQ4r9gwA8OdlyVvuz7NkvUyLrrEdatoWE7ToaNBq8r54/1VPfOX/loHfp/q6H3RUR16nwgW+AiNaXPASZuytgSeBXzFz5Zku8A8Q
-            XzHpzDOZz6Wyb7hXgBjNgNe+fssiLC5gaIUE3BVg/Nzj5g0IgAmduAi0qHQQ00IzqgKt+3F5F86Emb+IkyQNPeVzhQX6Rx4a0+rs
-            Elv8JJtf6Hkzh0HUjTsXcITt6T1/E6fRpAPrgFASujv2+CjPVkG0XiVwOkp7jpSrSScBQvSuXIYoSJ7FKMV1Py6A8orOv4v/tVMG
-            MI54Pts2Andj6wDeJ2eI1UzZEu0VV72MFzSri8FsGjkrsC7KP2x3orQqqdQB6yXyLeCYyKI0MbnrVi0wMno6+Hh20uTKQvTTgPMw
-            y8KHSlDvBSefSIwUBza41jiY0iY0lvmxZSgwiUcSt7YMJCfWiZvYJaaIoliF6WQ0bA8ktgBlu9QM3bpWssYkYykPq1KwnHqdOBnX
-            CSVaLQcRJreFGBRdqMCCYgontbS4uNiuOWfOGcTAtEOgSE/RU9VBS6IOeKqacUkdO5qlVqKRm9kis0Y3oRQIiiwDONny1sNDPMHY
-            v7vNbqfhCgxdySe4xXz3qONRz7ZlpGT3gYScm69kSlYsCsLSai6yNWhDexwZr0AZrWifjprO4/R2yFOI4jn56z0M4pTLqdCyZJ2D
-            cofFL1eeTY2lvT6ljTDKtQICSkUhdjZZeQCTrd6ROk94iidqhh8j+P5wZrQD9Bolmmb5ErOK0uvibYb2JazmLRrE8TEXnbPzgx+n
-            yrlSgCA8QikqJ+8J61eI9auZjx9e94MoQzAO0KnRqvbKq+T18H7O+QYBnf2XPz6f0rXW8dHx9Dl5s7WtV17q6xM9KOBJHVug3xs8
-            HXurO/uGDyAnC9rIzh9+6f9h2f9D1On2qlm2XMIs+6s1ipym8ArhDv2B1cHyi+jowe6ZX8MpxtUgGTDCvZyzgStpQOKr4S23fzb0
-            Uq2yzD2WBnXs7bWRftjXOTQaxSrDHsRKxx2lFJE9jFXQPoeAKsOAt5yWrbUAKIXVVaFGW5cF2xYOUrHrAjDZrfaijNNbDe28/K8t
-            EvT84PwgOJ3+9Pr4FCStHdQlnLA3MrcW2A6LjoYSxODo+Ofz16fT4MXx2dnxyfcO6OoWZd8SUuqLU9i1NV6oIeknP1nzzLYFaJeg
-            myxTSzfEKrlUIDaNAXelEu0dRCL5gutw+2J+BcD8r6XksvLOs6i5D0v5LB3Z3+9YVQucDd4Z5ju+tLM05JQJFqliZ3AAgN
-            UDXwAz9+2Pn/vu+v/xWq/mM5Hz/7J5V/fKT+YzQaP32i6j/2BiNsH+6Nn+39u/7jc/z9Q/UfYI1CqpwAw686TdOGCpGeOAbFEV4m
-            8pPUiqC49iGSXYKNoUKR4aZCERyJvdOfX00Pz8HgTs+PsDxk/AzhH393yvDPpmc4C3uePPt6sPP8+XgE+vVoejo9OZwGhwcnz49B
-            504RbJ4lCawuGMEQ8ntRK1VeT2fnxfT89PjwzASI7B0HV2VQLMPhQCkQp3XU2jreMNY0g8cwxla7YTSstzx90hgDpNtNBLWBlL40
-            kdrN8JCEVx1UQSQi3mWo5rsmgqbF4fjZ/ctsAlTGq5y9KqIhjM9IFvvMAvEG2+KbVSBzZ+NEHo8UEUBioQwjRfg852RgWXMZYwG
-            stgXJcT8kt1v3/dnlnun3fW6Z9+Seld+Tls3ByJJdhUXgDPAMxK8894pD4UCAHra197wJlfkXTMwr3jbeWeqeXiSW8RTu5F6Av8+
-            eiS8voGsAyYK7tF/XyqeeS639FHm+wVeqRMvbYp0tvKw9xEmqkCpbR+BYYo4TC/i4C1MIuFaxLcgb6BEQB0IvUycrLN8inXzBOJ0
-            ShqSiHjom9520QGPVxC+0xUkxCiYVLvF7IchYyHcoe7lEkOl2MZRTJvJXjDdhlTaaF1PIrFEI7mD9WgC/gS+Xine28g+uJkYzGHq
-            rocQUqNDkVAIkzbTJLjC526bp7jJmVVDRo+TUFp84LsKQbRYaAkNLuM0zO9Y03hAQ7RfZV9Urtxq0bl4/maX1lUpG10nQ0mECYL0
-            6bHlzhozDhi9EpoZ19zcYMkJUWJ19fjM9ap0XONu/nINDmcArjVwLV6pcIEp2p6a0DuwX2OtOiatNw/fITLWpHgLLIajPnqvcF7S
-            kpWuQ4g4DW90uM55oBMnQQ+KNV7ioVmGkRRLYADI4KWch+uC7zaMogadDkrJpAgiLrLDISS6fBz7tlzhBU8t6Q/BAQp7ITEQKaUT
-            TNkpfgwhii3Jf5ZPzFrpZNY/L+9vH+BPkvZXxM84M6m/6Rw5KBvSOEZB4bNSUr87KVQlmJv3Abrr990JOHmn+14JtOT9FQTDnbhA
-            FivR8pV+aptoXxhc1AVl9rDLg9b59kUCMUZl0ieNG4Qtaf8t6X5eu4Ja5WVZR4F+Y+G6IoKv8my9urzzKjpxTRzk9kR2CSf/rYzY
-            iTLYGAuYu5RukIag3Ebw/5g+B87V0QI9xffpB0J/5VNtCWoELwmXl1EoQFGnE7T0vvKoPVC/yzgNQFzjLComqU6TVzdXK8I67mGQ
-            L54+gc/xqIYUVOz71Takq8kKkIIjVPjFdbwovRUWCQwNCy86tmM7+wd4xV70TIEfDaqrh/FoA1k2G2BNLiNwkT4EGYYTF+Roay2g
-            N3lXo6DV7Dintoo+cJJrPy0Q36rl47geJfy5pyd0KyZnSxRQqn0Nb+NiMux223CN7olr1Ipr9CBc43viGrfiGj9wXfde2IaVfQTd
-            Q+Scw7g2cqyT8K0gL8Ru0+htmbdDwNYF6k1tclOFsPfkZj2w3IRsPGjnpopS78fNi/aAtYnT4m4DeTWtSUHV10oGgXXOrQqQkQLP
-            q87yY9ilJ4MuHOOBPxqLR+w8dmulkD3BdY/cuaPcGwAY6aov9ypJFYBpwUIbAy4tG2Cj1ZQjRDqNMpc1lWa5Nfi+h4uhqqjYdy+q
-            6ILqg5m6lOCUzHnxmlbyqi0S8Y9sF9j+Nbhxalic1gfhWhggLkVlXNzyIoBTNFyV6IJntXgqZMGdy/saNQAMCMF3cNByhCtpCsjb
-            SNdFR1abO5gYYWqPCKoyd+gv2XgpT0/pADThNgzYDr0g9FgRYqN/0XnPQz4EBJQEzwLvTHA2ydRN4beuLQMXnTy8YftD1IN3QbQ7
-            03kheBTcVMatFTC7Ezas9EtxpHJ9iXwrE6GvrqiYKC5IuUb06kCaiXVq7jfsWGVdZouFoFeE3kKAoN8HMOsx12HVorAO295RPJpO
-            lFzfqKIqJDSw+WhqTub4Yo4bf5owzVNju/erW9l06Y3A1dtg7QXZGHwqCvhaLNB7yRfz+MUqXdhSAv2lOAzpjShd2SVv0f2NMRex
-            Atcl7+NtCMVyOkWB2VV9j6mCNBqpsVf0KO9paBUTLNc4nQMQnGQ8prZUrutCtY1w1sJ1BvHVMvzEOIoy8qIoW0wGFqJ3rP3rW9B3
-            14kCV6eLYFyGUUBtAMSJEuqjKVZoLM2OGHQyw4AEo/bOjhgq7s/HzyoxgTHgkq60A3u730hv8iG6ZS0Ags628bZ2yDfkRXSBBgOz
-            MyL8/LCUCPZ+lloOXgsnDAKtUlqrtXksuQO5XMhcYoHrg0tEqLSfWZdytkHgLVUkbuLyGlUMaztMO4SV2iyvQXdcw0pUWufXBsm/
-            AjPvBJ3eSykKcDmSWL8D2aZedY4myy22VQl6cYzl1AVQ0rNncUanEM5ttgAVn5p3bdXGllh4UFLRKulFVDbh2zBOMA/t5now9co5
-            q7r6q2cyqV8xza5Vu3fdTY71t6aiBU9RLafCPTqyBw+jdEpbJq2lLaYkBsHXF8GFK03SnJqaCmFbpciWFBXXyiiONEpl8LNRHUOL
-            1bnlnErmiG6nvsdInqm0dk2uqyIanaQwqnsWEgAHEqumFii6o4LA+pNLI5rvSSjO8/WLyheZQ2kYp6drq945Ov4ZXILxM/QKghcH
-            J8dH07PzoCrzcV87reuQzXBxJzZVZjggN+mRj4Cma87n06Pjk2OyWm0UN3RD846lHfjhSwB28P00OP/hdHr2A6yiCZ/em6sDFlSi
-            rNq+0ftcJ6N7b/zHJ2evj46OD4+nJ+fVuoweuddaLNN+8vIclNXB8190rtaqucneoOGEDdFgbOv2+Qu79OO/QHUXncR9zfVFjWnm
-            fFozoji8SjPyKOzJdgEXOE37th4gL6pFDaj2NizG+3IAVT5ZCzS7sw2kct8cgJVL19RRpqsNWOW3OfAcH68B0ultg/rOhfauFcq7
-            TbO31au17OtDqtUQlH60WaqUcbPyDEIOOS/xRSU3NqtVael8BgzD28/GZUBtuFagMLxhB2pDzYEyA+snS0NU58QGWDiFgB9s2V4n
-            sqXQjuNl7EDL5anER5180JVhEtzI+Ooa1UM1yS1L0wfAVM61dHHwB52Wh2sGzKvwL9BBHWuCZqi0eaa8nSfrSBbBfJ3nXP/XQifE
-            UQHGUVj/V+vSkQeK4XAw2PWGj588euT1/7vbrVfruYYSJmyq9Nk6L7Dkg66sN3R3G3v7L1YCqOv/Kl1bfO76v+FwvKfr/0Z74wH+
-            /hOM+Hf93+f4e0D9329FljZrAfE1cTjJeuKre/xIlFvlR4N9q/5UTzFxSW9LkUSvNVHQa5YwKTz275xpRNWrA72t74ooENUpv6LC
-            NAWFaaw6cxlGgKQAYm7yuJRtXVtrHK0j2R/6Q/wtLK7Ufvn6/NXrcxzGq6l+BQu3qLNDDms1iFhbH1MpvGpgC4Fq9PPjg+9PXp6d
-            Hx+q4cHJwQv6lS3PJqknLNQ9UcdhincQaFCEC8k/Z1X9bgF8moIuvLMv6BeUeFSP8h/dRjbzPdZZvenuO2A5wfwG5ABzzDTfhz1Y
-            Fp66j2hF4KFJ7XGlV7eJ6aKJoQI/2wxW1fjpl+bdXDiNaeIywa76TsM0/1iekBgPj98+nboenKs7wBTVr2eIsziCkeAMH44S2Fl/
-            +SaKc4+/FOriR94CE8B1s7LJNIWRlvK2rC7KkAQ/Wi9XhWfxRtHRBVhpgWolLOZxrO/KMV+dlphWpiz3G3nHmLvisej8T2rZaxDF
-            DMTwatJZl4v+16rHyRciZZorWP0Z6CjR+4QpPzcusjqUn2q1RLIM42Rz8WJbCm/DtuGt2sfiRfr6e+LDeqxx/9jQbfidsaEV6bW+
-            PmHHCTdxDjLR9Efbg5IHRh4X6nmmnTV1qNW+mulqzy5syuk6kfLjPNqVUxqvRRWfq+La6gyTjHAtsslLcU1kzxIp+1nJEASjgJeO
-            I8IuCKaPapxPbP0oVXVrlroCID2KKlpUHxezVtd2MBYoU0caOxEhnHijt1Reqg6+rsO3F5f+5xmYQ13SHKYiu/wNYj1BvxnGgRvR
-            q3I6uvZ2gtT5V7LU1Tq1X32zaFL9zWXfg67q1/wYyMWso2/FDqw63fAOnIo8v6MfVJApouVfObPsu0glHBWBrMZC9xB/zIFe2UrL
-            TIEM7bw5/fAgmARffE+pxF19pHcxmnFfTFRVkyzY6tJT7WqlyBv7q9Y0q04MhTmGsSb+UULQtSIdhGUGKpXCl0CN1uaPsFSy1A5P
-            q5QaQNPchPh/7V15c9vIsf9fnwLhVl4om7cuWwlT5bXlXVVsy7G4ThyFBVIkJPGZImmCtK116X3219ecGJCQfG2yYvkggbmnp6en
-            p/vXhsdlHYKtOXB2jOlyMVsu4PVc8XLaYm+xm0zexdOL8eB9zKvcFBa6DYLEtnl8O8y/WOoj30g4OqPwWahwkgOLt4WSKzIunqNA
-            +/EuBwTz5PIUJu1iNCtU+GAM8hJMXHw6mi6SwUWhTGfNGNZHvJjOWttrM1jMl+Up82/Xs6A2ILV0Q8a+xSjfmQu41EYltcFPXIRS
-            McpluZBb9hbd2edo1sLjP/gdjTwrrteKGp893CvFCq2N0KSvr5zNI+URa6cRazVPr+SuT6cmrZ5o5zl7h9qVeaHlgGyD87i+349Q
-            mTR9fv9WseTLQVAeEwrOpNWYVSucb1WRZqAzxZg1kG+sGqw522lVxzeW9HKXEhW3XtbDT8Yuq+0qldUn54Z8vQhpRrqgCGlnKCpC
-            2nk8XXfXgRJxQs6o3EpUs64scyQ1UtGi+vAJnK+Ht5DfCvNemubvRjy34MX4cfnx15HfPoOHi/JULkc1AwlcnJq5KDAHBcY+qDNr
-            B5+aTEGdWTv41GTK6MzamScmMasi13CKHH1lO+e5yeiKk7p40kRbs0hnOW0gVok+XW+uV1JT2WsaTmmIb62um021rIrzjIXy2qFY
-            Z4wlBZvj3Hoa4rKvglElVo/c+3hzVrGqzGZyru1N76w8uSYMUoJ/118xy2RT9eB727rcfbIfZf/lGbV8URuw1fZfW43trR3f/mu3
-            eRf/75t8bmr/9WVsvlZYPWlCrBIhKsunMLibSWwslpoljTr2Sr3+CYrKhR+bIWqdXMyjF04ssCS5oP7GTsOEWLGNkQYGH4q8tuHo
-            HPFzBl8n32sbRQYjEVL9BKmXxtmNsZxzebXKL+wRFRb1LXx8idpV78xxtM5fj5IPEoCBq8H5uUfOXhwbb3wvSjAIAAyhXGf97IQB
-            Y/kH79w53h1U0evh+PZ6dVJjzcZLvKg6+OdLDswYHz7p9SLCSqLimu0fyUSq1ebADZVoq/0Kj7vbbYpUUYui4+XgAu/+pYUO8v84
-            Oe8Prqgk6kb1DG+ddAxGvAE7fAKHqxmRJZ4Y/mxF9oNC6cRf/esIZNJBHzpW/evT4+dUnoc9hEXh/Rffpl323wrisHV3RjR4hS5y
-            o0WajM8yXmkhJQtp0+iQGtCzZNxGqMD1xi2czJpG21w5ZMZtnZK43znpbEsZ0bE+O/jp0eM3Mrswz0evjMLKsh64Fk8ZpUA05/LQ
-            wV2Ca8HyoIBC2VWpDD5A+h2QnyQmVSYfl2hYwFEO5BlZTQWecVpDP1LYBE1mykDm57RgiS7p12jCBYgpIcEaAV3KUh0NCdcIYy+y
-            IQyXnHs7oehCd8OiDdOc9Q5K+RMhXFMdm+QAww7r4rvInurKOyLOCR+EaVhJNJrYkIeiOProPFMQSND8yRl8XTgn7hGeJLBn5PP9
-            qbkfqUCtrX0rROvWPoeEAVawr8LWXAeHTKuXcY0646beWCo3AwhhcK+QoE5UiVlciEq0XAwsa0iiFoJs8kCwqBzdgDwoLJpCOr0v
-            UgP1BAVauE/8azQpW4Nlcq+K1XBDAgG6+OXg2CcQ/JxPp0Mfn+BTaYFLf5Ge/B/U3UX0kxGyFPiXnyhcrtFkAUughDSGfka01xFO
-            ASe7Nn1xaBHBNdA5B+vedPprkrldDdIaDQ6WYaE2pSWEZULsi9pkORm9WyawO58juoAMoX9XmC15/c3gioF+8svLZ4eP8cHjoxdP
-            4Wun5FYJdHM6Rj5IDfdwyPBwyaMZwiDLhi2hDBmsMfXxFjuucIvOTgjiZLNr7Ju5aTJ87qWqxRNUKqi7W0PkjE3BzQdKnqINSX/h
-            IatYzMPNjEBXqzJnI0ndYCYOnr/saM9NlQ+aQO5UKErVUJRFs+SyervpnL5tq1zf+c32/Fzn+5a3QdtlhA1W8/bokhLWEE5lhveR
-            JZaQXCXLCO8ISCRiJartdAYrDLKphch7rQNrrxciu2PKD7udfYJZJzs+O6ciFXinvmbeEri7+mq99SgWEnlPrLSmd+g8p5wD3jsO
-            ARa5a7cAuzGZtY/Nyjy0cuQ6L147gr2vr/sMsR5kaLTFAvG+g4VqIRe2PTTCp+7iKWSwqD47OopeHnac0FqpEugRIWM0iI4TkN2l
-            DA4pBknOlhizOk36cxDB9VkrJetVFXUMCr2cLijsGEt4phIFQaGMu6Lk7CyBV+8Tuiepm5+LKW/epEyui9L4O8vP1nojwb6ISAyj
-            HHdA5DqInx88/xHOqj8fvgxLwzRUX1gYJntoVxRmmxZ+T2TivMYnwNM9wZiJNOe5ctt3ZtIp1X2VSQ9THU69mCpJnLFD7FTKXJjF
-            V33faRIY81+nyZxP3+SskceFzGQgLULjoVsviGem/m8Hb46zeA3e4FkVOcN0i/oQmQBo0FQlY2lVoUbvFqW/fHX0+uDFI1Tymj7x
-            zujKb7JtqEbwWyeY6vrK1DadmRRH3CdRTwnw5LghUnRGMF5fY+fw8d8OXmWnS89+bs2Y4HMq5gfrySR7nhnmHWfczKvOIuo0Mczr
-            QMH5evr04HHn8PVB/PTV0XPrRJHpDZN2ti/sw+I3fzHtruotOZXk902j66KjgGAzRv9Dv/IQkydJuVTCREM/lJ8aKSn1sweqc+Qf
-            vL6nOBrY73IkUZH+Csp9q3EdtPUACL/jIe2i7v7aEbxd7ykuucMndfrff+ntQLlvYcfxdWa8z3hPhWXWvd3EpNLeYo6wl7lnpTPO
-            Z4h8UjHIWseLOUzVct4fR4+lluhHriUiMAVi8Z7qtqNh3y+AgSEYoomxKPy1Tnpz7TtUB0JI4T89ZFVcdyxNEO6Wow++SPrjxcUA
-            BMP7l/3522RRHfRn8HQ5H7GTE4qMfuhXKkwrj/GGANoNrYIVhp4JPOT/gZLg42eHL+C8/yz+8fCoc/D4Zzh9Pn72C95dxJ1HPz47
-            +FZSoV5fwLH6KR32LYYhAuJ+ZOFal9Kry9Pp2MEdcsmC0nuPKpIIv4zSONUEmlkGTsFMYFSgfIX8p/10RAUxPAhQgpPHW96Y11/x
-            diKF8Q+ln2kodrs87fSq5cyKF8gtVZ3WSz/KiJa2wygsqen4feK49FoumzgHnJDOpMlVJVKzI/FT7RlTB1SbmLn4E8ja1epqpIST
-            Pqtt+liQLvOMf2MCrZj2t5uTsyzJfoLyVfCAa02wptESRVg1x9aKW4prE+BRS4brhMG1i8cWDqU5HM/YUHGWPg2BqWk2k2uNLl8B
-            6E7hOQKKd6SAkOLZkgdR+XsTYWrt0JOW1hMQh4F2hs9eqMzMVYjnCpDDNSrs24mN2ZnV0tATuh78D5aH8pVmtxONTJz2GDZSUtWx
-            fZDaLt19yJM+zppssHVjeeM/Ynt92sRzboyQgp2jl63t34CSxdM8yCbK8g1sPU4e2osK3FE6qA9C5f3JW6csfODnm6fNBw9jfvMb
-            1anQmFi/qV/rlRIy8Tzp+nrz8dHzl88OOgdfRvHh1BFUekgl1o72h3bU2i5a5uOjX150SFnT2rZwNmUEQifjydsskj3zaXxXhE9T
-            GS6vpntmmFJ+ZV3dScxlenOelJsYfWIta3d6+OrRi78dZ5UAatJvsA9hllvsQ9i3oQe3a27+sH/Nm/Tn0fHRU687v9e96doJXJZr
-            +nwr6J3fKDIAZghaOofQvz8HnSFj6xyqIGS5nJvOsV7OTRW2Py4MQq5jyHnHSxqKLISlAArE2i4tjPfodVEhLQYnwse/DFx7Qv58
-            87qcSfOLDay74m2yBZguuyMHcvHSP1kdlNuWcqw1K84KtxvuDO2pzoUp0+9dzmyFiNXPugZaM0vHfgFh8nXyh5Nk4TmpPJ8NGdLJ
-            XOAGOZarOvHUH/tr9INBdmaXaLMuU5qW9zOczVFNXA5IxlPrVQGky7t4nRzHfqEnAWLpOu6hBQHShZ7jo1e5WOlYm09ba+oqDJqO
-            ZecRX5E6iqCnq3pyaLRINUVw1LEKB07AKk0nyLCvroCV24n5xDIecxJIgPF7OCxrBjWBS9m0sBANadXEfClfAvq2kHalVwc0kG/i
-            R788Oew4ljhfFfj864HbieRoJmuN2Ggmp7RvzZQr1+V7+vhiTGHEyewRfHZTBEobftJCnZQG3BJpMoMw6WJL/h4cltLBfDRbpPUg
-            JNoX8gJCL5+9nZ0c/59Ga29n1/P/2dtqNu78f77F54c/1JfpvH46mtSTyftodrW4mE62Nm7gFtSfn8/QaVmQnNEtx0Y2lFRB+hKO
-            gwhgZeIZRieAPEOVXHs0P1+inSQ7Rxvvx2HC5Esexj/JzhAEZ6sTvIrdLmWctpguBxdoOJcFQePrRsWA+kPYc6Qh5VK1yrBjVWBf
-            pYq+tHFYlp9Ddriq3EgVyqP3u2p/UTTP5F2VkF1KKxLoKxCYgP5yvGh7u0Z+VjizVNnZRs5VeUlRslzTEEqiPXdXprptg0lAr1qy
-            fF5CJXdXRe6ukjiem/ysWQWptMpSuKh55+ekpasR1WJqkH7E7wV2vtTB/8ogT+LHQNm1MXfN/Da7uONPTqkKOJVTurDs5GDScUL1
-            yEkkXv8qge/4n+fkLen9l54DtN8C8zDPG9xLmwXQsOAJrHR+s8N+9ZTef7XOr54yhQ91q7zrKZv92Hb4plDAdBvDWNeW+8Nsjko9
-            FqmAGZ8Bu570L5FZt9tRKY6Rq8ZxiTMwiw0INBjSK63jv7ENjf8N/X9RNNiS/X9rb3d7D/b/3ebu3f7/TT432OgnIHFfoYnOZBb0
-            6lXPrpCaLGkgFHKBWZ6FbMd6xBA6ooWYswo9kVNMJ6NLqMbxCkAwNv72gZxVYwJgq2woNGAifkwUL4GT4s35r8kEHRDiRuNBDONA
-            S7PRasSy9aibTwy2HlGYzL5clFB45i0dWnNM0fAoGUdkZ+YxTRPzuFFr8eaBOwc0oozPK+xzSEnRdCSZYeRnDArf/zi6XF7irwdy
-            DXHDfCoYPaqNcFIRU3SG4aopU7lfiU6dgVEjegqH+fgc3fDiK/LRi9FGheLYj4hOYMQWwO+0ljHWQSb1VbHqOo3YvH9VPmnCeDWb
-            8Bfa2Nzi/x9WogeVaI/+fdiFDR/vpdocRIHvFPpzp5CHlEf/oTKdv6FCEoqdGi6k2artuGUG2wF05BSxA5XtQGd2oCM72/x3Gzqx
-            vQt/d+RdK9gj5Yjl0m9ZTSQQMDa4glU608fpTlpdYvrkRxl4vc2v2Yky8H6H34vvZSDBHidAf8zA2wdudot4zDJVpoYxqh3GyYLw
-            oiaL0flyukw5LHV8CmKTIpWhDMhsWDvlAmiFlVqN1m610YQ/IAqquLu7QtMDng7YgtNZf4DrkRZks0X/qVTW9b/t2ihqKKq4gtYX
-            56irHUT3I5i20pg8GQe4jsm4COYFf7O1m+qTqHaurXooKGiroQrsKgtn8xxLxsC/TWFRsNkzC60RCH3q4H/SGmuXlF2zHkzHgCmX
-            iypLBmuGNHIZdGMynVhqJgRKGCvVvbjBYyqlulwzUwk6KfJsPaw2Hliz9XDNbG3Rf3hbSUVvfttZY2DpYji9HjivI5k7fQ8L5SbJ
-            w05jZ7/RgD/3Gw/hXyuHSLAlmQEnCIosQw7vTAikXRQUPymHalnxFcutmtbwdSZ3Vr3Ia9o9Y63KpqFvKd/K26uNzMYrwcGBS3CJ
-            wCfMPgIyRIyxckZ4jU8ySWgDlu2EKKiJ7BuYeIu+0xZQ26YnD0Lcl7dpayuQLPwv7kL8zzb93gkVkd3ZHlIbmtKeXcrakqKgIZk9
-            iddScmbQOowOtowbewXp1t7SP7IUYCGAoykCLJuBsY5gaoZW/ZrMp2l5Emg6CRHL8dhH0uufkV9uMtNPElTKjE8aXbt4+Ok/xUPL
-            iIOEiPnIxDMewXwjFUl8hMuzCysWarwXlaGWqvU845iNbc26YqM1Dhb5Fyk7m8LqZxb+L9Mwq9v2R4Zg1A2+zQ6Zzoc4qxdY9F+h
-            jHDjqOyLlWWjWzV8uU+VIAm4o5P1i8aPqbnA0GTAFNWn0Misbn3+yMjUrRyZ1aO+YmTs0PL4G1YDcp7R5LzGvCzW0q85XN9MEq9Y
-            lQVWr1eOBkQzXNCcTHCLTT5cQptmF/24GWNpcXNbwnDGZ0i6q+RpYlooUWMj5ScK1o1t/QwZU4M40p7+hlypgaIvS+RN/TMor55P
-            ka3YxykWVUWa5W36mGUO6wVBpdaGo7Mz8apa4sQOUWkyKxNUUltkgyHysqq8ITto9UaFe4X3KDEgj4B/6/ADJn85q8HYlWns2s06
-            nPIiHje+EtqsXSZ9VDXXoYJCKTc3xeJudiVNXkE9MCoV3b5KxDFYJ/2JKGu/91E/+LH0P1YIxi8bAnS1/qfZ2m011f1Po4XPmzs7
-            d/qfb/O5gf6HYn5+rjIoEOeTuW5+yGADqssKj/xYoCLNcSxgxmL+VcwQQ0FC6U0G/tpTDOni5CQ0m44mizQGQohbO/FOI97bUexY
-            JGOvAeUqCIHk8iLHOgre9bHc2kHZsH+atptJtelqZfwiGsESdhrFSwi3Yc9vg9VxrWnH+GvxaaKFdJhAtqONBRdc9T9wdrUAkeXo
-            KqVEO3v2mTULQn5yVup8Gu03WsPrki9R7uxuilxYqEqN3PF5NcL+clLqNDCkOuvUoxB4+spS9lS71SxhJHIdghznZ2fPfn+pY46j
-            1TSLrYJUOJhSDLtFPADBPgWS5mMYHUnLctQmu19oZetBwwpuZZ+gK8bOS+RCE0RvXU/W6WkapKdpWSd/+V+0Z4wZILZlgs6i/AQm
-            UUJm7ogBpIbHzN0P0SMQVvG2I40WIGMNYeP/0J8P/xzRYFRlMCKUNLAv6RjjoAPRIc7I++loGBEVGkgXCS5ly1S4uGDG38KRpFFD
-            2cKoeVU38LQCqXZ0MtzNjNyJXQIxgOAefwUxRnQULA+5gi6OhbL5+mS8MvmL8lncx9KKKTGUBYutK8E6NtUIp/ZKJ6fgePEhGb9P
-            VKh4YnBeFHng72yHSfVOQAYi5V06mM61SCqY+YaKVhOqrKRV0QjU9DMfL4DcH4Ttn9MZn1PURqh8qzaZ8n6IfpkxESmsR0R3TNGq
-            Cg4nyftkEp3CAM2vEFdyyLpulDmZZPhVLH5DJwOD8Cl1iRMRuQ2SckZPPE9lfL6I08t+s1GquE9amSc7gTQNB70pWezgmwa7Oy5a
-            TfvX7pbzDuaRf5r8VKJTGX2xK3MfwZdx/xxaSmVcd33eZo0Ocbdm006BhoUwLyeDbnZnImWghZdql2SXgav0L22cXjHlJGosdfEh
-            lZE5NKTLyzIdZaTunEpgUZtUTtGbeH5AFY7dDko1738oBfqiane3Vw6NR3e2strQcX+IUAi4ZfM6jEHkmMLZFrFJaf1pM1JYg8NR
-            SsQw/KzFhwBxpLLU4BvMbgSHzVNll50k2FedHzEz1GthYV1GMVQBUvf3YPA0D+vyyRUOSDdd2vlMYt1it2fLXX58B8Fd2slOrTYw
-            DczvDp4/YUd0bz7Go1P2X+drRSU9zWDvmMdbew8aseiLYSKH07MYNXRqIvH0GxKIgShba7bdBm+7W9a2O1Gegx+cg7mte2ed+x79
-            O9nMvS5D3BQ8NkOmCdpVho7MlJx6icqiyz5PQHM/pz/Nrn/CvlwiJdLao2LUUZypZHROLbHfp4thGYew3ZBEKq6lSqZbUUV9onD9
-            w3SKCn7CEbZmi445COJLSwdRDNA4DBPNpumi6pBlJMy9Zqs9VtxOIH/Yx0GUbTo9odhgsfANHC1+fjE6Y27lpKjR83JTZ75cIh1R
-            VslSm0/HMKnn5eBxCrVksaKKUApnDlNEfITR/uJ1WPNlL9f8lWr66S+9y+VmJrXTaD8DvXTylBW1VN3KkMuvL8/KDW2BLFJB6IqN
-            sKPj2fIUZO4LYAl0Fv5wQcYGctaaan8g+Oa6DCwnBW/ewkwgj51synJ4FKVXEyBzBANkY3JhyHDwgD1oeX6B0jN2KKIeSHTp8z6p
-            wlwO7q4CI184y8GSg4zxPt6XWPIMrReXTyGXcm4HbWQQtVRukknmez86wZWP21EXBXuTuNpEYeAEDwRdW1jSZLE2a9PL+uv6LC03
-            h3h2rcn00NRzXUCyXnfAq5j4XszhqUi+Ulod8coPc5W1znPuSqkTuPIRhOuMnH9Lf3xT/eNl9Y9DG6rFvT11b0Sp0OBdKeVcHehl
-            XQyrArGrsjeyt7xTZYcs5aaeee3HJgrwpIfaAEky5nhfWU5EOPE5N7ppyWHIK72rblrMas+mm5a2wh2reFGUigP6dH3vMJlA2f9i
-            PEKxEInGYtpQIDulOcVZXmBGvfON9b+W/v/LO37IZ43+v9lqNv34L3u723f6/2/x+WLxX4peDNzKS0QEFth3bLOajZ8OXgD76Bw8
-            cV5kjGl0cJd3yo5JXNleUtxax+9khTWTNCJgyGSuYQsaMzkCkt5lPL/tsLREr5SZE1V835WaKIEYPtH7auC91iLSvbb7LqtV9DF1
-            6FKUUHPIC5CQ/ZWIYAm+1hxqdcdoMlsu4DR8OVq4wQvJ0Pas/zbhg/DiUoE/0CTJsZjjq1dUaForyJiKTlzcwULVkCOTqNkOCx+a
-            8uzNf/IOGkDOieiTmKpw8AwyRJ6Lm8pZ102oIu1mEtqhBq30bq/dbM5xSKW7jTAyeRcKtwn7lDYRsRKGwmzqLS0/7Q2aou3bsnKR
-            WJu50Xtxx/dqszZ855JlULCjngv1yo56aQt2lFzrc+U/r6H5CdfEkcah8dpnD41ZwGy5bywg9eJK41NYRdCpK99qVNzq5BSbu4yB
-            eQBJq7dwbC5N3tXgIY+Gzak5sdC1ZgAx/LnVaseqMG3pSyx7aZLlvMStDflNBQ04C3GM3JVwU0vP2y++IKVgvnU4JV+HoVgkeooB
-            rx3HsLP+aJzGohgP0p91KLbJQj2u4YSUnJQ53ufqqo4x6Y5fvsFh//vf/17qXm/mOZcDr88S/+XAEH9YNjixrgVVTSIgaLlE7+oi
-            fITuB7vuBs6t8bdwWoPWLvsbWWq+p6A03n3vOgiudgsMrslCm/Nvh9WvDpS8mtXb5Vh2GSqT1QCCX3M3B1u6G05JfCNf6tgeC3Kk
-            Dq9ClP68ZYCPSvqlYEOoi1+8b07QRJUy0npFkGl2lbHWrEppr9k/fSqpx6X9Ba6Df0/+lLdCT5Oz6TyhCyQpiab+FHUsZbMR3XwL
-            w+fFlxF287tvUjaJBIcDqZwHzNGpqznyJAieJoMgGszDeE03yhJAKwnmQyUn/D0dDTG2IyEGUws5cYXrlpzGQsNylVM16kKsCnLW
-            RqBt2DtycJgPY0EqEydJRiMLrhfbezpDeOyRn7OJGET9TxwdcV+dlveqzT3sth2fE/cPCwwrm4UNE7wsLcnS1VuL4+3tbjC0QEiI
-            +wLnt68g0YU92bPu67c+pHE1eKFqTmgWOE/3RKDzMvJTCNcOUodDieUKVzml+FG2RMJTIqZIlpk2ZdC5ipz8FP7U99J73n34Y+l/
-            v1oI8DX638Z2Y8/T/+7uNu70v9/kcwP9b44a1yMb16p7JdRhxU6i8Audh3m4ITlojLaBeGDb9Sy7U4p8J4WkCfA98oFdaHz1uA+8
-            e2S2YxUv3Nt9qYC8rfeTClWDO2insbW7g6y0o49yL14/eYRP/kFGlrj3wo9jjVmHYflK12ZTnQV20nmSLscoEuQGGXRtJCj5amZs
-            Jc8PMiaxH6iwnENFkRBiOcXYLqKjRaZTpGjCo8b7ZNLHWUaRCiO5ExV+1pTl6eOzE+m99ybVfZuJWuK4suelXUwxZU6Yon2KX0Gb
-            bnVl5CJKaddy7clqX52sfCkkO+EkazjTnmEaGkNAB0KKzUipYEfrph4Ky1+rRsXyzzf/CkQRkesQK26NxndFCfw8uelazYsR9Tkr
-            ViVfHz8iZ8WvCNJBsd3WrNyVRR0f/fLqRotf7Qtm9klTEcMTtIc1HGDtmsdSCp2QhAYs6xgVPkiv2gfVZpMjFE3eIrz6tS4g6/zc
-            2tm8xXIz8Ts+i3uvi2WwfgJC51dbxxoTVoTxex3MRwsiOr7qU8ZqgtSp7XtzgePx88WRFJwxlKYU1Ebr1EWvfkIZCioFddbgYfAk
-            AOW9usk5xRQknpxiWBn5uY1Rpaxqi0OFir5YJgzGtU5j5yCMspx3D5XDG2zN3W9AdVKEPwRA7MOc4ga6gQBzkVDjq3eaWygOVFYd
-            FZyXhjW2+an7H73UygHFS21FAqf0n0pNnAzVrBb+MNdlW4QRDUMD3xFXXa7UrrMXoiHamyf/C4JICpzw7WT6YSIvR8PbU15Bgnt4
-            Q4njS9BNdpvhW8BnBz89evxGWgftPHrV4dhlx86FxOr9JjS6w2nCR7N5cglsIHYiJ0gx/wVr/PvukfjJ033OMrfWq/eYr6O3LLhv
-            YdIbXlN/bzXMd/sMp4O0bq4Pj2uXX16/tQb/c3t7y8f/3tqDR3f6v2/w+SF6vfXAQGZHjt1lLw8VvofrzgnlO2JvqmFEekFylzJ4
-            2mcYOpjugs39DhmR1jY2DhFY4ipCg8AIhfD9jY1q1AvdG/bwReBysMeFwETSFd0AWMOCIr6hwEiXwFIep65wIfrHPNVfT5GrQKvU
-            77Nma8tk8q+b4SFU0kOn0GaLn0B/iNFE6PJHo6DlVhzn+tFk9ByRL15imvvRwfNHLXQt/wcB6USvjg+b29HT4+fA/nEfRtDeNOo5
-            x4VeRLh8UjabTop3g/Zfhv8plKwNmVa3kDrrg+UCwz8nE8SvrsJ/0G4CSA80myNGN1tVzecj1wdOjgEV6k2FPf8YeR2dYxToueNi
-            R6gNPXYBg1HE8Km9ZqNRLzfvb927V67+a3OzV4sOi4wBO/IzZmu0s1c96Dw13ibewFQi9BCI9K6KcGs0StMJN6K/XFxMgWD6qFGK
-            lC9IpIFMKYK1HhoYtIOPfTSvAZrt9Xqn/fRi4+Wbzs9HL14+6vzcTucDwdOP1kVZiP4N+5cNKe9A1fNLGz0+Mtu9vLVx4qPcnV4S
-            K4D4iI/odRaNzEsJnoiKA1QZHD45eCUvDaa7yktryeR2EN3tNLFjXmWnDtSGw7mx8cMP0Ss9V+aWFRW8MOB5d/7Em0AkmFpjSPQo
-            FIW37mn04SIB8pkjDW0wlaGb52PRXVg0wl2ILpNkQQTnRlBHGIQ5UCBxLV76Ls3BY7OWWAqKhAvUO3Ns9/nrUfIh6tkCYy+Sa/6y
-            LSDpeO7EJ/8ckTthlC5PoYeLJV69oO4J28gNsWLVSKM2oTW8YDSsiCwZWv162u5L+jqul7peB5yJVaFQEkwYjkZSPZ/D8EFZpCCP
-            jIY4KvdcrXd9Me1VxEurLkpcbNNtA9vr7hhVZ/S0GXVQb6Y91AQjRusJNzYeRXz1Iw3Gq59IRu4iFM4exiMU0B7obAPmaQysEA2n
-            +AQoQeydaBJ6hmpI0z9Ez5gMeJZoP5H5BqoORVjo0Q5JwEOEYGK3UggF6VBouE8eA3U8loh/MjNYh8BqGx1/c4rkrIzLp9ds4ym5
-            ErXafECuRFvtVwhqtt2mYzGw5w60QjsVpkSTNITIJ+3W6zVCzRgmi2QO530eQViKCWrS6odPVPW0SvG8F927B9v5vXu6jogMvCm0
-            EEb0oM2zbrZOfIF7p9nVkNSi3irJv6d3GGfG5PBQ+/0eC+4+d5+7z93n7nP3ufvcfe4+d5+7z3/h5/8Bgm86dQAYAQA=
         run: |
           set -euo pipefail
-          printf '%s' "$V38_DIAGNOSTICS_PAYLOAD_B64" | tr -d '[:space:]' | base64 -d > /tmp/v38-diagnostics-v3.tar.gz
-          echo "f7a28caed4d99957c288d8714b46d9ed4dd1f331a9f0d390fdf3a378677169a0  /tmp/v38-diagnostics-v3.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/v38-diagnostics-v3.tar.gz -C .
+
+          python - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          import io
+          import os
+          import re
+          import subprocess
+          import tarfile
+          from pathlib import Path
+
+          payload_commit = os.environ["PAYLOAD_COMMIT"]
+          expected_sha = os.environ["EXPECTED_SHA256"]
+
+          print(f"Reading diagnostics payload from commit: {payload_commit}")
+
+          old_workflow = subprocess.run(
+              [
+                  "git",
+                  "show",
+                  f"{payload_commit}:.github/workflows/bootstrap.yml",
+              ],
+              check=True,
+              capture_output=True,
+              text=True,
+          ).stdout
+
+          marker = "          V38_DIAGNOSTICS_PAYLOAD_B64: |"
+
+          if marker not in old_workflow:
+              raise SystemExit(
+                  "V38_DIAGNOSTICS_PAYLOAD_B64 marker not found "
+                  f"in commit {payload_commit}"
+              )
+
+          payload_section = old_workflow.split(marker, 1)[1]
+
+          payload_lines = []
+
+          for line in payload_section.splitlines()[1:]:
+              if line.startswith("            "):
+                  payload_lines.append(line.strip())
+                  continue
+              break
+
+          if not payload_lines:
+              raise SystemExit("Diagnostics payload is empty")
+
+          raw_payload = "".join(payload_lines)
+
+          print(f"Raw payload characters: {len(raw_payload)}")
+
+          # Remove anything outside the Base64 alphabet.
+          # This specifically protects against invisible/copied garbage.
+          clean_payload = re.sub(
+              r"[^A-Za-z0-9+/=]",
+              "",
+              raw_payload,
+          )
+
+          # Normalize padding.
+          clean_payload = clean_payload.rstrip("=")
+          clean_payload += "=" * ((4 - len(clean_payload) % 4) % 4)
+
+          print(f"Sanitized payload characters: {len(clean_payload)}")
+          print(f"Base64 length mod 4: {len(clean_payload) % 4}")
+
+          try:
+              archive_bytes = base64.b64decode(
+                  clean_payload,
+                  validate=True,
+              )
+          except Exception as exc:
+              raise SystemExit(
+                  f"Base64 decode failed after sanitization: {exc}"
+              ) from exc
+
+          actual_sha = hashlib.sha256(archive_bytes).hexdigest()
+
+          print(f"Decoded archive SHA256: {actual_sha}")
+
+          if actual_sha != expected_sha:
+              raise SystemExit(
+                  "Diagnostics archive SHA256 mismatch.\n"
+                  f"expected: {expected_sha}\n"
+                  f"actual:   {actual_sha}"
+              )
+
+          print("SHA256 verified.")
+
+          allowed_files = {
+              "src/v38/nqsar_engine.py",
+              "src/v38/mc57_engine.py",
+              "src/v38/diagnostics.py",
+              "src/v38/reference_gates.py",
+              "scripts/calculate_diagnostics.py",
+              "tests/test_nqsar_engine.py",
+              "tests/test_mc57_engine.py",
+              "tests/test_diagnostics.py",
+              "tests/test_reference_gates.py",
+              "docs/DIAGNOSTICS.md",
+          }
+
+          archive = io.BytesIO(archive_bytes)
+
+          with tarfile.open(
+              fileobj=archive,
+              mode="r:gz",
+          ) as tf:
+              members = tf.getmembers()
+
+              archive_files = set()
+
+              for member in members:
+                  normalized = member.name.lstrip("./")
+                  path = Path(normalized)
+
+                  if (
+                      member.name.startswith("/")
+                      or ".." in path.parts
+                  ):
+                      raise SystemExit(
+                          f"Unsafe archive path: {member.name}"
+                      )
+
+                  if member.issym() or member.islnk():
+                      raise SystemExit(
+                          f"Archive links are forbidden: {member.name}"
+                      )
+
+                  if member.isfile():
+                      archive_files.add(normalized)
+
+              unexpected = archive_files - allowed_files
+              missing = allowed_files - archive_files
+
+              if unexpected:
+                  raise SystemExit(
+                      "Unexpected files in diagnostics archive: "
+                      + ", ".join(sorted(unexpected))
+                  )
+
+              if missing:
+                  raise SystemExit(
+                      "Missing files in diagnostics archive: "
+                      + ", ".join(sorted(missing))
+                  )
+
+              tf.extractall(".")
+
+          print("Diagnostics payload restored successfully.")
+
+          for path in sorted(allowed_files):
+              if not Path(path).is_file():
+                  raise SystemExit(
+                      f"Expected restored file missing: {path}"
+                  )
+              print(f"RESTORED: {path}")
+          PY
 
       - name: Guard production and workflow files
         shell: bash
         run: |
           set -euo pipefail
+
           if ! git diff --quiet -- .github/workflows; then
             echo "::error::Workflow files were modified by diagnostics payload"
             git diff -- .github/workflows
@@ -243,39 +205,123 @@ jobs:
             data/market_state.json
             data/core12.json
           )
+
           for path in "${FORBIDDEN[@]}"; do
             if ! git diff --quiet -- "$path"; then
               echo "::error::Production shard modified: $path"
+              git diff -- "$path"
               exit 1
             fi
           done
 
+          echo "Production/workflow guard passed."
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python -m pip install \
+            --disable-pip-version-check \
+            -e . \
+            pytest
 
       - name: Validate full recovered suite
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check -e . pytest
+
           PYTHONPATH=src pytest -q
-          COUNT="$(PYTHONPATH=src pytest --collect-only -q | tail -1 | awk '{print $1}')"
+
+          COUNT="$(
+            PYTHONPATH=src \
+            pytest --collect-only -q \
+            | tail -1 \
+            | awk '{print $1}'
+          )"
+
+          echo "Collected tests: $COUNT"
+
           if [ "$COUNT" != "73" ]; then
             echo "::error::Expected 73 tests, collected $COUNT"
             exit 1
           fi
+
           python -m compileall -q src scripts
+
+          echo "73-test validation passed."
+          echo "compileall passed."
+
+      - name: Verify diagnostics files only
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ALLOWED=(
+            src/v38/nqsar_engine.py
+            src/v38/mc57_engine.py
+            src/v38/diagnostics.py
+            src/v38/reference_gates.py
+            scripts/calculate_diagnostics.py
+            tests/test_nqsar_engine.py
+            tests/test_mc57_engine.py
+            tests/test_diagnostics.py
+            tests/test_reference_gates.py
+            docs/DIAGNOSTICS.md
+          )
+
+          git status --short
+
+          CHANGED="$(
+            {
+              git diff --name-only
+              git ls-files --others --exclude-standard
+            } | sort -u
+          )"
+
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+
+            allowed=0
+
+            for candidate in "${ALLOWED[@]}"; do
+              if [ "$path" = "$candidate" ]; then
+                allowed=1
+                break
+              fi
+            done
+
+            if [ "$allowed" -ne 1 ]; then
+              echo "::error::Unexpected changed file: $path"
+              exit 1
+            fi
+          done <<< "$CHANGED"
+
+          echo "Changed-file allowlist passed."
 
       - name: Commit diagnostics only
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          rm -rf scripts/__pycache__ src/v38/__pycache__ tests/__pycache__ src/*.egg-info
+          git config \
+            user.name \
+            "github-actions[bot]"
+
+          git config \
+            user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          rm -rf \
+            scripts/__pycache__ \
+            src/v38/__pycache__ \
+            tests/__pycache__ \
+            src/*.egg-info
 
           git add -- \
             src/v38/nqsar_engine.py \
@@ -289,12 +335,25 @@ jobs:
             tests/test_reference_gates.py \
             docs/DIAGNOSTICS.md
 
-          STAGED="$(git diff --cached --name-only)"
-          if printf '%s\n' "$STAGED" | grep -q '^\.github/workflows/'; then
+          STAGED="$(
+            git diff \
+              --cached \
+              --name-only
+          )"
+
+          echo "Staged files:"
+          printf '%s\n' "$STAGED"
+
+          if printf '%s\n' "$STAGED" \
+            | grep -q '^\.github/workflows/'
+          then
             echo "::error::Workflow modification staged"
             exit 1
           fi
-          if printf '%s\n' "$STAGED" | grep -Eq '^data/(rs|breadth|f123|market_state|core12)\.json$'; then
+
+          if printf '%s\n' "$STAGED" \
+            | grep -Eq '^data/(rs|breadth|f123|market_state|core12)\.json$'
+          then
             echo "::error::Production shard modification staged"
             exit 1
           fi
@@ -304,19 +363,25 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Add isolated V38 NQSAR MC57 diagnostics and readiness gates"
+          git commit \
+            -m "Add isolated V38 NQSAR MC57 diagnostics and readiness gates"
 
           for attempt in 1 2 3; do
+            echo "Push attempt: $attempt"
+
             if git push origin HEAD:main; then
               echo "V38 diagnostics v3 pushed to main."
               exit 0
             fi
+
             git fetch origin main
+
             if ! git rebase origin/main; then
               git rebase --abort || true
               echo "::error::Rebase failed"
               exit 1
             fi
+
             sleep $((attempt * 3))
           done
 
