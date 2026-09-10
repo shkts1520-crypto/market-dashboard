@@ -1,0 +1,71 @@
+{
+  "base_pool_count": 1489,
+  "calculation_version": "v38-f123-engine-1.0.0",
+  "coverage": 0.9828807556080283,
+  "f1": {
+    "coverage": null,
+    "dependency": {
+      "reason": "PIT_OLD_TOP24_MISSING",
+      "status": "DATA_REQUIRED"
+    },
+    "drop_count": 0,
+    "dropped": [],
+    "eligibility_drop_count": 0,
+    "observable_count": 0,
+    "old_top24_count": 0,
+    "rank_drop_count": 0,
+    "severity": "NO_JUDGMENT",
+    "status": "DATA_REQUIRED",
+    "unknown": [],
+    "unknown_count": 0,
+    "value": null
+  },
+  "f2": {
+    "observable_count": 24,
+    "severity": "SEVERE",
+    "status": "OK",
+    "top24_count": 24,
+    "value": 0.5416666666666666,
+    "weak": [
+      "SNDK",
+      "AGL",
+      "AXTI",
+      "ERAS",
+      "MU",
+      "AEHR",
+      "AAOI",
+      "MXL"
+    ],
+    "weak_count": 13
+  },
+  "f3": {
+    "break_count": 194,
+    "broken": [
+      "MRAM",
+      "RDW",
+      "FCEL",
+      "RFAI",
+      "AAOI",
+      "VOR",
+      "VSH",
+      "AXTI"
+    ],
+    "observable_count": 303,
+    "queue_count": 306,
+    "severity": "NO_JUDGMENT",
+    "status": "DATA_INCOMPLETE",
+    "value": null
+  },
+  "generated_at": "2026-09-10T23:29:35Z",
+  "rules": {
+    "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
+    "f1": "20-session-ago PIT Top24; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
+    "f123_normal_stock_hard_gate": false,
+    "f1_coverage": ">=90% FULL; 70%-<90% PARTIAL; <70% DATA_INCOMPLETE",
+    "f2": "current base-pool RS189 Top24; fraction of RS63-observable names with RS63<85",
+    "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; break=Ret20<=0 OR Dist52<-15%; queue<3 no judgment"
+  },
+  "schema_version": "v38.f123.1",
+  "session_date": "2026-09-10",
+  "source": "derived:rs+pit_old_top24"
+}

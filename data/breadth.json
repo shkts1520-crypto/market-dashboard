@@ -1,0 +1,373 @@
+{
+  "breadth200": 58.58007004138809,
+  "breadth200_status": "FULL",
+  "breadth50": 39.50091296409008,
+  "calculation_version": "v38-stock-adapter-1.1.0",
+  "coverage": 0.9828807556080283,
+  "coverage_detail": {
+    "active_universe": 3388,
+    "current_valid_ohlcv": 3330,
+    "min_sma200_count": 2033,
+    "valid_sma200_count": 3141,
+    "valid_sma50_count": 3286
+  },
+  "excluded": [
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "AAC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "AACO"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "AACP"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ACAA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ACGC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ALDF"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ALOV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "BIXI"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CAII"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CAQ"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CCAQ"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CEPV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CRAN"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "DSAC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "DYOR"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "FERA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "FVAV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "GCGR"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "GPAC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "GSHR"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "GTERA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HACQ"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HAVA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HCIC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "IPVV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "IRAB"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ITHA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "JENA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KCHV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KFII"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KPET"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KRAQ"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KTWO"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "LPCV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "LWAC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "MTAL"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "MTNE"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "OHAC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "OYSE"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "PTAC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "QADR"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "RDAG"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "RNGT"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "RREV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SBXE"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SCII"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SOCA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SORN"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SZZL"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "TDWD"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "TMTS"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "TRGS"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "TVAI"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "TVIV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "VHCP"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "VLOS"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "XSLL"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ZKP"
+    }
+  ],
+  "generated_at": "2026-09-10T23:29:35Z",
+  "rules": {
+    "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
+    "missing_sma_excluded_from_denominator": true,
+    "pit_universe_required": true
+  },
+  "schema_version": "v38.breadth.1",
+  "session_date": "2026-09-10",
+  "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close"
+}
