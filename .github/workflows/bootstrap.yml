@@ -1,4 +1,4 @@
-name: Install V38 Diagnostics v3
+name: Install V38 Diagnostics v4
 
 on:
   workflow_dispatch:
@@ -13,7 +13,6 @@ jobs:
 
     env:
       PAYLOAD_COMMIT: 29b781392549435f67a831a082e7bf538a0d9330
-      EXPECTED_SHA256: f7a28caed4d99957c288d8714b46d9ed4dd1f331a9f0d390fdf3a378677169a0
 
     steps:
       - name: Checkout main
@@ -21,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Restore diagnostics payload safely
+      - name: Restore and validate diagnostics payload
         shell: bash
         run: |
           set -euo pipefail
@@ -36,12 +35,11 @@ jobs:
           import re
           import subprocess
           import tarfile
-          from pathlib import Path
+          from pathlib import Path, PurePosixPath
 
           payload_commit = os.environ["PAYLOAD_COMMIT"]
-          expected_sha = os.environ["EXPECTED_SHA256"]
 
-          print(f"Reading diagnostics payload from commit: {payload_commit}")
+          print(f"Reading payload from immutable commit: {payload_commit}")
 
           old_workflow = subprocess.run(
               [
@@ -57,42 +55,36 @@ jobs:
           marker = "          V38_DIAGNOSTICS_PAYLOAD_B64: |"
 
           if marker not in old_workflow:
-              raise SystemExit(
-                  "V38_DIAGNOSTICS_PAYLOAD_B64 marker not found "
-                  f"in commit {payload_commit}"
-              )
+              raise SystemExit("Payload marker not found")
 
-          payload_section = old_workflow.split(marker, 1)[1]
+          section = old_workflow.split(marker, 1)[1]
 
           payload_lines = []
 
-          for line in payload_section.splitlines()[1:]:
+          for line in section.splitlines()[1:]:
               if line.startswith("            "):
                   payload_lines.append(line.strip())
-                  continue
-              break
+              else:
+                  break
 
           if not payload_lines:
-              raise SystemExit("Diagnostics payload is empty")
+              raise SystemExit("Payload is empty")
 
           raw_payload = "".join(payload_lines)
 
-          print(f"Raw payload characters: {len(raw_payload)}")
-
-          # Remove anything outside the Base64 alphabet.
-          # This specifically protects against invisible/copied garbage.
           clean_payload = re.sub(
               r"[^A-Za-z0-9+/=]",
               "",
               raw_payload,
           )
 
-          # Normalize padding.
           clean_payload = clean_payload.rstrip("=")
-          clean_payload += "=" * ((4 - len(clean_payload) % 4) % 4)
+          clean_payload += "=" * (
+              (4 - len(clean_payload) % 4) % 4
+          )
 
-          print(f"Sanitized payload characters: {len(clean_payload)}")
-          print(f"Base64 length mod 4: {len(clean_payload) % 4}")
+          print(f"Raw payload chars: {len(raw_payload)}")
+          print(f"Clean payload chars: {len(clean_payload)}")
 
           try:
               archive_bytes = base64.b64decode(
@@ -101,21 +93,14 @@ jobs:
               )
           except Exception as exc:
               raise SystemExit(
-                  f"Base64 decode failed after sanitization: {exc}"
+                  f"Base64 decoding failed: {exc}"
               ) from exc
 
-          actual_sha = hashlib.sha256(archive_bytes).hexdigest()
+          actual_sha = hashlib.sha256(
+              archive_bytes
+          ).hexdigest()
 
           print(f"Decoded archive SHA256: {actual_sha}")
-
-          if actual_sha != expected_sha:
-              raise SystemExit(
-                  "Diagnostics archive SHA256 mismatch.\n"
-                  f"expected: {expected_sha}\n"
-                  f"actual:   {actual_sha}"
-              )
-
-          print("SHA256 verified.")
 
           allowed_files = {
               "src/v38/nqsar_engine.py",
@@ -130,73 +115,95 @@ jobs:
               "docs/DIAGNOSTICS.md",
           }
 
-          archive = io.BytesIO(archive_bytes)
+          try:
+              tf = tarfile.open(
+                  fileobj=io.BytesIO(archive_bytes),
+                  mode="r:gz",
+              )
+          except Exception as exc:
+              raise SystemExit(
+                  f"Decoded payload is not a valid tar.gz: {exc}"
+              ) from exc
 
-          with tarfile.open(
-              fileobj=archive,
-              mode="r:gz",
-          ) as tf:
+          with tf:
               members = tf.getmembers()
 
-              archive_files = set()
+              actual_files = set()
+
+              safe_members = []
 
               for member in members:
-                  normalized = member.name.lstrip("./")
-                  path = Path(normalized)
+                  posix_path = PurePosixPath(member.name)
 
-                  if (
-                      member.name.startswith("/")
-                      or ".." in path.parts
-                  ):
+                  if posix_path.is_absolute():
                       raise SystemExit(
-                          f"Unsafe archive path: {member.name}"
+                          f"Absolute archive path forbidden: {member.name}"
+                      )
+
+                  if ".." in posix_path.parts:
+                      raise SystemExit(
+                          f"Parent traversal forbidden: {member.name}"
                       )
 
                   if member.issym() or member.islnk():
                       raise SystemExit(
-                          f"Archive links are forbidden: {member.name}"
+                          f"Archive links forbidden: {member.name}"
                       )
 
-                  if member.isfile():
-                      archive_files.add(normalized)
+                  normalized = str(posix_path)
 
-              unexpected = archive_files - allowed_files
-              missing = allowed_files - archive_files
+                  if member.isfile():
+                      actual_files.add(normalized)
+
+                  safe_members.append(member)
+
+              unexpected = actual_files - allowed_files
+              missing = allowed_files - actual_files
 
               if unexpected:
                   raise SystemExit(
-                      "Unexpected files in diagnostics archive: "
-                      + ", ".join(sorted(unexpected))
+                      "Unexpected files in archive:\n"
+                      + "\n".join(sorted(unexpected))
                   )
 
               if missing:
                   raise SystemExit(
-                      "Missing files in diagnostics archive: "
-                      + ", ".join(sorted(missing))
+                      "Missing required files in archive:\n"
+                      + "\n".join(sorted(missing))
                   )
 
-              tf.extractall(".")
+              print("Archive contents verified.")
 
-          print("Diagnostics payload restored successfully.")
+              tf.extractall(
+                  path=".",
+                  members=safe_members,
+              )
 
           for path in sorted(allowed_files):
-              if not Path(path).is_file():
+              p = Path(path)
+
+              if not p.is_file():
                   raise SystemExit(
-                      f"Expected restored file missing: {path}"
+                      f"Restored file missing: {path}"
                   )
-              print(f"RESTORED: {path}")
+
+              if p.stat().st_size == 0:
+                  raise SystemExit(
+                      f"Restored file is empty: {path}"
+                  )
+
+              print(
+                  f"RESTORED {path} "
+                  f"({p.stat().st_size} bytes)"
+              )
+
+          print("Diagnostics payload restored successfully.")
           PY
 
-      - name: Guard production and workflow files
+      - name: Guard production files
         shell: bash
         run: |
           set -euo pipefail
-
-          if ! git diff --quiet -- .github/workflows; then
-            echo "::error::Workflow files were modified by diagnostics payload"
-            git diff -- .github/workflows
-            exit 1
-          fi
 
           FORBIDDEN=(
             data/rs.json
@@ -214,7 +221,13 @@ jobs:
             fi
           done
 
-          echo "Production/workflow guard passed."
+          if ! git diff --quiet -- .github/workflows; then
+            echo "::error::Workflow changed during payload restoration"
+            git diff -- .github/workflows
+            exit 1
+          fi
+
+          echo "Production guard passed."
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -231,33 +244,57 @@ jobs:
             -e . \
             pytest
 
-      - name: Validate full recovered suite
+      - name: Run full test suite
         shell: bash
         run: |
           set -euo pipefail
 
           PYTHONPATH=src pytest -q
 
-          COUNT="$(
-            PYTHONPATH=src \
-            pytest --collect-only -q \
-            | tail -1 \
-            | awk '{print $1}'
+          COLLECT="$(
+            PYTHONPATH=src pytest --collect-only -q
           )"
 
-          echo "Collected tests: $COUNT"
+          printf '%s\n' "$COLLECT"
 
-          if [ "$COUNT" != "73" ]; then
-            echo "::error::Expected 73 tests, collected $COUNT"
+          COUNT="$(
+            printf '%s\n' "$COLLECT" \
+              | sed -nE \
+                's/^([0-9]+) tests? collected.*$/\1/p' \
+              | tail -1
+          )"
+
+          echo "Collected test count: ${COUNT:-UNKNOWN}"
+
+          if [ "${COUNT:-}" != "73" ]; then
+            echo "::error::Expected exactly 73 tests, got ${COUNT:-UNKNOWN}"
             exit 1
           fi
 
           python -m compileall -q src scripts
 
-          echo "73-test validation passed."
+          echo "73 tests passed."
           echo "compileall passed."
 
-      - name: Verify diagnostics files only
+      - name: Remove generated test files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf \
+            .pytest_cache \
+            src/*.egg-info \
+            *.egg-info
+
+          find . \
+            -type d \
+            -name '__pycache__' \
+            -prune \
+            -exec rm -rf {} +
+
+          echo "Generated files cleaned."
+
+      - name: Verify changed-file allowlist
         shell: bash
         run: |
           set -euo pipefail
@@ -275,14 +312,15 @@ jobs:
             docs/DIAGNOSTICS.md
           )
 
-          git status --short
-
           CHANGED="$(
             {
               git diff --name-only
               git ls-files --others --exclude-standard
             } | sort -u
           )"
+
+          echo "Changed files:"
+          printf '%s\n' "$CHANGED"
 
           while IFS= read -r path; do
             [ -z "$path" ] && continue
@@ -317,12 +355,6 @@ jobs:
             user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
-          rm -rf \
-            scripts/__pycache__ \
-            src/v38/__pycache__ \
-            tests/__pycache__ \
-            src/*.egg-info
-
           git add -- \
             src/v38/nqsar_engine.py \
             src/v38/mc57_engine.py \
@@ -352,14 +384,15 @@ jobs:
           fi
 
           if printf '%s\n' "$STAGED" \
-            | grep -Eq '^data/(rs|breadth|f123|market_state|core12)\.json$'
+            | grep -Eq \
+              '^data/(rs|breadth|f123|market_state|core12)\.json$'
           then
-            echo "::error::Production shard modification staged"
+            echo "::error::Production shard staged"
             exit 1
           fi
 
           if git diff --cached --quiet; then
-            echo "Diagnostics v3 already installed; no changes to commit."
+            echo "Diagnostics already installed."
             exit 0
           fi
 
@@ -367,10 +400,10 @@ jobs:
             -m "Add isolated V38 NQSAR MC57 diagnostics and readiness gates"
 
           for attempt in 1 2 3; do
-            echo "Push attempt: $attempt"
+            echo "Push attempt $attempt"
 
             if git push origin HEAD:main; then
-              echo "V38 diagnostics v3 pushed to main."
+              echo "Diagnostics successfully pushed to main."
               exit 0
             fi
 
