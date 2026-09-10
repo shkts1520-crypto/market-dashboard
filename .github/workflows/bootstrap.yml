@@ -63,7 +63,7 @@ jobs:
             UDXwAz9+2Pn/vu+v/xWq/mM5Hz/7J5V/fKT+YzQaP32i6j/2BiNsH+6Nn+39u/7jc/z9Q/UfYI1CqpwAw686TdOGCpGeOAbFEV4m
             8pPUiqC49iGSXYKNoUKR4aZCERyJvdOfX00Pz8HgTs+PsDxk/AzhH393yvDPpmc4C3uePPt6sPP8+XgE+vVoejo9OZwGhwcnz49B
             504RbJ4lCawuGMEQ8ntRK1VeT2fnxfT89PjwzASI7B0HV2VQLMPhQCkQp3XU2jreMNY0g8cwxla7YTSstzx90hgDpNtNBLWBlL40
-            kdrN8JCEVxX1UQSQi3mWo5rsmgqbF4fjZ/ctsAlTGq5y9KqIhjM9IFvvMAvEG2+KbVSBzZ+NEHo8UEUBioQwjRfg852RgWXMZYwG
+            kdrN8JCEVx1UQSQi3mWo5rsmgqbF4fjZ/ctsAlTGq5y9KqIhjM9IFvvMAvEG2+KbVSBzZ+NEHo8UEUBioQwjRfg852RgWXMZYwG
             stgXJcT8kt1v3/dnlnun3fW6Z9+Seld+Tls3ByJJdhUXgDPAMxK8894pD4UCAHra197wJlfkXTMwr3jbeWeqeXiSW8RTu5F6Av8+
             eiS8voGsAyYK7tF/XyqeeS639FHm+wVeqRMvbYp0tvKw9xEmqkCpbR+BYYo4TC/i4C1MIuFaxLcgb6BEQB0IvUycrLN8inXzBOJ0
             ShqSiHjom9520QGPVxC+0xUkxCiYVLvF7IchYyHcoe7lEkOl2MZRTJvJXjDdhlTaaF1PIrFEI7mD9WgC/gS+Xine28g+uJkYzGHq
@@ -222,7 +222,7 @@ jobs:
             EEb0oM2zbrZOfIF7p9nVkNSi3irJv6d3GGfG5PBQ+/0eC+4+d5+7z93n7nP3ufvcfe4+d5+7z3/h5/8Bgm86dQAYAQA=
         run: |
           set -euo pipefail
-          printf '%s' "$V38_DIAGNOSTICS_PAYLOAD_B64" | base64 -d > /tmp/v38-diagnostics-v3.tar.gz
+          printf '%s' "$V38_DIAGNOSTICS_PAYLOAD_B64" | tr -d '[:space:]' | base64 -d > /tmp/v38-diagnostics-v3.tar.gz
           echo "f7a28caed4d99957c288d8714b46d9ed4dd1f331a9f0d390fdf3a378677169a0  /tmp/v38-diagnostics-v3.tar.gz" | sha256sum -c -
           tar -xzf /tmp/v38-diagnostics-v3.tar.gz -C .
 
