@@ -32,3 +32,11 @@ def test_runtime_hides_mock_children_before_payload_render():
     assert "suppressMockContent();" in text
     assert "child.hidden = true;" in text
     assert "Mock values remain shielded." in text
+
+
+def test_runtime_uses_canonical_on_class_for_tabs_and_sections():
+    text = js()
+    assert "tab.classList.toggle(\n          'on'," in text
+    assert "section.classList.toggle(\n          'on'," in text
+    assert "tab.classList.contains(\n              'on'" in text
+    assert "'active'" not in text

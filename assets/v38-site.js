@@ -84,7 +84,7 @@
           targetOf(tab) === valid;
 
         tab.classList.toggle(
-          'active',
+          'on',
           active
         );
 
@@ -108,7 +108,7 @@
           id === valid;
 
         section.classList.toggle(
-          'active',
+          'on',
           active
         );
 
@@ -322,7 +322,7 @@
         ).find(
           (tab) =>
             tab.classList.contains(
-              'active'
+              'on'
             )
         );
 
