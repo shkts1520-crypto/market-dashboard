@@ -2,7 +2,7 @@
   'use strict';
 
   const TAB_SELECTOR =
-    'a.tabx[data-target]';
+    'a.tabx[href^="#"]';
 
   const SECTION_IDS = [
     't-market',
@@ -16,6 +16,53 @@
     't-rules'
   ];
 
+  function targetOf(tab) {
+    const href =
+      tab.getAttribute('href') || '';
+
+    if (
+      href.length > 1 &&
+      href.charAt(0) === '#'
+    ) {
+      const id = href.slice(1);
+      if (SECTION_IDS.includes(id)) {
+        return id;
+      }
+    }
+
+    return null;
+  }
+
+  function suppressMockContent() {
+    SECTION_IDS.forEach(
+      (id) => {
+        const section =
+          document.getElementById(id);
+
+        if (!section) {
+          return;
+        }
+
+        Array.from(section.children)
+          .forEach(
+            (child) => {
+              if (
+                !child.classList.contains(
+                  'v38-production-state'
+                )
+              ) {
+                child.hidden = true;
+                child.setAttribute(
+                  'aria-hidden',
+                  'true'
+                );
+              }
+            }
+          );
+      }
+    );
+  }
+
   function activate(
     targetId,
     updateHash
@@ -27,17 +74,14 @@
     );
 
     const valid =
-      SECTION_IDS.includes(
-        targetId
-      )
+      SECTION_IDS.includes(targetId)
         ? targetId
         : 't-market';
 
     tabs.forEach(
       (tab) => {
         const active =
-          tab.dataset.target
-          === valid;
+          targetOf(tab) === valid;
 
         tab.classList.toggle(
           'active',
@@ -46,9 +90,7 @@
 
         tab.setAttribute(
           'aria-selected',
-          active
-            ? 'true'
-            : 'false'
+          active ? 'true' : 'false'
         );
       }
     );
@@ -56,9 +98,7 @@
     SECTION_IDS.forEach(
       (id) => {
         const section =
-          document.getElementById(
-            id
-          );
+          document.getElementById(id);
 
         if (!section) {
           return;
@@ -72,15 +112,14 @@
           active
         );
 
-        section.hidden =
-          !active;
+        section.hidden = !active;
       }
     );
 
     if (
-      updateHash
-      && window.location.hash
-      !== '#' + valid
+      updateHash &&
+      window.location.hash !==
+        '#' + valid
     ) {
       history.replaceState(
         null,
@@ -90,10 +129,96 @@
     }
   }
 
-  function setSafeState(
-    status,
-    detail
-  ) {
+  function sectionDetail(section) {
+    if (
+      !section ||
+      !Array.isArray(section.components)
+    ) {
+      return (
+        'Authoritative inputs are unavailable. ' +
+        'Mock values remain shielded.'
+      );
+    }
+
+    const parts =
+      section.components.map(
+        (row) => {
+          const status =
+            typeof row.status === 'string'
+              ? row.status
+              : 'DATA_REQUIRED';
+
+          const reason =
+            typeof row.reason === 'string'
+              ? row.reason
+              : 'UNKNOWN';
+
+          return (
+            row.name +
+            ': ' +
+            status +
+            ' (' +
+            reason +
+            ')'
+          );
+        }
+      );
+
+    return parts.join(' • ');
+  }
+
+  function renderPayload(payload) {
+    const sections =
+      payload &&
+      payload.sections &&
+      typeof payload.sections === 'object'
+        ? payload.sections
+        : {};
+
+    SECTION_IDS.forEach(
+      (id) => {
+        const node =
+          document.querySelector(
+            '.v38-production-state' +
+            '[data-v38-section="' +
+            id +
+            '"]'
+          );
+
+        if (!node) {
+          return;
+        }
+
+        const section =
+          sections[id] || null;
+
+        const status =
+          section &&
+          typeof section.status === 'string'
+            ? section.status
+            : 'DATA_REQUIRED';
+
+        const title =
+          node.querySelector('b');
+
+        const body =
+          node.querySelector('span');
+
+        if (title) {
+          title.textContent = status;
+        }
+
+        if (body) {
+          body.textContent =
+            sectionDetail(section);
+        }
+
+        node.dataset.v38Status = status;
+      }
+    );
+  }
+
+  function setAllUnavailable(detail) {
     document
       .querySelectorAll(
         '.v38-production-state'
@@ -101,46 +226,38 @@
       .forEach(
         (node) => {
           const title =
-            node.querySelector(
-              'b'
-            );
-
+            node.querySelector('b');
           const body =
-            node.querySelector(
-              'span'
-            );
+            node.querySelector('span');
 
           if (title) {
             title.textContent =
-              status;
+              'DATA_REQUIRED';
           }
 
           if (body) {
-            body.textContent =
-              detail;
+            body.textContent = detail;
           }
+
+          node.dataset.v38Status =
+            'DATA_REQUIRED';
         }
       );
   }
 
-  async function inspectPayload() {
+  async function loadPayload() {
     const runtime =
       window.V38Runtime;
 
     if (
-      !runtime
-      || typeof runtime.loadJson
-      !== 'function'
+      !runtime ||
+      typeof runtime.loadJson !==
+        'function'
     ) {
-      setSafeState(
-        'DATA_REQUIRED',
-        (
-          'Runtime unavailable. '
-          + 'Mock values remain '
-          + 'shielded.'
-        )
+      setAllUnavailable(
+        'Runtime unavailable. ' +
+        'Mock values remain shielded.'
       );
-
       return;
     }
 
@@ -150,41 +267,12 @@
           'data/ui_payload.json'
         );
 
-      const status =
-        payload
-        && typeof payload.status
-        === 'string'
-          ? payload.status
-          : 'DATA_REQUIRED';
-
-      setSafeState(
-        status,
-        status === 'READY'
-          ? (
-              'Authoritative payload '
-              + 'detected. Card binding '
-              + 'is intentionally '
-              + 'pending the next '
-              + 'verified stage.'
-            )
-          : (
-              'Authoritative payload '
-              + 'is not ready. '
-              + 'Mock values remain '
-              + 'shielded.'
-            )
-      );
-
+      renderPayload(payload);
     } catch (_) {
-      setSafeState(
-        'DATA_REQUIRED',
-        (
-          'Authoritative '
-          + 'ui_payload.json is '
-          + 'unavailable. '
-          + 'Mock values remain '
-          + 'shielded.'
-        )
+      setAllUnavailable(
+        'Authoritative ui_payload.json ' +
+        'is unavailable. ' +
+        'Mock values remain shielded.'
       );
     }
   }
@@ -192,6 +280,8 @@
   document.addEventListener(
     'DOMContentLoaded',
     () => {
+      suppressMockContent();
+
       document
         .querySelectorAll(
           TAB_SELECTOR
@@ -201,10 +291,17 @@
             tab.addEventListener(
               'click',
               (event) => {
+                const target =
+                  targetOf(tab);
+
+                if (!target) {
+                  return;
+                }
+
                 event.preventDefault();
 
                 activate(
-                  tab.dataset.target,
+                  target,
                   true
                 );
               }
@@ -214,33 +311,35 @@
 
       const requested =
         window.location.hash
-          ? window.location.hash.slice(
-              1
-            )
+          ? window.location.hash.slice(1)
           : '';
 
       const initiallyActive =
-        document.querySelector(
-          TAB_SELECTOR
-          + '.active'
+        Array.from(
+          document.querySelectorAll(
+            TAB_SELECTOR
+          )
+        ).find(
+          (tab) =>
+            tab.classList.contains(
+              'active'
+            )
         );
 
       activate(
-        SECTION_IDS.includes(
-          requested
-        )
+        SECTION_IDS.includes(requested)
           ? requested
           : (
               initiallyActive
-                ? initiallyActive
-                    .dataset
-                    .target
+                ? targetOf(
+                    initiallyActive
+                  )
                 : 't-market'
             ),
         false
       );
 
-      inspectPayload();
+      loadPayload();
     }
   );
 })();

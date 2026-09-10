@@ -1,0 +1,116 @@
+name: V38 Production Verify and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v38-pages
+  cancel-in-progress: true
+
+jobs:
+  verify-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install verification dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . pytest playwright==1.55.0
+
+      - name: Run full Python and JavaScript suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src pytest -q
+          COUNT="$(PYTHONPATH=src pytest -o addopts='' --collect-only -q | grep -c '::')"
+          echo "Collected tests: $COUNT"
+          if [ "$COUNT" != "171" ]; then
+            echo "::error::Expected exactly 171 tests, got $COUNT"
+            exit 1
+          fi
+          python -m compileall -q src scripts
+          node --check assets/v38-runtime.js
+          node --check assets/v38-site.js
+
+      - name: Build production artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site/assets _site/data
+
+          PYTHONPATH=src python scripts/build_site.py \
+            --canonical V38_Command_Center_mock_v5.html \
+            --output _site/index.html
+
+          cp assets/v38-runtime.js _site/assets/v38-runtime.js
+          cp assets/v38-site.js _site/assets/v38-site.js
+
+          GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          PYTHONPATH=src python scripts/build_ui_payload.py \
+            --data-dir data \
+            --output _site/data/ui_payload.json \
+            --generated-at "$GENERATED_AT"
+
+          touch _site/.nojekyll
+
+          test -s _site/index.html
+          test -s _site/data/ui_payload.json
+          grep -q 'data-v38-production="shielded"' _site/index.html
+          grep -q '"sections"' _site/data/ui_payload.json
+
+      - name: Install Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m playwright install --with-deps chromium
+
+      - name: Browser acceptance 375 390 430
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --directory _site > "$RUNNER_TEMP/v38-http.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 2
+          python scripts/browser_acceptance.py --url http://127.0.0.1:8000/
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-24.04
+    needs: verify-build
+
+    steps:
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
