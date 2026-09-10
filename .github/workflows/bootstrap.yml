@@ -1,4 +1,4 @@
-name: Install V38 Rule Engines v7
+name: Install V38 UI Preflight v8
 
 on:
   workflow_dispatch:
@@ -28,43 +28,59 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check -e . pytest
 
-      - name: Verify v6 baseline
+      - name: Verify v7 baseline
         shell: bash
         run: |
           set -euo pipefail
-          test -f docs/REFERENCE_RECOVERY.md
-          grep -q 'v38-nqsar-diagnostics-1.1.0' src/v38/nqsar_engine.py
+          test -f src/v38/nqsar_input.py
+          test -f src/v38/positions_engine.py
+          test -f src/v38/panic_reset_engine.py
+          test -f src/v38/tqqq_engine.py
           PYTHONPATH=src pytest -q
           BASE_COUNT="$(PYTHONPATH=src pytest -o addopts='' --collect-only -q | grep -c '::')"
           echo "Baseline tests: $BASE_COUNT"
-          if [ "$BASE_COUNT" != "83" ]; then
-            echo "::error::Expected v6 baseline of exactly 83 tests, got $BASE_COUNT"
+          if [ "$BASE_COUNT" != "126" ]; then
+            echo "::error::Expected v7 baseline of exactly 126 tests, got $BASE_COUNT"
             exit 1
           fi
 
-      - name: Write v7 rule engines
+      - name: Write v8 UI preflight files
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p src/v38 tests
+          mkdir -p src/v38 scripts assets tests docs
 
-          cat > src/v38/calculate_pipeline.py <<'V38V7_0'
+          cat > src/v38/freshness.py <<'V38V8_0'
           from __future__ import annotations
-          
+
           import json
           import math
           import os
-          import shutil
           import tempfile
+          from datetime import date
           from pathlib import Path
-          from typing import Any
-          
-          from .f123_engine import calculate_f123_from_files
-          from .market_engine import MarketEngineError, calculate_market_from_files
-          from .nqsar_input import NQSARInputError, normalize_nqsar_file
-          from .stock_adapter import calculate_from_files
-          
-          CALCULATION_VERSION = "v38-calculate-pipeline-1.1.0"
+          from typing import Any, Iterable
+
+          CALCULATION_VERSION = "v38-freshness-1.0.0"
+          SCHEMA_VERSION = "v38.freshness.1"
+
+          READY = "READY"
+          STALE = "STALE"
+          DATA_REQUIRED = "DATA_REQUIRED"
+
+          DEFAULT_UI_SHARDS = (
+              "market_state.json",
+              "breadth.json",
+              "mc57.json",
+              "f123.json",
+              "core12.json",
+              "positions.json",
+              "rotation.json",
+              "rs.json",
+              "weekly.json",
+              "options/index.json",
+          )
+
           REQUIRED_META = (
               "session_date",
               "generated_at",
@@ -73,926 +89,1757 @@ jobs:
               "schema_version",
               "calculation_version",
           )
-          OUTPUT_NAMES = ("rs.json", "breadth.json", "f123.json", "market_state.json", "core12.json")
-          
-          
-          class CalculatePipelineError(RuntimeError):
-              """Raised when the staged calculate output fails its publication contract."""
-          
-          
-          def _load(path: Path) -> dict[str, Any]:
-              obj = json.loads(path.read_text(encoding="utf-8"))
-              if not isinstance(obj, dict):
-                  raise CalculatePipelineError(f"{path.name}: expected JSON object")
-              return obj
-          
-          
-          def _walk_finite(v: Any, path: str = "$") -> None:
-              if isinstance(v, float) and not math.isfinite(v):
-                  raise CalculatePipelineError(f"non-finite JSON number at {path}")
-              if isinstance(v, dict):
-                  for k, x in v.items():
-                      _walk_finite(x, f"{path}.{k}")
-              elif isinstance(v, list):
-                  for i, x in enumerate(v):
-                      _walk_finite(x, f"{path}[{i}]")
-          
-          
-          def validate_staged_outputs(stage: str | Path, *, session_date: str, generated_at: str) -> dict[str, Any]:
-              root = Path(stage)
-              loaded: dict[str, Any] = {}
-              for name in OUTPUT_NAMES:
-                  p = root / name
-                  if not p.exists():
-                      raise CalculatePipelineError(f"missing staged output: {name}")
-                  obj = _load(p)
-                  missing = [k for k in REQUIRED_META if k not in obj]
-                  if missing:
-                      raise CalculatePipelineError(f"{name}: missing metadata: {', '.join(missing)}")
-                  if obj["session_date"] != session_date:
-                      raise CalculatePipelineError(
-                          f"STALE staged session mismatch: {name}={obj['session_date']} target={session_date}"
-                      )
-                  if obj["generated_at"] != generated_at:
-                      raise CalculatePipelineError(
-                          f"generated_at mismatch: {name}={obj['generated_at']} target={generated_at}"
-                      )
-                  if not isinstance(obj.get("source"), str) or not obj["source"]:
-                      raise CalculatePipelineError(f"{name}: source is required")
-                  if not isinstance(obj.get("schema_version"), str) or not obj["schema_version"]:
-                      raise CalculatePipelineError(f"{name}: schema_version is required")
-                  if not isinstance(obj.get("calculation_version"), str) or not obj["calculation_version"]:
-                      raise CalculatePipelineError(f"{name}: calculation_version is required")
-                  _walk_finite(obj)
-                  loaded[name] = obj
-              return loaded
-          
-          
-          def calculate_pipeline(
-              *,
-              ohlcv_path: str | Path,
-              universe_path: str | Path,
-              nqsar_path: str | Path,
-              output_dir: str | Path,
-              session_date: str,
-              generated_at: str,
-              stock_source: str,
-              old_top24_path: str | Path | None = None,
-              classifications_path: str | Path | None = None,
-              theme_scores_path: str | Path | None = None,
-          ) -> tuple[Path, ...]:
-              """Run the auditable calculate slice, validate, then publish atomically.
-          
-              NQSAR may be a dated sar_state.txt, authoritative NQSAR JSON shard, or
-              EXP_STATE_ID JSON record. It is normalized and freshness-checked before any
-              market output can be published. The missing exact FSM is never reconstructed.
-              """
-              out = Path(output_dir)
-              out.parent.mkdir(parents=True, exist_ok=True)
-              stage = Path(tempfile.mkdtemp(prefix=".v38-calc-stage-", dir=out.parent))
-              try:
-                  try:
-                      normalized_nqsar = normalize_nqsar_file(
-                          nqsar_path,
-                          stage / "_nqsar_authoritative.json",
-                          expected_session_date=session_date,
-                          as_of=generated_at,
-                      )
-                  except NQSARInputError as exc:
-                      msg = str(exc)
-                      if "stale session_date" in msg or "future session_date" in msg:
-                          raise MarketEngineError(
-                              f"STALE shard session mismatch: nqsar authoritative input rejected: {msg}"
-                          ) from exc
-                      raise MarketEngineError(f"NQSAR authoritative input rejected: {msg}") from exc
-          
-                  rs_path, breadth_path = calculate_from_files(
-                      ohlcv_path,
-                      universe_path,
-                      stage,
-                      session_date=session_date,
-                      generated_at=generated_at,
-                      source=stock_source,
-                  )
-                  calculate_f123_from_files(
-                      rs_path,
-                      stage / "f123.json",
-                      generated_at=generated_at,
-                      old_top24_path=old_top24_path,
-                  )
-                  calculate_market_from_files(
-                      rs_path,
-                      breadth_path,
-                      normalized_nqsar,
-                      stage,
-                      generated_at=generated_at,
-                      classifications_path=classifications_path,
-                      theme_scores_path=theme_scores_path,
-                  )
-                  validate_staged_outputs(stage, session_date=session_date, generated_at=generated_at)
-          
-                  out.mkdir(parents=True, exist_ok=True)
-                  published: list[Path] = []
-                  for name in OUTPUT_NAMES:
-                      src = stage / name
-                      dst = out / name
-                      os.replace(src, dst)
-                      published.append(dst)
-                  return tuple(published)
-              finally:
-                  shutil.rmtree(stage, ignore_errors=True)
-          V38V7_0
 
-          cat > src/v38/nqsar_input.py <<'V38V7_1'
-          from __future__ import annotations
-          
-          import json
-          import os
-          import tempfile
-          from pathlib import Path
-          from typing import Any
-          
-          from .nqsar_engine import NQSARError, parse_authoritative_input, parse_sar_state_text
-          
-          CALCULATION_VERSION = "v38-nqsar-input-1.0.0"
-          
-          class NQSARInputError(RuntimeError):
-              """Raised when an upstream NQSAR label cannot be normalized safely."""
-          
-          
-          def _atomic_json(path: Path, obj: dict[str, Any]) -> Path:
-              path.parent.mkdir(parents=True, exist_ok=True)
-              text = json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n"
-              fd, tmp = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent)
+
+          class FreshnessError(RuntimeError):
+              """Raised when the freshness contract itself is invalid."""
+
+
+          def _date(value: Any, field: str) -> str:
+              if not isinstance(value, str) or not value.strip():
+                  raise FreshnessError(f"{field} is required")
+              text = value.strip()
               try:
-                  with os.fdopen(fd, "w", encoding="utf-8") as f:
+                  parsed = date.fromisoformat(text)
+              except ValueError as exc:
+                  raise FreshnessError(f"{field} must be YYYY-MM-DD") from exc
+              if parsed.isoformat() != text:
+                  raise FreshnessError(f"{field} must be YYYY-MM-DD")
+              return text
+
+
+          def _finite_or_none(value: Any) -> float | None:
+              if value is None or isinstance(value, bool):
+                  return None
+              if isinstance(value, (int, float)):
+                  x = float(value)
+                  return x if math.isfinite(x) else None
+              return None
+
+
+          def assess_shard_object(
+              obj: Any,
+              *,
+              name: str,
+              target_session: str,
+          ) -> dict[str, Any]:
+              target = _date(target_session, "target_session")
+
+              if not isinstance(obj, dict):
+                  return {
+                      "name": name,
+                      "status": DATA_REQUIRED,
+                      "reason": "EXPECTED_JSON_OBJECT",
+                      "session_date": None,
+                      "coverage": None,
+                  }
+
+              missing = [
+                  key
+                  for key in REQUIRED_META
+                  if key not in obj
+              ]
+
+              if missing:
+                  return {
+                      "name": name,
+                      "status": DATA_REQUIRED,
+                      "reason": "MISSING_METADATA",
+                      "missing": missing,
+                      "session_date": obj.get("session_date"),
+                      "coverage": _finite_or_none(
+                          obj.get("coverage")
+                      ),
+                  }
+
+              session = obj.get("session_date")
+
+              try:
+                  session = _date(
+                      session,
+                      f"{name}.session_date",
+                  )
+              except FreshnessError:
+                  return {
+                      "name": name,
+                      "status": DATA_REQUIRED,
+                      "reason": "INVALID_SESSION_DATE",
+                      "session_date": session,
+                      "coverage": _finite_or_none(
+                          obj.get("coverage")
+                      ),
+                  }
+
+              base = {
+                  "name": name,
+                  "session_date": session,
+                  "generated_at": obj.get("generated_at"),
+                  "coverage": _finite_or_none(
+                      obj.get("coverage")
+                  ),
+                  "source": obj.get("source"),
+                  "schema_version": obj.get(
+                      "schema_version"
+                  ),
+                  "calculation_version": obj.get(
+                      "calculation_version"
+                  ),
+              }
+
+              if session != target:
+                  return {
+                      **base,
+                      "status": STALE,
+                      "reason": "SESSION_MISMATCH",
+                      "target_session": target,
+                  }
+
+              for key in (
+                  "generated_at",
+                  "source",
+                  "schema_version",
+                  "calculation_version",
+              ):
+                  if (
+                      not isinstance(obj.get(key), str)
+                      or not obj[key].strip()
+                  ):
+                      return {
+                          **base,
+                          "status": DATA_REQUIRED,
+                          "reason": (
+                              f"INVALID_{key.upper()}"
+                          ),
+                      }
+
+              return {
+                  **base,
+                  "status": READY,
+                  "reason": "CURRENT_SESSION",
+              }
+
+
+          def assess_shard_file(
+              path: str | Path,
+              *,
+              name: str | None = None,
+              target_session: str,
+          ) -> dict[str, Any]:
+              p = Path(path)
+              label = name or p.as_posix()
+
+              if not p.exists():
+                  return {
+                      "name": label,
+                      "status": DATA_REQUIRED,
+                      "reason": "FILE_MISSING",
+                      "session_date": None,
+                      "coverage": None,
+                  }
+
+              try:
+                  obj = json.loads(
+                      p.read_text(
+                          encoding="utf-8"
+                      )
+                  )
+              except (
+                  OSError,
+                  UnicodeDecodeError,
+                  json.JSONDecodeError,
+              ):
+                  return {
+                      "name": label,
+                      "status": DATA_REQUIRED,
+                      "reason": "INVALID_JSON",
+                      "session_date": None,
+                      "coverage": None,
+                  }
+
+              return assess_shard_object(
+                  obj,
+                  name=label,
+                  target_session=target_session,
+              )
+
+
+          def build_freshness(
+              data_dir: str | Path,
+              *,
+              target_session: str,
+              generated_at: str,
+              shard_names: Iterable[str] = DEFAULT_UI_SHARDS,
+          ) -> dict[str, Any]:
+              target = _date(
+                  target_session,
+                  "target_session",
+              )
+
+              if (
+                  not isinstance(generated_at, str)
+                  or not generated_at.strip()
+              ):
+                  raise FreshnessError(
+                      "generated_at is required"
+                  )
+
+              root = Path(data_dir)
+              names = tuple(
+                  str(x)
+                  for x in shard_names
+              )
+
+              if not names:
+                  raise FreshnessError(
+                      "at least one shard is required"
+                  )
+
+              if len(set(names)) != len(names):
+                  raise FreshnessError(
+                      "duplicate shard names are not allowed"
+                  )
+
+              shards = [
+                  assess_shard_file(
+                      root / name,
+                      name=name,
+                      target_session=target,
+                  )
+                  for name in names
+              ]
+
+              statuses = [
+                  row["status"]
+                  for row in shards
+              ]
+
+              if STALE in statuses:
+                  overall = STALE
+              elif DATA_REQUIRED in statuses:
+                  overall = DATA_REQUIRED
+              else:
+                  overall = READY
+
+              return {
+                  "session_date": target,
+                  "generated_at": generated_at,
+                  "coverage": (
+                      sum(
+                          1
+                          for row in shards
+                          if row["status"] == READY
+                      )
+                      / len(shards)
+                  ),
+                  "source": "derived:shard-freshness",
+                  "schema_version": SCHEMA_VERSION,
+                  "calculation_version": CALCULATION_VERSION,
+                  "status": overall,
+                  "ready_count": sum(
+                      1
+                      for row in shards
+                      if row["status"] == READY
+                  ),
+                  "stale_count": sum(
+                      1
+                      for row in shards
+                      if row["status"] == STALE
+                  ),
+                  "data_required_count": sum(
+                      1
+                      for row in shards
+                      if row["status"] == DATA_REQUIRED
+                  ),
+                  "shards": shards,
+              }
+
+
+          def atomic_write_json(
+              path: str | Path,
+              obj: dict[str, Any],
+          ) -> Path:
+              p = Path(path)
+
+              p.parent.mkdir(
+                  parents=True,
+                  exist_ok=True,
+              )
+
+              text = (
+                  json.dumps(
+                      obj,
+                      ensure_ascii=False,
+                      sort_keys=True,
+                      indent=2,
+                      allow_nan=False,
+                  )
+                  + "\n"
+              )
+
+              fd, tmp = tempfile.mkstemp(
+                  prefix=p.name + ".",
+                  dir=p.parent,
+              )
+
+              try:
+                  with os.fdopen(
+                      fd,
+                      "w",
+                      encoding="utf-8",
+                  ) as f:
                       f.write(text)
-                  os.replace(tmp, path)
+
+                  os.replace(
+                      tmp,
+                      p,
+                  )
               finally:
                   if os.path.exists(tmp):
                       os.unlink(tmp)
-              return path
-          
-          
-          def normalize_nqsar_text(
-              raw: str,
-              *,
-              expected_session_date: str,
-              as_of: str,
-              source_name: str,
-          ) -> dict[str, Any]:
-              text = (raw or "").strip()
-              if not text:
-                  raise NQSARInputError("NQSAR input is empty")
-          
-              try:
-                  parsed = json.loads(text)
-              except json.JSONDecodeError:
-                  parsed = None
-          
-              try:
-                  if isinstance(parsed, dict):
-                      if parsed.get("status") == "DATA_REQUIRED" and not parsed.get("state"):
-                          raise NQSARInputError("NQSAR upstream is DATA_REQUIRED")
-          
-                      has_direct_contract = (
-                          "session_date" in parsed
-                          and "generated_at" in parsed
-                          and "source" in parsed
-                          and ("state" in parsed or "exp_state_id" in parsed)
+
+              return p
+          V38V8_0
+
+          cat > src/v38/ui_contract.py <<'V38V8_1'
+          from __future__ import annotations
+
+          import re
+          from html.parser import HTMLParser
+          from typing import Any
+
+          EXPECTED_TABS = (
+              ("Daily", "#t-market"),
+              ("Positions", "#t-alloc"),
+              ("Core 12", "#t-port"),
+              ("Rotation", "#t-rotation"),
+              ("RS", "#t-rs"),
+              ("Weekly", "#t-weekly"),
+              ("Options", "#t-options"),
+              ("Publish", "#t-post1"),
+              ("Rules", "#t-rules"),
+          )
+
+          FORBIDDEN_TABS = {
+              "Setups",
+              "Movers",
+          }
+
+          REQUIRED_VISUAL_TOKENS = (
+              ".card",
+              ".chart",
+              ".rsx-card",
+              ".rsx-item",
+              ".mrow",
+              ".bflags",
+          )
+
+          PRODUCTION_FORBIDDEN_PATTERNS = (
+              r"Entry\s*\*\s*0\.75",
+              r"entry\s*\*\s*0\.75",
+              r"SOXL",
+              r"TQQQ\s*/\s*SOXL",
+              r"隔週リバランス",
+              r"21EMA.*Exit",
+              r"10SMA.*Exit",
+              r"ATR2",
+              r"建値Stop",
+          )
+
+
+          class UIContractError(RuntimeError):
+              pass
+
+
+          class _NavParser(HTMLParser):
+              def __init__(self) -> None:
+                  super().__init__(
+                      convert_charrefs=True
+                  )
+
+                  self.in_nav = 0
+                  self.capture_anchor = False
+                  self.anchor_href: str | None = None
+                  self.anchor_text: list[str] = []
+                  self.tabs: list[
+                      tuple[str, str | None]
+                  ] = []
+                  self.section_ids: set[str] = set()
+
+              def handle_starttag(
+                  self,
+                  tag: str,
+                  attrs: list[
+                      tuple[str, str | None]
+                  ],
+              ) -> None:
+                  amap = dict(attrs)
+
+                  if tag == "nav":
+                      self.in_nav += 1
+
+                  elif (
+                      tag == "section"
+                      and amap.get("id")
+                  ):
+                      self.section_ids.add(
+                          str(amap["id"])
                       )
-                      if has_direct_contract:
-                          out = parse_authoritative_input(
-                              parsed,
-                              expected_session_date=expected_session_date,
-                              as_of=as_of,
-                          )
-                      else:
-                          out = parse_sar_state_text(
-                              text,
-                              generated_at=as_of,
-                              expected_session_date=expected_session_date,
-                              as_of=as_of,
-                              source=source_name,
-                          )
-                  else:
-                      out = parse_sar_state_text(
-                          text,
-                          generated_at=as_of,
-                          expected_session_date=expected_session_date,
-                          as_of=as_of,
-                          source=source_name,
+
+                  elif (
+                      tag == "a"
+                      and self.in_nav
+                  ):
+                      classes = set(
+                          (
+                              amap.get("class")
+                              or ""
+                          ).split()
                       )
-              except NQSARError as exc:
-                  raise NQSARInputError(str(exc)) from exc
-          
-              out["input_adapter_version"] = CALCULATION_VERSION
-              return out
-          
-          
-          def normalize_nqsar_file(
-              input_path: str | Path,
-              output_path: str | Path,
-              *,
-              expected_session_date: str,
-              as_of: str,
-          ) -> Path:
-              src = Path(input_path)
-              if not src.exists():
-                  raise NQSARInputError(f"NQSAR input not found: {src}")
-              out = normalize_nqsar_text(
-                  src.read_text(encoding="utf-8"),
-                  expected_session_date=expected_session_date,
-                  as_of=as_of,
-                  source_name=src.name,
-              )
-              return _atomic_json(Path(output_path), out)
-          V38V7_1
 
-          cat > src/v38/positions_engine.py <<'V38V7_2'
-          from __future__ import annotations
-          
-          import math
-          from typing import Any
-          
-          CALCULATION_VERSION = "v38-positions-rules-1.0.0"
-          INITIAL_STOP_PCT = 0.92
-          PARTIAL_TRIGGER_PCT = 1.24
-          PARTIAL_SELL_FRACTION = 0.25
-          WINNER_TRAIL_PCT = 0.70
-          
-          class PositionsRuleError(RuntimeError):
-              pass
-          
-          
-          def _positive(value: Any, field: str) -> float:
-              if isinstance(value, bool) or not isinstance(value, (int, float)):
-                  raise PositionsRuleError(f"{field} must be a finite positive number")
-              x = float(value)
-              if not math.isfinite(x) or x <= 0:
-                  raise PositionsRuleError(f"{field} must be a finite positive number")
-              return x
-          
-          
-          def stop_levels(*, entry: float, peak_close: float) -> dict[str, float]:
-              e = _positive(entry, "entry")
-              p = _positive(peak_close, "peak_close")
-              if p < e:
-                  raise PositionsRuleError("peak_close must be >= entry")
-              initial = e * INITIAL_STOP_PCT
-              trail = p * WINNER_TRAIL_PCT
-              return {
-                  "initial_stop": initial,
-                  "winner_trail": trail,
-                  "final_stop": max(initial, trail),
-              }
-          
-          
-          def normal_stock_next_open_action(
-              *,
-              entry: float,
-              close: float,
-              peak_close: float,
-              partial_taken: bool,
-              nqsar_state: str,
-          ) -> dict[str, Any]:
-              e = _positive(entry, "entry")
-              c = _positive(close, "close")
-              p = _positive(peak_close, "peak_close")
-              if p < max(e, c):
-                  raise PositionsRuleError("peak_close must be >= entry and close")
-              if not isinstance(partial_taken, bool):
-                  raise PositionsRuleError("partial_taken must be bool")
-              if nqsar_state not in {"Blue", "Green", "Yellow", "Red"}:
-                  raise PositionsRuleError("invalid NQSAR state")
-          
-              levels = stop_levels(entry=e, peak_close=p)
-          
-              if nqsar_state == "Red":
-                  return {
-                      "action": "EXIT_ALL_NEXT_OPEN",
-                      "reason": "NQSAR_RED_PORTFOLIO_EXIT",
-                      "sell_fraction": 1.0,
-                      "levels": levels,
-                  }
-          
-              active_stop = levels["final_stop"] if partial_taken else levels["initial_stop"]
-              if c <= active_stop:
-                  return {
-                      "action": "EXIT_REMAINDER_NEXT_OPEN" if partial_taken else "EXIT_ALL_NEXT_OPEN",
-                      "reason": "WINNER_TRAIL_OR_INITIAL_STOP" if partial_taken else "INITIAL_STOP_CLOSE",
-                      "sell_fraction": 1.0,
-                      "levels": levels,
-                  }
-          
-              if not partial_taken and c >= e * PARTIAL_TRIGGER_PCT:
-                  return {
-                      "action": "SELL_25_PCT_NEXT_OPEN",
-                      "reason": "FIRST_CLOSE_GE_ENTRY_X_1_24",
-                      "sell_fraction": PARTIAL_SELL_FRACTION,
-                      "levels": levels,
-                  }
-          
-              return {
-                  "action": "HOLD",
-                  "reason": "NO_CONFIRMED_EXIT",
-                  "sell_fraction": 0.0,
-                  "levels": levels,
-                  "yellow_forces_exit": False,
-                  "breadth_forces_trim": False,
-                  "rank_decline_exit": False,
-                  "theme_decline_exit": False,
-              }
-          V38V7_2
+                      if "tabx" in classes:
+                          self.capture_anchor = True
+                          self.anchor_href = (
+                              amap.get("href")
+                          )
+                          self.anchor_text = []
 
-          cat > src/v38/panic_reset_engine.py <<'V38V7_3'
-          from __future__ import annotations
-          
-          import math
-          from typing import Any
-          
-          CALCULATION_VERSION = "v38-panic-reset-rules-1.0.0"
-          POSITION_PCT = 2.9
-          MAX_TOTAL_SLOTS = 4
-          MAX_SAME_THEME_SLOTS = 2
-          HOLD_SESSIONS = 20
-          COOLDOWN_SESSIONS = 20
-          
-          class PanicResetRuleError(RuntimeError):
-              pass
-          
-          
-          def _finite(value: Any, field: str) -> float:
-              if isinstance(value, bool) or not isinstance(value, (int, float)):
-                  raise PanicResetRuleError(f"{field} must be finite")
-              x = float(value)
-              if not math.isfinite(x):
-                  raise PanicResetRuleError(f"{field} must be finite")
-              return x
-          
-          
-          def activation(*, theme_rs_pct: float, rank_improvement_20d: float, theme_above_ema21_pct: float) -> bool:
-              return bool(
-                  _finite(theme_rs_pct, "theme_rs_pct") >= 80.0
-                  and _finite(rank_improvement_20d, "rank_improvement_20d") >= 15.0
-                  and _finite(theme_above_ema21_pct, "theme_above_ema21_pct") >= 60.0
-              )
-          
-          
-          def entry_signal(
-              *,
-              activation_ok: bool,
-              rsi30_touched_within_20: bool,
-              first_rsi_up_day_after_touch: bool,
-              theme_rs63_rank: int,
-          ) -> bool:
-              if not all(isinstance(x, bool) for x in (activation_ok, rsi30_touched_within_20, first_rsi_up_day_after_touch)):
-                  raise PanicResetRuleError("signal flags must be bool")
-              if isinstance(theme_rs63_rank, bool) or not isinstance(theme_rs63_rank, int) or theme_rs63_rank < 1:
-                  raise PanicResetRuleError("theme_rs63_rank must be a positive int")
-              return bool(
-                  activation_ok
-                  and rsi30_touched_within_20
-                  and first_rsi_up_day_after_touch
-                  and theme_rs63_rank <= 3
-              )
-          
-          
-          def admission(
-              *,
-              signal: bool,
-              current_total_slots: int,
-              current_same_theme_slots: int,
-              sessions_since_exit: int | None,
+              def handle_data(
+                  self,
+                  data: str,
+              ) -> None:
+                  if self.capture_anchor:
+                      self.anchor_text.append(data)
+
+              def handle_endtag(
+                  self,
+                  tag: str,
+              ) -> None:
+                  if (
+                      tag == "a"
+                      and self.capture_anchor
+                  ):
+                      label = " ".join(
+                          "".join(
+                              self.anchor_text
+                          ).split()
+                      )
+
+                      self.tabs.append(
+                          (
+                              label,
+                              self.anchor_href,
+                          )
+                      )
+
+                      self.capture_anchor = False
+                      self.anchor_href = None
+                      self.anchor_text = []
+
+                  elif (
+                      tag == "nav"
+                      and self.in_nav
+                  ):
+                      self.in_nav -= 1
+
+
+          def inspect_shell(
+              html: str,
           ) -> dict[str, Any]:
-              if not isinstance(signal, bool):
-                  raise PanicResetRuleError("signal must be bool")
-              for field, value in (
-                  ("current_total_slots", current_total_slots),
-                  ("current_same_theme_slots", current_same_theme_slots),
+              if (
+                  not isinstance(html, str)
+                  or not html.strip()
               ):
-                  if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-                      raise PanicResetRuleError(f"{field} must be a non-negative int")
-              if sessions_since_exit is not None and (
-                  isinstance(sessions_since_exit, bool)
-                  or not isinstance(sessions_since_exit, int)
-                  or sessions_since_exit < 0
-              ):
-                  raise PanicResetRuleError("sessions_since_exit must be non-negative int or None")
-          
-              if not signal:
-                  return {"admit": False, "reason": "NO_ENTRY_SIGNAL", "position_pct": 0.0}
-              if current_total_slots >= MAX_TOTAL_SLOTS:
-                  return {"admit": False, "reason": "TOTAL_SLOT_CAP", "position_pct": 0.0}
-              if current_same_theme_slots >= MAX_SAME_THEME_SLOTS:
-                  return {"admit": False, "reason": "SAME_THEME_SLOT_CAP", "position_pct": 0.0}
-              if sessions_since_exit is not None and sessions_since_exit < COOLDOWN_SESSIONS:
-                  return {"admit": False, "reason": "COOLDOWN_20_SESSIONS", "position_pct": 0.0}
-              return {"admit": True, "reason": "PANIC_RESET_ENTRY_NEXT_OPEN", "position_pct": POSITION_PCT}
-          
-          
-          def holding_action(*, holding_sessions_completed: int) -> dict[str, Any]:
-              if isinstance(holding_sessions_completed, bool) or not isinstance(holding_sessions_completed, int) or holding_sessions_completed < 0:
-                  raise PanicResetRuleError("holding_sessions_completed must be non-negative int")
-              if holding_sessions_completed >= HOLD_SESSIONS:
-                  return {"action": "EXIT_NEXT_OPEN", "reason": "FIXED_20_SESSION_HOLD"}
-              return {
-                  "action": "HOLD",
-                  "reason": "FIXED_HOLD_ACTIVE",
-                  "initial_stop_enabled": False,
-                  "averaging_enabled": False,
-              }
-          V38V7_3
+                  raise UIContractError(
+                      "HTML is empty"
+                  )
 
-          cat > src/v38/tqqq_engine.py <<'V38V7_4'
-          from __future__ import annotations
-          
-          import math
-          from typing import Any
-          
-          CALCULATION_VERSION = "v38-tqqq-panic-rules-1.1.0"
-          BASE_TARGET_PCT = 30
-          PANIC_TARGET_PCT = 80
-          SEED_MAX_AGE_SESSIONS = 30
-          PANIC_MAX_HOLD_SESSIONS = 10
-          MC57_MIN_TRIGGER = 20.0
-          
-          class TQQQRuleError(RuntimeError):
-              pass
-          
-          
-          def _finite(value: Any, field: str) -> float:
-              if isinstance(value, bool) or not isinstance(value, (int, float)):
-                  raise TQQQRuleError(f"{field} must be finite")
-              x = float(value)
-              if not math.isfinite(x):
-                  raise TQQQRuleError(f"{field} must be finite")
-              return x
-          
-          
-          def panic_seed(*, vix_close: float, qqq_sma50_atr_deviation: float, qqq_dd10: float) -> bool:
-              return bool(
-                  _finite(vix_close, "vix_close") >= 23.0
-                  and _finite(qqq_sma50_atr_deviation, "qqq_sma50_atr_deviation") <= -0.5
-                  and _finite(qqq_dd10, "qqq_dd10") <= -0.02
+              parser = _NavParser()
+              parser.feed(html)
+
+              expected = list(
+                  EXPECTED_TABS
               )
-          
-          
-          def panic_trigger(
-              *,
-              seed_age_sessions: int | None,
-              qqq_4h_rsi14: float,
-              mc57: float | None,
-          ) -> dict[str, Any]:
-              if seed_age_sessions is None:
-                  return {"status": "OK", "trigger": False, "reason": "NO_ACTIVE_SEED"}
-              if isinstance(seed_age_sessions, bool) or not isinstance(seed_age_sessions, int):
-                  raise TQQQRuleError("seed_age_sessions must be int or None")
-              if seed_age_sessions < 0:
-                  raise TQQQRuleError("seed_age_sessions must be >=0")
-          
-              rsi = _finite(qqq_4h_rsi14, "qqq_4h_rsi14")
-              if seed_age_sessions > SEED_MAX_AGE_SESSIONS:
-                  return {"status": "OK", "trigger": False, "reason": "SEED_EXPIRED"}
-              if rsi > 30.0:
-                  return {"status": "OK", "trigger": False, "reason": "QQQ_4H_RSI_ABOVE_30"}
-              if mc57 is None:
-                  return {
-                      "status": "DATA_REQUIRED",
-                      "trigger": None,
-                      "reason": "MC57_REQUIRED_FOR_PANIC_TRIGGER",
-                  }
-          
-              m = _finite(mc57, "mc57")
+
+              missing_visual = [
+                  token
+                  for token in REQUIRED_VISUAL_TOKENS
+                  if token not in html
+              ]
+
+              missing_sections = [
+                  href[1:]
+                  for _, href in EXPECTED_TABS
+                  if href[1:]
+                  not in parser.section_ids
+              ]
+
+              forbidden_present = [
+                  label
+                  for label, _ in parser.tabs
+                  if label in FORBIDDEN_TABS
+              ]
+
               return {
-                  "status": "OK",
-                  "trigger": m >= MC57_MIN_TRIGGER,
-                  "reason": "TRIGGER_CONFIRMED" if m >= MC57_MIN_TRIGGER else "MC57_BELOW_20",
+                  "tabs": parser.tabs,
+                  "tabs_exact": (
+                      parser.tabs == expected
+                  ),
+                  "forbidden_tabs": (
+                      forbidden_present
+                  ),
+                  "missing_sections": (
+                      missing_sections
+                  ),
+                  "missing_visual_tokens": (
+                      missing_visual
+                  ),
               }
-          
-          
-          def panic_position_action(
-              *,
-              in_panic: bool,
-              holding_sessions_completed: int,
-              trigger: bool | None,
-              mc57: float | None,
+
+
+          def validate_canonical_shell(
+              html: str,
           ) -> dict[str, Any]:
-              if not isinstance(in_panic, bool):
-                  raise TQQQRuleError("in_panic must be bool")
-              if trigger is not None and not isinstance(trigger, bool):
-                  raise TQQQRuleError("trigger must be bool or None")
-              if isinstance(holding_sessions_completed, bool) or not isinstance(holding_sessions_completed, int) or holding_sessions_completed < 0:
-                  raise TQQQRuleError("holding_sessions_completed must be a non-negative int")
-          
-              if in_panic and holding_sessions_completed >= PANIC_MAX_HOLD_SESSIONS:
-                  return {
-                      "status": "OK",
-                      "action": "RETURN_TO_30_NEXT_OPEN",
-                      "target_pct": BASE_TARGET_PCT,
-                      "reason": "PANIC_MAX_10_SESSIONS",
-                  }
-          
-              if in_panic:
-                  if mc57 is None:
-                      return {
-                          "status": "DATA_REQUIRED",
-                          "action": None,
-                          "target_pct": None,
-                          "reason": "MC57_REQUIRED_FOR_EARLY_EXIT_CHECK",
-                      }
-                  m = _finite(mc57, "mc57")
-                  if m < MC57_MIN_TRIGGER:
-                      return {
-                          "status": "OK",
-                          "action": "RETURN_TO_30_NEXT_OPEN",
-                          "target_pct": BASE_TARGET_PCT,
-                          "reason": "MC57_LT_20",
-                      }
-                  return {
-                      "status": "OK",
-                      "action": "HOLD_80",
-                      "target_pct": PANIC_TARGET_PCT,
-                      "reason": "PANIC_ACTIVE",
-                  }
-          
-              if trigger is None:
-                  return {
-                      "status": "DATA_REQUIRED",
-                      "action": None,
-                      "target_pct": None,
-                      "reason": "PANIC_TRIGGER_UNRESOLVED",
-                  }
-              if trigger:
-                  return {
-                      "status": "OK",
-                      "action": "RAISE_TO_80_NEXT_OPEN",
-                      "target_pct": PANIC_TARGET_PCT,
-                      "reason": "SEED_RSI30_MC57_GE_20",
-                  }
-              return {
-                  "status": "OK",
-                  "action": "BASELINE_30",
-                  "target_pct": BASE_TARGET_PCT,
-                  "reason": "NO_PANIC_TRIGGER",
-              }
-          V38V7_4
+              report = inspect_shell(html)
+              problems: list[str] = []
 
-          cat > tests/test_nqsar_input.py <<'V38V7_5'
-          import json
-          import pytest
-          from v38.nqsar_input import NQSARInputError, normalize_nqsar_text
-          
-          SESSION="2026-09-08"; ASOF="2026-09-09T05:00:00+09:00"
-          
-          def test_full_authoritative_json_is_normalized():
-              out=normalize_nqsar_text(json.dumps({"session_date":SESSION,"generated_at":"2026-09-08T16:00:00-04:00","source":"fixture","state":"Green"}),expected_session_date=SESSION,as_of=ASOF,source_name="nqsar.json")
-              assert out["state"]=="Green" and out["input_kind"]=="state"
-          
-          def test_exp_state_id_json_is_normalized():
-              out=normalize_nqsar_text(json.dumps({"session_date":SESSION,"generated_at":"2026-09-08T16:00:00-04:00","source":"nq.csv","exp_state_id":4}),expected_session_date=SESSION,as_of=ASOF,source_name="nqsar.json")
-              assert out["state"]=="Green" and out["exp_state_id"]==4
-          
-          def test_raw_sar_state_text_is_normalized():
-              out=normalize_nqsar_text("2026-09-08,Blue",expected_session_date=SESSION,as_of=ASOF,source_name="sar_state.txt")
-              assert out["state"]=="Blue" and out["source"]=="sar_state.txt"
-          
-          def test_dated_alias_json_is_normalized():
-              out=normalize_nqsar_text('{"asof":"2026-09-08","color":"red"}',expected_session_date=SESSION,as_of=ASOF,source_name="sar_state.txt")
-              assert out["state"]=="Red"
-          
-          @pytest.mark.parametrize("raw",["","Blue","2026-09-07,Green",'{"status":"DATA_REQUIRED","state":null}'])
-          def test_bad_or_unusable_inputs_fail_closed(raw):
-              with pytest.raises(NQSARInputError): normalize_nqsar_text(raw,expected_session_date=SESSION,as_of=ASOF,source_name="sar_state.txt")
-          
-          def test_future_generated_at_fails_closed():
-              raw=json.dumps({"session_date":SESSION,"generated_at":"2026-09-10T00:00:00+09:00","source":"fixture","state":"Green"})
-              with pytest.raises(NQSARInputError): normalize_nqsar_text(raw,expected_session_date=SESSION,as_of=ASOF,source_name="nqsar.json")
-          V38V7_5
+              if not report["tabs_exact"]:
+                  problems.append(
+                      "tabs must equal "
+                      f"{list(EXPECTED_TABS)!r}; "
+                      f"got {report['tabs']!r}"
+                  )
 
-          cat > tests/test_positions_engine.py <<'V38V7_6'
-          import pytest
-          from v38.positions_engine import normal_stock_next_open_action, stop_levels, PositionsRuleError
-          
-          def test_stop_levels_match_92_and_70_rules():
-              x=stop_levels(entry=100,peak_close=150)
-              assert x["initial_stop"]==92 and x["winner_trail"]==105 and x["final_stop"]==105
-          
-          def test_initial_stop_boundary_exits_next_open():
-              x=normal_stock_next_open_action(entry=100,close=92,peak_close=110,partial_taken=False,nqsar_state="Green")
-              assert x["action"]=="EXIT_ALL_NEXT_OPEN"
-          
-          def test_partial_profit_boundary_sells_25_percent_once():
-              x=normal_stock_next_open_action(entry=100,close=124,peak_close=124,partial_taken=False,nqsar_state="Blue")
-              assert x["action"]=="SELL_25_PCT_NEXT_OPEN" and x["sell_fraction"]==0.25
-          
-          def test_winner_trail_after_partial_exits_remainder():
-              x=normal_stock_next_open_action(entry=100,close=105,peak_close=150,partial_taken=True,nqsar_state="Green")
-              assert x["action"]=="EXIT_REMAINDER_NEXT_OPEN"
-          
-          def test_red_has_portfolio_exit_priority():
-              x=normal_stock_next_open_action(entry=100,close=130,peak_close=130,partial_taken=False,nqsar_state="Red")
-              assert x["reason"]=="NQSAR_RED_PORTFOLIO_EXIT"
-          
-          @pytest.mark.parametrize("state",["Yellow","Blue","Green"])
-          def test_non_red_state_does_not_force_exit_when_no_price_rule_hit(state):
-              x=normal_stock_next_open_action(entry=100,close=110,peak_close=110,partial_taken=False,nqsar_state=state)
-              assert x["action"]=="HOLD"
-          
-          def test_invalid_peak_fails():
-              with pytest.raises(PositionsRuleError): normal_stock_next_open_action(entry=100,close=110,peak_close=109,partial_taken=False,nqsar_state="Green")
-          V38V7_6
+              if report["forbidden_tabs"]:
+                  problems.append(
+                      "forbidden tabs present: "
+                      f"{report['forbidden_tabs']}"
+                  )
 
-          cat > tests/test_panic_reset_engine.py <<'V38V7_7'
-          import pytest
-          from v38.panic_reset_engine import activation, entry_signal, admission, holding_action, PanicResetRuleError
-          
-          def test_activation_boundaries():
-              assert activation(theme_rs_pct=80,rank_improvement_20d=15,theme_above_ema21_pct=60)
-              assert not activation(theme_rs_pct=79.9,rank_improvement_20d=15,theme_above_ema21_pct=60)
-              assert not activation(theme_rs_pct=80,rank_improvement_20d=14.9,theme_above_ema21_pct=60)
-              assert not activation(theme_rs_pct=80,rank_improvement_20d=15,theme_above_ema21_pct=59.9)
-          
-          def test_entry_signal_requires_top3_and_first_rsi_up_after_touch():
-              assert entry_signal(activation_ok=True,rsi30_touched_within_20=True,first_rsi_up_day_after_touch=True,theme_rs63_rank=3)
-              assert not entry_signal(activation_ok=True,rsi30_touched_within_20=True,first_rsi_up_day_after_touch=True,theme_rs63_rank=4)
-              assert not entry_signal(activation_ok=True,rsi30_touched_within_20=True,first_rsi_up_day_after_touch=False,theme_rs63_rank=1)
-          
-          def test_admission_uses_2_9_pct_and_caps():
-              x=admission(signal=True,current_total_slots=3,current_same_theme_slots=1,sessions_since_exit=20)
-              assert x["admit"] is True and x["position_pct"]==2.9
-              assert admission(signal=True,current_total_slots=4,current_same_theme_slots=0,sessions_since_exit=None)["reason"]=="TOTAL_SLOT_CAP"
-              assert admission(signal=True,current_total_slots=0,current_same_theme_slots=2,sessions_since_exit=None)["reason"]=="SAME_THEME_SLOT_CAP"
-          
-          def test_cooldown_boundary_is_20_sessions():
-              assert admission(signal=True,current_total_slots=0,current_same_theme_slots=0,sessions_since_exit=19)["admit"] is False
-              assert admission(signal=True,current_total_slots=0,current_same_theme_slots=0,sessions_since_exit=20)["admit"] is True
-          
-          def test_fixed_hold_has_no_initial_stop_or_averaging():
-              x=holding_action(holding_sessions_completed=19)
-              assert x["action"]=="HOLD" and x["initial_stop_enabled"] is False and x["averaging_enabled"] is False
-          
-          def test_exit_after_20_completed_holding_sessions():
-              assert holding_action(holding_sessions_completed=20)["action"]=="EXIT_NEXT_OPEN"
-          
-          def test_invalid_counts_fail():
-              with pytest.raises(PanicResetRuleError): admission(signal=True,current_total_slots=-1,current_same_theme_slots=0,sessions_since_exit=None)
-          V38V7_7
+              if report["missing_sections"]:
+                  problems.append(
+                      "missing tab sections: "
+                      f"{report['missing_sections']}"
+                  )
 
-          cat > tests/test_tqqq_engine.py <<'V38V7_8'
-          import pytest
-          from v38.tqqq_engine import panic_seed, panic_trigger, panic_position_action, TQQQRuleError
-          
-          
-          def test_seed_requires_all_three_conditions():
-              assert panic_seed(vix_close=23,qqq_sma50_atr_deviation=-0.5,qqq_dd10=-0.02)
-              assert not panic_seed(vix_close=22.99,qqq_sma50_atr_deviation=-0.5,qqq_dd10=-0.02)
-              assert not panic_seed(vix_close=23,qqq_sma50_atr_deviation=-0.49,qqq_dd10=-0.02)
-              assert not panic_seed(vix_close=23,qqq_sma50_atr_deviation=-0.5,qqq_dd10=-0.019)
-          
-          
-          def test_trigger_boundary_requires_seed_age30_rsi30_and_mc57_ge20():
-              x=panic_trigger(seed_age_sessions=30,qqq_4h_rsi14=30,mc57=20)
-              assert x["trigger"] is True and x["status"]=="OK"
-              assert panic_trigger(seed_age_sessions=31,qqq_4h_rsi14=30,mc57=30)["trigger"] is False
-              assert panic_trigger(seed_age_sessions=30,qqq_4h_rsi14=30.01,mc57=30)["trigger"] is False
-              assert panic_trigger(seed_age_sessions=30,qqq_4h_rsi14=30,mc57=19.99)["trigger"] is False
-          
-          
-          def test_trigger_needs_mc57_only_after_seed_and_rsi_conditions_are_met():
-              assert panic_trigger(seed_age_sessions=None,qqq_4h_rsi14=20,mc57=None)["status"]=="OK"
-              assert panic_trigger(seed_age_sessions=31,qqq_4h_rsi14=20,mc57=None)["status"]=="OK"
-              x=panic_trigger(seed_age_sessions=10,qqq_4h_rsi14=29,mc57=None)
-              assert x["status"]=="DATA_REQUIRED" and x["trigger"] is None
-          
-          
-          def test_confirmed_trigger_raises_tqqq_from_baseline_to_80_next_open():
-              x=panic_position_action(in_panic=False,holding_sessions_completed=0,trigger=True,mc57=25)
-              assert x["action"]=="RAISE_TO_80_NEXT_OPEN" and x["target_pct"]==80
-          
-          
-          def test_no_trigger_keeps_baseline_30():
-              x=panic_position_action(in_panic=False,holding_sessions_completed=0,trigger=False,mc57=None)
-              assert x["target_pct"]==30
-          
-          
-          def test_active_panic_holds_80_when_mc57_ge20_before_day10():
-              x=panic_position_action(in_panic=True,holding_sessions_completed=9,trigger=False,mc57=20)
-              assert x["action"]=="HOLD_80"
-          
-          
-          def test_mc57_lt20_exits_panic_to_30_next_open():
-              x=panic_position_action(in_panic=True,holding_sessions_completed=5,trigger=False,mc57=19.9)
-              assert x["action"]=="RETURN_TO_30_NEXT_OPEN" and x["reason"]=="MC57_LT_20"
-          
-          
-          def test_active_panic_without_mc57_fails_closed():
-              x=panic_position_action(in_panic=True,holding_sessions_completed=5,trigger=False,mc57=None)
-              assert x["status"]=="DATA_REQUIRED" and x["action"] is None
-          
-          
-          def test_day10_returns_to_30_even_if_mc57_missing():
-              x=panic_position_action(in_panic=True,holding_sessions_completed=10,trigger=False,mc57=None)
-              assert x["action"]=="RETURN_TO_30_NEXT_OPEN" and x["target_pct"]==30
-          
-          
-          def test_unresolved_trigger_does_not_guess_entry():
-              x=panic_position_action(in_panic=False,holding_sessions_completed=0,trigger=None,mc57=None)
-              assert x["status"]=="DATA_REQUIRED" and x["action"] is None
-          
-          
-          def test_bad_seed_age_fails():
-              with pytest.raises(TQQQRuleError): panic_trigger(seed_age_sessions=-1,qqq_4h_rsi14=20,mc57=25)
-          V38V7_8
+              if report[
+                  "missing_visual_tokens"
+              ]:
+                  problems.append(
+                      "missing v5 visual tokens: "
+                      f"{report['missing_visual_tokens']}"
+                  )
 
-          cat > tests/test_pipeline_nqsar_adapter.py <<'V38V7_9'
+              if problems:
+                  raise UIContractError(
+                      "; ".join(problems)
+                  )
+
+              return report
+
+
+          def scan_production_forbidden_logic(
+              html: str,
+          ) -> list[str]:
+              hits: list[str] = []
+
+              for pattern in (
+                  PRODUCTION_FORBIDDEN_PATTERNS
+              ):
+                  if re.search(
+                      pattern,
+                      html,
+                      flags=re.I | re.S,
+                  ):
+                      hits.append(pattern)
+
+              return hits
+
+
+          def validate_production_html(
+              html: str,
+          ) -> dict[str, Any]:
+              report = validate_canonical_shell(
+                  html
+              )
+
+              hits = (
+                  scan_production_forbidden_logic(
+                      html
+                  )
+              )
+
+              if hits:
+                  raise UIContractError(
+                      "legacy/forbidden production "
+                      f"logic found: {hits}"
+                  )
+
+              return report
+
+
+          def display_value(
+              value: Any,
+              *,
+              decimals: int | None = None,
+          ) -> str:
+              if (
+                  value is None
+                  or value == ""
+              ):
+                  return "—"
+
+              if isinstance(value, bool):
+                  return (
+                      "true"
+                      if value
+                      else "false"
+                  )
+
+              if isinstance(value, float):
+                  if (
+                      value != value
+                      or value
+                      in (
+                          float("inf"),
+                          float("-inf"),
+                      )
+                  ):
+                      return "—"
+
+              if (
+                  isinstance(
+                      value,
+                      (int, float),
+                  )
+                  and decimals is not None
+              ):
+                  return (
+                      f"{float(value):."
+                      f"{decimals}f}"
+                  )
+
+              return str(value)
+          V38V8_1
+
+          cat > scripts/preflight_ui.py <<'V38V8_2'
+          #!/usr/bin/env python3
+          from __future__ import annotations
+
+          import argparse
           import json
           from pathlib import Path
-          import pytest
-          import v38.calculate_pipeline as cp
-          from v38.market_engine import MarketEngineError
-          
-          SESSION="2026-09-08"
-          GENERATED="2026-09-09T05:00:00+09:00"
-          
-          
-          def install_stage_stubs(monkeypatch, seen):
-              def stocks(ohlcv, universe, stage, **kwargs):
-                  stage=Path(stage)
-                  meta={"session_date":SESSION,"generated_at":GENERATED,"coverage":1.0,"source":"fixture","schema_version":"x","calculation_version":"x"}
-                  (stage/"rs.json").write_text(json.dumps(meta),encoding="utf-8")
-                  (stage/"breadth.json").write_text(json.dumps(meta),encoding="utf-8")
-                  return stage/"rs.json",stage/"breadth.json"
-              def f123(rs_path, output_path, **kwargs):
-                  meta={"session_date":SESSION,"generated_at":GENERATED,"coverage":1.0,"source":"fixture","schema_version":"x","calculation_version":"x"}
-                  Path(output_path).write_text(json.dumps(meta),encoding="utf-8")
-              def market(rs_path,breadth_path,nqsar_path,stage,**kwargs):
-                  nq=json.loads(Path(nqsar_path).read_text(encoding="utf-8"))
-                  seen.append(nq)
-                  meta={"session_date":SESSION,"generated_at":GENERATED,"coverage":1.0,"source":"fixture","schema_version":"x","calculation_version":"x"}
-                  Path(stage,"market_state.json").write_text(json.dumps(meta),encoding="utf-8")
-                  Path(stage,"core12.json").write_text(json.dumps(meta),encoding="utf-8")
-              monkeypatch.setattr(cp,"calculate_from_files",stocks)
-              monkeypatch.setattr(cp,"calculate_f123_from_files",f123)
-              monkeypatch.setattr(cp,"calculate_market_from_files",market)
-          
-          
-          def run(tmp_path,monkeypatch,raw):
-              seen=[]; install_stage_stubs(monkeypatch,seen)
-              nq=tmp_path/"nqsar.input"; nq.write_text(raw,encoding="utf-8")
-              paths=cp.calculate_pipeline(ohlcv_path="unused",universe_path="unused",nqsar_path=nq,output_dir=tmp_path/"data",session_date=SESSION,generated_at=GENERATED,stock_source="fixture")
-              return seen,paths
-          
-          
-          def test_pipeline_accepts_raw_dated_sar_state(monkeypatch,tmp_path):
-              seen,paths=run(tmp_path,monkeypatch,"2026-09-08,Blue")
-              assert seen[0]["state"]=="Blue" and len(paths)==5
-          
-          
-          def test_pipeline_accepts_authoritative_json(monkeypatch,tmp_path):
-              raw=json.dumps({"session_date":SESSION,"generated_at":GENERATED,"source":"fixture","state":"Green"})
-              seen,_=run(tmp_path,monkeypatch,raw)
-              assert seen[0]["state"]=="Green"
-          
-          
-          def test_pipeline_accepts_exp_state_id(monkeypatch,tmp_path):
-              raw=json.dumps({"session_date":SESSION,"generated_at":GENERATED,"source":"nq.csv","exp_state_id":3})
-              seen,_=run(tmp_path,monkeypatch,raw)
-              assert seen[0]["state"]=="Red"
-          
-          @pytest.mark.parametrize("raw",[
-              "Blue",
-              "2026-09-07,Green",
-              json.dumps({"status":"DATA_REQUIRED","state":None}),
-          ])
-          def test_pipeline_rejects_unusable_nqsar_before_publish(monkeypatch,tmp_path,raw):
-              seen=[]; install_stage_stubs(monkeypatch,seen)
-              nq=tmp_path/"nqsar.input"; nq.write_text(raw,encoding="utf-8")
-              out=tmp_path/"data"; out.mkdir(); sentinel=out/"rs.json"; sentinel.write_text("SENTINEL")
-              with pytest.raises(MarketEngineError):
-                  cp.calculate_pipeline(ohlcv_path="unused",universe_path="unused",nqsar_path=nq,output_dir=out,session_date=SESSION,generated_at=GENERATED,stock_source="fixture")
-              assert sentinel.read_text()=="SENTINEL" and seen==[]
-          
-          
-          def test_stale_nqsar_preserves_legacy_stale_error_contract(monkeypatch,tmp_path):
-              seen=[]; install_stage_stubs(monkeypatch,seen)
-              nq=tmp_path/"nqsar.json"; nq.write_text(json.dumps({"session_date":"2026-09-07","generated_at":GENERATED,"source":"fixture","state":"Green"}))
-              with pytest.raises(MarketEngineError,match="STALE shard session mismatch"):
-                  cp.calculate_pipeline(ohlcv_path="unused",universe_path="unused",nqsar_path=nq,output_dir=tmp_path/"data",session_date=SESSION,generated_at=GENERATED,stock_source="fixture")
-          V38V7_9
 
-      - name: Validate v7 full suite
+          from v38.freshness import (
+              atomic_write_json,
+              build_freshness,
+          )
+          from v38.ui_contract import (
+              UIContractError,
+              validate_canonical_shell,
+          )
+
+
+          def main() -> int:
+              p = argparse.ArgumentParser(
+                  description=(
+                      "Validate V38 canonical UI shell "
+                      "and shard freshness before "
+                      "renderer work"
+                  )
+              )
+
+              p.add_argument(
+                  "--canonical",
+                  default=(
+                      "V38_Command_Center_mock_v5.html"
+                  ),
+              )
+
+              p.add_argument(
+                  "--data-dir",
+                  default="data",
+              )
+
+              p.add_argument(
+                  "--session-date",
+                  required=True,
+              )
+
+              p.add_argument(
+                  "--generated-at",
+                  required=True,
+              )
+
+              p.add_argument(
+                  "--freshness-output"
+              )
+
+              p.add_argument(
+                  "--require-all-ready",
+                  action="store_true",
+              )
+
+              a = p.parse_args()
+
+              canonical = Path(
+                  a.canonical
+              )
+
+              if not canonical.exists():
+                  print(
+                      json.dumps(
+                          {
+                              "status": (
+                                  "DATA_REQUIRED"
+                              ),
+                              "reason": (
+                                  "CANONICAL_V5_MISSING"
+                              ),
+                              "path": str(
+                                  canonical
+                              ),
+                          },
+                          sort_keys=True,
+                      )
+                  )
+
+                  return 3
+
+              try:
+                  shell = (
+                      validate_canonical_shell(
+                          canonical.read_text(
+                              encoding="utf-8"
+                          )
+                      )
+                  )
+
+              except (
+                  OSError,
+                  UnicodeDecodeError,
+                  UIContractError,
+              ) as exc:
+                  print(
+                      json.dumps(
+                          {
+                              "status": "FAILED",
+                              "reason": (
+                                  "CANONICAL_V5_INVALID"
+                              ),
+                              "detail": str(exc),
+                          },
+                          ensure_ascii=False,
+                          sort_keys=True,
+                      )
+                  )
+
+                  return 4
+
+              freshness = build_freshness(
+                  a.data_dir,
+                  target_session=(
+                      a.session_date
+                  ),
+                  generated_at=(
+                      a.generated_at
+                  ),
+              )
+
+              if a.freshness_output:
+                  atomic_write_json(
+                      a.freshness_output,
+                      freshness,
+                  )
+
+              result = {
+                  "status": freshness[
+                      "status"
+                  ],
+                  "canonical": "OK",
+                  "tabs": [
+                      label
+                      for label, _
+                      in shell["tabs"]
+                  ],
+                  "freshness": freshness,
+              }
+
+              print(
+                  json.dumps(
+                      result,
+                      ensure_ascii=False,
+                      sort_keys=True,
+                      allow_nan=False,
+                  )
+              )
+
+              if (
+                  a.require_all_ready
+                  and freshness["status"]
+                  != "READY"
+              ):
+                  return 2
+
+              return 0
+
+
+          if __name__ == "__main__":
+              raise SystemExit(main())
+          V38V8_2
+
+          cat > assets/v38-runtime.js <<'V38V8_3'
+          (function (global) {
+            'use strict';
+
+            const REQUIRED_META = [
+              'session_date',
+              'generated_at',
+              'coverage',
+              'source',
+              'schema_version',
+              'calculation_version'
+            ];
+
+            function missing(value) {
+              return value === null ||
+                value === undefined ||
+                value === '' ||
+                (
+                  typeof value === 'number' &&
+                  !Number.isFinite(value)
+                );
+            }
+
+            function display(
+              value,
+              decimals
+            ) {
+              if (missing(value)) {
+                return '—';
+              }
+
+              if (
+                typeof value === 'number' &&
+                Number.isInteger(decimals)
+              ) {
+                return value.toFixed(
+                  decimals
+                );
+              }
+
+              return String(value);
+            }
+
+            function assessShard(
+              obj,
+              targetSession
+            ) {
+              if (
+                !obj ||
+                typeof obj !== 'object' ||
+                Array.isArray(obj)
+              ) {
+                return {
+                  status: 'DATA_REQUIRED',
+                  reason: 'EXPECTED_JSON_OBJECT'
+                };
+              }
+
+              const absent =
+                REQUIRED_META.filter(
+                  (key) => !(key in obj)
+                );
+
+              if (absent.length) {
+                return {
+                  status: 'DATA_REQUIRED',
+                  reason: 'MISSING_METADATA',
+                  missing: absent
+                };
+              }
+
+              if (
+                obj.session_date !==
+                targetSession
+              ) {
+                return {
+                  status: 'STALE',
+                  reason: 'SESSION_MISMATCH',
+                  session_date:
+                    obj.session_date
+                };
+              }
+
+              return {
+                status: 'READY',
+                reason: 'CURRENT_SESSION'
+              };
+            }
+
+            async function loadJson(path) {
+              const response =
+                await fetch(
+                  path,
+                  {
+                    cache: 'no-store'
+                  }
+                );
+
+              if (!response.ok) {
+                throw new Error(
+                  'HTTP ' +
+                  response.status +
+                  ' for ' +
+                  path
+                );
+              }
+
+              return response.json();
+            }
+
+            global.V38Runtime =
+              Object.freeze(
+                {
+                  missing,
+                  display,
+                  assessShard,
+                  loadJson
+                }
+              );
+          })(window);
+          V38V8_3
+
+          cat > tests/test_freshness.py <<'V38V8_4'
+          import json
+
+          import pytest
+
+          from v38.freshness import (
+              DATA_REQUIRED,
+              READY,
+              STALE,
+              FreshnessError,
+              assess_shard_file,
+              assess_shard_object,
+              atomic_write_json,
+              build_freshness,
+          )
+
+          SESSION = "2026-09-08"
+          GENERATED = (
+              "2026-09-09T05:00:00+09:00"
+          )
+
+
+          def shard(
+              session=SESSION,
+              **updates,
+          ):
+              x = {
+                  "session_date": session,
+                  "generated_at": GENERATED,
+                  "coverage": 1.0,
+                  "source": "fixture",
+                  "schema_version": "x",
+                  "calculation_version": "x",
+              }
+
+              x.update(updates)
+
+              return x
+
+
+          def test_current_shard_is_ready():
+              out = assess_shard_object(
+                  shard(),
+                  name="rs.json",
+                  target_session=SESSION,
+              )
+
+              assert (
+                  out["status"]
+                  == READY
+              )
+
+
+          def test_session_mismatch_is_stale_not_success():
+              out = assess_shard_object(
+                  shard("2026-09-07"),
+                  name="rs.json",
+                  target_session=SESSION,
+              )
+
+              assert (
+                  out["status"]
+                  == STALE
+              )
+
+              assert (
+                  out["reason"]
+                  == "SESSION_MISMATCH"
+              )
+
+
+          def test_missing_metadata_is_data_required():
+              obj = shard()
+              obj.pop("source")
+
+              out = assess_shard_object(
+                  obj,
+                  name="rs.json",
+                  target_session=SESSION,
+              )
+
+              assert (
+                  out["status"]
+                  == DATA_REQUIRED
+              )
+
+              assert (
+                  "source"
+                  in out["missing"]
+              )
+
+
+          def test_missing_file_is_data_required(
+              tmp_path,
+          ):
+              out = assess_shard_file(
+                  tmp_path
+                  / "missing.json",
+                  name="missing.json",
+                  target_session=SESSION,
+              )
+
+              assert (
+                  out["status"]
+                  == DATA_REQUIRED
+              )
+
+              assert (
+                  out["reason"]
+                  == "FILE_MISSING"
+              )
+
+
+          def test_invalid_json_is_data_required(
+              tmp_path,
+          ):
+              p = tmp_path / "bad.json"
+
+              p.write_text(
+                  "{bad",
+                  encoding="utf-8",
+              )
+
+              out = assess_shard_file(
+                  p,
+                  name="bad.json",
+                  target_session=SESSION,
+              )
+
+              assert (
+                  out["status"]
+                  == DATA_REQUIRED
+              )
+
+              assert (
+                  out["reason"]
+                  == "INVALID_JSON"
+              )
+
+
+          def test_stale_dominates_overall_status(
+              tmp_path,
+          ):
+              (
+                  tmp_path
+                  / "a.json"
+              ).write_text(
+                  json.dumps(
+                      shard(
+                          "2026-09-07"
+                      )
+                  ),
+                  encoding="utf-8",
+              )
+
+              out = build_freshness(
+                  tmp_path,
+                  target_session=SESSION,
+                  generated_at=GENERATED,
+                  shard_names=(
+                      "a.json",
+                      "missing.json",
+                  ),
+              )
+
+              assert (
+                  out["status"]
+                  == STALE
+              )
+
+              assert (
+                  out["stale_count"]
+                  == 1
+              )
+
+              assert (
+                  out[
+                      "data_required_count"
+                  ]
+                  == 1
+              )
+
+
+          def test_missing_without_stale_is_data_required(
+              tmp_path,
+          ):
+              (
+                  tmp_path
+                  / "a.json"
+              ).write_text(
+                  json.dumps(
+                      shard()
+                  ),
+                  encoding="utf-8",
+              )
+
+              out = build_freshness(
+                  tmp_path,
+                  target_session=SESSION,
+                  generated_at=GENERATED,
+                  shard_names=(
+                      "a.json",
+                      "missing.json",
+                  ),
+              )
+
+              assert (
+                  out["status"]
+                  == DATA_REQUIRED
+              )
+
+              assert (
+                  out["ready_count"]
+                  == 1
+              )
+
+
+          def test_all_current_is_ready(
+              tmp_path,
+          ):
+              for name in (
+                  "a.json",
+                  "b.json",
+              ):
+                  (
+                      tmp_path
+                      / name
+                  ).write_text(
+                      json.dumps(
+                          shard()
+                      ),
+                      encoding="utf-8",
+                  )
+
+              out = build_freshness(
+                  tmp_path,
+                  target_session=SESSION,
+                  generated_at=GENERATED,
+                  shard_names=(
+                      "a.json",
+                      "b.json",
+                  ),
+              )
+
+              assert (
+                  out["status"]
+                  == READY
+              )
+
+              assert (
+                  out["coverage"]
+                  == 1.0
+              )
+
+
+          def test_duplicate_shard_names_are_rejected(
+              tmp_path,
+          ):
+              with pytest.raises(
+                  FreshnessError
+              ):
+                  build_freshness(
+                      tmp_path,
+                      target_session=SESSION,
+                      generated_at=GENERATED,
+                      shard_names=(
+                          "a",
+                          "a",
+                      ),
+                  )
+
+
+          def test_atomic_write_never_emits_nan(
+              tmp_path,
+          ):
+              p = atomic_write_json(
+                  tmp_path
+                  / "freshness.json",
+                  {
+                      "x": None
+                  },
+              )
+
+              assert json.loads(
+                  p.read_text(
+                      encoding="utf-8"
+                  )
+              ) == {
+                  "x": None
+              }
+
+              assert (
+                  "NaN"
+                  not in p.read_text(
+                      encoding="utf-8"
+                  )
+              )
+          V38V8_4
+
+          cat > tests/test_ui_contract.py <<'V38V8_5'
+          import pytest
+
+          from v38.ui_contract import (
+              EXPECTED_TABS,
+              UIContractError,
+              display_value,
+              inspect_shell,
+              scan_production_forbidden_logic,
+              validate_canonical_shell,
+              validate_production_html,
+          )
+
+
+          def shell(
+              *,
+              extra_nav="",
+              omit_visual="",
+          ):
+              visual = (
+                  "<style>"
+                  ".card{}"
+                  ".chart{}"
+                  ".rsx-card{}"
+                  ".rsx-item{}"
+                  ".mrow{}"
+                  ".bflags{}"
+                  "</style>"
+              )
+
+              if omit_visual:
+                  visual = visual.replace(
+                      omit_visual,
+                      "",
+                  )
+
+              nav = (
+                  "<nav>"
+                  + "".join(
+                      (
+                          '<a class="tabx" '
+                          f'href="{href}">'
+                          f"{label}</a>"
+                      )
+                      for label, href
+                      in EXPECTED_TABS
+                  )
+                  + extra_nav
+                  + "</nav>"
+              )
+
+              sections = "".join(
+                  (
+                      '<section id="'
+                      f'{href[1:]}">'
+                      "</section>"
+                  )
+                  for _, href
+                  in EXPECTED_TABS
+              )
+
+              return (
+                  "<!doctype html>"
+                  "<html><head>"
+                  f"{visual}"
+                  "</head><body>"
+                  f"{nav}"
+                  f"{sections}"
+                  "</body></html>"
+              )
+
+
+          def test_exact_nine_tab_shell_passes():
+              out = validate_canonical_shell(
+                  shell()
+              )
+
+              assert (
+                  out["tabs"]
+                  == list(EXPECTED_TABS)
+              )
+
+
+          def test_tab_order_is_contract_not_set_membership():
+              bad = shell().replace(
+                  "Daily</a>",
+                  "X</a>",
+                  1,
+              )
+
+              with pytest.raises(
+                  UIContractError,
+                  match="tabs must equal",
+              ):
+                  validate_canonical_shell(
+                      bad
+                  )
+
+
+          def test_setups_and_movers_are_forbidden_in_nav():
+              bad = shell(
+                  extra_nav=(
+                      '<a class="tabx" '
+                      'href="#x">'
+                      "Setups</a>"
+                  )
+              )
+
+              with pytest.raises(
+                  UIContractError
+              ):
+                  validate_canonical_shell(
+                      bad
+                  )
+
+
+          def test_all_nine_sections_are_required():
+              bad = shell().replace(
+                  (
+                      '<section '
+                      'id="t-options">'
+                      "</section>"
+                  ),
+                  "",
+              )
+
+              with pytest.raises(
+                  UIContractError,
+                  match=(
+                      "missing tab sections"
+                  ),
+              ):
+                  validate_canonical_shell(
+                      bad
+                  )
+
+
+          def test_visual_vocabulary_is_guarded():
+              bad = shell(
+                  omit_visual=(
+                      ".rsx-card{}"
+                  )
+              )
+
+              with pytest.raises(
+                  UIContractError,
+                  match="visual tokens",
+              ):
+                  validate_canonical_shell(
+                      bad
+                  )
+
+
+          def test_inspection_does_not_mutate_html():
+              html = shell()
+              before = html[:]
+
+              inspect_shell(html)
+
+              assert html == before
+
+
+          def test_production_forbidden_logic_is_detected():
+              bad = (
+                  shell()
+                  + (
+                      "<script>"
+                      "var x=Entry*0.75;"
+                      "</script>"
+                  )
+              )
+
+              hits = (
+                  scan_production_forbidden_logic(
+                      bad
+                  )
+              )
+
+              assert hits
+
+              with pytest.raises(
+                  UIContractError
+              ):
+                  validate_production_html(
+                      bad
+                  )
+
+
+          def test_null_nan_and_empty_display_as_dash():
+              assert (
+                  display_value(None)
+                  == "—"
+              )
+
+              assert (
+                  display_value("")
+                  == "—"
+              )
+
+              assert (
+                  display_value(
+                      float("nan")
+                  )
+                  == "—"
+              )
+
+
+          def test_zero_is_not_confused_with_missing():
+              assert (
+                  display_value(
+                      0,
+                      decimals=2,
+                  )
+                  == "0.00"
+              )
+          V38V8_5
+
+          cat > tests/test_ui_preflight.py <<'V38V8_6'
+          from pathlib import Path
+
+          from v38.ui_contract import (
+              EXPECTED_TABS,
+          )
+
+
+          def canonical_text():
+              nav = (
+                  "<nav>"
+                  + "".join(
+                      (
+                          '<a class="tabx" '
+                          f'href="{href}">'
+                          f"{label}</a>"
+                      )
+                      for label, href
+                      in EXPECTED_TABS
+                  )
+                  + "</nav>"
+              )
+
+              sections = "".join(
+                  (
+                      '<section id="'
+                      f'{href[1:]}">'
+                      "</section>"
+                  )
+                  for _, href
+                  in EXPECTED_TABS
+              )
+
+              return (
+                  "<style>"
+                  ".card{}"
+                  ".chart{}"
+                  ".rsx-card{}"
+                  ".rsx-item{}"
+                  ".mrow{}"
+                  ".bflags{}"
+                  "</style>"
+                  + nav
+                  + sections
+              )
+
+
+          def test_preflight_script_exists_and_is_not_a_renderer():
+              script = Path(
+                  "scripts/preflight_ui.py"
+              ).read_text(
+                  encoding="utf-8"
+              )
+
+              assert (
+                  "validate_canonical_shell"
+                  in script
+              )
+
+              assert (
+                  "CANONICAL_V5_MISSING"
+                  in script
+              )
+
+              assert (
+                  "replace("
+                  not in script
+              )
+
+
+          def test_runtime_has_no_trading_rule_engine():
+              js = Path(
+                  "assets/v38-runtime.js"
+              ).read_text(
+                  encoding="utf-8"
+              )
+
+              for forbidden in (
+                  "0.92",
+                  "1.24",
+                  "0.70",
+                  "RS189",
+                  "MC57",
+                  "panic_seed",
+              ):
+                  assert forbidden not in js
+
+
+          def test_runtime_missing_values_use_dash_not_fake_zero():
+              js = Path(
+                  "assets/v38-runtime.js"
+              ).read_text(
+                  encoding="utf-8"
+              )
+
+              assert (
+                  "return '—'"
+                  in js
+              )
+
+              assert (
+                  "|| 0"
+                  not in js
+              )
+          V38V8_6
+
+          cat > docs/UI_PREFLIGHT.md <<'V38V8_7'
+          # V38 UI Preflight
+
+          Status date: 2026-09-10
+
+          This layer deliberately does **not** redesign or regenerate the V38 Command Center.
+          The only visual authority remains `V38_Command_Center_mock_v5.html`.
+
+          Implemented in this stage:
+
+          - exact 9-tab contract: Daily / Positions / Core 12 / Rotation / RS / Weekly / Options / Publish / Rules
+          - required v5 visual vocabulary guard
+          - Setups / Movers rejection in the navigation
+          - shard `session_date` freshness assessment
+          - missing/corrupt shard -> `DATA_REQUIRED`
+          - mismatched shard date -> `STALE`
+          - null/undefined/empty/NaN display helper -> `—`
+          - small browser runtime that only loads/validates/formats data; it contains no trading rule engine
+
+          Not implemented in this stage:
+
+          - no alternate UI
+          - no fabricated `index.html`
+          - no promotion of v5 mock numbers into production
+          - no inferred MC57 value
+          - no inferred NQSAR FSM
+          - no renderer-side trading decisions
+
+          The next build stage may run only after the canonical v5 HTML exists in the repository. The production build must preserve its DOM/CSS and remove/disconnect legacy trading logic before publishing.
+          V38V8_7
+
+      - name: Validate v8 full suite
         shell: bash
         run: |
           set -euo pipefail
+
           PYTHONPATH=src pytest -q
-          COUNT="$(PYTHONPATH=src pytest -o addopts='' --collect-only -q | grep -c '::')"
+
+          COUNT="$(
+            PYTHONPATH=src \
+            pytest \
+              -o addopts='' \
+              --collect-only \
+              -q \
+            | grep -c '::'
+          )"
+
           echo "Collected tests: $COUNT"
-          if [ "$COUNT" != "126" ]; then
-            echo "::error::Expected exactly 126 tests, got $COUNT"
+
+          if [ "$COUNT" != "148" ]; then
+            echo "::error::Expected exactly 148 tests, got $COUNT"
             exit 1
           fi
+
           python -m compileall -q src scripts
+
+          node --check \
+            assets/v38-runtime.js
+
           python - <<'PY'
-          from v38.positions_engine import normal_stock_next_open_action
-          from v38.tqqq_engine import panic_seed, panic_trigger, panic_position_action
-          from v38.panic_reset_engine import activation, entry_signal, admission
-          x = normal_stock_next_open_action(entry=100, close=124, peak_close=124, partial_taken=False, nqsar_state="Green")
-          assert x["action"] == "SELL_25_PCT_NEXT_OPEN"
-          assert panic_seed(vix_close=23, qqq_sma50_atr_deviation=-0.5, qqq_dd10=-0.02)
-          trig = panic_trigger(seed_age_sessions=30, qqq_4h_rsi14=30, mc57=20)
-          assert trig["trigger"] is True
-          assert panic_position_action(in_panic=False, holding_sessions_completed=0, trigger=True, mc57=20)["target_pct"] == 80
-          assert panic_position_action(in_panic=True, holding_sessions_completed=5, trigger=False, mc57=19.9)["target_pct"] == 30
-          assert panic_position_action(in_panic=True, holding_sessions_completed=5, trigger=False, mc57=None)["status"] == "DATA_REQUIRED"
-          a = activation(theme_rs_pct=80, rank_improvement_20d=15, theme_above_ema21_pct=60)
-          s = entry_signal(activation_ok=a, rsi30_touched_within_20=True, first_rsi_up_day_after_touch=True, theme_rs63_rank=3)
-          assert admission(signal=s, current_total_slots=0, current_same_theme_slots=0, sessions_since_exit=20)["position_pct"] == 2.9
+          from v38.freshness import (
+              assess_shard_object,
+          )
+          from v38.ui_contract import (
+              display_value,
+          )
+
+          obj = {
+              "session_date": "2026-09-07",
+              "generated_at": "x",
+              "coverage": 1.0,
+              "source": "x",
+              "schema_version": "x",
+              "calculation_version": "x",
+          }
+
+          assert (
+              assess_shard_object(
+                  obj,
+                  name="x",
+                  target_session=(
+                      "2026-09-08"
+                  ),
+              )["status"]
+              == "STALE"
+          )
+
+          assert (
+              display_value(None)
+              == "—"
+          )
           PY
-          echo "126 tests passed."
-          echo "compileall passed."
-          echo "v7 rule smoke passed."
+
+          echo "148 tests passed."
+          echo "v8 UI preflight smoke passed."
 
       - name: Guard changed files
         shell: bash
         run: |
           set -euo pipefail
-          find . -type d -name __pycache__ -prune -exec rm -rf {} +
-          rm -rf .pytest_cache src/*.egg-info *.egg-info
-          
+
+          find . \
+            -type d \
+            -name __pycache__ \
+            -prune \
+            -exec rm -rf {} +
+
+          rm -rf \
+            .pytest_cache \
+            src/*.egg-info \
+            *.egg-info
+
           EXPECTED="$(
             printf '%s\n' \
-              src/v38/calculate_pipeline.py \
-              src/v38/nqsar_input.py \
-              src/v38/positions_engine.py \
-              src/v38/panic_reset_engine.py \
-              src/v38/tqqq_engine.py \
-              tests/test_nqsar_input.py \
-              tests/test_positions_engine.py \
-              tests/test_panic_reset_engine.py \
-              tests/test_tqqq_engine.py \
-              tests/test_pipeline_nqsar_adapter.py \
+              src/v38/freshness.py \
+              src/v38/ui_contract.py \
+              scripts/preflight_ui.py \
+              assets/v38-runtime.js \
+              tests/test_freshness.py \
+              tests/test_ui_contract.py \
+              tests/test_ui_preflight.py \
+              docs/UI_PREFLIGHT.md \
             | sort
           )"
-          
+
           CHANGED="$(
             {
               git diff --name-only
-              git ls-files --others --exclude-standard
+              git ls-files \
+                --others \
+                --exclude-standard
             } | sort -u
           )"
-          
+
           echo "Changed files:"
           printf '%s\n' "$CHANGED"
-          
-          if [ "$CHANGED" != "$EXPECTED" ]; then
-            echo "::error::v7 changed-file set does not match the exact 10-file allowlist"
-            diff -u <(printf '%s\n' "$EXPECTED") <(printf '%s\n' "$CHANGED") || true
+
+          if [
+            "$CHANGED" != "$EXPECTED"
+          ]; then
+            echo "::error::v8 changed-file set does not match exact allowlist"
+
+            diff -u \
+              <(
+                printf '%s\n' \
+                  "$EXPECTED"
+              ) \
+              <(
+                printf '%s\n' \
+                  "$CHANGED"
+              ) \
+              || true
+
             exit 1
           fi
-          
-          echo "v7 changed-file guard passed."
 
-      - name: Commit v7 only
+          echo "v8 changed-file guard passed."
+
+      - name: Commit v8 only
         shell: bash
         run: |
           set -euo pipefail
-          
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
+
+          git config \
+            user.name \
+            "github-actions[bot]"
+
+          git config \
+            user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add -- \
-            src/v38/calculate_pipeline.py \
-            src/v38/nqsar_input.py \
-            src/v38/positions_engine.py \
-            src/v38/panic_reset_engine.py \
-            src/v38/tqqq_engine.py \
-            tests/test_nqsar_input.py \
-            tests/test_positions_engine.py \
-            tests/test_panic_reset_engine.py \
-            tests/test_tqqq_engine.py \
-            tests/test_pipeline_nqsar_adapter.py
-          
-          STAGED="$(git diff --cached --name-only | sort)"
-          EXPECTED="$(
-            printf '%s\n' \
-              src/v38/calculate_pipeline.py \
-              src/v38/nqsar_input.py \
-              src/v38/positions_engine.py \
-              src/v38/panic_reset_engine.py \
-              src/v38/tqqq_engine.py \
-              tests/test_nqsar_input.py \
-              tests/test_positions_engine.py \
-              tests/test_panic_reset_engine.py \
-              tests/test_tqqq_engine.py \
-              tests/test_pipeline_nqsar_adapter.py \
+            src/v38/freshness.py \
+            src/v38/ui_contract.py \
+            scripts/preflight_ui.py \
+            assets/v38-runtime.js \
+            tests/test_freshness.py \
+            tests/test_ui_contract.py \
+            tests/test_ui_preflight.py \
+            docs/UI_PREFLIGHT.md
+
+          STAGED="$(
+            git diff \
+              --cached \
+              --name-only \
             | sort
           )"
-          
-          if [ "$STAGED" != "$EXPECTED" ]; then
+
+          EXPECTED="$(
+            printf '%s\n' \
+              src/v38/freshness.py \
+              src/v38/ui_contract.py \
+              scripts/preflight_ui.py \
+              assets/v38-runtime.js \
+              tests/test_freshness.py \
+              tests/test_ui_contract.py \
+              tests/test_ui_preflight.py \
+              docs/UI_PREFLIGHT.md \
+            | sort
+          )"
+
+          if [
+            "$STAGED" != "$EXPECTED"
+          ]; then
             echo "::error::Unexpected staged file set"
             exit 1
           fi
-          
-          git commit -m "Add V38 authoritative NQSAR adapter and rule engines"
+
+          git commit \
+            -m "Add V38 UI and freshness preflight contracts"
+
           git push origin HEAD:main
