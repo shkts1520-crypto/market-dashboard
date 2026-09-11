@@ -33,8 +33,8 @@
   },
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.1.0",
-  "coverage": 0.9997048406139315,
-  "generated_at": "2026-09-11T13:04:51Z",
+  "coverage": 0.9994112452163674,
+  "generated_at": "2026-09-11T15:05:29Z",
   "mc57_reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
   "mc57_status": "DATA_REQUIRED",
   "nqsar_status": "DATA_REQUIRED",
@@ -58,7 +58,7 @@
   "structural_clinical_biotech_reason": "FILE_MISSING",
   "structural_clinical_biotech_status": "DATA_REQUIRED",
   "universe": {
-    "active_universe": 3388,
+    "active_universe": 3397,
     "below_floor_rows": 0,
     "biotech_heuristic_applied": false,
     "count_guard_ratio": 0.8,
@@ -66,17 +66,18 @@
     "duplicate_symbol_rows": 0,
     "malformed_rows": 0,
     "previous_active_universe": 3388,
-    "response_rows": 3389,
-    "response_total_count": 3389,
+    "response_rows": 3398,
+    "response_total_count": 3398,
     "special_security_rows": 1
   },
   "yahoo": {
     "failed_tickers": [
-      "ATLQ"
+      "ATLQ",
+      "BRTM"
     ],
-    "history_received": 3388,
-    "requested": 3388,
-    "target_session_coverage": 0.9997048406139315,
-    "target_session_received": 3387
+    "history_received": 3396,
+    "requested": 3397,
+    "target_session_coverage": 0.9994112452163674,
+    "target_session_received": 3395
   }
 }

@@ -1,0 +1,22 @@
+{
+  "calculation_version": "v38-history-archive-1.0.0",
+  "coverage": 0.9994112452163674,
+  "first_session": "2026-09-10",
+  "generated_at": "2026-09-11T15:05:29Z",
+  "latest_session": "2026-09-10",
+  "rows": [
+    {
+      "coverage": 0.9994112452163674,
+      "generated_at": "2026-09-11T15:05:29Z",
+      "path": "sessions/2026-09-10.json",
+      "ready_authority_count": 0,
+      "rs_top_count": 100,
+      "session_date": "2026-09-10"
+    }
+  ],
+  "schema_version": "v38.history.index.1",
+  "session_count": 1,
+  "session_date": "2026-09-10",
+  "source": "derived:history-session-snapshots",
+  "status": "READY"
+}

@@ -1,26 +1,31 @@
 {
-  "breadth200": 58.871989860583014,
+  "breadth200": 58.75474083438685,
   "breadth200_status": "FULL",
-  "breadth50": 40.383463151587776,
+  "breadth50": 40.45413803406035,
   "calculation_version": "v38-stock-adapter-1.1.0",
-  "coverage": 0.9997048406139315,
+  "coverage": 0.9994112452163674,
   "coverage_detail": {
-    "active_universe": 3388,
-    "current_valid_ohlcv": 3387,
-    "min_sma200_count": 2033,
-    "valid_sma200_count": 3156,
-    "valid_sma50_count": 3338
+    "active_universe": 3397,
+    "current_valid_ohlcv": 3395,
+    "min_sma200_count": 2039,
+    "valid_sma200_count": 3164,
+    "valid_sma50_count": 3347
   },
   "excluded": [
     {
       "reasons": [
-        "NON_NUMERIC_OHLCV",
-        "SPLIT_STATUS_UNKNOWN"
+        "NO_COMPLETED_SESSION_BAR"
       ],
       "ticker": "ATLQ"
+    },
+    {
+      "reasons": [
+        "NO_OHLCV"
+      ],
+      "ticker": "BRTM"
     }
   ],
-  "generated_at": "2026-09-11T13:04:51Z",
+  "generated_at": "2026-09-11T15:05:29Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,
