@@ -45,7 +45,10 @@ def prepare_inputs(root: Path, fx):
     rows = []
     for i, ticker in enumerate(tickers):
         for j, dt in enumerate(dates):
-            close = 20.0 + i * 0.25 + (i + 1) * j * 0.03
+            if i < 24:
+                close = 20.0 + i * 0.25 + (i + 1) * j * 0.03
+            else:
+                close = 25.0 + (i - 24) * 0.05 + j * 0.002
             rows.append(
                 {
                     "ticker": ticker,
@@ -75,7 +78,7 @@ def prepare_inputs(root: Path, fx):
     )
 
     old = dict(fx["old_top24"])
-    old["rows"] = [{"ticker": ticker} for ticker in tickers]
+    old["rows"] = [{"ticker": ticker} for ticker in tickers[:24]]
     old_top24 = root / "old_top24.json"
     write_json(old_top24, old)
 
@@ -107,7 +110,13 @@ def prepare_inputs(root: Path, fx):
                 "schema_version": "v38.peer_theme.fixture.1",
                 "calculation_version": "fixture-loo",
                 "rows": [
-                    {"ticker": ticker, "peer_theme_score": 50.0 + i * 2.0, "theme": "SYNTHETIC"}
+                    {
+                        "ticker": ticker,
+                        "peer_theme_score": (
+                            50.0 + i * 2.0 if i < 24 else 5.0 + (i - 24) * 0.1
+                        ),
+                        "theme": "SYNTHETIC",
+                    }
                     for i, ticker in enumerate(tickers)
                 ],
             },
