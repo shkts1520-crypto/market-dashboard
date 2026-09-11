@@ -7,23 +7,13 @@ from playwright.sync_api import sync_playwright
 
 WIDTHS = (375, 390, 430)
 TAB_LABELS = (
-    "Daily",
-    "Positions",
-    "Core 12",
-    "Rotation",
-    "RS",
-    "Weekly",
-    "Options",
-    "Publish",
-    "Rules",
+    "Daily", "Positions", "Core 12", "Rotation", "RS",
+    "Weekly", "Options", "Publish", "Rules",
 )
 GENERIC_BINDINGS = (
-    ("t-alloc", "positions"),
-    ("t-port", "core12"),
-    ("t-rotation", "rotation"),
-    ("t-weekly", "weekly"),
-    ("t-options", "options"),
-    ("t-post1", "publish"),
+    ("t-alloc", "positions"), ("t-port", "core12"),
+    ("t-rotation", "rotation"), ("t-weekly", "weekly"),
+    ("t-options", "options"), ("t-post1", "publish"),
     ("t-rules", "rules"),
 )
 
@@ -39,33 +29,29 @@ def _view_model(page):
 
 
 def _assert_live_binding(page, view):
-    daily = view["daily"]
-    daily_card = page.locator(
-        '.v38-production-state[data-v38-section="t-market"]'
-    )
-    daily_text = daily_card.inner_text()
-    assert "Daily • " + view["session_date"] in daily_text
+    page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
+    body_text = page.locator("body").inner_text()
+    assert "MOCK DATA" not in body_text
+    assert "分析基準日 2026-09-08" not in body_text
+    assert page.locator(".v38-production-state").count() == 0
+    assert page.locator(".v38-live-grid,.v38-generic-row,.v38-rs-row").count() == 0
 
+    daily = view["daily"]
+    daily_text = page.locator("#t-market").inner_text()
     by_key = {row["key"]: row for row in daily["metrics"]}
     for key in ("breadth50", "breadth200", "f2", "market_QQQ"):
         row = by_key[key]
-        assert row["label"] in daily_text
+        assert row["label"].split()[0] in daily_text
         assert row["display"] in daily_text
 
     rs = view["rs"]
     page.locator('a.tabx[href="#t-rs"]').click()
-    rs_card = page.locator(
-        '.v38-production-state[data-v38-section="t-rs"]'
-    )
-    rs_text = rs_card.inner_text()
-    assert "not Core 12" in rs_text
+    rs_text = page.locator("#t-rs").inner_text()
+    assert "Core 12の適格性・採用順位ではありません" in rs_text
     assert str(rs["status"]) in rs_text
-
     if rs["rows"]:
         first = rs["rows"][0]
-        row = page.locator(
-            '[data-v38-rs-ticker="' + first["ticker"] + '"]'
-        ).first
+        row = page.locator('[data-v38-rs-ticker="' + first["ticker"] + '"]').first
         assert row.is_visible()
         text = row.inner_text()
         assert first["ticker"] in text
@@ -73,19 +59,12 @@ def _assert_live_binding(page, view):
 
     for section_id, view_key in GENERIC_BINDINGS:
         page.locator(f'a.tabx[href="#{section_id}"]').click()
-        card = page.locator(
-            f'.v38-production-state[data-v38-section="{section_id}"]'
-        )
-        text = card.inner_text()
-        section = view[view_key]
-        assert str(section["status"]) in text
-        assert str(section.get("title") or view_key) in text
-        assert view["session_date"] in text
-        if section.get("reason") and section["status"] != "READY":
-            assert str(section["reason"]) in text
-        rows = section.get("rows") or []
-        if rows:
-            assert card.locator('[data-v38-row="1"]').count() == 1
+        section = page.locator("#" + section_id)
+        expected = view[view_key]
+        assert str(expected["status"]) in section.inner_text()
+        assert section.get_attribute("data-v38-status") == expected["status"]
+        if section_id != "t-post1":
+            assert section.locator(".card:visible").count() > 0
 
 
 def main() -> int:
@@ -97,21 +76,14 @@ def main() -> int:
         browser = p.chromium.launch(headless=True)
         try:
             for width in WIDTHS:
-                page = browser.new_page(
-                    viewport={"width": width, "height": 900}
-                )
+                page = browser.new_page(viewport={"width": width, "height": 900})
                 page_errors: list[str] = []
                 page.on("pageerror", lambda exc: page_errors.append(str(exc)))
                 page.goto(args.url, wait_until="networkidle")
 
                 tabs = page.locator("a.tabx")
                 assert tabs.count() == 9
-
-                labels = [
-                    tabs.nth(i).inner_text().strip()
-                    for i in range(9)
-                ]
-                assert labels == list(TAB_LABELS)
+                assert [tabs.nth(i).inner_text().strip() for i in range(9)] == list(TAB_LABELS)
 
                 view = _view_model(page)
                 _assert_live_binding(page, view)
@@ -126,24 +98,29 @@ def main() -> int:
                     assert section.is_visible()
                     assert tab.evaluate("el => el.classList.contains('on')")
                     assert section.evaluate("el => el.classList.contains('on')")
-                    assert section.locator(".v38-production-state").count() == 1
-                    visible_mock = section.locator(
-                        ':scope > :not(.v38-production-state):visible'
-                    ).count()
-                    assert visible_mock == 0
+                    assert page.locator("section.on").count() == 1
+
+                page.locator('a.tabx[href="#t-rs"]').click()
+                page.locator('a.tabx[href="#t-weekly"]').click()
+                assert page.url.endswith("#t-weekly")
+                page.go_back(wait_until="networkidle")
+                assert page.url.endswith("#t-rs")
+                assert page.locator("#t-rs").is_visible()
+                page.wait_for_function("window.scrollY === 0")
 
                 metrics = page.evaluate(
                     """() => ({
                       innerWidth: window.innerWidth,
-                      scrollWidth: document.documentElement.scrollWidth
+                      scrollWidth: document.documentElement.scrollWidth,
+                      scrollY: window.scrollY
                     })"""
                 )
                 assert metrics["scrollWidth"] <= metrics["innerWidth"] + 1
+                assert metrics["scrollY"] == 0
                 assert not page_errors
                 page.close()
         finally:
             browser.close()
-
     return 0
 
 

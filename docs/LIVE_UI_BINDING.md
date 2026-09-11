@@ -25,7 +25,7 @@ The first 24 rows of `rs.json` are displayed in their source order. The browser 
 
 ## Fail-closed behavior
 
-Missing or cross-session inputs render `—`, `DATA_REQUIRED`, or `STALE`. The canonical Mock cards remain hidden. Positions, Core 12, Rotation, Weekly, Options, Publish, and Rules remain fail-closed until their authoritative shards exist.
+Missing or cross-session inputs render `—`, `DATA_REQUIRED`, or `STALE` inside the original canonical cards. The old replacement grids and whole-section visibility shield are not used. Positions, Core 12, Rotation, Weekly, Options, Publish, and Rules remain fail-closed until their authoritative shards exist.
 
 ## Mobile acceptance
 

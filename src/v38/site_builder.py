@@ -11,7 +11,7 @@ from .ui_contract import (
 )
 
 CALCULATION_VERSION = (
-    "v38-safe-site-builder-1.0.0"
+    "v38-live-site-builder-1.1.0"
 )
 
 CANONICAL_BLOB_SHA = (
@@ -75,19 +75,18 @@ SECTION_IDS = tuple(
     in EXPECTED_TABS
 )
 
-SHIELD_STYLE = """<style id="v38-production-shield">
-body[data-v38-production="shielded"] #t-market > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-alloc > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-port > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-rotation > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-rs > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-weekly > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-options > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-post1 > :not(.v38-production-state),
-body[data-v38-production="shielded"] #t-rules > :not(.v38-production-state){visibility:hidden!important}
-.v38-production-state{visibility:visible!important;min-height:84px;display:flex;flex-direction:column;justify-content:center;gap:5px}
-.v38-production-state b{font-size:14px}
-.v38-production-state span{font-size:11px;opacity:.75}
+BINDING_STYLE = """<style id="v38-live-binding-bootstrap">
+body[data-v38-production="live-binding"] .wrap{opacity:0;pointer-events:none}
+body[data-v38-production="live-binding"][data-v38-binding-status] .wrap{opacity:1;pointer-events:auto}
+.v38-bind-note{font-size:11px;line-height:1.55;color:#575242;margin-top:6px;overflow-wrap:anywhere}
+.v38-bind-note strong{font-size:12px;color:#272622}
+.v38-bind-note[data-v38-status="DATA_REQUIRED"] strong,
+.v38-bind-note[data-v38-status="STALE"] strong{color:#806319}
+.v38-bind-note[data-v38-status="READY"] strong{color:#2b6e45}
+.v38-live-kv{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:5px 0;border-top:1px solid rgba(27,29,28,.08)}
+.v38-live-kv:first-of-type{border-top:0}
+.v38-live-kv span{font-size:10px;color:#575242;min-width:0}
+.v38-live-kv b{font-size:12px;text-align:right;overflow-wrap:anywhere;min-width:0}
 </style>"""
 
 RUNTIME_SCRIPTS = (
@@ -187,7 +186,7 @@ def _strip_active_inline_logic(
     )
 
 
-def _mark_body_shielded(
+def _mark_body_live(
     html: str,
 ) -> str:
     match = _BODY_RE.search(
@@ -219,7 +218,7 @@ def _mark_body_shielded(
 
     replacement = (
         '<body '
-        'data-v38-production="shielded"'
+        'data-v38-production="live-binding"'
         f"{attrs}>"
     )
 
@@ -232,62 +231,6 @@ def _mark_body_shielded(
             match.end() :
         ]
     )
-
-
-def _insert_section_state(
-    html: str,
-    section_id: str,
-) -> str:
-    pattern = re.compile(
-        (
-            r"(<section\b"
-            r"(?=[^>]*\bid\s*=\s*"
-            r"[\"']"
-            + re.escape(
-                section_id
-            )
-            + r"[\"'])"
-            r"[^>]*>)"
-        ),
-        re.I | re.S,
-    )
-
-    state = (
-        '<div '
-        'class="card '
-        'v38-production-state" '
-        'role="status" '
-        'data-v38-section="'
-        f"{section_id}"
-        '">'
-        '<b>DATA_REQUIRED</b>'
-        '<span>'
-        'Authoritative data binding '
-        'is not ready. '
-        'Mock values are shielded.'
-        '</span>'
-        '</div>'
-    )
-
-    out, count = (
-        pattern.subn(
-            lambda m: (
-                m.group(1)
-                + state
-            ),
-            html,
-            count=1,
-        )
-    )
-
-    if count != 1:
-        raise SiteBuildError(
-            "section insertion "
-            "failed: "
-            f"{section_id}"
-        )
-
-    return out
 
 
 def build_safe_shell(
@@ -309,19 +252,9 @@ def build_safe_shell(
         )
     )
 
-    out = _mark_body_shielded(
+    out = _mark_body_live(
         out
     )
-
-    for section_id in (
-        SECTION_IDS
-    ):
-        out = (
-            _insert_section_state(
-                out,
-                section_id,
-            )
-        )
 
     if not _HEAD_END_RE.search(
         out
@@ -332,7 +265,7 @@ def build_safe_shell(
 
     out = _HEAD_END_RE.sub(
         (
-            SHIELD_STYLE
+            BINDING_STYLE
             + "\n</head>"
         ),
         out,
@@ -362,7 +295,7 @@ def build_safe_shell(
             out
         )
         if (
-            'id="v38-production-shield"'
+            'id="v38-live-binding-bootstrap"'
             not in block
         )
     )
@@ -394,27 +327,18 @@ def build_safe_shell(
             "external scripts"
         )
 
-    if (
-        out.count(
-            'class="card '
-            'v38-production-state"'
-        )
-        != len(
-            SECTION_IDS
-        )
-    ):
+    if 'v38-production-state' in out:
         raise SiteBuildError(
-            "all nine sections "
-            "must be fail-closed "
-            "shielded"
+            "legacy replacement cards "
+            "must not be injected"
         )
 
     if (
-        'data-v38-production="shielded"'
+        'data-v38-production="live-binding"'
         not in out
     ):
         raise SiteBuildError(
-            "production shield "
+            "live binding "
             "marker missing"
         )
 

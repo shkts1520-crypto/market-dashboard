@@ -19,8 +19,8 @@ from v38.ui_contract import (
 def main() -> int:
     p = argparse.ArgumentParser(
         description=(
-            "Build fail-closed V38 "
-            "production shell from "
+            "Build live-bound V38 "
+            "production UI from "
             "canonical v5"
         )
     )
@@ -56,7 +56,7 @@ def main() -> int:
         json.dumps(
             {
                 "status": (
-                    "SAFE_SHELL_READY"
+                    "LIVE_BINDING_SHELL_READY"
                 ),
                 "output": str(
                     out
@@ -87,9 +87,8 @@ def main() -> int:
                         "external_script_count"
                     ]
                 ),
-                "mock_values_shielded": (
-                    True
-                ),
+                "canonical_dom_preserved": True,
+                "legacy_replacement_cards": False,
             },
             ensure_ascii=False,
             sort_keys=True,
