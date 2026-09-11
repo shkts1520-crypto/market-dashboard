@@ -6,8 +6,19 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from v38.authority_contracts import AuthorityContractError, validate_authority
+from v38.authority_contracts import AuthorityContractError
+from v38.extended_authority_contracts import validate_full_authority
 from v38.freshness import atomic_write_json
+
+KINDS = (
+    "nqsar",
+    "mc57",
+    "classifications",
+    "theme_scores",
+    "options",
+    "positions",
+    "old_top24",
+)
 
 
 def _require_aware_generated_at(payload: object) -> None:
@@ -29,11 +40,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate and atomically promote one authoritative V38 upstream payload"
     )
-    parser.add_argument(
-        "--kind",
-        required=True,
-        choices=("nqsar", "mc57", "classifications", "theme_scores", "options", "positions"),
-    )
+    parser.add_argument("--kind", required=True, choices=KINDS)
     parser.add_argument("--payload", required=True, help="JSON payload path")
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--expected-session")
@@ -49,7 +56,7 @@ def main() -> int:
 
     _require_aware_generated_at(payload)
     try:
-        relative, normalized = validate_authority(
+        relative, normalized = validate_full_authority(
             args.kind,
             payload,
             expected_session=args.expected_session,
@@ -65,7 +72,8 @@ def main() -> int:
                 "status": "PROMOTED",
                 "kind": args.kind,
                 "target": target.as_posix(),
-                "session_date": normalized["session_date"],
+                "session_date": normalized.get("session_date"),
+                "target_session_date": normalized.get("target_session_date"),
                 "source": normalized["source"],
             },
             ensure_ascii=False,
