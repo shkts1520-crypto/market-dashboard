@@ -3,10 +3,26 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 
 from v38.authority_contracts import AuthorityContractError, validate_authority
 from v38.freshness import atomic_write_json
+
+
+def _require_aware_generated_at(payload: object) -> None:
+    if not isinstance(payload, dict):
+        raise SystemExit("authority payload must be a JSON object")
+    value = payload.get("generated_at")
+    if not isinstance(value, str) or not value.strip():
+        raise SystemExit("authority generated_at is required")
+    text = value.strip()
+    try:
+        parsed = datetime.fromisoformat(text[:-1] + "+00:00" if text.endswith("Z") else text)
+    except ValueError as exc:
+        raise SystemExit("authority generated_at must be ISO-8601") from exc
+    if parsed.utcoffset() is None:
+        raise SystemExit("authority generated_at must include a timezone offset")
 
 
 def main() -> int:
@@ -31,6 +47,7 @@ def main() -> int:
     except json.JSONDecodeError as exc:
         raise SystemExit(f"invalid authority JSON: {exc}") from exc
 
+    _require_aware_generated_at(payload)
     try:
         relative, normalized = validate_authority(
             args.kind,
