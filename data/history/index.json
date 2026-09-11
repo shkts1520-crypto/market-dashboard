@@ -1,9 +1,9 @@
 {
   "calculation_version": "v38-history-archive-1.0.0",
-  "coverage": 0.9994112452163674,
+  "coverage": 0.9781775287525803,
   "first_session": "2026-09-10",
-  "generated_at": "2026-09-11T15:05:29Z",
-  "latest_session": "2026-09-10",
+  "generated_at": "2026-09-11T22:29:06Z",
+  "latest_session": "2026-09-11",
   "rows": [
     {
       "coverage": 0.9994112452163674,
@@ -12,11 +12,19 @@
       "ready_authority_count": 0,
       "rs_top_count": 100,
       "session_date": "2026-09-10"
+    },
+    {
+      "coverage": 0.9781775287525803,
+      "generated_at": "2026-09-11T22:29:06Z",
+      "path": "sessions/2026-09-11.json",
+      "ready_authority_count": 0,
+      "rs_top_count": 100,
+      "session_date": "2026-09-11"
     }
   ],
   "schema_version": "v38.history.index.1",
-  "session_count": 1,
-  "session_date": "2026-09-10",
+  "session_count": 2,
+  "session_date": "2026-09-11",
   "source": "derived:history-session-snapshots",
   "status": "READY"
 }

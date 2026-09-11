@@ -2,11 +2,11 @@
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": null,
   "dependency": "theme_scores.json",
-  "generated_at": "2026-09-11T15:05:29Z",
+  "generated_at": "2026-09-11T22:29:06Z",
   "reason": "PEER_THEME_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
   "rows": [],
   "schema_version": "v38.rotation.1",
-  "session_date": "2026-09-10",
+  "session_date": "2026-09-11",
   "source": "derived:peer-theme-authority",
   "status": "DATA_REQUIRED",
   "value": null
