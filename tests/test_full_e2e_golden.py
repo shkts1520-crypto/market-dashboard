@@ -36,6 +36,7 @@ def with_meta(fx, payload):
 
 
 def prepare_inputs(root: Path, fx):
+    root.mkdir(parents=True, exist_ok=True)
     session = fx["session_date"]
     generated = fx["generated_at"]
     tickers = fx["tickers"]
@@ -140,7 +141,6 @@ def build_full(root: Path, fx):
     )
     normalize_market_statuses(data, session_date=fx["session_date"])
 
-    # Publish the explicit authorities required by supplemental sections.
     shutil.copyfile(inputs["nqsar"], data / "nqsar.json")
     shutil.copyfile(inputs["theme_scores"], data / "theme_scores.json")
     shutil.copyfile(inputs["classifications"], data / "classifications.json")
@@ -233,8 +233,6 @@ def test_full_e2e_golden_reaches_nine_tab_ready_without_mock_values(tmp_path):
         for key in ("daily", "positions", "core12", "rotation", "rs", "weekly", "options", "publish", "rules")
     )
 
-    # Macro and prior-state are part of the frozen input bundle even though the
-    # current UI has no dedicated tab for them.
     assert json.loads((data / "macro.json").read_text())["values"]["DGS10"] == 4.0
     assert json.loads((data / "prior_state.json").read_text())["previous_session_date"] == "2026-09-04"
 
