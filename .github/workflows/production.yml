@@ -158,7 +158,7 @@ jobs:
           test -s _site/index.html
           test -s _site/data/ui_payload.json
           test -s _site/data/ui_view_model.json
-          grep -q 'data-v38-production="shielded"' _site/index.html
+          grep -q 'data-v38-production="live-binding"' _site/index.html
           for key in daily positions core12 rotation rs weekly options publish rules; do
             grep -q "\"${key}\"" _site/data/ui_view_model.json
           done
@@ -203,6 +203,8 @@ jobs:
             data/options/index.json \
             data/publish.json \
             data/rules.json
+
+          git add -- data/history
 
           for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json; do
             if [ -f "$path" ]; then git add -- "$path"; fi

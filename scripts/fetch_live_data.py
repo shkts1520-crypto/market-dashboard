@@ -26,6 +26,10 @@ from v38.live_acquisition import (
     write_json,
     write_universe_csv,
 )
+from v38.history_archive import (
+    materialize_old_top24_from_history,
+    stage_session_snapshot,
+)
 from v38.market_engine import calculate_market_from_files
 from v38.market_status import normalize_market_statuses
 from v38.nqsar_input import NQSARInputError, normalize_nqsar_file
@@ -161,7 +165,6 @@ def main() -> int:
         source=source,
     )
 
-    old_top24 = _resolve_optional(args.old_top24, data_dir / "old_top24.json", session_date)
     # old_top24.session_date is intentionally old, so target_session_date rather than
     # top-level session_date determines whether it belongs to this calculation.
     if args.old_top24:
@@ -173,6 +176,15 @@ def main() -> int:
         old_top24 = candidate
     else:
         old_top24 = None
+
+    if old_top24 is None:
+        old_top24 = materialize_old_top24_from_history(
+            data_dir / "history",
+            rs_path,
+            stage / "old_top24.json",
+            target_session=session_date,
+            generated_at=generated_at,
+        )
 
     f123_path = stage / "f123.json"
     calculate_f123_from_files(
@@ -251,7 +263,8 @@ def main() -> int:
         _copy_current(classifications, stage, session_date, "classifications.json")
     if old_top24 is not None:
         dst = stage / "old_top24.json"
-        shutil.copyfile(old_top24, dst)
+        if old_top24.resolve() != dst.resolve():
+            shutil.copyfile(old_top24, dst)
 
     coverage = float(yahoo_stats["target_session_coverage"])
     write_json(
@@ -301,6 +314,12 @@ def main() -> int:
     )
     _validate_same_session(stage, session_date, required)
 
+    stage_session_snapshot(
+        stage,
+        data_dir / "history",
+        stage / "history",
+    )
+
     promoted = list(required)
     for optional_name in (
         "nqsar.json",
@@ -316,6 +335,14 @@ def main() -> int:
 
     for name in promoted:
         _atomic_promote(stage / name, data_dir / name)
+
+    history_names = (
+        "history/index.json",
+        f"history/sessions/{session_date}.json",
+    )
+    for name in history_names:
+        _atomic_promote(stage / name, data_dir / name)
+        promoted.append(name)
 
     print(
         json.dumps(

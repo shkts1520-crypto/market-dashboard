@@ -9,6 +9,8 @@ Implemented:
 - upstream NQSAR + Breadth -> `market_state.json`
 - normal-stock Eligibility + Attack/Selective ranking contract -> `core12.json`
 - staged calculate pipeline: calculate all outputs first, validate common contract/session, then publish files
+- compact session archive under `data/history/` for Breadth, market closes, F1/F2/F3, RS Top 100, acquisition quality, and authority readiness
+- automatic PIT `old_top24.json` materialization after 20 prior archived sessions are available
 
 Deliberately not invented:
 
@@ -40,3 +42,5 @@ PYTHONPATH=src python scripts/calculate_all.py \
 ```
 
 Optional verified dependencies can be supplied with `--old-top24`, `--classifications`, and `--theme-scores`. Missing optional dependencies result in `DATA_REQUIRED`; they are not backfilled from current/static data.
+
+Each successful live run writes one idempotent `data/history/sessions/YYYY-MM-DD.json` snapshot and rebuilds `data/history/index.json`. Re-running the same session replaces that session instead of duplicating it. Position rows are deliberately excluded from this public historical archive.

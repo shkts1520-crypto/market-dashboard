@@ -193,7 +193,7 @@ def test_builder_preserves_original_style_block_bytes():
             flags=re.I | re.S,
         )
         if (
-            "v38-production-shield"
+            "v38-live-binding-bootstrap"
             not in x
         )
     ]
@@ -222,35 +222,22 @@ def test_builder_keeps_exact_nine_tabs_and_sections():
         )
     )
 
-    assert (
-        out.count(
-            'class="card '
-            'v38-production-state"'
-        )
-        == 9
-    )
+    assert 'v38-production-state' not in out
 
 
-def test_builder_hides_mock_content_by_default():
+def test_builder_preserves_canonical_dom_for_live_binding():
     out = build_safe_shell(
         shell()
     )
 
     assert (
-        'data-v38-production="shielded"'
+        'data-v38-production="live-binding"'
         in out
     )
 
-    assert (
-        "Mock values are shielded."
-        in out
-    )
-
-    assert (
-        "#t-market > "
-        ":not(.v38-production-state)"
-        in out
-    )
+    assert '<div class="mock">123</div>' in out
+    assert 'visibility:hidden!important' not in out
+    assert 'v38-production-state' not in out
 
 
 def test_builder_injects_only_two_external_runtime_scripts():
