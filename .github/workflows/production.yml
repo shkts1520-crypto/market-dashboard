@@ -59,7 +59,7 @@ jobs:
           node --check assets/v38-site.js
 
       - name: Fetch and calculate current V38 session
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -180,7 +180,7 @@ jobs:
           python scripts/browser_acceptance.py --url http://127.0.0.1:8000/
 
       - name: Commit scheduled or manually acquired data
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
