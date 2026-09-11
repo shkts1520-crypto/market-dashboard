@@ -14,6 +14,7 @@ on:
           - theme_scores
           - options
           - positions
+          - old_top24
       payload_json:
         description: Inline JSON payload (leave blank when payload_path is used)
         required: false
@@ -71,7 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           case "$AUTH_KIND" in
-            nqsar|mc57|classifications|theme_scores|options|positions) ;;
+            nqsar|mc57|classifications|theme_scores|options|positions|old_top24) ;;
             *) echo "::error::Unsupported authority kind: $AUTH_KIND"; exit 1 ;;
           esac
 
@@ -98,10 +99,13 @@ jobs:
           import json, os
           from pathlib import Path
           current = json.loads(Path('data/state.json').read_text(encoding='utf-8'))['session_date']
-          incoming = json.loads(Path(os.environ['RUNNER_TEMP']).joinpath('v38-authority.json').read_text(encoding='utf-8'))['session_date']
+          payload = json.loads(Path(os.environ['RUNNER_TEMP']).joinpath('v38-authority.json').read_text(encoding='utf-8'))
+          incoming = payload.get('target_session_date') if os.environ['AUTH_KIND'] == 'old_top24' else payload.get('session_date')
+          if not isinstance(incoming, str):
+              raise SystemExit('authority target session is missing')
           if incoming < current:
-              raise SystemExit(f'authority session {incoming} is older than production {current}')
-          print(f'authority session={incoming}; current production session={current}')
+              raise SystemExit(f'authority target session {incoming} is older than production {current}')
+          print(f'authority target session={incoming}; current production session={current}')
           PY
 
       - name: Validate and promote authority
@@ -119,8 +123,8 @@ jobs:
           set -euo pipefail
           TARGET="$(PYTHONPATH=src python - <<'PY'
           import os
-          from v38.authority_contracts import AUTHORITY_TARGETS
-          print('data/' + AUTHORITY_TARGETS[os.environ['AUTH_KIND']])
+          from v38.extended_authority_contracts import FULL_AUTHORITY_TARGETS
+          print('data/' + FULL_AUTHORITY_TARGETS[os.environ['AUTH_KIND']])
           PY
           )"
           CHANGED="$({ git diff --name-only; git ls-files --others --exclude-standard; } | sort -u)"
@@ -140,7 +144,8 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           SESSION="$(python - <<'PY'
           import json, os
-          print(json.load(open(os.environ['TARGET'], encoding='utf-8'))['session_date'])
+          obj = json.load(open(os.environ['TARGET'], encoding='utf-8'))
+          print(obj.get('target_session_date') or obj['session_date'])
           PY
           )"
           git commit -m "Promote V38 ${AUTH_KIND} authority ${SESSION}"
