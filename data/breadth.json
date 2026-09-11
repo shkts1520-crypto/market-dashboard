@@ -1,15 +1,15 @@
 {
-  "breadth200": 58.83470550981634,
+  "breadth200": 58.871989860583014,
   "breadth200_status": "FULL",
-  "breadth50": 40.35928143712575,
+  "breadth50": 40.383463151587776,
   "calculation_version": "v38-stock-adapter-1.1.0",
-  "coverage": 0.9997049277072882,
+  "coverage": 0.9997048406139315,
   "coverage_detail": {
-    "active_universe": 3389,
-    "current_valid_ohlcv": 3388,
-    "min_sma200_count": 2034,
-    "valid_sma200_count": 3158,
-    "valid_sma50_count": 3340
+    "active_universe": 3388,
+    "current_valid_ohlcv": 3387,
+    "min_sma200_count": 2033,
+    "valid_sma200_count": 3156,
+    "valid_sma50_count": 3338
   },
   "excluded": [
     {
@@ -20,7 +20,7 @@
       "ticker": "ATLQ"
     }
   ],
-  "generated_at": "2026-09-11T04:31:01Z",
+  "generated_at": "2026-09-11T12:34:07Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,

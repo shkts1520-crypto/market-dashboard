@@ -1,7 +1,7 @@
 {
-  "calculation_version": "v38-live-acquisition-1.0.0",
-  "coverage": 0.9997049277072882,
-  "generated_at": "2026-09-11T04:31:01Z",
+  "calculation_version": "v38-live-acquisition-1.1.0",
+  "coverage": 0.9997048406139315,
+  "generated_at": "2026-09-11T12:34:07Z",
   "mc57_reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
   "mc57_status": "DATA_REQUIRED",
   "nqsar_status": "DATA_REQUIRED",
@@ -9,30 +9,37 @@
   "peer_theme_status": "DATA_REQUIRED",
   "positions_status": "DATA_REQUIRED",
   "schema_version": "v38.acquisition.1",
+  "session_contract": {
+    "calendar": "observed common QQQ/SPY completed daily sessions",
+    "cutoff_et": "16:15",
+    "price_primary": "Yahoo Finance",
+    "ticker_resolution_fallback": "FMP only when explicitly available; never substitute unverified price values",
+    "timezone": "America/New_York"
+  },
   "session_date": "2026-09-10",
   "source": "TradingView america/scan + Yahoo Finance/yfinance 0.2.66",
   "status": "READY",
   "structural_clinical_biotech_status": "DATA_REQUIRED",
   "universe": {
-    "active_universe": 3389,
+    "active_universe": 3388,
     "below_floor_rows": 0,
     "biotech_heuristic_applied": false,
     "count_guard_ratio": 0.8,
     "duplicate_class_rows": 0,
     "duplicate_symbol_rows": 0,
     "malformed_rows": 0,
-    "previous_active_universe": 3388,
-    "response_rows": 3390,
-    "response_total_count": 3390,
+    "previous_active_universe": 3389,
+    "response_rows": 3389,
+    "response_total_count": 3389,
     "special_security_rows": 1
   },
   "yahoo": {
     "failed_tickers": [
       "ATLQ"
     ],
-    "history_received": 3389,
-    "requested": 3389,
-    "target_session_coverage": 0.9997049277072882,
-    "target_session_received": 3388
+    "history_received": 3388,
+    "requested": 3388,
+    "target_session_coverage": 0.9997048406139315,
+    "target_session_received": 3387
   }
 }

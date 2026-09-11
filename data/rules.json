@@ -1,0 +1,65 @@
+{
+  "calculation_version": "v38-supplemental-engine-1.0.0",
+  "coverage": 1.0,
+  "generated_at": "2026-09-11T12:34:07Z",
+  "rules": {
+    "allocation": {
+      "gross_max_pct": 100,
+      "gross_priority": [
+        "RSI30_PANIC_RESET",
+        "TQQQ_PROTECTED_UP_TO_80",
+        "NORMAL_STOCK",
+        "TQQQ_EXTRA"
+      ],
+      "normal_stock_max_pct": 70,
+      "normal_tqqq_pct": 30,
+      "panic_reset_max_names": 4,
+      "panic_reset_per_name_pct": 2.9,
+      "panic_tqqq_target_pct": 80,
+      "share_level_golden_ledger_status": "DATA_REQUIRED"
+    },
+    "market_mode": {
+      "ATTACK": "NQSAR Blue/Green and Breadth50>=60 -> max 12 new/total slots",
+      "DEFENSE": "Red -> new 0 and normal stocks exit next open",
+      "SELECTIVE": "NQSAR Blue/Green and 50<=Breadth50<60 -> max 4 fill slots; no forced trim",
+      "STOP": "Yellow or Blue/Green and Breadth50<50 -> new 0"
+    },
+    "normal_stock": {
+      "attack_rank": "0.70*RS189 + 0.30*PeerThemeScore (LOO)",
+      "eligibility": "Price>=5; DDV20>=10M; SMA50>SMA200; Close>SMA200; RS189>=85; RS63>=85; exclude Structural Clinical Biotech",
+      "forbidden_exits": [
+        "RS rank decline",
+        "Theme rank decline",
+        "Top12 exit",
+        "Breadth threshold trim",
+        "Yellow forced exit",
+        "10SMA/21EMA/ATR2/building-stop rules"
+      ],
+      "initial_stop": "first Close<=Entry*0.92 -> exit next open",
+      "partial_profit": "first Close>=Entry*1.24 -> sell 25% next open once",
+      "selective_rank": "RS189 only",
+      "winner_trail": "remaining 75% stop=max(Entry*0.92, PeakClose*0.70)"
+    },
+    "panic_reset": {
+      "averaging_down": false,
+      "cooldown_sessions": 20,
+      "entry": "qualified strong theme; RSI14<=30 then first RSI rise within 20 sessions; theme RS63 Top3",
+      "hold_sessions": 20,
+      "max_names": 4,
+      "max_same_theme": 2,
+      "normal_minus8_stop": false
+    },
+    "tqqq_panic": {
+      "early_exit": "MC57<20 -> return to 30 next open",
+      "max_hold_sessions": 10,
+      "seed": "VIX Close>=23 AND QQQ SMA50 deviation<=-0.5ATR AND QQQ 10d DD<=-2%",
+      "seed_max_age_sessions": 30,
+      "target_pct": 80,
+      "trigger": "first QQQ 4H RSI14 touch from >30 to <=30 AND MC57>=20"
+    }
+  },
+  "schema_version": "v38.rules.1",
+  "session_date": "2026-09-10",
+  "source": "code:adopted-v38-contracts",
+  "status": "READY"
+}

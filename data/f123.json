@@ -1,7 +1,7 @@
 {
   "base_pool_count": 1489,
-  "calculation_version": "v38-f123-engine-1.0.0",
-  "coverage": 0.9997049277072882,
+  "calculation_version": "v38-f123-engine-1.1.0",
+  "coverage": 0.9997048406139315,
   "f1": {
     "coverage": null,
     "dependency": {
@@ -56,10 +56,10 @@
     "status": "DATA_INCOMPLETE",
     "value": null
   },
-  "generated_at": "2026-09-11T04:31:01Z",
+  "generated_at": "2026-09-11T12:34:07Z",
   "rules": {
     "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
-    "f1": "20-session-ago PIT Top24; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
+    "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
     "f123_normal_stock_hard_gate": false,
     "f1_coverage": ">=90% FULL; 70%-<90% PARTIAL; <70% DATA_INCOMPLETE",
     "f2": "current base-pool RS189 Top24; fraction of RS63-observable names with RS63<85",

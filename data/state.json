@@ -1,8 +1,13 @@
 {
-  "calculation_version": "v38-live-acquisition-1.0.0",
-  "coverage": 0.9997049277072882,
-  "generated_at": "2026-09-11T04:31:01Z",
+  "calculation_version": "v38-live-acquisition-1.1.0",
+  "coverage": 0.9997048406139315,
+  "generated_at": "2026-09-11T12:34:07Z",
   "schema_version": "v38.state.1",
+  "session_contract": {
+    "calendar": "observed common QQQ/SPY completed daily sessions",
+    "cutoff_et": "16:15",
+    "timezone": "America/New_York"
+  },
   "session_date": "2026-09-10",
   "source": "authoritative-session:QQQ+SPY; universe:TradingView; prices:Yahoo",
   "status": "READY"
