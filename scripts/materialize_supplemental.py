@@ -5,6 +5,7 @@ import argparse
 import json
 from pathlib import Path
 
+from v38.authority_status import sync_acquisition_manifest
 from v38.supplemental_engine import materialize_supplemental_shards
 
 
@@ -34,7 +35,17 @@ def main() -> int:
         theme_scores_path=args.theme_scores,
         positions_ledger_path=args.positions_ledger,
     )
-    print(json.dumps({"session_date": session, "outputs": [p.as_posix() for p in outputs]}, sort_keys=True))
+    manifest = sync_acquisition_manifest(root)
+    print(
+        json.dumps(
+            {
+                "session_date": session,
+                "outputs": [p.as_posix() for p in outputs],
+                "authority_manifest": manifest.as_posix(),
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 
