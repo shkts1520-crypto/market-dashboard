@@ -1,12 +1,48 @@
 {
+  "authority_status": {
+    "mc57_status": {
+      "path": "mc57.json",
+      "reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
+      "status": "DATA_REQUIRED"
+    },
+    "nqsar_status": {
+      "path": "nqsar.json",
+      "reason": "FILE_MISSING",
+      "status": "DATA_REQUIRED"
+    },
+    "options_status": {
+      "path": "options/index.json",
+      "reason": "OPTIONS_AUTHORITATIVE_INPUT_MISSING",
+      "status": "DATA_REQUIRED"
+    },
+    "peer_theme_status": {
+      "path": "theme_scores.json",
+      "reason": "FILE_MISSING",
+      "status": "DATA_REQUIRED"
+    },
+    "positions_status": {
+      "path": "positions_ledger.json",
+      "reason": "FILE_MISSING",
+      "status": "DATA_REQUIRED"
+    },
+    "structural_clinical_biotech_status": {
+      "path": "classifications.json",
+      "reason": "FILE_MISSING",
+      "status": "DATA_REQUIRED"
+    }
+  },
+  "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.1.0",
   "coverage": 0.9997048406139315,
-  "generated_at": "2026-09-11T12:34:07Z",
+  "generated_at": "2026-09-11T13:04:51Z",
   "mc57_reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
   "mc57_status": "DATA_REQUIRED",
   "nqsar_status": "DATA_REQUIRED",
+  "options_reason": "OPTIONS_AUTHORITATIVE_INPUT_MISSING",
   "options_status": "DATA_REQUIRED",
+  "peer_theme_reason": "FILE_MISSING",
   "peer_theme_status": "DATA_REQUIRED",
+  "positions_reason": "FILE_MISSING",
   "positions_status": "DATA_REQUIRED",
   "schema_version": "v38.acquisition.1",
   "session_contract": {
@@ -19,6 +55,7 @@
   "session_date": "2026-09-10",
   "source": "TradingView america/scan + Yahoo Finance/yfinance 0.2.66",
   "status": "READY",
+  "structural_clinical_biotech_reason": "FILE_MISSING",
   "structural_clinical_biotech_status": "DATA_REQUIRED",
   "universe": {
     "active_universe": 3388,
@@ -28,7 +65,7 @@
     "duplicate_class_rows": 0,
     "duplicate_symbol_rows": 0,
     "malformed_rows": 0,
-    "previous_active_universe": 3389,
+    "previous_active_universe": 3388,
     "response_rows": 3389,
     "response_total_count": 3389,
     "special_security_rows": 1
