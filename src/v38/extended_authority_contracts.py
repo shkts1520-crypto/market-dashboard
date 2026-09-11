@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any
 
 from .authority_contracts import (
@@ -8,6 +8,7 @@ from .authority_contracts import (
     AuthorityContractError,
     validate_authority,
 )
+from .nqsar_engine import NQSARError, parse_authoritative_input
 
 FULL_AUTHORITY_TARGETS = {**AUTHORITY_TARGETS, "old_top24": "old_top24.json"}
 
@@ -111,4 +112,24 @@ def validate_full_authority(
     name = str(kind or "").strip().lower()
     if name == "old_top24":
         return FULL_AUTHORITY_TARGETS[name], validate_old_top24(payload, expected_session)
+    if name == "nqsar":
+        session = _date(payload.get("session_date"), "session_date")
+        if expected_session is not None and session != expected_session:
+            raise AuthorityContractError(
+                f"session_date mismatch: {session} != {expected_session}"
+            )
+        now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        try:
+            normalized = parse_authoritative_input(
+                payload,
+                expected_session_date=session,
+                as_of=now,
+            )
+        except NQSARError as exc:
+            raise AuthorityContractError(str(exc)) from exc
+        normalized["authority_version"] = str(
+            payload.get("authority_version") or "recovered-authoritative-input"
+        )
+        normalized["fsm_recomputed"] = False
+        return FULL_AUTHORITY_TARGETS[name], normalized
     return validate_authority(name, payload, expected_session=expected_session)
