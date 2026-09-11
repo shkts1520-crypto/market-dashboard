@@ -1,0 +1,156 @@
+name: V38 Authority Input
+
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: Authority kind
+        required: true
+        type: choice
+        options:
+          - nqsar
+          - mc57
+          - classifications
+          - theme_scores
+          - options
+          - positions
+          - old_top24
+      payload_json:
+        description: Inline JSON payload (leave blank when payload_path is used)
+        required: false
+        type: string
+      payload_path:
+        description: Repository JSON path for large payloads
+        required: false
+        type: string
+      payload_ref:
+        description: Git ref containing payload_path (use authority-inbox for large files)
+        required: false
+        default: main
+        type: string
+  repository_dispatch:
+    types:
+      - v38_authority
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v38-authority-main
+  cancel-in-progress: false
+
+jobs:
+  validate-promote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      AUTH_KIND: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.kind || inputs.kind }}
+      AUTH_PAYLOAD_JSON: ${{ github.event_name == 'repository_dispatch' && toJSON(github.event.client_payload.payload) || inputs.payload_json }}
+      AUTH_PAYLOAD_PATH: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.payload_path || inputs.payload_path }}
+      AUTH_PAYLOAD_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.payload_ref || inputs.payload_ref || 'main' }}
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install V38 package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e .
+
+      - name: Resolve authority payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$AUTH_KIND" in
+            nqsar|mc57|classifications|theme_scores|options|positions|old_top24) ;;
+            *) echo "::error::Unsupported authority kind: $AUTH_KIND"; exit 1 ;;
+          esac
+
+          OUT="$RUNNER_TEMP/v38-authority.json"
+          if [ -n "${AUTH_PAYLOAD_PATH:-}" ]; then
+            git fetch --no-tags --depth=1 origin "$AUTH_PAYLOAD_REF"
+            git show "FETCH_HEAD:${AUTH_PAYLOAD_PATH}" > "$OUT" || {
+              echo "::error::Payload not found at ${AUTH_PAYLOAD_REF}:${AUTH_PAYLOAD_PATH}"
+              exit 1
+            }
+          elif [ -n "${AUTH_PAYLOAD_JSON:-}" ] && [ "$AUTH_PAYLOAD_JSON" != "null" ]; then
+            printf '%s' "$AUTH_PAYLOAD_JSON" > "$OUT"
+          else
+            echo "::error::Provide payload_json or payload_path"
+            exit 1
+          fi
+          python -m json.tool "$OUT" >/dev/null
+
+      - name: Reject authority older than current production session
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          current = json.loads(Path('data/state.json').read_text(encoding='utf-8'))['session_date']
+          payload = json.loads(Path(os.environ['RUNNER_TEMP']).joinpath('v38-authority.json').read_text(encoding='utf-8'))
+          incoming = payload.get('target_session_date') if os.environ['AUTH_KIND'] == 'old_top24' else payload.get('session_date')
+          if not isinstance(incoming, str):
+              raise SystemExit('authority target session is missing')
+          if incoming < current:
+              raise SystemExit(f'authority target session {incoming} is older than production {current}')
+          print(f'authority target session={incoming}; current production session={current}')
+          PY
+
+      - name: Validate and promote authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/ingest_authority.py \
+            --kind "$AUTH_KIND" \
+            --payload "$RUNNER_TEMP/v38-authority.json" \
+            --data-dir data
+
+      - name: Guard changed file
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="$(PYTHONPATH=src python - <<'PY'
+          import os
+          from v38.extended_authority_contracts import FULL_AUTHORITY_TARGETS
+          print('data/' + FULL_AUTHORITY_TARGETS[os.environ['AUTH_KIND']])
+          PY
+          )"
+          CHANGED="$({ git diff --name-only; git ls-files --others --exclude-standard; } | sort -u)"
+          printf 'Expected authority target: %s\nChanged files:\n%s\n' "$TARGET" "$CHANGED"
+          if [ -n "$CHANGED" ] && [ "$CHANGED" != "$TARGET" ]; then
+            echo "::error::Authority ingestion changed files outside its target"
+            exit 1
+          fi
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+
+      - name: Commit authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- "$TARGET"
+          if git diff --cached --quiet; then
+            echo 'Authority is already current; no commit required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          SESSION="$(python - <<'PY'
+          import json, os
+          obj = json.load(open(os.environ['TARGET'], encoding='utf-8'))
+          print(obj.get('target_session_date') or obj['session_date'])
+          PY
+          )"
+          git commit -m "Promote V38 ${AUTH_KIND} authority ${SESSION}"
+          git push origin HEAD:main
