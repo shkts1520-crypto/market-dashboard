@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from v38.authority_contracts import AuthorityContractError
@@ -21,7 +21,7 @@ KINDS = (
 )
 
 
-def _require_aware_generated_at(payload: object) -> None:
+def _require_aware_generated_at(payload: object) -> datetime:
     if not isinstance(payload, dict):
         raise SystemExit("authority payload must be a JSON object")
     value = payload.get("generated_at")
@@ -34,6 +34,9 @@ def _require_aware_generated_at(payload: object) -> None:
         raise SystemExit("authority generated_at must be ISO-8601") from exc
     if parsed.utcoffset() is None:
         raise SystemExit("authority generated_at must include a timezone offset")
+    if parsed > datetime.now(timezone.utc):
+        raise SystemExit("authority generated_at must not be in the future")
+    return parsed
 
 
 def main() -> int:
