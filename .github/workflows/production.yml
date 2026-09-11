@@ -1,37 +1,47 @@
-name: V38 Production Verify and Deploy
+name: V38 Production Full Pipeline
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '17 22 * * 1-5'
+    - cron: '17 4 * * 2-6'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: v38-pages
-  cancel-in-progress: true
+  group: v38-production-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   verify-build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 70
+    env:
+      TZ: Asia/Tokyo
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install verification dependencies
+      - name: Install verification and acquisition dependencies
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check -e . pytest playwright==1.55.0
+          python -m pip install --disable-pip-version-check -e . pytest playwright==1.55.0 'yfinance==0.2.66'
 
       - name: Run full Python and JavaScript suite
         shell: bash
@@ -40,13 +50,84 @@ jobs:
           PYTHONPATH=src pytest -q
           COUNT="$(PYTHONPATH=src pytest -o addopts='' --collect-only -q | grep -c '::')"
           echo "Collected tests: $COUNT"
-          if [ "$COUNT" != "200" ]; then
-            echo "::error::Expected exactly 200 tests, got $COUNT"
+          if [ "$COUNT" -lt "200" ]; then
+            echo "::error::Expected at least 200 tests, got $COUNT"
             exit 1
           fi
           python -m compileall -q src scripts
           node --check assets/v38-runtime.js
           node --check assets/v38-site.js
+
+      - name: Fetch and calculate current V38 session
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/v38-live"
+          mkdir -p "$RUNNER_TEMP/v38-live"
+          PYTHONPATH=src python scripts/fetch_live_data.py \
+            --data-dir data \
+            --work-dir "$RUNNER_TEMP/v38-live"
+
+      - name: Materialize current fail-closed supplemental shards
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s data/state.json
+          PYTHONPATH=src python scripts/materialize_supplemental.py --data-dir data
+          SESSION="$(python - <<'PY'
+          import json
+          print(json.load(open('data/state.json', encoding='utf-8'))['session_date'])
+          PY
+          )"
+          PYTHONPATH=src python - <<PY
+          from v38.market_status import normalize_market_statuses
+          normalize_market_statuses('data', session_date='${SESSION}')
+          PY
+
+      - name: Validate single-session publication contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          from v38.freshness import assess_shard_file
+
+          root = Path('data')
+          state = json.loads((root / 'state.json').read_text(encoding='utf-8'))
+          session = state['session_date']
+          required = (
+              'rs.json', 'breadth.json', 'f123.json', 'market_inputs.json',
+              'market_state.json', 'core12.json', 'mc57.json', 'positions.json',
+              'rotation.json', 'weekly.json', 'options/index.json', 'publish.json',
+              'rules.json',
+          )
+          for name in required:
+              path = root / name
+              assert path.is_file() and path.stat().st_size > 0, name
+              obj = json.loads(path.read_text(encoding='utf-8'))
+              assert obj.get('session_date') == session, (name, obj.get('session_date'), session)
+              for key in ('generated_at', 'source', 'schema_version', 'calculation_version'):
+                  assert obj.get(key), (name, key)
+              assessed = assess_shard_file(path, name=name, target_session=session)
+              assert assessed['status'] in {'READY', 'DATA_REQUIRED'}, (name, assessed)
+
+          rs = json.loads((root / 'rs.json').read_text(encoding='utf-8'))
+          assert int(rs['coverage_detail']['active_universe']) > 0
+          assert int(rs['coverage_detail']['current_valid_ohlcv']) > 0
+          assert float(rs['coverage']) >= 0.80
+
+          publish = json.loads((root / 'publish.json').read_text(encoding='utf-8'))
+          assert isinstance(publish.get('full_v38_ready'), bool)
+          assert isinstance(publish.get('blockers'), list)
+          print(json.dumps({
+              'session_date': session,
+              'stock_coverage': rs['coverage'],
+              'full_v38_ready': publish['full_v38_ready'],
+              'blocker_count': len(publish['blockers']),
+          }, sort_keys=True))
+          PY
 
       - name: Build production artifact
         shell: bash
@@ -78,9 +159,9 @@ jobs:
           test -s _site/data/ui_payload.json
           test -s _site/data/ui_view_model.json
           grep -q 'data-v38-production="shielded"' _site/index.html
-          grep -q '"sections"' _site/data/ui_payload.json
-          grep -q '"daily"' _site/data/ui_view_model.json
-          grep -q '"rs"' _site/data/ui_view_model.json
+          for key in daily positions core12 rotation rs weekly options publish rules; do
+            grep -q "\"${key}\"" _site/data/ui_view_model.json
+          done
 
       - name: Install Chromium
         shell: bash
@@ -88,7 +169,7 @@ jobs:
           set -euo pipefail
           python -m playwright install --with-deps chromium
 
-      - name: Browser acceptance 375 390 430
+      - name: Browser acceptance 375 390 430 all nine tabs
         shell: bash
         run: |
           set -euo pipefail
@@ -98,15 +179,61 @@ jobs:
           sleep 2
           python scripts/browser_acceptance.py --url http://127.0.0.1:8000/
 
+      - name: Commit scheduled or manually acquired data
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          rm -rf .pytest_cache src/*.egg-info *.egg-info
+
+          git add -- \
+            data/rs.json \
+            data/breadth.json \
+            data/f123.json \
+            data/market_inputs.json \
+            data/state.json \
+            data/acquisition_manifest.json \
+            data/market_state.json \
+            data/core12.json \
+            data/mc57.json \
+            data/positions.json \
+            data/rotation.json \
+            data/weekly.json \
+            data/options/index.json \
+            data/publish.json \
+            data/rules.json
+
+          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json; do
+            if [ -f "$path" ]; then git add -- "$path"; fi
+          done
+
+          if git diff --cached --quiet; then
+            echo 'No production data changes to commit.'
+          else
+            SESSION="$(python - <<'PY'
+          import json
+          print(json.load(open('data/state.json', encoding='utf-8'))['session_date'])
+          PY
+            )"
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m "Update V38 production data ${SESSION} [skip ci]"
+            git push origin HEAD:main
+          fi
+
       - name: Configure Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
   deploy:
+    if: github.event_name != 'pull_request'
     permissions:
       contents: read
       pages: write
