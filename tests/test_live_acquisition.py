@@ -7,6 +7,7 @@ import pytest
 
 from v38.live_acquisition import (
     CLASS_PAIRS,
+    SESSION_CUTOFF_ET,
     LiveAcquisitionError,
     adjusted_ohlcv_rows,
     build_tradingview_payload,
@@ -147,11 +148,34 @@ def test_yahoo_symbol_maps_dot_class_only():
     assert yahoo_symbol("NVDA") == "NVDA"
 
 
+def test_completed_session_cutoff_is_1615_et():
+    assert SESSION_CUTOFF_ET.hour == 16
+    assert SESSION_CUTOFF_ET.minute == 15
+
+
 def test_completed_session_after_close_can_use_current_session():
     got = choose_completed_session(
         ["2026-09-09", "2026-09-10"],
         ["2026-09-09", "2026-09-10"],
         now_utc=datetime(2026, 9, 10, 21, 0, tzinfo=timezone.utc),
+    )
+    assert got == "2026-09-10"
+
+
+def test_completed_session_at_1614_et_falls_back_to_prior():
+    got = choose_completed_session(
+        ["2026-09-09", "2026-09-10"],
+        ["2026-09-09", "2026-09-10"],
+        now_utc=datetime(2026, 9, 10, 20, 14, tzinfo=timezone.utc),
+    )
+    assert got == "2026-09-09"
+
+
+def test_completed_session_at_1615_et_accepts_current():
+    got = choose_completed_session(
+        ["2026-09-09", "2026-09-10"],
+        ["2026-09-09", "2026-09-10"],
+        now_utc=datetime(2026, 9, 10, 20, 15, tzinfo=timezone.utc),
     )
     assert got == "2026-09-10"
 
@@ -254,6 +278,8 @@ def test_state_and_manifest_keep_unresolved_authorities_fail_closed():
     )
     assert state["status"] == "READY"
     assert state["session_date"] == "2026-09-10"
+    assert state["session_contract"]["cutoff_et"] == "16:15"
+    assert state["session_contract"]["timezone"] == "America/New_York"
 
     manifest = manifest_object(
         session_date="2026-09-10",
@@ -262,6 +288,7 @@ def test_state_and_manifest_keep_unresolved_authorities_fail_closed():
         yahoo_stats={"target_session_coverage": 0.99},
         nqsar_status="DATA_REQUIRED",
     )
+    assert manifest["session_contract"]["cutoff_et"] == "16:15"
     assert manifest["mc57_status"] == "DATA_REQUIRED"
     assert manifest["structural_clinical_biotech_status"] == "DATA_REQUIRED"
     assert manifest["peer_theme_status"] == "DATA_REQUIRED"
