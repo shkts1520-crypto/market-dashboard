@@ -1,0 +1,138 @@
+name: V38 Authority Input
+
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: Authority kind
+        required: true
+        type: choice
+        options:
+          - nqsar
+          - mc57
+          - classifications
+          - theme_scores
+          - options
+          - positions
+      payload_json:
+        description: Inline JSON payload (leave blank when payload_path is used)
+        required: false
+        type: string
+      payload_path:
+        description: Repository JSON path for large payloads
+        required: false
+        type: string
+  repository_dispatch:
+    types:
+      - v38_authority
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v38-authority-main
+  cancel-in-progress: false
+
+jobs:
+  validate-promote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      AUTH_KIND: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.kind || inputs.kind }}
+      AUTH_PAYLOAD_JSON: ${{ github.event_name == 'repository_dispatch' && toJSON(github.event.client_payload.payload) || inputs.payload_json }}
+      AUTH_PAYLOAD_PATH: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.payload_path || inputs.payload_path }}
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install V38 package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e .
+
+      - name: Resolve authority payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$AUTH_KIND" in
+            nqsar|mc57|classifications|theme_scores|options|positions) ;;
+            *) echo "::error::Unsupported authority kind: $AUTH_KIND"; exit 1 ;;
+          esac
+
+          OUT="$RUNNER_TEMP/v38-authority.json"
+          if [ -n "${AUTH_PAYLOAD_PATH:-}" ]; then
+            test -f "$AUTH_PAYLOAD_PATH" || { echo "::error::Payload path not found: $AUTH_PAYLOAD_PATH"; exit 1; }
+            cp "$AUTH_PAYLOAD_PATH" "$OUT"
+          elif [ -n "${AUTH_PAYLOAD_JSON:-}" ] && [ "$AUTH_PAYLOAD_JSON" != "null" ]; then
+            printf '%s' "$AUTH_PAYLOAD_JSON" > "$OUT"
+          else
+            echo "::error::Provide payload_json or payload_path"
+            exit 1
+          fi
+          python -m json.tool "$OUT" >/dev/null
+
+      - name: Reject authority older than current production session
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          current = json.loads(Path('data/state.json').read_text(encoding='utf-8'))['session_date']
+          incoming = json.loads(Path(os.environ['RUNNER_TEMP']).joinpath('v38-authority.json').read_text(encoding='utf-8'))['session_date']
+          if incoming < current:
+              raise SystemExit(f'authority session {incoming} is older than production {current}')
+          print(f'authority session={incoming}; current production session={current}')
+          PY
+
+      - name: Validate and promote authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/ingest_authority.py \
+            --kind "$AUTH_KIND" \
+            --payload "$RUNNER_TEMP/v38-authority.json" \
+            --data-dir data
+
+      - name: Guard changed file
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="$(PYTHONPATH=src python - <<'PY'
+          import os
+          from v38.authority_contracts import AUTHORITY_TARGETS
+          print('data/' + AUTHORITY_TARGETS[os.environ['AUTH_KIND']])
+          PY
+          )"
+          CHANGED="$({ git diff --name-only; git ls-files --others --exclude-standard; } | sort -u)"
+          printf 'Expected authority target: %s\nChanged files:\n%s\n' "$TARGET" "$CHANGED"
+          [ "$CHANGED" = "$TARGET" ] || {
+            echo "::error::Authority ingestion changed files outside its target"
+            exit 1
+          }
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+
+      - name: Commit authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- "$TARGET"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          SESSION="$(python - <<'PY'
+          import json, os
+          print(json.load(open(os.environ['TARGET'], encoding='utf-8'))['session_date'])
+          PY
+          )"
+          git commit -m "Promote V38 ${AUTH_KIND} authority ${SESSION}"
+          git push origin HEAD:main
