@@ -1,21 +1,11 @@
 (function () {
   'use strict';
 
-  const TAB_SELECTOR =
-    'a.tabx[href^="#"]';
-
+  const TAB_SELECTOR = 'nav a.tabx[href^="#t-"]';
   const SECTION_IDS = [
-    't-market',
-    't-alloc',
-    't-port',
-    't-rotation',
-    't-rs',
-    't-weekly',
-    't-options',
-    't-post1',
-    't-rules'
+    't-market', 't-alloc', 't-port', 't-rotation', 't-rs',
+    't-weekly', 't-options', 't-post1', 't-rules'
   ];
-
   const VIEW_BINDINGS = [
     ['t-alloc', 'positions'],
     ['t-port', 'core12'],
@@ -27,550 +17,255 @@
   ];
 
   function targetOf(tab) {
-    const href =
-      tab.getAttribute('href') || '';
+    const href = tab.getAttribute('href') || '';
+    const id = href.charAt(0) === '#' ? href.slice(1) : '';
+    return SECTION_IDS.includes(id) ? id : null;
+  }
 
-    if (
-      href.length > 1 &&
-      href.charAt(0) === '#'
-    ) {
-      const id = href.slice(1);
-      if (SECTION_IDS.includes(id)) {
-        return id;
-      }
+  function activate(targetId) {
+    const valid = SECTION_IDS.includes(targetId) ? targetId : 't-market';
+    document.querySelectorAll('section').forEach((section) => {
+      section.classList.remove('on');
+    });
+    document.querySelectorAll('nav a.tabx').forEach((tab) => {
+      tab.classList.remove('on');
+      tab.setAttribute('aria-selected', 'false');
+    });
+
+    const section = document.getElementById(valid);
+    const tab = Array.from(document.querySelectorAll(TAB_SELECTOR))
+      .find((candidate) => targetOf(candidate) === valid);
+    if (section) section.classList.add('on');
+    if (tab) {
+      tab.classList.add('on');
+      tab.setAttribute('aria-selected', 'true');
     }
-
-    return null;
+    window.scrollTo(0, 0);
   }
 
-  function suppressMockContent() {
-    SECTION_IDS.forEach(
-      (id) => {
-        const section =
-          document.getElementById(id);
-
-        if (!section) {
-          return;
-        }
-
-        Array.from(section.children)
-          .forEach(
-            (child) => {
-              if (
-                !child.classList.contains(
-                  'v38-production-state'
-                )
-              ) {
-                child.hidden = true;
-                child.setAttribute(
-                  'aria-hidden',
-                  'true'
-                );
-              }
-            }
-          );
-      }
-    );
-  }
-
-  function activate(
-    targetId,
-    updateHash
-  ) {
-    const tabs = Array.from(
-      document.querySelectorAll(
-        TAB_SELECTOR
-      )
-    );
-
-    const valid =
-      SECTION_IDS.includes(targetId)
-        ? targetId
-        : 't-market';
-
-    tabs.forEach(
-      (tab) => {
-        const active =
-          targetOf(tab) === valid;
-
-        tab.classList.toggle(
-          'on',
-          active
-        );
-
-        tab.setAttribute(
-          'aria-selected',
-          active ? 'true' : 'false'
-        );
-      }
-    );
-
-    SECTION_IDS.forEach(
-      (id) => {
-        const section =
-          document.getElementById(id);
-
-        if (!section) {
-          return;
-        }
-
-        const active =
-          id === valid;
-
-        section.classList.toggle(
-          'on',
-          active
-        );
-
-        section.hidden = !active;
-      }
-    );
-
-    if (
-      updateHash &&
-      window.location.hash !==
-        '#' + valid
-    ) {
-      history.replaceState(
-        null,
-        '',
-        '#' + valid
-      );
-    }
-  }
-
-  function stateNode(id) {
+  function root(id) {
     return document.querySelector(
-      '.v38-production-state' +
-      '[data-v38-section="' +
-      id +
-      '"]'
+      '[data-v38-live-section="' + id + '"]'
     );
+  }
+
+  function node(tag, className, text) {
+    const out = document.createElement(tag);
+    if (className) out.className = className;
+    if (text !== undefined && text !== null) out.textContent = String(text);
+    return out;
+  }
+
+  function statusClass(status) {
+    return status === 'READY' ? 'pos' : (status === 'STALE' ? 'neg' : 'mut');
+  }
+
+  function resetRoot(sectionId, title, status, session) {
+    const out = root(sectionId);
+    if (!out) return null;
+    out.replaceChildren();
+    out.className = 'card';
+    out.dataset.v38Status = status || 'DATA_REQUIRED';
+
+    const head = node('div', 'chd');
+    head.appendChild(node('h2', '', title || 'V38'));
+    const now = node('div', 'chd-now');
+    now.appendChild(node('b', statusClass(out.dataset.v38Status), out.dataset.v38Status));
+    now.appendChild(node('span', '', session || '—'));
+    head.appendChild(now);
+    out.appendChild(head);
+    return out;
+  }
+
+  function addMessage(parent, text) {
+    if (!text) return;
+    parent.appendChild(node('div', 'mut', text));
+  }
+
+  function addRow(parent, label, value, detail, rowIndex) {
+    const row = node('div', 'rrow');
+    if (rowIndex !== undefined) row.dataset.v38Row = String(rowIndex);
+    const left = node('div', 'lft');
+    left.appendChild(node('div', 'nm', label || '—'));
+    const right = node('div', 'rgt');
+    right.appendChild(node('div', 'big', value === undefined || value === null ? '—' : value));
+    row.appendChild(left);
+    row.appendChild(right);
+    if (detail) row.appendChild(node('div', 'foot', detail));
+    parent.appendChild(row);
+    return row;
   }
 
   function sectionDetail(section) {
-    if (
-      !section ||
-      !Array.isArray(section.components)
-    ) {
-      return (
-        'Authoritative inputs are unavailable. ' +
-        'Mock values remain shielded.'
-      );
+    if (!section || !Array.isArray(section.components)) {
+      return 'Authoritative inputs are unavailable.';
     }
-
-    return section.components.map(
-      (row) => {
-        const status =
-          typeof row.status === 'string'
-            ? row.status
-            : 'DATA_REQUIRED';
-        const reason =
-          typeof row.reason === 'string'
-            ? row.reason
-            : 'UNKNOWN';
-        return (
-          row.name + ': ' + status +
-          ' (' + reason + ')'
-        );
-      }
-    ).join(' • ');
+    return section.components.map((item) => {
+      const name = item && item.name ? item.name : 'input';
+      const status = item && item.status ? item.status : 'DATA_REQUIRED';
+      const reason = item && item.reason ? item.reason : 'UNKNOWN';
+      return name + ': ' + status + ' (' + reason + ')';
+    }).join(' • ');
   }
 
   function renderPayload(payload) {
-    const sections =
-      payload && payload.sections &&
-      typeof payload.sections === 'object'
-        ? payload.sections
-        : {};
-
-    SECTION_IDS.forEach(
-      (id) => {
-        const node = stateNode(id);
-        if (!node) {
-          return;
-        }
-        const section = sections[id] || null;
-        const status =
-          section && typeof section.status === 'string'
-            ? section.status
-            : 'DATA_REQUIRED';
-        const title = node.querySelector('b');
-        const body = node.querySelector('span');
-        if (title) {
-          title.textContent = status;
-        }
-        if (body) {
-          body.textContent = sectionDetail(section);
-        }
-        node.dataset.v38Status = status;
-      }
-    );
-  }
-
-  function setAllUnavailable(detail) {
-    document
-      .querySelectorAll('.v38-production-state')
-      .forEach(
-        (node) => {
-          const title = node.querySelector('b');
-          const body = node.querySelector('span');
-          if (title) {
-            title.textContent = 'DATA_REQUIRED';
-          }
-          if (body) {
-            body.textContent = detail;
-          }
-          node.dataset.v38Status = 'DATA_REQUIRED';
-        }
-      );
-  }
-
-  function ensureLiveStyles() {
-    if (document.getElementById('v38-live-binding-style')) {
-      return;
-    }
-
-    const style = document.createElement('style');
-    style.id = 'v38-live-binding-style';
-    style.textContent = [
-      '.v38-production-state.v38-live-bound{justify-content:flex-start;gap:8px;min-width:0}',
-      '.v38-live-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;min-width:0}',
-      '.v38-live-head strong{font-size:14px}',
-      '.v38-live-status{font-size:10px;opacity:.7}',
-      '.v38-live-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;width:100%;min-width:0}',
-      '.v38-live-metric,.v38-generic-row{min-width:0}',
-      '.v38-live-metric-label,.v38-live-metric-value,.v38-live-metric-meta,.v38-generic-key,.v38-generic-value{display:block;min-width:0;overflow-wrap:anywhere}',
-      '.v38-live-metric-label,.v38-generic-key{font-size:10px;opacity:.7}',
-      '.v38-live-metric-value{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}',
-      '.v38-live-metric-meta{font-size:9px;opacity:.6}',
-      '.v38-live-note{font-size:10px;opacity:.7;overflow-wrap:anywhere}',
-      '.v38-rs-list,.v38-generic-list{display:grid;gap:4px;width:100%;min-width:0}',
-      '.v38-rs-row{display:grid;grid-template-columns:2rem minmax(3.8rem,1fr) minmax(4rem,.9fr) minmax(3.5rem,.75fr) minmax(3.5rem,.75fr);gap:5px;align-items:center;min-width:0;font-size:10px}',
-      '.v38-rs-row>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '.v38-rs-row .v38-num{text-align:right;font-variant-numeric:tabular-nums}',
-      '.v38-generic-row{border-top:1px solid rgba(127,127,127,.18);padding-top:6px}',
-      '.v38-generic-value{font-size:11px;white-space:normal;word-break:break-word}',
-      '@media(min-width:700px){.v38-live-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}'
-    ].join('');
-    document.head.appendChild(style);
-  }
-
-  function appendText(parent, tag, className, text) {
-    const node = document.createElement(tag);
-    if (className) {
-      node.className = className;
-    }
-    node.textContent =
-      text === null || text === undefined
-        ? ''
-        : String(text);
-    parent.appendChild(node);
-    return node;
-  }
-
-  function addHead(node, title, status, session) {
-    const head = document.createElement('div');
-    head.className = 'v38-live-head';
-    appendText(
-      head,
-      'strong',
-      '',
-      String(title || 'V38') + ' • ' + String(session || '—')
-    );
-    appendText(
-      head,
-      'span',
-      'v38-live-status',
-      status || 'DATA_REQUIRED'
-    );
-    node.appendChild(head);
+    const sections = payload && payload.sections && typeof payload.sections === 'object'
+      ? payload.sections : {};
+    SECTION_IDS.forEach((id) => {
+      const section = sections[id] || null;
+      const status = section && typeof section.status === 'string'
+        ? section.status : 'DATA_REQUIRED';
+      const out = resetRoot(id, 'V38', status, payload && payload.session_date);
+      if (out) addMessage(out, sectionDetail(section));
+    });
   }
 
   function renderDaily(view) {
-    const node = stateNode('t-market');
-    const daily =
-      view && view.daily && typeof view.daily === 'object'
-        ? view.daily
-        : null;
-    if (!node || !daily || !Array.isArray(daily.metrics)) {
+    const daily = view && view.daily && typeof view.daily === 'object'
+      ? view.daily : null;
+    const status = daily && daily.status ? daily.status : 'DATA_REQUIRED';
+    const out = resetRoot('t-market', 'Daily', status, view && view.session_date);
+    if (!out) return;
+    if (!daily || !Array.isArray(daily.metrics)) {
+      addMessage(out, daily && daily.reason ? daily.reason : 'Daily data unavailable.');
       return;
     }
-
-    node.replaceChildren();
-    node.classList.add('v38-live-bound');
-    node.dataset.v38Status =
-      typeof daily.status === 'string'
-        ? daily.status
-        : 'DATA_REQUIRED';
-    addHead(node, 'Daily', node.dataset.v38Status, view.session_date);
-
-    const grid = document.createElement('div');
-    grid.className = 'v38-live-grid';
-    daily.metrics.forEach(
-      (metric) => {
-        if (!metric || typeof metric !== 'object') {
-          return;
-        }
-        const item = document.createElement('div');
-        item.className = 'v38-live-metric';
-        item.dataset.v38Metric = String(metric.key || '');
-        appendText(item, 'span', 'v38-live-metric-label', metric.label || metric.key || '—');
-        appendText(item, 'span', 'v38-live-metric-value', metric.display || '—');
-        const status = typeof metric.status === 'string' ? metric.status : 'DATA_REQUIRED';
-        const severity =
-          typeof metric.severity === 'string' && metric.severity !== 'NO_JUDGMENT'
-            ? metric.severity
-            : '';
-        if (status !== 'READY' || severity) {
-          const reason =
-            status !== 'READY' && typeof metric.reason === 'string'
-              ? metric.reason
-              : '';
-          appendText(
-            item,
-            'span',
-            'v38-live-metric-meta',
-            [severity, reason].filter(Boolean).join(' • ')
-          );
-        }
-        grid.appendChild(item);
-      }
-    );
-    node.appendChild(grid);
+    daily.metrics.forEach((metric) => {
+      if (!metric || typeof metric !== 'object') return;
+      const detail = [
+        metric.status && metric.status !== 'READY' ? metric.status : '',
+        metric.severity && metric.severity !== 'NO_JUDGMENT' ? metric.severity : '',
+        metric.status !== 'READY' && metric.reason ? metric.reason : ''
+      ].filter(Boolean).join(' • ');
+      const row = addRow(out, metric.label || metric.key, metric.display || '—', detail);
+      row.dataset.v38Metric = String(metric.key || '');
+    });
   }
 
   function renderRs(view) {
-    const node = stateNode('t-rs');
     const rs = view && view.rs && typeof view.rs === 'object' ? view.rs : null;
-    if (!node || !rs) {
+    const status = rs && rs.status ? rs.status : 'DATA_REQUIRED';
+    const out = resetRoot('t-rs', (rs && rs.title) || 'RS189 Top 24', status, view && view.session_date);
+    if (!out) return;
+    addMessage(out, rs && rs.note ? rs.note : 'RS ranking; not Core 12.');
+    if (!rs || !Array.isArray(rs.rows) || rs.rows.length === 0) {
+      addMessage(out, rs && rs.reason ? rs.reason : 'RS data unavailable.');
       return;
     }
-
-    node.replaceChildren();
-    node.classList.add('v38-live-bound');
-    node.dataset.v38Status = typeof rs.status === 'string' ? rs.status : 'DATA_REQUIRED';
-    addHead(node, rs.title || 'RS189 Top 24', node.dataset.v38Status, view.session_date);
-    appendText(node, 'div', 'v38-live-note', rs.note || '');
-
-    if (!Array.isArray(rs.rows) || rs.rows.length === 0) {
-      appendText(node, 'div', 'v38-live-note', rs.reason || 'RS data unavailable.');
-      return;
-    }
-
-    const list = document.createElement('div');
-    list.className = 'v38-rs-list';
-    const header = document.createElement('div');
-    header.className = 'v38-rs-row';
-    appendText(header, 'span', '', '#');
-    appendText(header, 'span', '', 'Ticker');
-    appendText(header, 'span', 'v38-num', 'Price');
-    appendText(header, 'span', 'v38-num', 'RS189');
-    appendText(header, 'span', 'v38-num', 'RS63');
-    list.appendChild(header);
-
-    rs.rows.forEach(
-      (row) => {
-        if (!row || typeof row !== 'object') {
-          return;
-        }
-        const line = document.createElement('div');
-        line.className = 'v38-rs-row';
-        line.dataset.v38RsTicker = String(row.ticker || '');
-        appendText(line, 'span', '', row.rank);
-        appendText(line, 'span', '', row.ticker || '—');
-        appendText(line, 'span', 'v38-num', row.price_display || '—');
-        appendText(line, 'span', 'v38-num', row.rs189_display || '—');
-        appendText(line, 'span', 'v38-num', row.rs63_display || '—');
-        list.appendChild(line);
-      }
-    );
-    node.appendChild(list);
+    const list = node('div', 'rsx-card');
+    rs.rows.forEach((item) => {
+      if (!item || typeof item !== 'object') return;
+      const row = node('div', 'rsx-item');
+      row.dataset.v38RsTicker = String(item.ticker || '');
+      const label = '#' + String(item.rank || '—') + '  ' + String(item.ticker || '—');
+      const value = 'RS189 ' + String(item.rs189_display || '—') + '  ·  RS63 ' + String(item.rs63_display || '—');
+      row.appendChild(node('div', 'nm', label));
+      row.appendChild(node('div', 'big', value));
+      row.appendChild(node('div', 'mut', 'Price ' + String(item.price_display || '—') + '  ·  DDV20 ' + String(item.ddv20_display || '—')));
+      list.appendChild(row);
+    });
+    out.appendChild(list);
   }
 
-  function primitiveEntries(row) {
-    if (!row || typeof row !== 'object') {
-      return [];
-    }
-    return Object.keys(row)
-      .filter(
-        (key) => {
-          const value = row[key];
-          return (
-            value === null ||
-            typeof value === 'string' ||
-            typeof value === 'number' ||
-            typeof value === 'boolean'
-          );
-        }
-      )
-      .slice(0, 8)
-      .map((key) => [key, row[key]]);
+  function primitiveEntries(item) {
+    if (!item || typeof item !== 'object') return [];
+    return Object.keys(item).filter((key) => {
+      const value = item[key];
+      return value === null || ['string', 'number', 'boolean'].includes(typeof value);
+    }).slice(0, 8).map((key) => [key, item[key]]);
   }
 
-  function renderGenericSection(view, sectionId, viewKey) {
-    const node = stateNode(sectionId);
-    const data =
-      view && view[viewKey] && typeof view[viewKey] === 'object'
-        ? view[viewKey]
-        : null;
-    if (!node || !data) {
+  function summarizeRow(item, index, viewKey) {
+    if (viewKey === 'rules' && item && typeof item.key === 'string') {
+      return [item.key, item.value, ''];
+    }
+    const entries = primitiveEntries(item);
+    if (!entries.length) return ['Row ' + index, '—', 'Authoritative structured row'];
+    const preferred = ['ticker', 'symbol', 'theme', 'name', 'action', 'state', 'status', 'key'];
+    let primary = entries.find(([key]) => preferred.includes(key));
+    if (!primary) primary = entries[0];
+    const rest = entries.filter(([key]) => key !== primary[0]);
+    const detail = rest.map(([key, value]) => key + ': ' + (value === null ? '—' : value)).join(' • ');
+    return [primary[0], primary[1] === null ? '—' : primary[1], detail];
+  }
+
+  function renderGeneric(view, sectionId, viewKey) {
+    const data = view && view[viewKey] && typeof view[viewKey] === 'object'
+      ? view[viewKey] : null;
+    const status = data && data.status ? data.status : 'DATA_REQUIRED';
+    const title = data && data.title ? data.title : viewKey;
+    const out = resetRoot(sectionId, title, status, view && view.session_date);
+    if (!out) return;
+    if (data && data.note) addMessage(out, data.note);
+    if (data && data.reason && status !== 'READY') addMessage(out, data.reason);
+    if (data && data.state) addRow(out, 'State', data.state, 'Authoritative weekly state');
+    if (viewKey === 'publish' && data && data.full_v38_ready !== undefined) {
+      const counts = data.ready_count !== undefined && data.required_count !== undefined
+        ? String(data.ready_count) + '/' + String(data.required_count) + ' dependencies ready' : '';
+      addRow(out, 'Full V38 ready', data.full_v38_ready ? 'YES' : 'NO', counts);
+    }
+    const rows = data && Array.isArray(data.rows) ? data.rows : [];
+    if (!rows.length) {
+      if (!(data && data.reason)) addMessage(out, 'No authoritative rows for this session.');
       return;
     }
-
-    node.replaceChildren();
-    node.classList.add('v38-live-bound');
-    node.dataset.v38Status = typeof data.status === 'string' ? data.status : 'DATA_REQUIRED';
-    addHead(node, data.title || viewKey, node.dataset.v38Status, view.session_date);
-
-    if (data.note) {
-      appendText(node, 'div', 'v38-live-note', data.note);
-    }
-    if (data.reason && data.status !== 'READY') {
-      appendText(node, 'div', 'v38-live-note', data.reason);
-    }
-    if (data.state) {
-      appendText(node, 'div', 'v38-live-metric-value', data.state);
-    }
-    if (viewKey === 'publish' && data.full_v38_ready !== undefined) {
-      appendText(
-        node,
-        'div',
-        'v38-live-note',
-        'Full V38 ready: ' + (data.full_v38_ready ? 'YES' : 'NO') +
-          (data.ready_count !== undefined && data.required_count !== undefined
-            ? ' • ' + data.ready_count + '/' + data.required_count + ' dependencies ready'
-            : '')
-      );
-    }
-
-    const rows = Array.isArray(data.rows) ? data.rows : [];
-    if (rows.length === 0) {
-      if (!data.reason) {
-        appendText(node, 'div', 'v38-live-note', 'No authoritative rows for this session.');
-      }
-      return;
-    }
-
-    const list = document.createElement('div');
-    list.className = 'v38-generic-list';
-    rows.slice(0, viewKey === 'rules' ? 80 : 40).forEach(
-      (row, index) => {
-        const line = document.createElement('div');
-        line.className = 'v38-generic-row';
-        line.dataset.v38Row = String(index + 1);
-
-        if (
-          viewKey === 'rules' &&
-          row && typeof row.key === 'string'
-        ) {
-          appendText(line, 'span', 'v38-generic-key', row.key);
-          appendText(line, 'span', 'v38-generic-value', row.value);
-        } else {
-          const entries = primitiveEntries(row);
-          if (entries.length === 0) {
-            appendText(line, 'span', 'v38-generic-value', 'Authoritative structured row');
-          } else {
-            entries.forEach(
-              ([key, value]) => {
-                appendText(line, 'span', 'v38-generic-key', key);
-                appendText(line, 'span', 'v38-generic-value', value === null ? '—' : value);
-              }
-            );
-          }
-        }
-        list.appendChild(line);
-      }
-    );
-    node.appendChild(list);
+    rows.slice(0, viewKey === 'rules' ? 80 : 40).forEach((item, i) => {
+      const summary = summarizeRow(item, i + 1, viewKey);
+      addRow(out, summary[0], summary[1], summary[2], i + 1);
+    });
   }
 
   function renderLiveView(view) {
-    ensureLiveStyles();
     renderDaily(view);
     renderRs(view);
-    VIEW_BINDINGS.forEach(
-      (binding) => renderGenericSection(view, binding[0], binding[1])
-    );
+    VIEW_BINDINGS.forEach(([sectionId, viewKey]) => renderGeneric(view, sectionId, viewKey));
+  }
+
+  function setAllUnavailable(detail) {
+    SECTION_IDS.forEach((id) => {
+      const out = resetRoot(id, 'V38', 'DATA_REQUIRED', '—');
+      if (out) addMessage(out, detail);
+    });
   }
 
   async function loadProductionData() {
     const runtime = window.V38Runtime;
     if (!runtime || typeof runtime.loadJson !== 'function') {
-      setAllUnavailable(
-        'Runtime unavailable. Mock values remain shielded.'
-      );
+      setAllUnavailable('Runtime unavailable.');
       return;
     }
-
     try {
       const payload = await runtime.loadJson('data/ui_payload.json');
       renderPayload(payload);
     } catch (_) {
-      setAllUnavailable(
-        'Authoritative ui_payload.json is unavailable. Mock values remain shielded.'
-      );
+      setAllUnavailable('Authoritative ui_payload.json is unavailable.');
       return;
     }
-
     try {
       const view = await runtime.loadJson('data/ui_view_model.json');
       renderLiveView(view);
     } catch (_) {
-      // Keep the already rendered fail-closed payload state.
+      // ui_payload already left every section fail-closed.
     }
   }
 
-  document.addEventListener(
-    'DOMContentLoaded',
-    () => {
-      suppressMockContent();
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll(TAB_SELECTOR).forEach((tab) => {
+      tab.addEventListener('click', (event) => {
+        const target = targetOf(tab);
+        if (!target) return;
+        event.preventDefault();
+        activate(target);
+      });
+    });
 
-      document
-        .querySelectorAll(TAB_SELECTOR)
-        .forEach(
-          (tab) => {
-            tab.addEventListener(
-              'click',
-              (event) => {
-                const target = targetOf(tab);
-                if (!target) {
-                  return;
-                }
-                event.preventDefault();
-                activate(target, true);
-              }
-            );
-          }
-        );
-
-      const requested =
-        window.location.hash
-          ? window.location.hash.slice(1)
-          : '';
-
-      const initiallyActive =
-        Array.from(
-          document.querySelectorAll(TAB_SELECTOR)
-        ).find(
-          (tab) =>
-            tab.classList.contains(
-              'on'
-            )
-        );
-
-      activate(
-        SECTION_IDS.includes(requested)
-          ? requested
-          : (
-              initiallyActive
-                ? targetOf(initiallyActive)
-                : 't-market'
-            ),
-        false
-      );
-
-      loadProductionData();
-    }
-  );
+    const activeTab = Array.from(document.querySelectorAll(TAB_SELECTOR))
+      .find((tab) => tab.classList.contains('on'));
+    const activeSection = SECTION_IDS.find((id) => {
+      const section = document.getElementById(id);
+      return section && section.classList.contains('on');
+    });
+    activate(activeTab ? targetOf(activeTab) : (activeSection || 't-market'));
+    loadProductionData();
+  });
 })();
