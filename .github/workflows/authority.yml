@@ -22,6 +22,11 @@ on:
         description: Repository JSON path for large payloads
         required: false
         type: string
+      payload_ref:
+        description: Git ref containing payload_path (use authority-inbox for large files)
+        required: false
+        default: main
+        type: string
   repository_dispatch:
     types:
       - v38_authority
@@ -41,6 +46,7 @@ jobs:
       AUTH_KIND: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.kind || inputs.kind }}
       AUTH_PAYLOAD_JSON: ${{ github.event_name == 'repository_dispatch' && toJSON(github.event.client_payload.payload) || inputs.payload_json }}
       AUTH_PAYLOAD_PATH: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.payload_path || inputs.payload_path }}
+      AUTH_PAYLOAD_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.payload_ref || inputs.payload_ref || 'main' }}
 
     steps:
       - name: Checkout main
@@ -71,8 +77,11 @@ jobs:
 
           OUT="$RUNNER_TEMP/v38-authority.json"
           if [ -n "${AUTH_PAYLOAD_PATH:-}" ]; then
-            test -f "$AUTH_PAYLOAD_PATH" || { echo "::error::Payload path not found: $AUTH_PAYLOAD_PATH"; exit 1; }
-            cp "$AUTH_PAYLOAD_PATH" "$OUT"
+            git fetch --no-tags --depth=1 origin "$AUTH_PAYLOAD_REF"
+            git show "FETCH_HEAD:${AUTH_PAYLOAD_PATH}" > "$OUT" || {
+              echo "::error::Payload not found at ${AUTH_PAYLOAD_REF}:${AUTH_PAYLOAD_PATH}"
+              exit 1
+            }
           elif [ -n "${AUTH_PAYLOAD_JSON:-}" ] && [ "$AUTH_PAYLOAD_JSON" != "null" ]; then
             printf '%s' "$AUTH_PAYLOAD_JSON" > "$OUT"
           else
