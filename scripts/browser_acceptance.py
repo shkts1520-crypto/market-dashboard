@@ -17,6 +17,15 @@ TAB_LABELS = (
     "Publish",
     "Rules",
 )
+GENERIC_BINDINGS = (
+    ("t-alloc", "positions"),
+    ("t-port", "core12"),
+    ("t-rotation", "rotation"),
+    ("t-weekly", "weekly"),
+    ("t-options", "options"),
+    ("t-post1", "publish"),
+    ("t-rules", "rules"),
+)
 
 
 def _view_model(page):
@@ -50,6 +59,7 @@ def _assert_live_binding(page, view):
     )
     rs_text = rs_card.inner_text()
     assert "not Core 12" in rs_text
+    assert str(rs["status"]) in rs_text
 
     if rs["rows"]:
         first = rs["rows"][0]
@@ -60,6 +70,22 @@ def _assert_live_binding(page, view):
         text = row.inner_text()
         assert first["ticker"] in text
         assert first["rs189_display"] in text
+
+    for section_id, view_key in GENERIC_BINDINGS:
+        page.locator(f'a.tabx[href="#{section_id}"]').click()
+        card = page.locator(
+            f'.v38-production-state[data-v38-section="{section_id}"]'
+        )
+        text = card.inner_text()
+        section = view[view_key]
+        assert str(section["status"]) in text
+        assert str(section.get("title") or view_key) in text
+        assert view["session_date"] in text
+        if section.get("reason") and section["status"] != "READY":
+            assert str(section["reason"]) in text
+        rows = section.get("rows") or []
+        if rows:
+            assert card.locator('[data-v38-row="1"]').count() == 1
 
 
 def main() -> int:
@@ -100,12 +126,7 @@ def main() -> int:
                     assert section.is_visible()
                     assert tab.evaluate("el => el.classList.contains('on')")
                     assert section.evaluate("el => el.classList.contains('on')")
-                    assert (
-                        section.locator(
-                            ".v38-production-state"
-                        ).count()
-                        == 1
-                    )
+                    assert section.locator(".v38-production-state").count() == 1
                     visible_mock = section.locator(
                         ':scope > :not(.v38-production-state):visible'
                     ).count()
