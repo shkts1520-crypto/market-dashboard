@@ -3,12 +3,13 @@ from __future__ import annotations
 import math
 from typing import Any
 
-CALCULATION_VERSION = "v38-tqqq-panic-rules-1.1.0"
+CALCULATION_VERSION = "v38-tqqq-panic-rules-1.2.0"
 BASE_TARGET_PCT = 30
 PANIC_TARGET_PCT = 80
 SEED_MAX_AGE_SESSIONS = 30
 PANIC_MAX_HOLD_SESSIONS = 10
 MC57_MIN_TRIGGER = 20.0
+
 
 class TQQQRuleError(RuntimeError):
     pass
@@ -31,10 +32,22 @@ def panic_seed(*, vix_close: float, qqq_sma50_atr_deviation: float, qqq_dd10: fl
     )
 
 
+def qqq_4h_rsi30_touch(*, prior_rsi14: float, current_rsi14: float) -> bool:
+    """Return True only for the first downward touch/cross of RSI14=30.
+
+    The audited Stage56 contract is TOUCH30, not merely "RSI currently <=30".
+    Remaining below 30 on subsequent 4H bars must not create a new trigger.
+    """
+    prior = _finite(prior_rsi14, "prior_rsi14")
+    current = _finite(current_rsi14, "current_rsi14")
+    return prior > 30.0 and current <= 30.0
+
+
 def panic_trigger(
     *,
     seed_age_sessions: int | None,
     qqq_4h_rsi14: float,
+    prior_qqq_4h_rsi14: float | None = None,
     mc57: float | None,
 ) -> dict[str, Any]:
     if seed_age_sessions is None:
@@ -44,11 +57,26 @@ def panic_trigger(
     if seed_age_sessions < 0:
         raise TQQQRuleError("seed_age_sessions must be >=0")
 
-    rsi = _finite(qqq_4h_rsi14, "qqq_4h_rsi14")
+    current = _finite(qqq_4h_rsi14, "qqq_4h_rsi14")
     if seed_age_sessions > SEED_MAX_AGE_SESSIONS:
         return {"status": "OK", "trigger": False, "reason": "SEED_EXPIRED"}
-    if rsi > 30.0:
+    if current > 30.0:
         return {"status": "OK", "trigger": False, "reason": "QQQ_4H_RSI_ABOVE_30"}
+    if prior_qqq_4h_rsi14 is None:
+        return {
+            "status": "DATA_REQUIRED",
+            "trigger": None,
+            "reason": "PRIOR_QQQ_4H_RSI_REQUIRED_FOR_TOUCH30",
+        }
+
+    prior = _finite(prior_qqq_4h_rsi14, "prior_qqq_4h_rsi14")
+    if not qqq_4h_rsi30_touch(prior_rsi14=prior, current_rsi14=current):
+        return {
+            "status": "OK",
+            "trigger": False,
+            "reason": "NO_NEW_QQQ_4H_RSI30_TOUCH",
+        }
+
     if mc57 is None:
         return {
             "status": "DATA_REQUIRED",
@@ -121,7 +149,7 @@ def panic_position_action(
             "status": "OK",
             "action": "RAISE_TO_80_NEXT_OPEN",
             "target_pct": PANIC_TARGET_PCT,
-            "reason": "SEED_RSI30_MC57_GE_20",
+            "reason": "SEED_RSI30_TOUCH_MC57_GE_20",
         }
     return {
         "status": "OK",

@@ -16,6 +16,16 @@
     't-rules'
   ];
 
+  const VIEW_BINDINGS = [
+    ['t-alloc', 'positions'],
+    ['t-port', 'core12'],
+    ['t-rotation', 'rotation'],
+    ['t-weekly', 'weekly'],
+    ['t-options', 'options'],
+    ['t-post1', 'publish'],
+    ['t-rules', 'rules']
+  ];
+
   function targetOf(tab) {
     const href =
       tab.getAttribute('href') || '';
@@ -129,6 +139,15 @@
     }
   }
 
+  function stateNode(id) {
+    return document.querySelector(
+      '.v38-production-state' +
+      '[data-v38-section="' +
+      id +
+      '"]'
+    );
+  }
+
   function sectionDetail(section) {
     if (
       !section ||
@@ -140,46 +159,27 @@
       );
     }
 
-    const parts =
-      section.components.map(
-        (row) => {
-          const status =
-            typeof row.status === 'string'
-              ? row.status
-              : 'DATA_REQUIRED';
-
-          const reason =
-            typeof row.reason === 'string'
-              ? row.reason
-              : 'UNKNOWN';
-
-          return (
-            row.name +
-            ': ' +
-            status +
-            ' (' +
-            reason +
-            ')'
-          );
-        }
-      );
-
-    return parts.join(' • ');
-  }
-
-  function stateNode(id) {
-    return document.querySelector(
-      '.v38-production-state' +
-      '[data-v38-section="' +
-      id +
-      '"]'
-    );
+    return section.components.map(
+      (row) => {
+        const status =
+          typeof row.status === 'string'
+            ? row.status
+            : 'DATA_REQUIRED';
+        const reason =
+          typeof row.reason === 'string'
+            ? row.reason
+            : 'UNKNOWN';
+        return (
+          row.name + ': ' + status +
+          ' (' + reason + ')'
+        );
+      }
+    ).join(' • ');
   }
 
   function renderPayload(payload) {
     const sections =
-      payload &&
-      payload.sections &&
+      payload && payload.sections &&
       typeof payload.sections === 'object'
         ? payload.sections
         : {};
@@ -187,35 +187,22 @@
     SECTION_IDS.forEach(
       (id) => {
         const node = stateNode(id);
-
         if (!node) {
           return;
         }
-
-        const section =
-          sections[id] || null;
-
+        const section = sections[id] || null;
         const status =
-          section &&
-          typeof section.status === 'string'
+          section && typeof section.status === 'string'
             ? section.status
             : 'DATA_REQUIRED';
-
-        const title =
-          node.querySelector('b');
-
-        const body =
-          node.querySelector('span');
-
+        const title = node.querySelector('b');
+        const body = node.querySelector('span');
         if (title) {
           title.textContent = status;
         }
-
         if (body) {
-          body.textContent =
-            sectionDetail(section);
+          body.textContent = sectionDetail(section);
         }
-
         node.dataset.v38Status = status;
       }
     );
@@ -223,103 +210,90 @@
 
   function setAllUnavailable(detail) {
     document
-      .querySelectorAll(
-        '.v38-production-state'
-      )
+      .querySelectorAll('.v38-production-state')
       .forEach(
         (node) => {
-          const title =
-            node.querySelector('b');
-          const body =
-            node.querySelector('span');
-
+          const title = node.querySelector('b');
+          const body = node.querySelector('span');
           if (title) {
-            title.textContent =
-              'DATA_REQUIRED';
+            title.textContent = 'DATA_REQUIRED';
           }
-
           if (body) {
             body.textContent = detail;
           }
-
-          node.dataset.v38Status =
-            'DATA_REQUIRED';
+          node.dataset.v38Status = 'DATA_REQUIRED';
         }
       );
   }
 
   function ensureLiveStyles() {
-    if (
-      document.getElementById(
-        'v38-live-binding-style'
-      )
-    ) {
+    if (document.getElementById('v38-live-binding-style')) {
       return;
     }
 
-    const style =
-      document.createElement('style');
-
-    style.id =
-      'v38-live-binding-style';
-
+    const style = document.createElement('style');
+    style.id = 'v38-live-binding-style';
     style.textContent = [
-      '.v38-production-state.v38-live-bound{justify-content:flex-start;gap:8px}',
-      '.v38-live-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}',
+      '.v38-production-state.v38-live-bound{justify-content:flex-start;gap:8px;min-width:0}',
+      '.v38-live-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;min-width:0}',
       '.v38-live-head strong{font-size:14px}',
       '.v38-live-status{font-size:10px;opacity:.7}',
-      '.v38-live-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;width:100%}',
-      '.v38-live-metric{min-width:0}',
-      '.v38-live-metric-label,.v38-live-metric-value,.v38-live-metric-meta{display:block;min-width:0;overflow-wrap:anywhere}',
-      '.v38-live-metric-label{font-size:10px;opacity:.7}',
+      '.v38-live-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;width:100%;min-width:0}',
+      '.v38-live-metric,.v38-generic-row{min-width:0}',
+      '.v38-live-metric-label,.v38-live-metric-value,.v38-live-metric-meta,.v38-generic-key,.v38-generic-value{display:block;min-width:0;overflow-wrap:anywhere}',
+      '.v38-live-metric-label,.v38-generic-key{font-size:10px;opacity:.7}',
       '.v38-live-metric-value{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}',
       '.v38-live-metric-meta{font-size:9px;opacity:.6}',
-      '.v38-live-note{font-size:10px;opacity:.7}',
-      '.v38-rs-list{display:grid;gap:4px;width:100%}',
+      '.v38-live-note{font-size:10px;opacity:.7;overflow-wrap:anywhere}',
+      '.v38-rs-list,.v38-generic-list{display:grid;gap:4px;width:100%;min-width:0}',
       '.v38-rs-row{display:grid;grid-template-columns:2rem minmax(3.8rem,1fr) minmax(4rem,.9fr) minmax(3.5rem,.75fr) minmax(3.5rem,.75fr);gap:5px;align-items:center;min-width:0;font-size:10px}',
       '.v38-rs-row>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.v38-rs-row .v38-num{text-align:right;font-variant-numeric:tabular-nums}',
+      '.v38-generic-row{border-top:1px solid rgba(127,127,127,.18);padding-top:6px}',
+      '.v38-generic-value{font-size:11px;white-space:normal;word-break:break-word}',
       '@media(min-width:700px){.v38-live-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}'
     ].join('');
-
     document.head.appendChild(style);
   }
 
-  function appendText(
-    parent,
-    tag,
-    className,
-    text
-  ) {
-    const node =
-      document.createElement(tag);
-
+  function appendText(parent, tag, className, text) {
+    const node = document.createElement(tag);
     if (className) {
       node.className = className;
     }
-
     node.textContent =
       text === null || text === undefined
         ? ''
         : String(text);
-
     parent.appendChild(node);
     return node;
+  }
+
+  function addHead(node, title, status, session) {
+    const head = document.createElement('div');
+    head.className = 'v38-live-head';
+    appendText(
+      head,
+      'strong',
+      '',
+      String(title || 'V38') + ' • ' + String(session || '—')
+    );
+    appendText(
+      head,
+      'span',
+      'v38-live-status',
+      status || 'DATA_REQUIRED'
+    );
+    node.appendChild(head);
   }
 
   function renderDaily(view) {
     const node = stateNode('t-market');
     const daily =
-      view && view.daily &&
-      typeof view.daily === 'object'
+      view && view.daily && typeof view.daily === 'object'
         ? view.daily
         : null;
-
-    if (
-      !node ||
-      !daily ||
-      !Array.isArray(daily.metrics)
-    ) {
+    if (!node || !daily || !Array.isArray(daily.metrics)) {
       return;
     }
 
@@ -329,150 +303,64 @@
       typeof daily.status === 'string'
         ? daily.status
         : 'DATA_REQUIRED';
+    addHead(node, 'Daily', node.dataset.v38Status, view.session_date);
 
-    const head =
-      document.createElement('div');
-    head.className = 'v38-live-head';
-    appendText(
-      head,
-      'strong',
-      '',
-      'Daily • ' + String(view.session_date || '—')
-    );
-    appendText(
-      head,
-      'span',
-      'v38-live-status',
-      node.dataset.v38Status
-    );
-    node.appendChild(head);
-
-    const grid =
-      document.createElement('div');
+    const grid = document.createElement('div');
     grid.className = 'v38-live-grid';
-
     daily.metrics.forEach(
       (metric) => {
         if (!metric || typeof metric !== 'object') {
           return;
         }
-
-        const item =
-          document.createElement('div');
+        const item = document.createElement('div');
         item.className = 'v38-live-metric';
-        item.dataset.v38Metric =
-          String(metric.key || '');
-
-        appendText(
-          item,
-          'span',
-          'v38-live-metric-label',
-          metric.label || metric.key || '—'
-        );
-        appendText(
-          item,
-          'span',
-          'v38-live-metric-value',
-          metric.display || '—'
-        );
-
-        const status =
-          typeof metric.status === 'string'
-            ? metric.status
-            : 'DATA_REQUIRED';
+        item.dataset.v38Metric = String(metric.key || '');
+        appendText(item, 'span', 'v38-live-metric-label', metric.label || metric.key || '—');
+        appendText(item, 'span', 'v38-live-metric-value', metric.display || '—');
+        const status = typeof metric.status === 'string' ? metric.status : 'DATA_REQUIRED';
         const severity =
-          typeof metric.severity === 'string' &&
-          metric.severity !== 'NO_JUDGMENT'
+          typeof metric.severity === 'string' && metric.severity !== 'NO_JUDGMENT'
             ? metric.severity
             : '';
-
         if (status !== 'READY' || severity) {
           const reason =
-            status !== 'READY' &&
-            typeof metric.reason === 'string'
+            status !== 'READY' && typeof metric.reason === 'string'
               ? metric.reason
               : '';
           appendText(
             item,
             'span',
             'v38-live-metric-meta',
-            [severity, reason]
-              .filter(Boolean)
-              .join(' • ')
+            [severity, reason].filter(Boolean).join(' • ')
           );
         }
-
         grid.appendChild(item);
       }
     );
-
     node.appendChild(grid);
   }
 
   function renderRs(view) {
     const node = stateNode('t-rs');
-    const rs =
-      view && view.rs &&
-      typeof view.rs === 'object'
-        ? view.rs
-        : null;
-
+    const rs = view && view.rs && typeof view.rs === 'object' ? view.rs : null;
     if (!node || !rs) {
       return;
     }
 
     node.replaceChildren();
     node.classList.add('v38-live-bound');
-    node.dataset.v38Status =
-      typeof rs.status === 'string'
-        ? rs.status
-        : 'DATA_REQUIRED';
+    node.dataset.v38Status = typeof rs.status === 'string' ? rs.status : 'DATA_REQUIRED';
+    addHead(node, rs.title || 'RS189 Top 24', node.dataset.v38Status, view.session_date);
+    appendText(node, 'div', 'v38-live-note', rs.note || '');
 
-    const head =
-      document.createElement('div');
-    head.className = 'v38-live-head';
-    appendText(
-      head,
-      'strong',
-      '',
-      String(rs.title || 'RS189 Top 24') +
-        ' • ' +
-        String(view.session_date || '—')
-    );
-    appendText(
-      head,
-      'span',
-      'v38-live-status',
-      node.dataset.v38Status
-    );
-    node.appendChild(head);
-
-    appendText(
-      node,
-      'div',
-      'v38-live-note',
-      rs.note || ''
-    );
-
-    if (
-      !Array.isArray(rs.rows) ||
-      rs.rows.length === 0
-    ) {
-      appendText(
-        node,
-        'div',
-        'v38-live-note',
-        rs.reason || 'RS data unavailable.'
-      );
+    if (!Array.isArray(rs.rows) || rs.rows.length === 0) {
+      appendText(node, 'div', 'v38-live-note', rs.reason || 'RS data unavailable.');
       return;
     }
 
-    const list =
-      document.createElement('div');
+    const list = document.createElement('div');
     list.className = 'v38-rs-list';
-
-    const header =
-      document.createElement('div');
+    const header = document.createElement('div');
     header.className = 'v38-rs-row';
     appendText(header, 'span', '', '#');
     appendText(header, 'span', '', 'Ticker');
@@ -486,13 +374,9 @@
         if (!row || typeof row !== 'object') {
           return;
         }
-
-        const line =
-          document.createElement('div');
+        const line = document.createElement('div');
         line.className = 'v38-rs-row';
-        line.dataset.v38RsTicker =
-          String(row.ticker || '');
-
+        line.dataset.v38RsTicker = String(row.ticker || '');
         appendText(line, 'span', '', row.rank);
         appendText(line, 'span', '', row.ticker || '—');
         appendText(line, 'span', 'v38-num', row.price_display || '—');
@@ -501,7 +385,103 @@
         list.appendChild(line);
       }
     );
+    node.appendChild(list);
+  }
 
+  function primitiveEntries(row) {
+    if (!row || typeof row !== 'object') {
+      return [];
+    }
+    return Object.keys(row)
+      .filter(
+        (key) => {
+          const value = row[key];
+          return (
+            value === null ||
+            typeof value === 'string' ||
+            typeof value === 'number' ||
+            typeof value === 'boolean'
+          );
+        }
+      )
+      .slice(0, 8)
+      .map((key) => [key, row[key]]);
+  }
+
+  function renderGenericSection(view, sectionId, viewKey) {
+    const node = stateNode(sectionId);
+    const data =
+      view && view[viewKey] && typeof view[viewKey] === 'object'
+        ? view[viewKey]
+        : null;
+    if (!node || !data) {
+      return;
+    }
+
+    node.replaceChildren();
+    node.classList.add('v38-live-bound');
+    node.dataset.v38Status = typeof data.status === 'string' ? data.status : 'DATA_REQUIRED';
+    addHead(node, data.title || viewKey, node.dataset.v38Status, view.session_date);
+
+    if (data.note) {
+      appendText(node, 'div', 'v38-live-note', data.note);
+    }
+    if (data.reason && data.status !== 'READY') {
+      appendText(node, 'div', 'v38-live-note', data.reason);
+    }
+    if (data.state) {
+      appendText(node, 'div', 'v38-live-metric-value', data.state);
+    }
+    if (viewKey === 'publish' && data.full_v38_ready !== undefined) {
+      appendText(
+        node,
+        'div',
+        'v38-live-note',
+        'Full V38 ready: ' + (data.full_v38_ready ? 'YES' : 'NO') +
+          (data.ready_count !== undefined && data.required_count !== undefined
+            ? ' • ' + data.ready_count + '/' + data.required_count + ' dependencies ready'
+            : '')
+      );
+    }
+
+    const rows = Array.isArray(data.rows) ? data.rows : [];
+    if (rows.length === 0) {
+      if (!data.reason) {
+        appendText(node, 'div', 'v38-live-note', 'No authoritative rows for this session.');
+      }
+      return;
+    }
+
+    const list = document.createElement('div');
+    list.className = 'v38-generic-list';
+    rows.slice(0, viewKey === 'rules' ? 80 : 40).forEach(
+      (row, index) => {
+        const line = document.createElement('div');
+        line.className = 'v38-generic-row';
+        line.dataset.v38Row = String(index + 1);
+
+        if (
+          viewKey === 'rules' &&
+          row && typeof row.key === 'string'
+        ) {
+          appendText(line, 'span', 'v38-generic-key', row.key);
+          appendText(line, 'span', 'v38-generic-value', row.value);
+        } else {
+          const entries = primitiveEntries(row);
+          if (entries.length === 0) {
+            appendText(line, 'span', 'v38-generic-value', 'Authoritative structured row');
+          } else {
+            entries.forEach(
+              ([key, value]) => {
+                appendText(line, 'span', 'v38-generic-key', key);
+                appendText(line, 'span', 'v38-generic-value', value === null ? '—' : value);
+              }
+            );
+          }
+        }
+        list.appendChild(line);
+      }
+    );
     node.appendChild(list);
   }
 
@@ -509,46 +489,32 @@
     ensureLiveStyles();
     renderDaily(view);
     renderRs(view);
+    VIEW_BINDINGS.forEach(
+      (binding) => renderGenericSection(view, binding[0], binding[1])
+    );
   }
 
   async function loadProductionData() {
-    const runtime =
-      window.V38Runtime;
-
-    if (
-      !runtime ||
-      typeof runtime.loadJson !==
-        'function'
-    ) {
+    const runtime = window.V38Runtime;
+    if (!runtime || typeof runtime.loadJson !== 'function') {
       setAllUnavailable(
-        'Runtime unavailable. ' +
-        'Mock values remain shielded.'
+        'Runtime unavailable. Mock values remain shielded.'
       );
       return;
     }
 
     try {
-      const payload =
-        await runtime.loadJson(
-          'data/ui_payload.json'
-        );
-
+      const payload = await runtime.loadJson('data/ui_payload.json');
       renderPayload(payload);
     } catch (_) {
       setAllUnavailable(
-        'Authoritative ui_payload.json ' +
-        'is unavailable. ' +
-        'Mock values remain shielded.'
+        'Authoritative ui_payload.json is unavailable. Mock values remain shielded.'
       );
       return;
     }
 
     try {
-      const view =
-        await runtime.loadJson(
-          'data/ui_view_model.json'
-        );
-
+      const view = await runtime.loadJson('data/ui_view_model.json');
       renderLiveView(view);
     } catch (_) {
       // Keep the already rendered fail-closed payload state.
@@ -561,27 +527,18 @@
       suppressMockContent();
 
       document
-        .querySelectorAll(
-          TAB_SELECTOR
-        )
+        .querySelectorAll(TAB_SELECTOR)
         .forEach(
           (tab) => {
             tab.addEventListener(
               'click',
               (event) => {
-                const target =
-                  targetOf(tab);
-
+                const target = targetOf(tab);
                 if (!target) {
                   return;
                 }
-
                 event.preventDefault();
-
-                activate(
-                  target,
-                  true
-                );
+                activate(target, true);
               }
             );
           }
@@ -594,9 +551,7 @@
 
       const initiallyActive =
         Array.from(
-          document.querySelectorAll(
-            TAB_SELECTOR
-          )
+          document.querySelectorAll(TAB_SELECTOR)
         ).find(
           (tab) =>
             tab.classList.contains(
@@ -609,9 +564,7 @@
           ? requested
           : (
               initiallyActive
-                ? targetOf(
-                    initiallyActive
-                  )
+                ? targetOf(initiallyActive)
                 : 't-market'
             ),
         false

@@ -4,10 +4,11 @@ import json
 import math
 import os
 import tempfile
+from datetime import date
 from pathlib import Path
 from typing import Any
 
-CALCULATION_VERSION = "v38-f123-engine-1.0.0"
+CALCULATION_VERSION = "v38-f123-engine-1.1.0"
 SCHEMA_VERSION = "v38.f123.1"
 
 PRICE_MIN = 5.0
@@ -17,6 +18,7 @@ TOP_N = 24
 DROP_RANK = 36
 F1_COV_FULL = 0.90
 F1_COV_MIN = 0.70
+F1_LAG_SESSIONS = 20
 
 
 class F123Error(RuntimeError):
@@ -43,9 +45,22 @@ def _finite(v: Any) -> float | None:
     return None
 
 
+def _iso_date(v: Any) -> str | None:
+    if not isinstance(v, str):
+        return None
+    text = v.strip()
+    if not text:
+        return None
+    try:
+        parsed = date.fromisoformat(text)
+    except ValueError:
+        return None
+    return text if parsed.isoformat() == text else None
+
+
 def _session(obj: dict[str, Any], label: str) -> str:
-    s = obj.get("session_date")
-    if not isinstance(s, str) or len(s) != 10:
+    s = _iso_date(obj.get("session_date"))
+    if s is None:
         raise F123Error(f"{label}.session_date is required")
     return s
 
@@ -71,9 +86,6 @@ def _base_pool_row(row: dict[str, Any]) -> bool:
 def _observable_f1(row: dict[str, Any] | None) -> bool:
     if row is None:
         return False
-    # Current observation is usable only when the inputs needed to evaluate the
-    # historical leader today are all present. Missing/invalid names are UNKNOWN,
-    # never silently counted as drops.
     return all(
         _finite(row.get(k)) is not None
         for k in ("price", "ddv20", "sma50", "sma200", "rs189")
@@ -97,15 +109,79 @@ def _severity(value: float | None, warn: float, severe: float) -> str:
     return "NORMAL"
 
 
-def _old_top24_tickers(old_top24: dict[str, Any] | None) -> tuple[list[str], dict[str, Any]]:
+def _unverified(reason_detail: str, **extra: Any) -> tuple[list[str], dict[str, Any]]:
+    meta: dict[str, Any] = {
+        "status": "DATA_REQUIRED",
+        "reason": "PIT_OLD_TOP24_PROVENANCE_UNVERIFIED",
+        "detail": reason_detail,
+        "required": {
+            "lag_sessions": F1_LAG_SESSIONS,
+            "pit_frozen": True,
+            "target_session_date": "current rs.session_date",
+            "session_sequence_count": F1_LAG_SESSIONS + 1,
+            "calendar_source": "non-empty",
+            "source": "non-empty",
+            "calculation_version": "non-empty",
+        },
+    }
+    meta.update(extra)
+    return [], meta
+
+
+def _old_top24_tickers(
+    old_top24: dict[str, Any] | None,
+    *,
+    current_session_date: str,
+) -> tuple[list[str], dict[str, Any]]:
     if old_top24 is None:
         return [], {"status": "DATA_REQUIRED", "reason": "PIT_OLD_TOP24_MISSING"}
-    if old_top24.get("lag_sessions") != 20 or old_top24.get("pit_frozen") is not True:
-        return [], {
-            "status": "DATA_REQUIRED",
-            "reason": "PIT_OLD_TOP24_PROVENANCE_UNVERIFIED",
-            "required": {"lag_sessions": 20, "pit_frozen": True},
-        }
+
+    if old_top24.get("lag_sessions") != F1_LAG_SESSIONS or old_top24.get("pit_frozen") is not True:
+        return _unverified("lag_sessions/pit_frozen mismatch")
+
+    old_session = _iso_date(old_top24.get("session_date"))
+    target_session = _iso_date(old_top24.get("target_session_date"))
+    source = old_top24.get("source")
+    calculation_version = old_top24.get("calculation_version")
+    calendar_source = old_top24.get("calendar_source")
+    if old_session is None:
+        return _unverified("session_date missing or invalid")
+    if target_session != current_session_date:
+        return _unverified(
+            "target_session_date does not match current rs.session_date",
+            session_date=old_session,
+            target_session_date=target_session,
+        )
+    if old_session >= current_session_date:
+        return _unverified("old session must precede current session", session_date=old_session)
+    if not isinstance(source, str) or not source.strip():
+        return _unverified("source missing")
+    if not isinstance(calculation_version, str) or not calculation_version.strip():
+        return _unverified("calculation_version missing")
+    if not isinstance(calendar_source, str) or not calendar_source.strip():
+        return _unverified("calendar_source missing")
+
+    sequence_raw = old_top24.get("session_sequence")
+    if not isinstance(sequence_raw, list):
+        return _unverified("session_sequence missing")
+    sequence = [_iso_date(x) for x in sequence_raw]
+    if any(x is None for x in sequence):
+        return _unverified("session_sequence contains invalid dates")
+    session_sequence = [str(x) for x in sequence]
+    if len(session_sequence) != F1_LAG_SESSIONS + 1:
+        return _unverified(
+            "session_sequence must contain exactly 21 sessions for a 20-session lag",
+            sequence_count=len(session_sequence),
+        )
+    if len(set(session_sequence)) != len(session_sequence) or session_sequence != sorted(session_sequence):
+        return _unverified("session_sequence must be unique and strictly ascending")
+    if session_sequence[0] != old_session or session_sequence[-1] != current_session_date:
+        return _unverified(
+            "session_sequence endpoints do not match old/current sessions",
+            sequence_first=session_sequence[0],
+            sequence_last=session_sequence[-1],
+        )
+
     rows = old_top24.get("rows")
     if not isinstance(rows, list):
         raise F123Error("old_top24.rows must be a list")
@@ -127,9 +203,14 @@ def _old_top24_tickers(old_top24: dict[str, Any] | None) -> tuple[list[str], dic
         raise F123Error("old_top24 contains more than 24 unique tickers")
     return tickers, {
         "status": "OK",
-        "session_date": old_top24.get("session_date"),
-        "source": old_top24.get("source"),
-        "calculation_version": old_top24.get("calculation_version"),
+        "session_date": old_session,
+        "target_session_date": current_session_date,
+        "lag_sessions": F1_LAG_SESSIONS,
+        "pit_frozen": True,
+        "calendar_source": calendar_source,
+        "source": source,
+        "calculation_version": calculation_version,
+        "session_sequence_count": len(session_sequence),
         "count": len(tickers),
     }
 
@@ -162,9 +243,10 @@ def calculate_f123(
 
     pool, rank_now = _rank_pool(rows)
 
-    # F1: requires an explicit PIT-frozen old Top24 artifact. We intentionally do
-    # not synthesize it from today's universe or from a previous static snapshot.
-    old_names, old_meta = _old_top24_tickers(old_top24)
+    old_names, old_meta = _old_top24_tickers(
+        old_top24,
+        current_session_date=session_date,
+    )
     if not old_names:
         f1 = {
             "value": None,
@@ -220,8 +302,6 @@ def calculate_f123(
             "dependency": old_meta,
         }
 
-    # F2: current base-pool RS189 Top24; names without RS63 are excluded from the
-    # denominator rather than interpreted as weak.
     top24 = pool[:TOP_N]
     f2_obs = [r for r in top24 if _finite(r.get("rs63")) is not None]
     f2_weak = [r for r in f2_obs if float(r["rs63"]) < LEADER_RS]
@@ -236,9 +316,6 @@ def calculate_f123(
         "weak": [str(r["ticker"]) for r in sorted(f2_weak, key=lambda r: rank_now[str(r["ticker"])])][:8],
     }
 
-    # F3: base pool -> RS189>=85 and Close>SMA200. Ret20/Dist52 missing does not
-    # turn into False/zero; it makes that queue member unobservable for a valid
-    # F3 value, because the break condition cannot be evaluated safely.
     queue = [
         r for r in pool
         if float(r["rs189"]) >= LEADER_RS
@@ -284,7 +361,7 @@ def calculate_f123(
         "f3": f3,
         "rules": {
             "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
-            "f1": "20-session-ago PIT Top24; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
+            "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
             "f1_coverage": ">=90% FULL; 70%-<90% PARTIAL; <70% DATA_INCOMPLETE",
             "f2": "current base-pool RS189 Top24; fraction of RS63-observable names with RS63<85",
             "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; break=Ret20<=0 OR Dist52<-15%; queue<3 no judgment",
