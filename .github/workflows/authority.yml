@@ -129,10 +129,10 @@ jobs:
           )"
           CHANGED="$({ git diff --name-only; git ls-files --others --exclude-standard; } | sort -u)"
           printf 'Expected authority target: %s\nChanged files:\n%s\n' "$TARGET" "$CHANGED"
-          [ "$CHANGED" = "$TARGET" ] || {
+          if [ -n "$CHANGED" ] && [ "$CHANGED" != "$TARGET" ]; then
             echo "::error::Authority ingestion changed files outside its target"
             exit 1
-          }
+          fi
           echo "TARGET=$TARGET" >> "$GITHUB_ENV"
 
       - name: Commit authority
@@ -140,6 +140,10 @@ jobs:
         run: |
           set -euo pipefail
           git add -- "$TARGET"
+          if git diff --cached --quiet; then
+            echo 'Authority is already current; no commit required.'
+            exit 0
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           SESSION="$(python - <<'PY'
