@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-live-acquisition-1.0.0",
-  "coverage": 0.9828807556080283,
-  "generated_at": "2026-09-10T23:29:35Z",
+  "coverage": 0.9997049277072882,
+  "generated_at": "2026-09-11T04:31:01Z",
   "schema_version": "v38.state.1",
   "session_date": "2026-09-10",
   "source": "authoritative-session:QQQ+SPY; universe:TradingView; prices:Yahoo",
