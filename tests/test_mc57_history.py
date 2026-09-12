@@ -12,7 +12,7 @@ from v38.mc57_history import (
 from v38.mc57_live import FIXED_57_ETFS, build_mc57_object, load_verified_reference
 
 
-def _closes(periods: int = 4100) -> dict[str, pd.Series]:
+def _closes(periods: int = 4400) -> dict[str, pd.Series]:
     idx = pd.bdate_range("2010-01-04", periods=periods)
     x = np.arange(periods, dtype=float)
     out: dict[str, pd.Series] = {}
