@@ -317,7 +317,7 @@ jobs:
 
           git add -- data/history
 
-          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json; do
+          for path in data/nqsar.json data/theme_scores.json data/theme_membership.json data/theme_rotation_recovered.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json; do
             if [ -f "$path" ]; then git add -- "$path"; fi
           done
 
