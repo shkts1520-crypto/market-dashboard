@@ -242,15 +242,13 @@
       const ticker = String(rsItem.getAttribute('data-v38-rs-ticker') || '').trim().toUpperCase();
       if (TICKER_RE.test(ticker)) return ticker;
     }
+    // Generic cards are accepted only when they explicitly label a Ticker/Symbol.
+    // Never infer arbitrary uppercase words (NORMAL, ENTRY, READY...) as symbols.
     const item = target.closest('.rsx-item,.slrow,.l');
     if (item) {
       const text = String(item.textContent || '').toUpperCase();
       const explicit = text.match(/(?:TICKER|SYMBOL)\s+([A-Z][A-Z0-9.\-]{0,9})/);
       if (explicit && TICKER_RE.test(explicit[1])) return explicit[1];
-      const candidates = text.match(/\b[A-Z][A-Z0-9.\-]{0,5}\b/g) || [];
-      const ignored = new Set(['RS','RS63','RS126','RS189','DDV','PRICE','READY','CURRENT','DTE','ETF','TOP']);
-      const ticker = candidates.find((value) => TICKER_RE.test(value) && !ignored.has(value));
-      if (ticker) return ticker;
     }
     return null;
   }
