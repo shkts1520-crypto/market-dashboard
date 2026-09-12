@@ -7,11 +7,12 @@ from typing import Any
 
 from .freshness import atomic_write_json
 
-CALCULATION_VERSION = "v38-rs-history-1.0.0"
+CALCULATION_VERSION = "v38-rs-history-1.1.0"
 SCHEMA_VERSION = "v38.rs_history.1"
 MAX_SNAPSHOTS = 320
 RS_WINDOWS = (63, 126, 189)
 COMPARISON_LAGS = ((1, "1日", "前営業日"), (5, "1週", "約5営業日前"), (21, "1か月", "約21営業日前"))
+RECONSTRUCTED_HISTORY_NAME = "reconstructed_stock_metrics.json"
 
 
 class RSHistoryError(RuntimeError):
@@ -81,12 +82,62 @@ def _current_snapshot(rs: dict[str, Any], session_date: str) -> dict[str, Any]:
     }
 
 
-def _seed_from_archive(history_dir: Path) -> dict[str, dict[str, Any]]:
-    """Recover only what the old archive actually proves.
+def _seed_from_reconstruction(history_dir: Path) -> dict[str, dict[str, Any]]:
+    """Seed display history from the same downloaded OHLC used by production.
 
-    Legacy session snapshots stored RS189-sorted top rows, not complete RS63/126
-    rankings.  Therefore only the RS189 window is seeded from those files.  We
-    never reinterpret the RS189 top100 as a short/mid-window Top10.
+    The reconstructed file deliberately uses the current universe for old dates.
+    It is therefore valid for display/history diagnostics, but is not PIT evidence
+    and must never be promoted into a normal-stock trading gate.
+    """
+    obj = _load(history_dir / RECONSTRUCTED_HISTORY_NAME)
+    if not obj or obj.get("status") != "READY" or obj.get("history_kind") != "CURRENT_UNIVERSE_RECONSTRUCTED":
+        return {}
+    raw_rows = obj.get("rows")
+    if not isinstance(raw_rows, list):
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for raw in raw_rows:
+        if not isinstance(raw, dict) or not isinstance(raw.get("date"), str):
+            continue
+        day = raw["date"]
+        rs_top = raw.get("rs_top")
+        rs_windows = raw.get("rs_windows")
+        if not isinstance(rs_top, list):
+            continue
+        windows: dict[str, list[dict[str, Any]]] = {"63": [], "126": [], "189": []}
+        if isinstance(rs_windows, dict):
+            for period in (63, 126):
+                rows = rs_windows.get(str(period))
+                if isinstance(rows, list):
+                    windows[str(period)] = [
+                        _clean_record(row, rank)
+                        for rank, row in enumerate(rows[:10], start=1)
+                        if isinstance(row, dict) and str(row.get("ticker") or "").strip()
+                    ]
+        windows["189"] = [
+            _clean_record(row, rank)
+            for rank, row in enumerate(rs_top[:100], start=1)
+            if isinstance(row, dict) and str(row.get("ticker") or "").strip()
+        ]
+        if any(windows.values()):
+            out[day] = {
+                "date": day,
+                "windows": windows,
+                "window_source": {
+                    "63": "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC",
+                    "126": "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC",
+                    "189": "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC",
+                },
+            }
+    return out
+
+
+def _seed_from_archive(history_dir: Path) -> dict[str, dict[str, Any]]:
+    """Recover only what the legacy observed archive actually proves.
+
+    Session snapshots stored RS189-sorted top rows, not complete RS63/126
+    rankings. Therefore only RS189 is seeded here. Exact RS63/126 snapshots from
+    dates when this dashboard was already running are preserved separately.
     """
     out: dict[str, dict[str, Any]] = {}
     sessions = history_dir / "sessions"
@@ -118,13 +169,22 @@ def _seed_from_archive(history_dir: Path) -> dict[str, dict[str, Any]]:
     return out
 
 
-def _preserved_snapshots(existing: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+def _preserved_observed_snapshots(existing: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    """Keep only previously captured exact current-session RS windows.
+
+    Reconstructed sessions are regenerated from OHLC every run and are not kept
+    from the previous output. This prevents stale reconstructions from overriding
+    a refreshed historical calculation.
+    """
     out: dict[str, dict[str, Any]] = {}
     raw = existing.get("snapshots") if isinstance(existing, dict) else None
     if not isinstance(raw, list):
         return out
     for snapshot in raw:
         if not isinstance(snapshot, dict) or not isinstance(snapshot.get("date"), str):
+            continue
+        source_map = snapshot.get("window_source")
+        if not isinstance(source_map, dict) or "CURRENT_RS_FULL_UNIVERSE" not in set(source_map.values()):
             continue
         windows = snapshot.get("windows")
         if not isinstance(windows, dict):
@@ -142,7 +202,7 @@ def _preserved_snapshots(existing: dict[str, Any] | None) -> dict[str, dict[str,
         out[snapshot["date"]] = {
             "date": snapshot["date"],
             "windows": clean_windows,
-            "window_source": dict(snapshot.get("window_source") or {}),
+            "window_source": dict(source_map),
         }
     return out
 
@@ -361,25 +421,45 @@ def build_rs_history(
 ) -> dict[str, Any]:
     if rs.get("session_date") != session_date:
         raise RSHistoryError(f"rs session mismatch: {rs.get('session_date')} != {session_date}")
-    snapshots = _seed_from_archive(Path(history_dir))
-    snapshots.update(_preserved_snapshots(existing))
+    root = Path(history_dir)
+    reconstructed = _seed_from_reconstruction(root)
+    snapshots = dict(reconstructed)
+    snapshots.update(_seed_from_archive(root))
+    snapshots.update(_preserved_observed_snapshots(existing))
     snapshots[session_date] = _current_snapshot(rs, session_date)
     ordered = [snapshots[day] for day in sorted(snapshots) if day <= session_date][-MAX_SNAPSHOTS:]
     windows = {str(period): _window_output(ordered, period) for period in RS_WINDOWS}
     persistence = _persistence_output(ordered)
-    observed = len(ordered)
+    session_count = len(ordered)
+    reconstructed_count = sum(
+        1 for snapshot in ordered
+        if "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC" in set((snapshot.get("window_source") or {}).values())
+    )
+    has_reconstruction = reconstructed_count > 0
     return {
         "session_date": session_date,
         "generated_at": generated_at,
         "coverage": min(1.0, persistence["observed_sessions"] / 21.0),
-        "source": "observed V38 session archive + current RS universe; no retrospective PIT backfill",
+        "source": (
+            "Yahoo adjusted OHLC current-universe reconstruction + observed V38 session archive + current RS universe"
+            if has_reconstruction
+            else "observed V38 session archive + current RS universe"
+        ),
         "schema_version": SCHEMA_VERSION,
         "calculation_version": CALCULATION_VERSION,
         "status": "READY",
-        "observed_sessions": observed,
+        "history_kind": "CURRENT_UNIVERSE_RECONSTRUCTED" if has_reconstruction else "OBSERVED_ARCHIVE_ONLY",
+        "observed_sessions": session_count,
+        "reconstructed_sessions": reconstructed_count,
         "first_observed_session": ordered[0]["date"] if ordered else session_date,
         "latest_observed_session": ordered[-1]["date"] if ordered else session_date,
-        "history_policy": "Only actually archived sessions are used. Missing pre-recovery history is never fabricated.",
+        "survivorship_warning": has_reconstruction,
+        "trading_gate_eligible": False,
+        "history_policy": (
+            "Historical RS ranks are recomputed from downloaded split-adjusted Yahoo OHLC using the current universe; exact PIT membership is unavailable for reconstructed dates. Exact observed sessions override reconstructed windows."
+            if has_reconstruction
+            else "Only actually archived sessions are used. Missing pre-recovery history is not filled."
+        ),
         "windows": windows,
         "persistence": persistence,
         "snapshots": ordered,
