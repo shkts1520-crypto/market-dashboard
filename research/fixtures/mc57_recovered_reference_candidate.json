@@ -1,0 +1,55 @@
+{
+  "schema_version": "v38.mc57.recovered-reference-candidate.1",
+  "research_only": true,
+  "production_authority": false,
+  "verified": false,
+  "source": "Recovered legacy V38 builder MICRO_ETFS (56) plus QQQE; final formula separately confirmed by 2026-09-06 audit and 2026-09-10 master handoff",
+  "etf_universe": [
+    "SMH", "XSD", "DRAM", "SOXX",
+    "DTCR", "IGV", "WCLD", "SKYY",
+    "CIBR", "AIQ", "QTUM", "BOTZ", "ARKW",
+    "XBI", "IHI", "PPH", "GNOM",
+    "KBE", "KRE", "IAI", "KIE",
+    "XOP", "OIH", "XES",
+    "TAN", "ICLN", "GRID", "FAN",
+    "URA", "NLR", "LIT", "HYDR",
+    "GDX", "SIL", "COPX", "XME", "SLX", "REMX",
+    "ITA", "SHLD", "XAR",
+    "JETS", "IYT", "BOAT",
+    "XHB", "PAVE", "PKB",
+    "XRT", "IBUY", "PEJ",
+    "BLOK", "WGMI", "DRIV",
+    "MOO", "PHO", "WOOD",
+    "QQQE"
+  ],
+  "universe_count": 57,
+  "universe_identity_status": "RECOVERED_STRONG_EVIDENCE_NOT_FINAL_AUTHORITY",
+  "formula_contract": {
+    "metric_count": 12,
+    "dd52": "clip((DD52 + 0.30) / 0.25 * 100, 0, 100)",
+    "ema_span": 2,
+    "ema_adjust": false,
+    "calibration_lookback_sessions": 3780,
+    "calibration_excludes_current": true,
+    "std_ddof": 0,
+    "transform": "100/(1+3**(-Z))"
+  },
+  "price_contract": {
+    "status": "UNRESOLVED_FINAL_ENVIRONMENT",
+    "candidate": "adjusted daily close",
+    "evidence": "Legacy 56+QQQE fetch omitted auto_adjust; yfinance >=0.2.54 defaults to auto_adjust=True, but exact final production yfinance version has not been recovered."
+  },
+  "golden_fixture_sha256": null,
+  "golden_status": "MISSING_POST_STANDARDIZATION_3_DAY_FIXTURE",
+  "rejected_historical_reference": {
+    "date": "2026-08-28",
+    "value": 56.438985,
+    "reason": "Pre/forked numerical generation; 2026-09-06 audit states Stage56 legacy MC input and current MC15/MC57 scale are not interchangeable. Do not use as final MC57 golden."
+  },
+  "promotion_requirements": [
+    "Recover or recreate a verified post-standardization fixture for at least 3 sessions containing per-metric coverage, DD52 score, Raw, EMA2 Raw, prior mu/sigma and MC57.",
+    "Freeze the final data-source contract including adjusted/unadjusted behavior, calendar, timezone and completed-session cutoff.",
+    "Verify the 57-ticker list/order/substitution policy against final source or fixture.",
+    "Only then set verified=true and populate golden_fixture_sha256."
+  ]
+}
