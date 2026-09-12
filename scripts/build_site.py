@@ -17,6 +17,23 @@ from v38.ui_contract import (
 )
 
 
+def _inject_external_extension(out: Path, asset: Path) -> bool:
+    if not asset.is_file():
+        return False
+    asset_dir = out.parent / "assets"
+    asset_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(asset, asset_dir / asset.name)
+
+    html = out.read_text(encoding="utf-8")
+    marker = f'<script src="assets/{asset.name}" defer></script>'
+    if marker not in html:
+        if "</body>" not in html:
+            raise RuntimeError("production body end tag is missing")
+        html = html.replace("</body>", marker + "\n</body>", 1)
+        out.write_text(html, encoding="utf-8")
+    return True
+
+
 def main() -> int:
     p = argparse.ArgumentParser(
         description=(
@@ -45,11 +62,14 @@ def main() -> int:
         args.output,
     )
 
-    extension = Path("assets/v38-observables.js")
-    if extension.is_file():
+    observables = Path("assets/v38-observables.js")
+    if observables.is_file():
         asset_dir = out.parent / "assets"
         asset_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(extension, asset_dir / extension.name)
+        shutil.copy2(observables, asset_dir / observables.name)
+
+    recovery = Path("assets/v38-recovery.js")
+    recovery_enabled = _inject_external_extension(out, recovery)
 
     report = (
         validate_production_html(
@@ -96,7 +116,8 @@ def main() -> int:
                 ),
                 "canonical_dom_preserved": True,
                 "legacy_replacement_cards": False,
-                "observables_extension": extension.is_file(),
+                "observables_extension": observables.is_file(),
+                "recovery_extension": recovery_enabled,
             },
             ensure_ascii=False,
             sort_keys=True,
