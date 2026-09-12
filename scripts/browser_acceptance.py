@@ -28,8 +28,19 @@ def _view_model(page):
     )
 
 
-def _assert_live_binding(page, view):
-    page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
+def _assert_live_binding(page, view, page_errors, console_errors):
+    page.wait_for_function(
+        "['ready', 'failed'].includes(document.body.dataset.v38BindingStatus)"
+    )
+    binding_status = page.evaluate(
+        "document.body.dataset.v38BindingStatus || ''"
+    )
+    assert binding_status == "ready", (
+        "live binding did not reach ready; "
+        f"status={binding_status!r}; "
+        f"page_errors={page_errors!r}; "
+        f"console_errors={console_errors!r}"
+    )
     body_text = page.locator("body").inner_text()
     assert "MOCK DATA" not in body_text
     assert "分析基準日 2026-09-08" not in body_text
@@ -98,7 +109,13 @@ def main() -> int:
             for width in WIDTHS:
                 page = browser.new_page(viewport={"width": width, "height": 900})
                 page_errors: list[str] = []
+                console_errors: list[str] = []
                 page.on("pageerror", lambda exc: page_errors.append(str(exc)))
+                page.on(
+                    "console",
+                    lambda msg: console_errors.append(msg.text)
+                    if msg.type == "error" else None,
+                )
                 page.goto(args.url, wait_until="networkidle")
 
                 tabs = page.locator("a.tabx")
@@ -106,7 +123,7 @@ def main() -> int:
                 assert [tabs.nth(i).inner_text().strip() for i in range(9)] == list(TAB_LABELS)
 
                 view = _view_model(page)
-                _assert_live_binding(page, view)
+                _assert_live_binding(page, view, page_errors, console_errors)
 
                 for i in range(9):
                     tab = tabs.nth(i)
@@ -138,6 +155,7 @@ def main() -> int:
                 assert metrics["scrollWidth"] <= metrics["innerWidth"] + 1
                 assert metrics["scrollY"] == 0
                 assert not page_errors
+                assert not console_errors
                 page.close()
         finally:
             browser.close()

@@ -57,6 +57,7 @@ jobs:
           python -m compileall -q src scripts
           node --check assets/v38-runtime.js
           node --check assets/v38-site.js
+          node --check assets/v38-observables.js
 
       - name: Revalidate retained session or select live acquisition
         id: session-mode
@@ -92,6 +93,17 @@ jobs:
             --data-dir data \
             --reference config/mc57_reference.json \
             --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json
+
+      - name: Recover remaining non-options live inputs
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/v38-live"
+          if [ ! -d "$WORK" ]; then WORK=""; fi
+          PYTHONPATH=src python scripts/materialize_recovered_live_inputs.py \
+            --data-dir data \
+            --work-dir "$WORK"
 
       - name: Materialize current fail-closed supplemental shards
         shell: bash
@@ -139,6 +151,7 @@ jobs:
           assert float(mc57['sigma_prior']) > 0
           assert len(mc57.get('metric_scores', {})) == 12
           assert all(int(v) > 0 for v in mc57.get('coverage_detail', {}).get('metric_valid_counts', {}).values())
+          assert mc57.get('history') and 'close_gt_sma50' in mc57['history'][-1]
           print(json.dumps({
               'session_date': mc57['session_date'],
               'mc57': mc57['mc57'],
@@ -205,6 +218,7 @@ jobs:
 
           cp assets/v38-runtime.js _site/assets/v38-runtime.js
           cp assets/v38-site.js _site/assets/v38-site.js
+          cp assets/v38-observables.js _site/assets/v38-observables.js
 
           GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           PYTHONPATH=src python scripts/build_ui_payload.py \
@@ -216,12 +230,19 @@ jobs:
             --data-dir data \
             --output _site/data/ui_view_model.json
 
+          PYTHONPATH=src python scripts/augment_ui_view_model.py \
+            --data-dir data \
+            --view-model _site/data/ui_view_model.json
+
           touch _site/.nojekyll
 
           test -s _site/index.html
           test -s _site/data/ui_payload.json
           test -s _site/data/ui_view_model.json
+          test -s _site/assets/v38-observables.js
           grep -q 'data-v38-production="live-binding"' _site/index.html
+          grep -q 'assets/v38-observables.js' _site/index.html
+          grep -q '"mc57_detail"' _site/data/ui_view_model.json
           for key in daily positions core12 rotation rs weekly options publish rules; do
             grep -q "\"${key}\"" _site/data/ui_view_model.json
           done
@@ -269,7 +290,7 @@ jobs:
 
           git add -- data/history
 
-          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json; do
+          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json; do
             if [ -f "$path" ]; then git add -- "$path"; fi
           done
 
