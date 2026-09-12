@@ -224,6 +224,13 @@ def build_tqqq_panic_state(
         mc57=mc57_value,
     )
 
+    if prior_same_session and action.get("action") in {None, "BASELINE_30"}:
+        pending = prior.get("action_next_open")
+        if pending in {"RAISE_TO_80_NEXT_OPEN", "RETURN_TO_30_NEXT_OPEN"}:
+            action = {"status": "READY", "action": pending,
+                      "target_pct": 80 if pending.startswith("RAISE") else 30,
+                      "reason": "PRESERVED_SAME_SESSION_PENDING_ACTION"}
+
     if trigger_result.get("trigger") is True:
         seed_consumed = True
         seed_active = False
