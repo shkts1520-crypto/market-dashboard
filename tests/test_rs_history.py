@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from v38.rs_history import build_rs_history_analysis, _tag_persistence
+from v38.rs_history import build_rs_history_analysis, _comparison, _tag_persistence
 from v38.stock_adapter import calculate_stock_outputs
 
 
@@ -14,10 +14,6 @@ def _panel(n_tickers: int = 40, n_days: int = 330):
         rate = 0.00015 + i * 0.000018
         for j, day in enumerate(dates):
             close = 20.0 * ((1.0 + rate) ** j)
-            # Force a formerly weak name sharply upward near the end so at least
-            # one historical Top10 comparison has a real IN/OUT transition.
-            if ticker == "T000" and j >= n_days - 28:
-                close *= 1.0 + 0.025 * (j - (n_days - 29))
             rows.append({
                 "ticker": ticker,
                 "date": day.strftime("%Y-%m-%d"),
@@ -82,11 +78,25 @@ def test_rs_history_reproduces_current_formula_and_all_comparison_windows():
         assert [row["lag"] for row in block["windows"]] == [1, 5, 21]
         assert all(row["status"] == "READY" for row in block["windows"])
     assert len(analysis["persistence"]["rows"]) == 24
-    assert any(
-        window["turnover"] > 0
-        for period in analysis["comparison"].values()
-        for window in period["windows"]
-    )
+
+
+def test_top10_in_out_is_ordered_and_detects_real_membership_change():
+    dates = pd.bdate_range(end="2026-09-11", periods=30).strftime("%Y-%m-%d")
+    tickers = [f"T{i:02d}" for i in range(12)]
+    rows = []
+    for _ in dates:
+        rows.append({ticker: 100.0 - i for i, ticker in enumerate(tickers)})
+    frame = pd.DataFrame(rows, index=dates)
+    frame.loc[dates[-1], "T00"] = 80.0
+    frame.loc[dates[-1], "T10"] = 101.0
+    frames = {63: frame.copy(), 126: frame.copy(), 189: frame.copy()}
+    out = _comparison(frames, "2026-09-11")
+    for period in ("63", "126", "189"):
+        for window in out[period]["windows"]:
+            assert window["in"] == ["T10"]
+            assert window["out"] == ["T00"]
+            assert window["overlap"] == 9
+            assert window["turnover"] == 1
 
 
 def test_price_and_ddv_failures_do_not_enter_rs_percentile_pool():
