@@ -2,7 +2,7 @@
   "calculation_version": "v38-recovered-theme-1.1.0",
   "coverage": 1.0,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-12T11:53:46Z",
+  "generated_at": "2026-09-12T12:41:12Z",
   "rows": [
     {
       "leaders": [
