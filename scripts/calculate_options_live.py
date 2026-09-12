@@ -18,6 +18,8 @@ from v38.options_engine import (
     select_targets,
 )
 
+CHART_TARGET_FLOOR = 48
+
 
 def _load(path: Path) -> dict:
     if not path.exists():
@@ -78,6 +80,36 @@ def _spot_map(rs: dict) -> dict[str, float]:
         if ticker and price is not None and price > 0:
             out[ticker] = price
     return out
+
+
+def _chart_targets(rs: dict, core12: dict, *, requested_limit: int) -> list[str]:
+    """Cover tickers users can actually tap before adding generic liquidity names."""
+    limit = max(int(requested_limit), CHART_TARGET_FLOOR)
+    out: list[str] = []
+
+    def add(value) -> None:
+        ticker = str(value or "").strip().upper()
+        if ticker and ticker not in out:
+            out.append(ticker)
+
+    ranking = core12.get("ranking") if isinstance(core12, dict) else None
+    if isinstance(ranking, list):
+        for row in ranking:
+            if isinstance(row, dict):
+                add(row.get("ticker"))
+
+    rows = [row for row in (rs.get("rows") or []) if isinstance(row, dict)] if isinstance(rs, dict) else []
+    for key, count in (("rs63", 10), ("rs126", 10), ("rs189", 24)):
+        ranked = sorted(
+            (row for row in rows if _finite(row.get(key)) is not None),
+            key=lambda row: (-float(row[key]), str(row.get("ticker") or "")),
+        )[:count]
+        for row in ranked:
+            add(row.get("ticker"))
+
+    for ticker in select_targets(rs, core12, limit=limit):
+        add(ticker)
+    return out[:limit]
 
 
 def _fetch_ticker_snapshot(yf, ticker: str, *, spot: float, session_date: str) -> dict:
@@ -143,7 +175,8 @@ def main() -> int:
         raise SystemExit("rs.json is not current session")
 
     generated_at = args.generated_at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    targets = select_targets(rs, core12, limit=args.target_limit)
+    effective_limit = max(int(args.target_limit), CHART_TARGET_FLOOR)
+    targets = _chart_targets(rs, core12, requested_limit=effective_limit)
     if not targets:
         raise SystemExit("no option targets resolved")
     spots = _spot_map(rs)
@@ -194,6 +227,12 @@ def main() -> int:
         previous=previous,
     )
     out["fetch_errors"] = fetch_errors
+    out["chart_overlay_contract"] = {
+        "requested_cli_limit": int(args.target_limit),
+        "effective_target_floor": CHART_TARGET_FLOOR,
+        "target_priority": "Core12, RS63 Top10, RS126 Top10, RS189 Top24, then deterministic standard targets",
+        "chart_bucket_default": "0-45",
+    }
     out["coverage_detail"] = {
         "target_count": len(targets),
         "ticker_snapshots": len(snapshots),
@@ -204,6 +243,8 @@ def main() -> int:
     print(json.dumps({
         "path": str(path), "session_date": session, "status": out.get("status"),
         "coverage": out.get("coverage"), "targets": len(targets),
+        "requested_target_limit": int(args.target_limit),
+        "effective_target_floor": CHART_TARGET_FLOOR,
         "rows_0_45": len(out.get("buckets", {}).get("0-45", [])),
         "risk_free_rate": rate,
     }, sort_keys=True))
