@@ -6,7 +6,6 @@
     '通常株PIT履歴', '遡及推計なし', 'MC57 Raw', 'MC57 EMA2 Raw', 'MC57 Z',
     'MC57内部 12指標履歴', '日次保存済み履歴', '各指標は同一セッションの正本値のみ'
   ];
-  let observer = null;
   let rendering = false;
 
   function finite(value) {
@@ -35,11 +34,14 @@
           return;
         }
         if (status === 'DATA_REQUIRED' || status === 'STALE') {
-          note.replaceChildren();
-          const span = document.createElement('span');
-          span.className = 'mut';
-          span.textContent = status === 'STALE' ? '更新待ち' : 'データ未取得';
-          note.appendChild(span);
+          const replacement = status === 'STALE' ? '更新待ち' : 'データ未取得';
+          if (text.trim() !== replacement) {
+            note.replaceChildren();
+            const span = document.createElement('span');
+            span.className = 'mut';
+            span.textContent = replacement;
+            note.appendChild(span);
+          }
         }
       });
     }
@@ -81,10 +83,7 @@
       if (seen.has(key)) return;
       seen.add(key);
       const quarterMonth = quarter * 3 + 1;
-      ticks.push({
-        index: index,
-        label: String(year).slice(2) + '/' + String(quarterMonth)
-      });
+      ticks.push({index: index, label: String(year).slice(2) + '/' + String(quarterMonth)});
     });
     return ticks;
   }
@@ -213,14 +212,6 @@
     window.setTimeout(finalPass, 250);
     window.setTimeout(finalPass, 900);
     window.setTimeout(finalPass, 1800);
-    const daily = document.getElementById('t-market');
-    if (daily && !observer) {
-      observer = new MutationObserver(() => {
-        window.clearTimeout(start._timer);
-        start._timer = window.setTimeout(finalPass, 40);
-      });
-      observer.observe(daily, {childList: true, subtree: true});
-    }
   }
 
   function waitForBinding() {
