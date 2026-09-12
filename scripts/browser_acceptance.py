@@ -192,7 +192,13 @@ def main() -> int:
                 page.locator('a.tabx[href="#t-rs"]').click()
                 page.locator('a.tabx[href="#t-weekly"]').click()
                 assert page.url.endswith("#t-weekly")
-                page.go_back(wait_until="networkidle")
+                # This is a same-document hash transition. Do not wait for global
+                # network-idle because the embedded TradingView widget may still
+                # have legitimate background traffic unrelated to tab navigation.
+                page.evaluate("history.back()")
+                page.wait_for_function(
+                    "location.hash === '#t-rs' && document.querySelector('#t-rs').classList.contains('on')"
+                )
                 assert page.url.endswith("#t-rs")
                 assert page.locator("#t-rs").is_visible()
                 page.wait_for_function("window.scrollY === 0")
