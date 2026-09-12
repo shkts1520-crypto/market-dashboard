@@ -2,131 +2,73 @@
   'use strict';
 
   const REQUIRED_META = [
-    'session_date',
-    'generated_at',
-    'coverage',
-    'source',
-    'schema_version',
-    'calculation_version'
+    'session_date', 'generated_at', 'coverage', 'source',
+    'schema_version', 'calculation_version'
   ];
 
   function missing(value) {
     return value === null ||
       value === undefined ||
       value === '' ||
-      (
-        typeof value === 'number' &&
-        !Number.isFinite(value)
-      );
+      (typeof value === 'number' && !Number.isFinite(value));
   }
 
-  function display(
-    value,
-    decimals
-  ) {
-    if (missing(value)) {
-      return '—';
+  function display(value, decimals) {
+    if (missing(value)) return '—';
+    if (typeof value === 'number' && Number.isInteger(decimals)) {
+      return value.toFixed(decimals);
     }
-
-    if (
-      typeof value === 'number' &&
-      Number.isInteger(decimals)
-    ) {
-      return value.toFixed(
-        decimals
-      );
-    }
-
     return String(value);
   }
 
-  function assessShard(
-    obj,
-    targetSession
-  ) {
-    if (
-      !obj ||
-      typeof obj !== 'object' ||
-      Array.isArray(obj)
-    ) {
-      return {
-        status: 'DATA_REQUIRED',
-        reason: 'EXPECTED_JSON_OBJECT'
-      };
+  function assessShard(obj, targetSession) {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+      return {status: 'DATA_REQUIRED', reason: 'EXPECTED_JSON_OBJECT'};
     }
-
-    const absent =
-      REQUIRED_META.filter(
-        (key) => !(key in obj)
-      );
-
+    const absent = REQUIRED_META.filter((key) => !(key in obj));
     if (absent.length) {
+      return {status: 'DATA_REQUIRED', reason: 'MISSING_METADATA', missing: absent};
+    }
+    if (obj.session_date !== targetSession) {
       return {
-        status: 'DATA_REQUIRED',
-        reason: 'MISSING_METADATA',
-        missing: absent
+        status: 'STALE', reason: 'SESSION_MISMATCH',
+        session_date: obj.session_date
       };
     }
-
-    if (
-      obj.session_date !==
-      targetSession
-    ) {
-      return {
-        status: 'STALE',
-        reason: 'SESSION_MISMATCH',
-        session_date:
-          obj.session_date
-      };
-    }
-
-    return {
-      status: 'READY',
-      reason: 'CURRENT_SESSION'
-    };
+    return {status: 'READY', reason: 'CURRENT_SESSION'};
   }
 
   async function loadJson(path) {
-    const response =
-      await fetch(
-        path,
-        {
-          cache: 'no-store'
-        }
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        'HTTP ' +
-        response.status +
-        ' for ' +
-        path
-      );
-    }
-
+    const response = await fetch(path, {cache: 'no-store'});
+    if (!response.ok) throw new Error('HTTP ' + response.status + ' for ' + path);
     return response.json();
   }
 
-  function loadDisplayExtension() {
+  function appendExtension(src, name, onload) {
     const script = document.createElement('script');
-    script.src = 'assets/v38-observables.js';
-    script.defer = true;
-    script.dataset.v38Extension = 'observables';
+    script.src = src;
+    script.async = false;
+    script.dataset.v38Extension = name;
+    if (typeof onload === 'function') script.addEventListener('load', onload, {once: true});
     document.head.appendChild(script);
   }
 
-  global.V38Runtime =
-    Object.freeze(
-      {
-        missing,
-        display,
-        assessShard,
-        loadJson
-      }
-    );
+  function loadDisplayExtensions() {
+    appendExtension('assets/v38-observables.js', 'observables', function () {
+      appendExtension('assets/v38-polish.js', 'polish');
+    });
+  }
 
-  document.addEventListener(
-    'DOMContentLoaded',
-    loadDisplayExtension
-  );
+  global.V38Runtime = Object.freeze({
+    missing,
+    display,
+    assessShard,
+    loadJson
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadDisplayExtensions, {once: true});
+  } else {
+    loadDisplayExtensions();
+  }
 })(window);
