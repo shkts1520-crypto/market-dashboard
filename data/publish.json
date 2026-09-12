@@ -1,8 +1,8 @@
 {
   "blockers": [
     {
-      "name": "positions.json",
-      "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
+      "name": "options/index.json",
+      "reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
       "status": "DATA_REQUIRED"
     }
   ],
@@ -11,7 +11,7 @@
     {
       "calculation_version": "v38-market-engine-1.0.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "market_state.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.market_state.1",
@@ -22,7 +22,7 @@
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "breadth.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.breadth.1",
@@ -44,7 +44,7 @@
     {
       "calculation_version": "v38-f123-engine-1.1.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "f123.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.f123.1",
@@ -55,7 +55,7 @@
     {
       "calculation_version": "v38-market-engine-1.0.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "core12.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.core12.1",
@@ -65,30 +65,30 @@
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": null,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "coverage": 1.0,
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "positions.json",
-      "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
+      "reason": "CURRENT_SESSION",
       "schema_version": "v38.positions.1",
       "session_date": "2026-09-11",
-      "source": "derived:portfolio-ledger",
-      "status": "DATA_REQUIRED"
+      "source": "user-confirmed-empty:config/portfolio_state.json",
+      "status": "READY"
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": 1.0,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "coverage": 0.9660666863381528,
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "rotation.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rotation.1",
       "session_date": "2026-09-11",
-      "source": "final-v38-missing-theme-neutral-policy; no Sector/Industry substitution",
+      "source": "recovered fine-theme membership; final Peer Theme trade score intentionally neutral until full LOO inputs are restored",
       "status": "READY"
     },
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "rs.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rs.1",
@@ -99,7 +99,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "weekly.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.weekly.1",
@@ -109,19 +109,19 @@
     },
     {
       "calculation_version": "v38-options-live-1.0.1",
-      "coverage": 0.9583333333333334,
-      "generated_at": "2026-09-12T07:54:12Z",
+      "coverage": 0.0,
+      "generated_at": "2026-09-12T09:26:14Z",
       "name": "options/index.json",
-      "reason": "CURRENT_SESSION",
+      "reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
       "schema_version": "v38.options.1",
       "session_date": "2026-09-11",
-      "source": "Yahoo Finance option chains via yfinance 0.2.66; recovered V38 GEX/Wall/Flip/Expected-Move contract",
-      "status": "READY"
+      "source": "Yahoo Finance option chains via yfinance 0.2.66",
+      "status": "DATA_REQUIRED"
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T07:49:49Z",
+      "generated_at": "2026-09-12T09:21:45Z",
       "name": "rules.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rules.1",
@@ -132,7 +132,7 @@
   ],
   "coverage": 0.9090909090909091,
   "full_v38_ready": false,
-  "generated_at": "2026-09-12T07:49:49Z",
+  "generated_at": "2026-09-12T09:21:45Z",
   "note": "This shard reports publication readiness; READY means the report itself is current, not that every trading dependency is available.",
   "ready_count": 10,
   "required_count": 11,

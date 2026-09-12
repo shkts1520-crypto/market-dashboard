@@ -12,8 +12,8 @@
     },
     "options_status": {
       "path": "options/index.json",
-      "reason": "CURRENT_SESSION_AUTHORITY",
-      "status": "READY"
+      "reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
+      "status": "DATA_REQUIRED"
     },
     "peer_theme_status": {
       "path": "theme_scores.json",
@@ -22,8 +22,8 @@
     },
     "positions_status": {
       "path": "positions_ledger.json",
-      "reason": "FILE_MISSING",
-      "status": "DATA_REQUIRED"
+      "reason": "CURRENT_SESSION_AUTHORITY",
+      "status": "READY"
     },
     "structural_clinical_biotech_status": {
       "path": "classifications.json",
@@ -34,13 +34,13 @@
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 0.9997050147492625,
-  "generated_at": "2026-09-12T07:49:49Z",
+  "generated_at": "2026-09-12T09:21:45Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
-  "options_status": "READY",
+  "options_reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
+  "options_status": "DATA_REQUIRED",
   "peer_theme_status": "READY",
-  "positions_reason": "FILE_MISSING",
-  "positions_status": "DATA_REQUIRED",
+  "positions_status": "READY",
   "schema_version": "v38.acquisition.1",
   "session_contract": {
     "calendar": "observed common QQQ/SPY completed daily sessions",

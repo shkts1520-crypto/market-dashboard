@@ -1,13 +1,12 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.0",
-  "coverage": null,
-  "dependency": "positions_ledger.json",
-  "generated_at": "2026-09-12T07:49:49Z",
-  "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
+  "coverage": 1.0,
+  "generated_at": "2026-09-12T09:21:45Z",
+  "ledger_version": "EMPTY",
+  "note": "Actions are derived only from explicit ledger fields; quantities/cash are never inferred.",
   "rows": [],
   "schema_version": "v38.positions.1",
   "session_date": "2026-09-11",
-  "source": "derived:portfolio-ledger",
-  "status": "DATA_REQUIRED",
-  "value": null
+  "source": "user-confirmed-empty:config/portfolio_state.json",
+  "status": "READY"
 }
