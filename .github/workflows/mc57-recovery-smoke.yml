@@ -1,0 +1,93 @@
+name: MC57 Recovery Smoke
+
+on:
+  push:
+    branches:
+      - feature/mc57-production-recovery-20260912
+    paths:
+      - src/v38/mc57_live.py
+      - .github/workflows/mc57-recovery-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: python -m pip install --disable-pip-version-check -e . pandas numpy 'yfinance==0.2.66'
+      - name: Calculate live MC57 candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p mc57-smoke
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+          import yfinance as yf
+          from v38.mc57_live import (
+              FIXED_57_ETFS,
+              build_mc57_object,
+              calculate_mc57_panel,
+              download_fixed57_adjusted_closes,
+          )
+
+          state = json.loads(Path('data/state.json').read_text(encoding='utf-8'))
+          session = state['session_date']
+          closes, stats = download_fixed57_adjusted_closes(yf, target_session=session)
+          ref = {
+              'schema_version': 'smoke-only',
+              'verification_kind': 'RECOVERY_SMOKE_NOT_AUTHORITY',
+              'golden_fixture_sha256': None,
+          }
+          obj = build_mc57_object(
+              closes=closes,
+              target_session=session,
+              generated_at=state['generated_at'],
+              reference=ref,
+              fetch_stats=stats,
+          )
+          Path('mc57-smoke/mc57.json').write_text(json.dumps(obj, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+
+          panel, frames = calculate_mc57_panel(closes)
+          audit = []
+          for day in ('2026-09-09', '2026-09-10', '2026-09-11'):
+              ts = pd.Timestamp(day)
+              if ts not in panel.index:
+                  continue
+              row = panel.loc[ts]
+              audit.append({
+                  'date': day,
+                  'raw': float(row['raw']),
+                  'ema2_raw': float(row['ema2_raw']),
+                  'mu_prior': float(row['mu_prior']),
+                  'sigma_prior': float(row['sigma_prior']),
+                  'z': float(row['z']),
+                  'mc57': float(row['mc57']),
+                  'metric_scores': {m: float(row[m]) for m in frames},
+                  'metric_valid_counts': {m: int(frames[m].loc[ts].notna().sum()) for m in frames},
+              })
+          payload = {
+              'session_date': session,
+              'fixed57': list(FIXED_57_ETFS),
+              'fetch_stats': stats,
+              'audit_days': audit,
+          }
+          Path('mc57-smoke/three_day_candidate.json').write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          print(json.dumps({'session': session, 'mc57': obj['mc57'], 'raw': obj['raw'], 'coverage': obj['coverage'], 'audit_days': audit}, indent=2))
+          PY
+      - name: Upload smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: mc57-recovery-smoke
+          path: mc57-smoke/
+          if-no-files-found: error
+          retention-days: 14
