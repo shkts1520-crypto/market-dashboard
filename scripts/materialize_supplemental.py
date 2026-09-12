@@ -11,6 +11,7 @@ from pathlib import Path
 from v38.authority_status import sync_acquisition_manifest
 from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
+from v38.publish_extension import include_tqqq_panic_readiness
 from v38.rs_history import write_rs_history
 from v38.supplemental_engine import materialize_supplemental_shards
 from v38.tqqq_state import materialize_tqqq_panic_state
@@ -143,7 +144,7 @@ def main() -> int:
         generated_at=generated_at,
     )
 
-    # TQQQ Panic is a persistent state machine.  It consumes the canonical QQQ 4H
+    # TQQQ Panic is a persistent state machine. It consumes the canonical QQQ 4H
     # input and current MC57 after both have been acquired for this session.
     tqqq_state = _materialize_tqqq_if_ready(
         root,
@@ -158,6 +159,9 @@ def main() -> int:
         theme_scores_path=args.theme_scores,
         positions_ledger_path=ledger_arg,
     )
+    # Publication readiness must fail visibly if the TQQQ panic state cannot be
+    # materialized. The state itself is not promoted into normal-stock hard gates.
+    publish_extension = include_tqqq_panic_readiness(root, session_date=session)
 
     # Refresh the current observed session after reconstruction. The exact current
     # session remains authoritative and overrides display-only reconstructed values.
@@ -185,6 +189,7 @@ def main() -> int:
                 "historical_reconstruction": reconstructed_history.as_posix() if reconstructed_history is not None else None,
                 "f123_display_completion": f123_completion.as_posix() if f123_completion is not None else None,
                 "tqqq_panic_state": tqqq_state.as_posix() if tqqq_state is not None else None,
+                "publish_extension": publish_extension.as_posix(),
                 "history_snapshot": history_snapshot.as_posix(),
                 "history_index": history_index.as_posix(),
                 "rs_history": rs_history.as_posix(),
