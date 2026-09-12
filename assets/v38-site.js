@@ -36,6 +36,10 @@
       if (!section) return;
       section.removeAttribute('hidden');
       section.classList.toggle('on', id === valid);
+      // Keep the visibility contract explicit. This makes tab switching reliable
+      // even when a cached/legacy stylesheet still contains :target rules.
+      section.style.display = id === valid ? 'block' : 'none';
+      section.setAttribute('aria-hidden', id === valid ? 'false' : 'true');
     });
     if (updateHistory && window.location.hash !== '#' + valid) {
       history.pushState({v38Tab: valid}, '', '#' + valid);
