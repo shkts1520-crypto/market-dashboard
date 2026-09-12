@@ -3,7 +3,7 @@ import pytest
 from v38.f123_display import complete_f123_for_display
 
 
-def test_reconstructed_f1_is_used_only_when_exact_pit_is_missing_and_f3_partial_keeps_full_denominator():
+def test_reconstructed_f1_and_partial_f3_are_display_overrides_only():
     session = "2026-09-11"
     f123 = {
         "session_date": session,
@@ -48,17 +48,26 @@ def test_reconstructed_f1_is_used_only_when_exact_pit_is_missing_and_f3_partial_
         session_date=session,
         generated_at="new",
     )
-    assert out["f1"]["value"] == 0.25
-    assert out["f1"]["status"] == "FULL"
-    assert out["f1"]["display_only"] is True
-    assert out["f1"]["display_source"] == "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC_NOT_PIT"
-    assert out["f3"]["status"] == "PARTIAL"
-    assert out["f3"]["value"] == pytest.approx(185 / 307)
-    assert out["f3"]["coverage"] == pytest.approx(304 / 307)
+    assert out["f1"]["value"] is None
+    assert out["f1"]["status"] == "DATA_REQUIRED"
+    assert out["f3"]["value"] is None
+    assert out["f3"]["status"] == "DATA_INCOMPLETE"
+
+    f1_display = out["display_overrides"]["f1"]
+    assert f1_display["value"] == 0.25
+    assert f1_display["display_only"] is True
+    assert f1_display["trading_gate_eligible"] is False
+    assert f1_display["display_source"] == "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC_NOT_PIT"
+
+    f3_display = out["display_overrides"]["f3"]
+    assert f3_display["status"] == "PARTIAL"
+    assert f3_display["value"] == pytest.approx(185 / 307)
+    assert f3_display["coverage"] == pytest.approx(304 / 307)
+    assert f3_display["display_only"] is True
     assert out["display_completion_policy"]["hard_gate"] is False
 
 
-def test_exact_pit_f1_is_never_overwritten():
+def test_exact_pit_f1_is_never_overwritten_or_given_override():
     session = "2026-09-11"
     f123 = {
         "session_date": session,
@@ -83,3 +92,4 @@ def test_exact_pit_f1_is_never_overwritten():
     )
     assert out["f1"]["value"] == 0.1
     assert out["f1"]["dependency"]["status"] == "OK"
+    assert "f1" not in out["display_overrides"]
