@@ -8,12 +8,12 @@ from pathlib import Path
 from v38.market_engine import calculate_market_from_files
 from v38.recovered_live_inputs import (
     build_classifications,
-    build_neutral_theme_scores,
     build_recovered_nqsar,
     build_rotation_diagnostics,
     fetch_tradingview_fundamentals,
     write_json,
 )
+from v38.recovered_theme import write_theme_outputs
 
 AUTHORITATIVE_INPUT_KINDS = {"state", "EXP_STATE_ID"}
 
@@ -41,6 +41,7 @@ def main() -> int:
         description="Recover current V38 non-options inputs from legacy acquisition/calculation logic without restoring obsolete trading rules"
     )
     parser.add_argument("--data-dir", default="data")
+    parser.add_argument("--theme-map", default="config/theme_s2t.json.gz.b64")
     parser.add_argument("--no-fundamentals", action="store_true")
     args = parser.parse_args()
 
@@ -76,18 +77,23 @@ def main() -> int:
         session_date=session,
         generated_at=generated_at,
     )
-    theme_scores = build_neutral_theme_scores(
+    write_json(root / "classifications.json", classifications)
+
+    membership_path, recovered_rotation_path, theme_scores_path = write_theme_outputs(
+        root,
         rs,
         session_date=session,
         generated_at=generated_at,
+        theme_map_path=args.theme_map,
     )
+    theme_membership = _load(membership_path)
+    theme_scores = _load(theme_scores_path)
+
     analytics = build_rotation_diagnostics(
         rs,
         session_date=session,
         generated_at=generated_at,
     )
-    write_json(root / "classifications.json", classifications)
-    write_json(root / "theme_scores.json", theme_scores)
     write_json(root / "analytics.json", analytics)
 
     market_path, core12_path = calculate_market_from_files(
@@ -101,6 +107,7 @@ def main() -> int:
     )
     market = _load(market_path)
     core = _load(core12_path)
+    tag_detail = theme_membership.get("coverage_detail", {}) if isinstance(theme_membership, dict) else {}
     print(json.dumps({
         "session_date": session,
         "nqsar": nqsar.get("state"),
@@ -109,7 +116,12 @@ def main() -> int:
         "classification_rows": len(classifications.get("rows") or []),
         "classification_revenue_coverage": classifications.get("coverage_detail", {}).get("revenue_ttm_available"),
         "theme_rows": len(theme_scores.get("rows") or []),
-        "theme_missing_policy": "neutral_50",
+        "theme_tag_exact": tag_detail.get("exact"),
+        "theme_tag_inferred": tag_detail.get("inferred"),
+        "theme_tag_unmapped": tag_detail.get("unmapped"),
+        "theme_membership_coverage": theme_membership.get("coverage") if isinstance(theme_membership, dict) else None,
+        "theme_trade_score_policy": "neutral_50_until_full_LOO_restored",
+        "theme_rotation_recovered": recovered_rotation_path.as_posix(),
         "rotation_industries": len(analytics.get("industry") or []),
         "rotation_sectors": len(analytics.get("sector") or []),
         "market_mode": market.get("market_mode"),
