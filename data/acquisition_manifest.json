@@ -7,18 +7,18 @@
     },
     "nqsar_status": {
       "path": "nqsar.json",
-      "reason": "FILE_MISSING",
-      "status": "DATA_REQUIRED"
+      "reason": "CURRENT_SESSION_AUTHORITY",
+      "status": "READY"
     },
     "options_status": {
       "path": "options/index.json",
-      "reason": "OPTIONS_AUTHORITATIVE_INPUT_MISSING",
-      "status": "DATA_REQUIRED"
+      "reason": "CURRENT_SESSION_AUTHORITY",
+      "status": "READY"
     },
     "peer_theme_status": {
       "path": "theme_scores.json",
-      "reason": "FILE_MISSING",
-      "status": "DATA_REQUIRED"
+      "reason": "CURRENT_SESSION_AUTHORITY",
+      "status": "READY"
     },
     "positions_status": {
       "path": "positions_ledger.json",
@@ -27,20 +27,18 @@
     },
     "structural_clinical_biotech_status": {
       "path": "classifications.json",
-      "reason": "FILE_MISSING",
-      "status": "DATA_REQUIRED"
+      "reason": "CURRENT_SESSION_AUTHORITY",
+      "status": "READY"
     }
   },
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 0.9997050147492625,
-  "generated_at": "2026-09-12T07:09:37Z",
+  "generated_at": "2026-09-12T07:49:49Z",
   "mc57_status": "READY",
-  "nqsar_status": "DATA_REQUIRED",
-  "options_reason": "OPTIONS_AUTHORITATIVE_INPUT_MISSING",
-  "options_status": "DATA_REQUIRED",
-  "peer_theme_reason": "FILE_MISSING",
-  "peer_theme_status": "DATA_REQUIRED",
+  "nqsar_status": "READY",
+  "options_status": "READY",
+  "peer_theme_status": "READY",
   "positions_reason": "FILE_MISSING",
   "positions_status": "DATA_REQUIRED",
   "schema_version": "v38.acquisition.1",
@@ -61,8 +59,7 @@
   },
   "source": "TradingView america/scan + Yahoo Finance/yfinance 0.2.66",
   "status": "READY",
-  "structural_clinical_biotech_reason": "FILE_MISSING",
-  "structural_clinical_biotech_status": "DATA_REQUIRED",
+  "structural_clinical_biotech_status": "READY",
   "universe": {
     "active_universe": 3390,
     "below_floor_rows": 0,
@@ -71,7 +68,7 @@
     "duplicate_class_rows": 0,
     "duplicate_symbol_rows": 0,
     "malformed_rows": 0,
-    "previous_active_universe": 3391,
+    "previous_active_universe": 3390,
     "response_rows": 3391,
     "response_total_count": 3391,
     "special_security_rows": 1

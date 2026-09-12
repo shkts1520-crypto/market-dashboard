@@ -1,48 +1,28 @@
 {
   "blockers": [
     {
-      "name": "core12.json",
-      "reason": "CORE12_RANKING_UNRESOLVED",
-      "status": "DATA_REQUIRED"
-    },
-    {
       "name": "positions.json",
       "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
-      "status": "DATA_REQUIRED"
-    },
-    {
-      "name": "rotation.json",
-      "reason": "PEER_THEME_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
-      "status": "DATA_REQUIRED"
-    },
-    {
-      "name": "weekly.json",
-      "reason": "NQSAR_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
-      "status": "DATA_REQUIRED"
-    },
-    {
-      "name": "options/index.json",
-      "reason": "OPTIONS_AUTHORITATIVE_INPUT_MISSING",
       "status": "DATA_REQUIRED"
     }
   ],
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "components": [
     {
-      "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": null,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "calculation_version": "v38-market-engine-1.0.0",
+      "coverage": 0.9997050147492625,
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "market_state.json",
       "reason": "CURRENT_SESSION",
-      "schema_version": "v38.data_required.1",
+      "schema_version": "v38.market_state.1",
       "session_date": "2026-09-11",
-      "source": "reference-gate:market-engine",
+      "source": "derived:rs+breadth+nqsar",
       "status": "READY"
     },
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "breadth.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.breadth.1",
@@ -64,7 +44,7 @@
     {
       "calculation_version": "v38-f123-engine-1.1.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "f123.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.f123.1",
@@ -73,20 +53,20 @@
       "status": "READY"
     },
     {
-      "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": null,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "calculation_version": "v38-market-engine-1.0.0",
+      "coverage": 0.9997050147492625,
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "core12.json",
-      "reason": "CORE12_RANKING_UNRESOLVED",
-      "schema_version": "v38.data_required.1",
+      "reason": "CURRENT_SESSION",
+      "schema_version": "v38.core12.1",
       "session_date": "2026-09-11",
-      "source": "reference-gate:market-engine",
-      "status": "DATA_REQUIRED"
+      "source": "derived:rs+classification+peer_theme",
+      "status": "READY"
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "positions.json",
       "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
       "schema_version": "v38.positions.1",
@@ -96,19 +76,19 @@
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": null,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "coverage": 1.0,
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "rotation.json",
-      "reason": "PEER_THEME_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
+      "reason": "CURRENT_SESSION",
       "schema_version": "v38.rotation.1",
       "session_date": "2026-09-11",
-      "source": "derived:peer-theme-authority",
-      "status": "DATA_REQUIRED"
+      "source": "final-v38-missing-theme-neutral-policy; no Sector/Industry substitution",
+      "status": "READY"
     },
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "rs.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rs.1",
@@ -118,30 +98,30 @@
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": null,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "coverage": 1.0,
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "weekly.json",
-      "reason": "NQSAR_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
+      "reason": "CURRENT_SESSION",
       "schema_version": "v38.weekly.1",
       "session_date": "2026-09-11",
-      "source": "derived:nqsar-authoritative-input",
-      "status": "DATA_REQUIRED"
+      "source": "derived:recovered-legacy-live-fallback:Yahoo NQ=F completed daily bars",
+      "status": "READY"
     },
     {
-      "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": null,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "calculation_version": "v38-options-live-1.0.1",
+      "coverage": 0.9583333333333334,
+      "generated_at": "2026-09-12T07:54:12Z",
       "name": "options/index.json",
-      "reason": "OPTIONS_AUTHORITATIVE_INPUT_MISSING",
-      "schema_version": "v38.data_required.1",
+      "reason": "CURRENT_SESSION",
+      "schema_version": "v38.options.1",
       "session_date": "2026-09-11",
-      "source": "reference-gate:options_authority",
-      "status": "DATA_REQUIRED"
+      "source": "Yahoo Finance option chains via yfinance 0.2.66; recovered V38 GEX/Wall/Flip/Expected-Move contract",
+      "status": "READY"
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T07:09:37Z",
+      "generated_at": "2026-09-12T07:49:49Z",
       "name": "rules.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rules.1",
@@ -150,11 +130,11 @@
       "status": "READY"
     }
   ],
-  "coverage": 0.5454545454545454,
+  "coverage": 0.9090909090909091,
   "full_v38_ready": false,
-  "generated_at": "2026-09-12T07:09:37Z",
+  "generated_at": "2026-09-12T07:49:49Z",
   "note": "This shard reports publication readiness; READY means the report itself is current, not that every trading dependency is available.",
-  "ready_count": 6,
+  "ready_count": 10,
   "required_count": 11,
   "schema_version": "v38.publish.1",
   "session_date": "2026-09-11",

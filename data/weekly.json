@@ -1,13 +1,12 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.0",
-  "coverage": null,
-  "dependency": "nqsar.json",
-  "generated_at": "2026-09-12T07:09:37Z",
-  "reason": "NQSAR_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
+  "coverage": 1.0,
+  "generated_at": "2026-09-12T07:49:49Z",
+  "input_kind": "RECOVERED_YAHOO_FSM_ESTIMATE",
+  "note": "Authoritative NQSAR state is displayed; the unrecovered FSM is not recomputed here.",
   "schema_version": "v38.weekly.1",
   "session_date": "2026-09-11",
-  "source": "derived:nqsar-authoritative-input",
-  "state": null,
-  "status": "DATA_REQUIRED",
-  "value": null
+  "source": "derived:recovered-legacy-live-fallback:Yahoo NQ=F completed daily bars",
+  "state": "Yellow",
+  "status": "READY"
 }

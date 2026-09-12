@@ -20,7 +20,7 @@
       "ticker": "ATLQ"
     }
   ],
-  "generated_at": "2026-09-12T07:09:37Z",
+  "generated_at": "2026-09-12T07:49:49Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,

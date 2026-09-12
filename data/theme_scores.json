@@ -1,9 +1,8 @@
 {
-  "calculation_version": "v38-supplemental-engine-1.0.0",
+  "calculation_version": "v38-recovered-live-inputs-1.0.1",
   "coverage": 1.0,
   "generated_at": "2026-09-12T07:49:49Z",
-  "loo_required": true,
-  "ordering": "authoritative source order; dashboard does not re-rank themes",
+  "note": "This fills only the final V38 missing-theme neutral value. It does not claim recovered fine-theme membership.",
   "rows": [
     {
       "peer_theme_score": 50.0,
@@ -20340,7 +20339,13 @@
       "ticker": "ZURA"
     }
   ],
-  "schema_version": "v38.rotation.1",
+  "rules": {
+    "industry_substitution": false,
+    "loo_required_when_theme_exists": true,
+    "missing_theme_score": 50.0,
+    "sector_substitution": false
+  },
+  "schema_version": "v38.theme_scores.1",
   "session_date": "2026-09-11",
   "source": "final-v38-missing-theme-neutral-policy; no Sector/Industry substitution",
   "status": "READY"

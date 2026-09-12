@@ -1,0 +1,1835 @@
+{
+  "calculation_version": "v38-recovered-live-inputs-1.0.1",
+  "coverage": 0.9997050147492625,
+  "generated_at": "2026-09-12T07:49:49Z",
+  "industry": [
+    {
+      "group": "Oil Refining/Marketing",
+      "leaders": [
+        "PBF",
+        "CVI",
+        "CLMT"
+      ],
+      "member_count": 11,
+      "ret20_avg": 0.12164426974458077,
+      "ret63_avg": 0.4948280027974538,
+      "rs63_avg": 96.83573755234994,
+      "trade_input": false
+    },
+    {
+      "group": "Marine Shipping",
+      "leaders": [
+        "ECO",
+        "NAT",
+        "DHT"
+      ],
+      "member_count": 37,
+      "ret20_avg": 0.11832624835211425,
+      "ret63_avg": 0.21305784864381913,
+      "rs63_avg": 80.00761453530183,
+      "trade_input": false
+    },
+    {
+      "group": "Oil & Gas Production",
+      "leaders": [
+        "NOG",
+        "COP",
+        "TALO"
+      ],
+      "member_count": 26,
+      "ret20_avg": 0.10246176829313197,
+      "ret63_avg": 0.0991725261554562,
+      "rs63_avg": 66.16757452166536,
+      "trade_input": false
+    },
+    {
+      "group": "Chemicals: Agricultural",
+      "leaders": [
+        "CF",
+        "MOS",
+        "FMC"
+      ],
+      "member_count": 7,
+      "ret20_avg": 0.09399781605939604,
+      "ret63_avg": 0.07945765881700954,
+      "rs63_avg": 61.458818054909266,
+      "trade_input": false
+    },
+    {
+      "group": "Integrated Oil",
+      "leaders": [
+        "CRGY",
+        "REPX",
+        "PR"
+      ],
+      "member_count": 28,
+      "ret20_avg": 0.09088965273913162,
+      "ret63_avg": 0.1015070177897447,
+      "rs63_avg": 67.44067007910655,
+      "trade_input": false
+    },
+    {
+      "group": "Electronics/Appliances",
+      "leaders": [
+        "IMAX",
+        "SN",
+        "SPB"
+      ],
+      "member_count": 9,
+      "ret20_avg": 0.0629684931232778,
+      "ret63_avg": 0.13289552119075212,
+      "rs63_avg": 54.4439274080968,
+      "trade_input": false
+    },
+    {
+      "group": "Coal",
+      "leaders": [
+        "AMR",
+        "CNR",
+        "BTU"
+      ],
+      "member_count": 9,
+      "ret20_avg": 0.05978789579814195,
+      "ret63_avg": -0.004109868824543191,
+      "rs63_avg": 51.73569101907864,
+      "trade_input": false
+    },
+    {
+      "group": "Electronics Distributors",
+      "leaders": [
+        "SCSC",
+        "AVT",
+        "ARW"
+      ],
+      "member_count": 7,
+      "ret20_avg": 0.0438108139282895,
+      "ret63_avg": 0.07658429373128785,
+      "rs63_avg": 52.173103769194974,
+      "trade_input": false
+    },
+    {
+      "group": "Oil & Gas Pipelines",
+      "leaders": [
+        "VG",
+        "PAA",
+        "KNTK"
+      ],
+      "member_count": 18,
+      "ret20_avg": 0.037380142723313,
+      "ret63_avg": 0.10274008825383181,
+      "rs63_avg": 65.15278424073212,
+      "trade_input": false
+    },
+    {
+      "group": "Precious Metals",
+      "leaders": [
+        "SSRM",
+        "HL",
+        "NEM"
+      ],
+      "member_count": 23,
+      "ret20_avg": 0.03614959243251892,
+      "ret63_avg": 0.11074800224597742,
+      "rs63_avg": 66.47277803629596,
+      "trade_input": false
+    },
+    {
+      "group": "Electronics/Appliance Stores",
+      "leaders": [
+        "BBY",
+        "GME",
+        "PLBL"
+      ],
+      "member_count": 4,
+      "ret20_avg": 0.035363499725020814,
+      "ret63_avg": 0.0022224680959153087,
+      "rs63_avg": 57.375523499302005,
+      "trade_input": false
+    },
+    {
+      "group": "Agricultural Commodities/Milling",
+      "leaders": [
+        "CTVA",
+        "ADM",
+        "DMC"
+      ],
+      "member_count": 18,
+      "ret20_avg": 0.02776684709460863,
+      "ret63_avg": 0.011162525987171842,
+      "rs63_avg": 44.816193578408566,
+      "trade_input": false
+    },
+    {
+      "group": "Major Telecommunications",
+      "leaders": [
+        "OOMA",
+        "IDT",
+        "LBTYA"
+      ],
+      "member_count": 10,
+      "ret20_avg": 0.024351523208947255,
+      "ret63_avg": 0.0037607498745759415,
+      "rs63_avg": 37.38172793547387,
+      "trade_input": false
+    },
+    {
+      "group": "Investment Banks/Brokers",
+      "leaders": [
+        "MKTX",
+        "XP",
+        "LPLA"
+      ],
+      "member_count": 35,
+      "ret20_avg": 0.018805686081148857,
+      "ret63_avg": 0.09060953659513833,
+      "rs63_avg": 57.94478051807042,
+      "trade_input": false
+    },
+    {
+      "group": "Financial Conglomerates",
+      "leaders": [
+        "RFAI",
+        "ASST",
+        "FWDI"
+      ],
+      "member_count": 219,
+      "ret20_avg": 0.017595556874154532,
+      "ret63_avg": 0.019634384962778535,
+      "rs63_avg": 78.55746859004188,
+      "trade_input": false
+    },
+    {
+      "group": "Publishing: Newspapers",
+      "leaders": [
+        "DJCO",
+        "NWS",
+        "NYT"
+      ],
+      "member_count": 4,
+      "ret20_avg": 0.017485465526059202,
+      "ret63_avg": 0.00093686313513347,
+      "rs63_avg": 45.97487203350396,
+      "trade_input": false
+    },
+    {
+      "group": "Medical Distributors",
+      "leaders": [
+        "COR",
+        "MCK",
+        "HSIC"
+      ],
+      "member_count": 4,
+      "ret20_avg": 0.01605934514801799,
+      "ret63_avg": 0.10751612335163407,
+      "rs63_avg": 68.69474174034436,
+      "trade_input": false
+    },
+    {
+      "group": "Contract Drilling",
+      "leaders": [
+        "HP",
+        "SDRL",
+        "SLB"
+      ],
+      "member_count": 9,
+      "ret20_avg": 0.013023592783313418,
+      "ret63_avg": -0.02005452595009432,
+      "rs63_avg": 42.374360167519775,
+      "trade_input": false
+    },
+    {
+      "group": "Wireless Telecommunications",
+      "leaders": [
+        "T",
+        "VZ",
+        "TIGO"
+      ],
+      "member_count": 10,
+      "ret20_avg": 0.010837007556373268,
+      "ret63_avg": -0.006128937190896788,
+      "rs63_avg": 52.93491989629728,
+      "trade_input": false
+    },
+    {
+      "group": "Managed Health Care",
+      "leaders": [
+        "OSCR",
+        "HUM",
+        "MOH"
+      ],
+      "member_count": 8,
+      "ret20_avg": 0.010768164711268152,
+      "ret63_avg": -0.009471734310194518,
+      "rs63_avg": 48.074685900418814,
+      "trade_input": false
+    },
+    {
+      "group": "Pharmaceuticals: Major",
+      "leaders": [
+        "AMLX",
+        "ARCT",
+        "ATAI"
+      ],
+      "member_count": 165,
+      "ret20_avg": 0.00563062954184718,
+      "ret63_avg": 0.1398311229341305,
+      "rs63_avg": 67.40005041104388,
+      "trade_input": false
+    },
+    {
+      "group": "Biotechnology",
+      "leaders": [
+        "FTH",
+        "MRNA",
+        "TXG"
+      ],
+      "member_count": 163,
+      "ret20_avg": 0.004994254109006104,
+      "ret63_avg": 0.22758330736137308,
+      "rs63_avg": 72.99996420517594,
+      "trade_input": false
+    },
+    {
+      "group": "Medical/Nursing Services",
+      "leaders": [
+        "AVAH",
+        "PSNL",
+        "NEO"
+      ],
+      "member_count": 37,
+      "ret20_avg": 0.004969947842666779,
+      "ret63_avg": 0.18321187138015088,
+      "rs63_avg": 67.84729928052404,
+      "trade_input": false
+    },
+    {
+      "group": "Oilfield Services/Equipment",
+      "leaders": [
+        "FET",
+        "NESR",
+        "WHD"
+      ],
+      "member_count": 24,
+      "ret20_avg": 0.0036292680553788037,
+      "ret63_avg": 0.004247767565827232,
+      "rs63_avg": 45.1786360581149,
+      "trade_input": false
+    },
+    {
+      "group": "Property/Casualty Insurance",
+      "leaders": [
+        "PRCH",
+        "ARX",
+        "SAFT"
+      ],
+      "member_count": 36,
+      "ret20_avg": 0.002889188706271451,
+      "ret63_avg": 0.1574752879640252,
+      "rs63_avg": 65.49651000465333,
+      "trade_input": false
+    },
+    {
+      "group": "Trucks/Construction/Farm Machinery",
+      "leaders": [
+        "CNH",
+        "DE",
+        "ALG"
+      ],
+      "member_count": 23,
+      "ret20_avg": -0.0019604258694266947,
+      "ret63_avg": 0.06708797336234396,
+      "rs63_avg": 47.73316492720867,
+      "trade_input": false
+    },
+    {
+      "group": "Commercial Printing/Forms",
+      "leaders": [
+        "DLX",
+        "WMG",
+        "CMPR"
+      ],
+      "member_count": 5,
+      "ret20_avg": -0.0023089466670419556,
+      "ret63_avg": 0.07308052833756376,
+      "rs63_avg": 42.60896541026835,
+      "trade_input": false
+    },
+    {
+      "group": "Services to the Health Industry",
+      "leaders": [
+        "DGX",
+        "ASTH",
+        "NRC"
+      ],
+      "member_count": 3,
+      "ret20_avg": -0.002736481347805464,
+      "ret63_avg": 0.08120272227468199,
+      "rs63_avg": 55.18845974872034,
+      "trade_input": false
+    },
+    {
+      "group": "Environmental Services",
+      "leaders": [
+        "GFL",
+        "CLH",
+        "ONT"
+      ],
+      "member_count": 8,
+      "ret20_avg": -0.003963029919381286,
+      "ret63_avg": 0.12972892563636165,
+      "rs63_avg": 52.622482217642755,
+      "trade_input": false
+    },
+    {
+      "group": "Advertising/Marketing Services",
+      "leaders": [
+        "SBET",
+        "QNST",
+        "DJT"
+      ],
+      "member_count": 10,
+      "ret20_avg": -0.0044376267971488305,
+      "ret63_avg": 0.072312495601796,
+      "rs63_avg": 67.80828292228944,
+      "trade_input": false
+    },
+    {
+      "group": "Internet Software/Services",
+      "leaders": [
+        "ACVA",
+        "PUBM",
+        "GRND"
+      ],
+      "member_count": 41,
+      "ret20_avg": -0.005863695301762204,
+      "ret63_avg": 0.08451821144785764,
+      "rs63_avg": 57.17630293159609,
+      "trade_input": false
+    },
+    {
+      "group": "Beverages: Non-Alcoholic",
+      "leaders": [
+        "KO",
+        "CCEP",
+        "COKE"
+      ],
+      "member_count": 10,
+      "ret20_avg": -0.006365636726120272,
+      "ret63_avg": -0.026664831125087253,
+      "rs63_avg": 43.46724574737604,
+      "trade_input": false
+    },
+    {
+      "group": "Broadcasting",
+      "leaders": [
+        "NMAX",
+        "SIRI",
+        "NXST"
+      ],
+      "member_count": 9,
+      "ret20_avg": -0.008687950773694922,
+      "ret63_avg": 0.01088887277134909,
+      "rs63_avg": 56.02605863192182,
+      "trade_input": false
+    },
+    {
+      "group": "Data Processing Services",
+      "leaders": [
+        "BTGO",
+        "GDDY",
+        "DXC"
+      ],
+      "member_count": 37,
+      "ret20_avg": -0.00881881258458564,
+      "ret63_avg": -0.060737657594192786,
+      "rs63_avg": 35.6748335929755,
+      "trade_input": false
+    },
+    {
+      "group": "Cable/Satellite TV",
+      "leaders": [
+        "CMCSA",
+        "CHTR",
+        "WBD"
+      ],
+      "member_count": 6,
+      "ret20_avg": -0.010709882368212686,
+      "ret63_avg": 0.05288684350317746,
+      "rs63_avg": 50.25593299208934,
+      "trade_input": false
+    },
+    {
+      "group": "Food Retail",
+      "leaders": [
+        "TBBB",
+        "GO",
+        "KR"
+      ],
+      "member_count": 11,
+      "ret20_avg": -0.010844236736210478,
+      "ret63_avg": -0.07985590617477809,
+      "rs63_avg": 39.21203660617342,
+      "trade_input": false
+    },
+    {
+      "group": "Hospital/Nursing Management",
+      "leaders": [
+        "THC",
+        "PACS",
+        "CHE"
+      ],
+      "member_count": 11,
+      "ret20_avg": -0.01122488087766666,
+      "ret63_avg": 0.12300418164747275,
+      "rs63_avg": 70.80618892508144,
+      "trade_input": false
+    },
+    {
+      "group": "Life/Health Insurance",
+      "leaders": [
+        "JXN",
+        "CRBG",
+        "EQH"
+      ],
+      "member_count": 10,
+      "ret20_avg": -0.016651789842771637,
+      "ret63_avg": 0.09366413591351627,
+      "rs63_avg": 64.0246109301484,
+      "trade_input": false
+    },
+    {
+      "group": "Water Utilities",
+      "leaders": [
+        "AWR",
+        "WTRG",
+        "HTO"
+      ],
+      "member_count": 11,
+      "ret20_avg": -0.017762722797272364,
+      "ret63_avg": 0.10183179977331451,
+      "rs63_avg": 69.31596091205212,
+      "trade_input": false
+    },
+    {
+      "group": "Discount Stores",
+      "leaders": [
+        "FIVE",
+        "DG",
+        "DLTR"
+      ],
+      "member_count": 3,
+      "ret20_avg": -0.018422282608372902,
+      "ret63_avg": 0.11157819334483143,
+      "rs63_avg": 67.10097719869707,
+      "trade_input": false
+    },
+    {
+      "group": "Miscellaneous Commercial Services",
+      "leaders": [
+        "PAY",
+        "CBZ",
+        "CRL"
+      ],
+      "member_count": 88,
+      "ret20_avg": -0.019771244801313512,
+      "ret63_avg": 0.12236380536449822,
+      "rs63_avg": 58.736417591209296,
+      "trade_input": false
+    },
+    {
+      "group": "Savings Banks",
+      "leaders": [
+        "CLBK",
+        "HIFS",
+        "NWBI"
+      ],
+      "member_count": 21,
+      "ret20_avg": -0.02073298751928338,
+      "ret63_avg": 0.07475900254021453,
+      "rs63_avg": 55.787575616565846,
+      "trade_input": false
+    },
+    {
+      "group": "Regional Banks",
+      "leaders": [
+        "NU",
+        "CBC",
+        "WSBC"
+      ],
+      "member_count": 185,
+      "ret20_avg": -0.02128862735001259,
+      "ret63_avg": 0.062381890860417136,
+      "rs63_avg": 52.45112159956275,
+      "trade_input": false
+    },
+    {
+      "group": "Investment Trusts/Mutual Funds",
+      "leaders": [
+        "FSK",
+        "TRIN",
+        "CSWC"
+      ],
+      "member_count": 36,
+      "ret20_avg": -0.021610179267426196,
+      "ret63_avg": 0.017921816655664575,
+      "rs63_avg": 57.02652396463471,
+      "trade_input": false
+    },
+    {
+      "group": "Pharmaceuticals: Other",
+      "leaders": [
+        "RVMD",
+        "AVBP",
+        "ARTV"
+      ],
+      "member_count": 6,
+      "ret20_avg": -0.0226371615075871,
+      "ret63_avg": -0.01505540459541436,
+      "rs63_avg": 63.773848301535594,
+      "trade_input": false
+    },
+    {
+      "group": "Multi-Line Insurance",
+      "leaders": [
+        "BOW",
+        "LNC",
+        "GNW"
+      ],
+      "member_count": 29,
+      "ret20_avg": -0.023584056423730675,
+      "ret63_avg": 0.06458224163451967,
+      "rs63_avg": 60.1353044349787,
+      "trade_input": false
+    },
+    {
+      "group": "Personnel Services",
+      "leaders": [
+        "MAN",
+        "RHI",
+        "AMN"
+      ],
+      "member_count": 11,
+      "ret20_avg": -0.025414976786233886,
+      "ret63_avg": 0.2185696377128596,
+      "rs63_avg": 68.93904141461145,
+      "trade_input": false
+    },
+    {
+      "group": "Specialty Insurance",
+      "leaders": [
+        "ITIC",
+        "ESNT",
+        "FAF"
+      ],
+      "member_count": 11,
+      "ret20_avg": -0.026884636382783066,
+      "ret63_avg": 0.017295277080446737,
+      "rs63_avg": 58.81805490926013,
+      "trade_input": false
+    },
+    {
+      "group": "Gas Distributors",
+      "leaders": [
+        "EE",
+        "TRGP",
+        "CPK"
+      ],
+      "member_count": 17,
+      "ret20_avg": -0.027497228161887627,
+      "ret63_avg": -0.02759819319111918,
+      "rs63_avg": 42.72751445855215,
+      "trade_input": false
+    },
+    {
+      "group": "Railroads",
+      "leaders": [
+        "UNP",
+        "GATX",
+        "CSX"
+      ],
+      "member_count": 4,
+      "ret20_avg": -0.029411307606711984,
+      "ret63_avg": 0.04430255011899592,
+      "rs63_avg": 55.339692880409494,
+      "trade_input": false
+    },
+    {
+      "group": "Specialty Telecommunications",
+      "leaders": [
+        "IRDM",
+        "ECHO",
+        "ASTS"
+      ],
+      "member_count": 6,
+      "ret20_avg": -0.033375859702647136,
+      "ret63_avg": -0.18260632127472715,
+      "rs63_avg": 13.8824259345432,
+      "trade_input": false
+    },
+    {
+      "group": "Tobacco",
+      "leaders": [
+        "PM",
+        "MO",
+        "TPB"
+      ],
+      "member_count": 3,
+      "ret20_avg": -0.03351712012342489,
+      "ret63_avg": -0.02313492764916088,
+      "rs63_avg": 40.43741275011633,
+      "trade_input": false
+    },
+    {
+      "group": "Major Banks",
+      "leaders": [
+        "DAVE",
+        "NIC",
+        "COF"
+      ],
+      "member_count": 60,
+      "ret20_avg": -0.03363764214378277,
+      "ret63_avg": 0.06376760307321767,
+      "rs63_avg": 54.64899845249818,
+      "trade_input": false
+    },
+    {
+      "group": "Wholesale Distributors",
+      "leaders": [
+        "GCT",
+        "BXC",
+        "GPC"
+      ],
+      "member_count": 34,
+      "ret20_avg": -0.034954828292601256,
+      "ret63_avg": 0.07374713286467245,
+      "rs63_avg": 54.805617834933784,
+      "trade_input": false
+    },
+    {
+      "group": "Metal Fabrication",
+      "leaders": [
+        "ROCK",
+        "VMI",
+        "MLI"
+      ],
+      "member_count": 12,
+      "ret20_avg": -0.036975916817791894,
+      "ret63_avg": 0.0416747705503066,
+      "rs63_avg": 29.018147975802698,
+      "trade_input": false
+    },
+    {
+      "group": "Medical Specialties",
+      "leaders": [
+        "CDNA",
+        "PLSE",
+        "ATRC"
+      ],
+      "member_count": 117,
+      "ret20_avg": -0.03920291489236565,
+      "ret63_avg": 0.1495644111068597,
+      "rs63_avg": 61.26981441081022,
+      "trade_input": false
+    },
+    {
+      "group": "Packaged Software",
+      "leaders": [
+        "LIFE",
+        "NIQ",
+        "TEAM"
+      ],
+      "member_count": 209,
+      "ret20_avg": -0.03968154689565984,
+      "ret63_avg": 0.15961659995028382,
+      "rs63_avg": 66.91278251291445,
+      "trade_input": false
+    },
+    {
+      "group": "Electric Utilities",
+      "leaders": [
+        "CEG",
+        "AES",
+        "TXNM"
+      ],
+      "member_count": 43,
+      "ret20_avg": -0.04096717445783706,
+      "ret63_avg": -0.04452995538557831,
+      "rs63_avg": 35.215889887585405,
+      "trade_input": false
+    },
+    {
+      "group": "Information Technology Services",
+      "leaders": [
+        "EFOR",
+        "NSIT",
+        "WK"
+      ],
+      "member_count": 56,
+      "ret20_avg": -0.04234841011470768,
+      "ret63_avg": 0.10201689348576268,
+      "rs63_avg": 60.00697999069335,
+      "trade_input": false
+    },
+    {
+      "group": "Real Estate Investment Trusts",
+      "leaders": [
+        "JAN",
+        "LXP",
+        "LTC"
+      ],
+      "member_count": 157,
+      "ret20_avg": -0.04456789635087688,
+      "ret63_avg": -0.0395150834450065,
+      "rs63_avg": 39.10178209852476,
+      "trade_input": false
+    },
+    {
+      "group": "Other Metals/Minerals",
+      "leaders": [
+        "AUGO",
+        "SCCO",
+        "FCX"
+      ],
+      "member_count": 30,
+      "ret20_avg": -0.04483732704489838,
+      "ret63_avg": -0.08029656007841027,
+      "rs63_avg": 36.30836047774158,
+      "trade_input": false
+    },
+    {
+      "group": "Insurance Brokers/Services",
+      "leaders": [
+        "BWIN",
+        "GSHD",
+        "WTW"
+      ],
+      "member_count": 14,
+      "ret20_avg": -0.045458119991817425,
+      "ret63_avg": 0.17961412078459185,
+      "rs63_avg": 68.74233258598079,
+      "trade_input": false
+    },
+    {
+      "group": "Department Stores",
+      "leaders": [
+        "DDS",
+        "KSS",
+        "M"
+      ],
+      "member_count": 4,
+      "ret20_avg": -0.045743332109448115,
+      "ret63_avg": -0.04272716805574972,
+      "rs63_avg": 36.389018147975804,
+      "trade_input": false
+    },
+    {
+      "group": "Finance/Rental/Leasing",
+      "leaders": [
+        "GPN",
+        "AGM",
+        "FIGR"
+      ],
+      "member_count": 63,
+      "ret20_avg": -0.04676265373752825,
+      "ret63_avg": 0.00233686797119563,
+      "rs63_avg": 51.14245146818436,
+      "trade_input": false
+    },
+    {
+      "group": "Food Distributors",
+      "leaders": [
+        "CHEF",
+        "SYY",
+        "USFD"
+      ],
+      "member_count": 7,
+      "ret20_avg": -0.04807215091403732,
+      "ret63_avg": -0.01776258174748551,
+      "rs63_avg": 50.386226151698466,
+      "trade_input": false
+    },
+    {
+      "group": "Office Equipment/Supplies",
+      "leaders": [
+        "HNI",
+        "MLKN",
+        "ACCO"
+      ],
+      "member_count": 3,
+      "ret20_avg": -0.048127326664727334,
+      "ret63_avg": 0.2951151449224568,
+      "rs63_avg": 93.18287575616566,
+      "trade_input": false
+    },
+    {
+      "group": "Steel",
+      "leaders": [
+        "SXC",
+        "NUE",
+        "RS"
+      ],
+      "member_count": 11,
+      "ret20_avg": -0.05065692553728503,
+      "ret63_avg": -0.020241490484356195,
+      "rs63_avg": 30.798377983115074,
+      "trade_input": false
+    },
+    {
+      "group": "Air Freight/Couriers",
+      "leaders": [
+        "DASH",
+        "CART",
+        "EXPD"
+      ],
+      "member_count": 12,
+      "ret20_avg": -0.05176864379544736,
+      "ret63_avg": -0.020214366645831445,
+      "rs63_avg": 41.233648725505404,
+      "trade_input": false
+    },
+    {
+      "group": "Publishing: Books/Magazines",
+      "leaders": [
+        "WLY",
+        "SCHL",
+        "VALU"
+      ],
+      "member_count": 3,
+      "ret20_avg": -0.05467741022438625,
+      "ret63_avg": 0.003848410002860033,
+      "rs63_avg": 35.458352722196366,
+      "trade_input": false
+    },
+    {
+      "group": "Motor Vehicles",
+      "leaders": [
+        "OSK",
+        "HOG",
+        "GM"
+      ],
+      "member_count": 13,
+      "ret20_avg": -0.05712813542782187,
+      "ret63_avg": 0.0012531874925266473,
+      "rs63_avg": 46.963704048394604,
+      "trade_input": false
+    },
+    {
+      "group": "Automotive Aftermarket",
+      "leaders": [
+        "DORM",
+        "LKQ",
+        "GT"
+      ],
+      "member_count": 5,
+      "ret20_avg": -0.05748371426520236,
+      "ret63_avg": -0.03403860538936321,
+      "rs63_avg": 31.95284628509384,
+      "trade_input": false
+    },
+    {
+      "group": "Chemicals: Specialty",
+      "leaders": [
+        "KWR",
+        "NEU",
+        "APD"
+      ],
+      "member_count": 40,
+      "ret20_avg": -0.05831193511807975,
+      "ret63_avg": -0.08221563494715668,
+      "rs63_avg": 28.766022251364266,
+      "trade_input": false
+    },
+    {
+      "group": "Household/Personal Care",
+      "leaders": [
+        "ELF",
+        "EPC",
+        "IPAR"
+      ],
+      "member_count": 15,
+      "ret20_avg": -0.05874873911569746,
+      "ret63_avg": 0.020033460346734817,
+      "rs63_avg": 53.16814022025749,
+      "trade_input": false
+    },
+    {
+      "group": "Casinos/Gaming",
+      "leaders": [
+        "CZR",
+        "SGHC",
+        "BRSL"
+      ],
+      "member_count": 11,
+      "ret20_avg": -0.05939829553015161,
+      "ret63_avg": -0.12696534123534559,
+      "rs63_avg": 25.062819916240112,
+      "trade_input": false
+    },
+    {
+      "group": "Specialty Stores",
+      "leaders": [
+        "HZO",
+        "HNST",
+        "W"
+      ],
+      "member_count": 45,
+      "ret20_avg": -0.06092512177268469,
+      "ret63_avg": -0.015207138223544386,
+      "rs63_avg": 46.98513384438293,
+      "trade_input": false
+    },
+    {
+      "group": "Food: Specialty/Candy",
+      "leaders": [
+        "UTZ",
+        "SENEA",
+        "FRPT"
+      ],
+      "member_count": 27,
+      "ret20_avg": -0.06108770207370515,
+      "ret63_avg": 0.022216622520014235,
+      "rs63_avg": 50.59582819106968,
+      "trade_input": false
+    },
+    {
+      "group": "Financial Publishing/Services",
+      "leaders": [
+        "TRU",
+        "FDS",
+        "MORN"
+      ],
+      "member_count": 8,
+      "ret20_avg": -0.061672560705695864,
+      "ret63_avg": 0.04092730959679583,
+      "rs63_avg": 54.80456026058632,
+      "trade_input": false
+    },
+    {
+      "group": "Telecommunications Equipment",
+      "leaders": [
+        "GRMN",
+        "FEIM",
+        "MSI"
+      ],
+      "member_count": 21,
+      "ret20_avg": -0.06257598020764098,
+      "ret63_avg": -0.04742770587650667,
+      "rs63_avg": 42.89702851824769,
+      "trade_input": false
+    },
+    {
+      "group": "Real Estate Development",
+      "leaders": [
+        "REAX",
+        "COMP",
+        "JLL"
+      ],
+      "member_count": 26,
+      "ret20_avg": -0.06289438894407612,
+      "ret63_avg": -0.020305773079458526,
+      "rs63_avg": 46.700015511090434,
+      "trade_input": false
+    },
+    {
+      "group": "Auto Parts: OEM",
+      "leaders": [
+        "ITT",
+        "ALSN",
+        "THRM"
+      ],
+      "member_count": 27,
+      "ret20_avg": -0.06611334883105446,
+      "ret63_avg": -0.08535365343072275,
+      "rs63_avg": 38.229990693345734,
+      "trade_input": false
+    },
+    {
+      "group": "Movies/Entertainment",
+      "leaders": [
+        "DIS",
+        "MSGE",
+        "CNK"
+      ],
+      "member_count": 24,
+      "ret20_avg": -0.0666081222267802,
+      "ret63_avg": -0.04192528733160705,
+      "rs63_avg": 30.2179904785768,
+      "trade_input": false
+    },
+    {
+      "group": "Investment Managers",
+      "leaders": [
+        "WT",
+        "VCTR",
+        "AMP"
+      ],
+      "member_count": 45,
+      "ret20_avg": -0.06977200705907732,
+      "ret63_avg": 0.07302383183382617,
+      "rs63_avg": 60.23166023166023,
+      "trade_input": false
+    },
+    {
+      "group": "Engineering & Construction",
+      "leaders": [
+        "BWMN",
+        "TTEK",
+        "TPC"
+      ],
+      "member_count": 39,
+      "ret20_avg": -0.06983855650511532,
+      "ret63_avg": -0.11835778816849855,
+      "rs63_avg": 32.07073057235923,
+      "trade_input": false
+    },
+    {
+      "group": "Electronic Production Equipment",
+      "leaders": [
+        "BE",
+        "TER",
+        "PLAB"
+      ],
+      "member_count": 20,
+      "ret20_avg": -0.07006352358871534,
+      "ret63_avg": -0.13314960239560433,
+      "rs63_avg": 22.925391655033348,
+      "trade_input": false
+    },
+    {
+      "group": "Food: Major Diversified",
+      "leaders": [
+        "CAG",
+        "GIS",
+        "KHC"
+      ],
+      "member_count": 6,
+      "ret20_avg": -0.07023600384617135,
+      "ret63_avg": -0.03832062286687519,
+      "rs63_avg": 46.868310842252214,
+      "trade_input": false
+    },
+    {
+      "group": "Electrical Products",
+      "leaders": [
+        "CHPT",
+        "ATKR",
+        "AYI"
+      ],
+      "member_count": 43,
+      "ret20_avg": -0.07080704107230809,
+      "ret63_avg": -0.1303273569153779,
+      "rs63_avg": 28.619512951760502,
+      "trade_input": false
+    },
+    {
+      "group": "Chemicals: Major Diversified",
+      "leaders": [
+        "AVNT",
+        "IOSP",
+        "NGVT"
+      ],
+      "member_count": 8,
+      "ret20_avg": -0.07144709059823814,
+      "ret63_avg": -0.09752538606524641,
+      "rs63_avg": 31.4797580269893,
+      "trade_input": false
+    },
+    {
+      "group": "Beverages: Alcoholic",
+      "leaders": [
+        "TAP",
+        "SAM",
+        "STZ"
+      ],
+      "member_count": 4,
+      "ret20_avg": -0.07312793320310992,
+      "ret63_avg": -0.05735299203904545,
+      "rs63_avg": 29.64169381107492,
+      "trade_input": false
+    },
+    {
+      "group": "Semiconductors",
+      "leaders": [
+        "PI",
+        "SWKS",
+        "QRVO"
+      ],
+      "member_count": 60,
+      "ret20_avg": -0.07343364327784302,
+      "ret63_avg": -0.18077761082181543,
+      "rs63_avg": 20.175846783081475,
+      "trade_input": false
+    },
+    {
+      "group": "Industrial Specialties",
+      "leaders": [
+        "UFPT",
+        "CSW",
+        "AXTA"
+      ],
+      "member_count": 14,
+      "ret20_avg": -0.07463242126095458,
+      "ret63_avg": 0.03428475704114133,
+      "rs63_avg": 36.82177757096324,
+      "trade_input": false
+    },
+    {
+      "group": "Trucking",
+      "leaders": [
+        "JBHT",
+        "SNDR",
+        "WERN"
+      ],
+      "member_count": 16,
+      "ret20_avg": -0.07728320130672389,
+      "ret63_avg": -0.15352211903573693,
+      "rs63_avg": 13.30851558864588,
+      "trade_input": false
+    },
+    {
+      "group": "Computer Peripherals",
+      "leaders": [
+        "QMCO",
+        "BLZE",
+        "P"
+      ],
+      "member_count": 14,
+      "ret20_avg": -0.07852105467951312,
+      "ret63_avg": 0.07056161719092915,
+      "rs63_avg": 53.84364820846905,
+      "trade_input": false
+    },
+    {
+      "group": "Restaurants",
+      "leaders": [
+        "CAKE",
+        "EAT",
+        "JACK"
+      ],
+      "member_count": 35,
+      "ret20_avg": -0.07858810936530816,
+      "ret63_avg": -0.0003640743132973605,
+      "rs63_avg": 48.95300139599813,
+      "trade_input": false
+    },
+    {
+      "group": "Apparel/Footwear Retail",
+      "leaders": [
+        "ANF",
+        "CTRN",
+        "URBN"
+      ],
+      "member_count": 25,
+      "ret20_avg": -0.08106083393402735,
+      "ret63_avg": -0.07070078772411288,
+      "rs63_avg": 28.478362028850626,
+      "trade_input": false
+    },
+    {
+      "group": "Food: Meat/Fish/Dairy",
+      "leaders": [
+        "JBS",
+        "TSN",
+        "HRL"
+      ],
+      "member_count": 6,
+      "ret20_avg": -0.08340957873227056,
+      "ret63_avg": -0.0671123546523051,
+      "rs63_avg": 28.327128897161472,
+      "trade_input": false
+    },
+    {
+      "group": "Construction Materials",
+      "leaders": [
+        "JHX",
+        "ACA",
+        "USLM"
+      ],
+      "member_count": 14,
+      "ret20_avg": -0.0836416197645047,
+      "ret63_avg": -0.08657028855053489,
+      "rs63_avg": 33.64355514192647,
+      "trade_input": false
+    },
+    {
+      "group": "Aluminum",
+      "leaders": [
+        "KALU",
+        "CSTM",
+        "CENX"
+      ],
+      "member_count": 5,
+      "ret20_avg": -0.08428814197847478,
+      "ret63_avg": -0.21739817443213347,
+      "rs63_avg": 8.666821777570963,
+      "trade_input": false
+    },
+    {
+      "group": "Other Consumer Services",
+      "leaders": [
+        "ANDG",
+        "HRB",
+        "EXPE"
+      ],
+      "member_count": 26,
+      "ret20_avg": -0.08705164251998868,
+      "ret63_avg": -0.03851757876725316,
+      "rs63_avg": 46.57747789669614,
+      "trade_input": false
+    },
+    {
+      "group": "Building Products",
+      "leaders": [
+        "MHK",
+        "PLPC",
+        "TILE"
+      ],
+      "member_count": 17,
+      "ret20_avg": -0.08713742719558208,
+      "ret63_avg": -0.03193396211984748,
+      "rs63_avg": 36.5950940636841,
+      "trade_input": false
+    },
+    {
+      "group": "Alternative Power Generation",
+      "leaders": [
+        "RNW",
+        "BIP",
+        "TLN"
+      ],
+      "member_count": 5,
+      "ret20_avg": -0.08801883386109546,
+      "ret63_avg": -0.12133853080724091,
+      "rs63_avg": 31.71242438343415,
+      "trade_input": false
+    },
+    {
+      "group": "Tools & Hardware",
+      "leaders": [
+        "ALLE",
+        "SWK",
+        "SNA"
+      ],
+      "member_count": 3,
+      "ret20_avg": -0.08810906247495087,
+      "ret63_avg": 0.07217188883176089,
+      "rs63_avg": 60.462230494803784,
+      "trade_input": false
+    },
+    {
+      "group": "Hotels/Resorts/Cruise lines",
+      "leaders": [
+        "ABNB",
+        "LIND",
+        "TH"
+      ],
+      "member_count": 17,
+      "ret20_avg": -0.08871083535693797,
+      "ret63_avg": -0.05440337994388998,
+      "rs63_avg": 33.46323871568171,
+      "trade_input": false
+    },
+    {
+      "group": "Recreational Products",
+      "leaders": [
+        "HAS",
+        "WGO",
+        "THO"
+      ],
+      "member_count": 18,
+      "ret20_avg": -0.08926579842937825,
+      "ret63_avg": -0.05333918559259274,
+      "rs63_avg": 30.96530686107233,
+      "trade_input": false
+    },
+    {
+      "group": "Industrial Machinery",
+      "leaders": [
+        "OII",
+        "NWL",
+        "CXT"
+      ],
+      "member_count": 71,
+      "ret20_avg": -0.08928012129000697,
+      "ret63_avg": -0.1117787086440702,
+      "rs63_avg": 29.501699647451318,
+      "trade_input": false
+    },
+    {
+      "group": "Homebuilding",
+      "leaders": [
+        "BZH",
+        "FTDR",
+        "SKY"
+      ],
+      "member_count": 19,
+      "ret20_avg": -0.08959201829853373,
+      "ret63_avg": -0.02658907394227507,
+      "rs63_avg": 37.93392275476967,
+      "trade_input": false
+    },
+    {
+      "group": "Other Transportation",
+      "leaders": [
+        "VNT",
+        "LYFT",
+        "UBER"
+      ],
+      "member_count": 7,
+      "ret20_avg": -0.09080231079006094,
+      "ret63_avg": -0.02014245692921011,
+      "rs63_avg": 49.39041414611447,
+      "trade_input": false
+    },
+    {
+      "group": "Internet Retail",
+      "leaders": [
+        "MELI",
+        "GLBE",
+        "GRPN"
+      ],
+      "member_count": 16,
+      "ret20_avg": -0.09109960609042203,
+      "ret63_avg": -0.022365537986642037,
+      "rs63_avg": 56.02140530479293,
+      "trade_input": false
+    },
+    {
+      "group": "Computer Communications",
+      "leaders": [
+        "ALLT",
+        "RDWR",
+        "SILC"
+      ],
+      "member_count": 4,
+      "ret20_avg": -0.09123258962597783,
+      "ret63_avg": -0.025846851677083282,
+      "rs63_avg": null,
+      "trade_input": false
+    },
+    {
+      "group": "Home Furnishings",
+      "leaders": [
+        "ETD",
+        "ARHS",
+        "SGI"
+      ],
+      "member_count": 10,
+      "ret20_avg": -0.09342758375729807,
+      "ret63_avg": -0.024817446339120464,
+      "rs63_avg": 36.823328680006206,
+      "trade_input": false
+    },
+    {
+      "group": "Pulp & Paper",
+      "leaders": [
+        "AVY",
+        "IP",
+        "CLW"
+      ],
+      "member_count": 4,
+      "ret20_avg": -0.09485109547322437,
+      "ret63_avg": 0.03808356752969225,
+      "rs63_avg": 53.02466263378316,
+      "trade_input": false
+    },
+    {
+      "group": "Containers/Packaging",
+      "leaders": [
+        "GEF",
+        "CCK",
+        "OC"
+      ],
+      "member_count": 16,
+      "ret20_avg": -0.09554354784809813,
+      "ret63_avg": 0.0385807368901344,
+      "rs63_avg": 50.223717650427744,
+      "trade_input": false
+    },
+    {
+      "group": "Forest Products",
+      "leaders": [
+        "TREX",
+        "UFPI",
+        "LPX"
+      ],
+      "member_count": 3,
+      "ret20_avg": -0.10157000250048831,
+      "ret63_avg": -0.05604247979264813,
+      "rs63_avg": 32.06142391810145,
+      "trade_input": false
+    },
+    {
+      "group": "Electronic Components",
+      "leaders": [
+        "MEI",
+        "APH",
+        "NVT"
+      ],
+      "member_count": 15,
+      "ret20_avg": -0.10194239925716136,
+      "ret63_avg": -0.1476297512913888,
+      "rs63_avg": 26.74394009898896,
+      "trade_input": false
+    },
+    {
+      "group": "Computer Processing Hardware",
+      "leaders": [
+        "ZBRA",
+        "DELL",
+        "HPE"
+      ],
+      "member_count": 14,
+      "ret20_avg": -0.10232757548964432,
+      "ret63_avg": -0.054348654159934846,
+      "rs63_avg": 41.87606638746704,
+      "trade_input": false
+    },
+    {
+      "group": "Electronic Equipment/Instruments",
+      "leaders": [
+        "ITRI",
+        "MSA",
+        "EMR"
+      ],
+      "member_count": 24,
+      "ret20_avg": -0.1031282109579742,
+      "ret63_avg": -0.10320055439755677,
+      "rs63_avg": 31.89390414146115,
+      "trade_input": false
+    },
+    {
+      "group": "Apparel/Footwear",
+      "leaders": [
+        "FIGS",
+        "WWW",
+        "VSTS"
+      ],
+      "member_count": 22,
+      "ret20_avg": -0.11006754426320707,
+      "ret63_avg": -0.11394005745366967,
+      "rs63_avg": 21.757978006906516,
+      "trade_input": false
+    },
+    {
+      "group": "Miscellaneous Manufacturing",
+      "leaders": [
+        "MYE",
+        "BRC",
+        "AWI"
+      ],
+      "member_count": 10,
+      "ret20_avg": -0.12033168327301969,
+      "ret63_avg": -0.039463438089204904,
+      "rs63_avg": 39.02396463471382,
+      "trade_input": false
+    },
+    {
+      "group": "Airlines",
+      "leaders": [
+        "SKYW",
+        "VTOL",
+        "DAL"
+      ],
+      "member_count": 12,
+      "ret20_avg": -0.12786031541962958,
+      "ret63_avg": -0.05648131493592313,
+      "rs63_avg": 33.182875756165664,
+      "trade_input": false
+    },
+    {
+      "group": "Home Improvement Chains",
+      "leaders": [
+        "HD",
+        "LOW",
+        "FND"
+      ],
+      "member_count": 4,
+      "ret20_avg": -0.14086022559014516,
+      "ret63_avg": -0.12533236639723755,
+      "rs63_avg": 21.242438343415543,
+      "trade_input": false
+    },
+    {
+      "group": "Aerospace & Defense",
+      "leaders": [
+        "ARXS",
+        "BETA",
+        "NPK"
+      ],
+      "member_count": 55,
+      "ret20_avg": -0.1522720976749286,
+      "ret63_avg": -0.14156236652722864,
+      "rs63_avg": 27.799399297770638,
+      "trade_input": false
+    }
+  ],
+  "note": "Sector/Industry rotation diagnostics only; not the final fine-grained Peer Theme Score.",
+  "schema_version": "v38.analytics.1",
+  "sector": [
+    {
+      "group": "Energy Minerals",
+      "leaders": [
+        "PBF",
+        "CVI",
+        "CLMT"
+      ],
+      "member_count": 74,
+      "ret20_avg": 0.0957445173201457,
+      "ret63_avg": 0.14630812688521377,
+      "rs63_avg": 70.66396591209775,
+      "trade_input": false
+    },
+    {
+      "group": "Communications",
+      "leaders": [
+        "OOMA",
+        "IDT",
+        "T"
+      ],
+      "member_count": 26,
+      "ret20_avg": 0.005831928824512402,
+      "ret63_avg": -0.03746853918147377,
+      "rs63_avg": 39.78013029315961,
+      "trade_input": false
+    },
+    {
+      "group": "Transportation",
+      "leaders": [
+        "ECO",
+        "NAT",
+        "DHT"
+      ],
+      "member_count": 88,
+      "ret20_avg": 0.0026446710407096313,
+      "ret63_avg": 0.05162103770727245,
+      "rs63_avg": 51.07491856677523,
+      "trade_input": false
+    },
+    {
+      "group": "Health Services",
+      "leaders": [
+        "AVAH",
+        "PSNL",
+        "THC"
+      ],
+      "member_count": 59,
+      "ret20_avg": 0.0023449195622214643,
+      "ret63_avg": 0.1406732123988181,
+      "rs63_avg": 64.21485680443335,
+      "trade_input": false
+    },
+    {
+      "group": "Health Technology",
+      "leaders": [
+        "FTH",
+        "MRNA",
+        "TXG"
+      ],
+      "member_count": 451,
+      "ret20_avg": -0.006606312011706258,
+      "ret63_avg": 0.17167347743760664,
+      "rs63_avg": 67.51400371566423,
+      "trade_input": false
+    },
+    {
+      "group": "Industrial Services",
+      "leaders": [
+        "FET",
+        "NESR",
+        "BWMN"
+      ],
+      "member_count": 98,
+      "ret20_avg": -0.019165822506693894,
+      "ret63_avg": -0.017412239883650264,
+      "rs63_avg": 44.35873572681391,
+      "trade_input": false
+    },
+    {
+      "group": "Finance",
+      "leaders": [
+        "RFAI",
+        "ASST",
+        "PRCH"
+      ],
+      "member_count": 911,
+      "ret20_avg": -0.020523070275291693,
+      "ret63_avg": 0.03621262066758847,
+      "rs63_avg": 52.66720740051359,
+      "trade_input": false
+    },
+    {
+      "group": "Commercial Services",
+      "leaders": [
+        "PAY",
+        "MAN",
+        "SBET"
+      ],
+      "member_count": 122,
+      "ret20_avg": -0.0210552112632494,
+      "ret63_avg": 0.11957563083112661,
+      "rs63_avg": 59.07487144447521,
+      "trade_input": false
+    },
+    {
+      "group": "Miscellaneous",
+      "leaders": [
+        "FSK",
+        "TRIN",
+        "CSWC"
+      ],
+      "member_count": 36,
+      "ret20_avg": -0.021610179267426196,
+      "ret63_avg": 0.017921816655664575,
+      "rs63_avg": 57.02652396463471,
+      "trade_input": false
+    },
+    {
+      "group": "Distribution Services",
+      "leaders": [
+        "GCT",
+        "BXC",
+        "GPC"
+      ],
+      "member_count": 52,
+      "ret20_avg": -0.022193387312627027,
+      "ret63_avg": 0.06422493846720279,
+      "rs63_avg": 55.36942247039967,
+      "trade_input": false
+    },
+    {
+      "group": "Technology Services",
+      "leaders": [
+        "LIFE",
+        "NIQ",
+        "TEAM"
+      ],
+      "member_count": 343,
+      "ret20_avg": -0.032725088578136836,
+      "ret63_avg": 0.11877861227581238,
+      "rs63_avg": 61.74965100046531,
+      "trade_input": false
+    },
+    {
+      "group": "Non-Energy Minerals",
+      "leaders": [
+        "AUGO",
+        "SSRM",
+        "HL"
+      ],
+      "member_count": 86,
+      "ret20_avg": -0.03393408400754767,
+      "ret63_avg": -0.03006424880585394,
+      "rs63_avg": 39.70930391700656,
+      "trade_input": false
+    },
+    {
+      "group": "Utilities",
+      "leaders": [
+        "EE",
+        "CEG",
+        "AWR"
+      ],
+      "member_count": 76,
+      "ret20_avg": -0.037691125006770465,
+      "ret63_avg": -0.02461184503103472,
+      "rs63_avg": 39.505221643311025,
+      "trade_input": false
+    },
+    {
+      "group": "Process Industries",
+      "leaders": [
+        "CF",
+        "GEF",
+        "MOS"
+      ],
+      "member_count": 109,
+      "ret20_avg": -0.04396801063400863,
+      "ret63_avg": -0.020122003839105805,
+      "rs63_avg": 38.89450242637774,
+      "trade_input": false
+    },
+    {
+      "group": "Retail Trade",
+      "leaders": [
+        "ANF",
+        "HZO",
+        "HNST"
+      ],
+      "member_count": 114,
+      "ret20_avg": -0.06029866052429808,
+      "ret63_avg": -0.03560116465044974,
+      "rs63_avg": 43.10404292009963,
+      "trade_input": false
+    },
+    {
+      "group": "Consumer Durables",
+      "leaders": [
+        "IMAX",
+        "BZH",
+        "FTDR"
+      ],
+      "member_count": 79,
+      "ret20_avg": -0.06580257935592959,
+      "ret63_avg": -0.005884186789405863,
+      "rs63_avg": 40.69002193711361,
+      "trade_input": false
+    },
+    {
+      "group": "Consumer Services",
+      "leaders": [
+        "ANDG",
+        "CAKE",
+        "EAT"
+      ],
+      "member_count": 136,
+      "ret20_avg": -0.0676245871639809,
+      "ret63_avg": -0.029326846321438046,
+      "rs63_avg": 40.978594695207086,
+      "trade_input": false
+    },
+    {
+      "group": "Consumer Non-Durables",
+      "leaders": [
+        "UTZ",
+        "ELF",
+        "SENEA"
+      ],
+      "member_count": 94,
+      "ret20_avg": -0.06836502700896045,
+      "ret63_avg": -0.030383711202771817,
+      "rs63_avg": 40.56687069716386,
+      "trade_input": false
+    },
+    {
+      "group": "Producer Manufacturing",
+      "leaders": [
+        "HNI",
+        "CHPT",
+        "MLKN"
+      ],
+      "member_count": 208,
+      "ret20_avg": -0.06997053495160059,
+      "ret63_avg": -0.06543940262852718,
+      "rs63_avg": 34.172441685066566,
+      "trade_input": false
+    },
+    {
+      "group": "Electronic Technology",
+      "leaders": [
+        "QMCO",
+        "BLZE",
+        "ZBRA"
+      ],
+      "member_count": 227,
+      "ret20_avg": -0.09866684694998833,
+      "ret63_avg": -0.1182197513817903,
+      "rs63_avg": 28.910638319513208,
+      "trade_input": false
+    }
+  ],
+  "session_date": "2026-09-11",
+  "source": "current RS universe sector/industry diagnostics",
+  "status": "READY",
+  "trade_input": false
+}
