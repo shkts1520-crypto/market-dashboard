@@ -9,9 +9,12 @@ import sys
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
+from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
+from v38.publish_extension import include_tqqq_panic_readiness
 from v38.rs_history import write_rs_history
 from v38.supplemental_engine import materialize_supplemental_shards
+from v38.tqqq_state import materialize_tqqq_panic_state
 
 
 def _load(path: Path) -> dict:
@@ -22,6 +25,11 @@ def _load(path: Path) -> dict:
     except Exception:
         return {}
     return obj if isinstance(obj, dict) else {}
+
+
+def _is_production_context() -> bool:
+    event = str(os.environ.get("GITHUB_EVENT_NAME") or "").strip().lower()
+    return event not in {"", "pull_request", "pull_request_target"}
 
 
 def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_at: str) -> Path | None:
@@ -60,8 +68,7 @@ def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path
     required 200-session indicator warm-up, and fetch 2 years for market ratios.
     These histories remain display-only and never become trading gates.
     """
-    event = str(os.environ.get("GITHUB_EVENT_NAME") or "").strip().lower()
-    if event in {"", "pull_request", "pull_request_target"}:
+    if not _is_production_context():
         return None
 
     command = [
@@ -81,6 +88,21 @@ def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path
         if not output.is_file() or output.stat().st_size <= 0:
             raise SystemExit(f"two-year display reconstruction missing output: {output}")
     return outputs[0]
+
+
+def _materialize_tqqq_if_ready(root: Path, *, session: str, generated_at: str) -> Path | None:
+    market_inputs = _load(root / "market_inputs.json")
+    mc57 = _load(root / "mc57.json")
+    ready = market_inputs.get("session_date") == session and mc57.get("session_date") == session
+    if not ready:
+        if _is_production_context():
+            raise SystemExit("current-session market_inputs.json and mc57.json are required for TQQQ panic state")
+        return None
+    return materialize_tqqq_panic_state(
+        root,
+        session_date=session,
+        generated_at=generated_at,
+    )
 
 
 def main() -> int:
@@ -109,6 +131,27 @@ def main() -> int:
     )
     ledger_arg = args.positions_ledger or (str(empty_ledger) if empty_ledger is not None else None)
 
+    # Reuse the same downloaded historical market data for Breadth, RS and F1/F2/F3.
+    # This happens before UI/publish materialization so reconstructed display values
+    # are actually visible in the same production run instead of one run later.
+    reconstructed_history = _reconstruct_history_if_production(
+        root,
+        generated_at=generated_at,
+    )
+    f123_completion = complete_f123_file(
+        root,
+        session_date=session,
+        generated_at=generated_at,
+    )
+
+    # TQQQ Panic is a persistent state machine. It consumes the canonical QQQ 4H
+    # input and current MC57 after both have been acquired for this session.
+    tqqq_state = _materialize_tqqq_if_ready(
+        root,
+        session=session,
+        generated_at=generated_at,
+    )
+
     outputs = materialize_supplemental_shards(
         root,
         session_date=session,
@@ -116,11 +159,9 @@ def main() -> int:
         theme_scores_path=args.theme_scores,
         positions_ledger_path=ledger_arg,
     )
-
-    reconstructed_history = _reconstruct_history_if_production(
-        root,
-        generated_at=generated_at,
-    )
+    # Publication readiness must fail visibly if the TQQQ panic state cannot be
+    # materialized. The state itself is not promoted into normal-stock hard gates.
+    publish_extension = include_tqqq_panic_readiness(root, session_date=session)
 
     # Refresh the current observed session after reconstruction. The exact current
     # session remains authoritative and overrides display-only reconstructed values.
@@ -146,6 +187,9 @@ def main() -> int:
                 "positions_ledger": empty_ledger.as_posix() if empty_ledger is not None else ledger_arg,
                 "outputs": [p.as_posix() for p in outputs],
                 "historical_reconstruction": reconstructed_history.as_posix() if reconstructed_history is not None else None,
+                "f123_display_completion": f123_completion.as_posix() if f123_completion is not None else None,
+                "tqqq_panic_state": tqqq_state.as_posix() if tqqq_state is not None else None,
+                "publish_extension": publish_extension.as_posix(),
                 "history_snapshot": history_snapshot.as_posix(),
                 "history_index": history_index.as_posix(),
                 "rs_history": rs_history.as_posix(),

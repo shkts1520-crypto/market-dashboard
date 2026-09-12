@@ -684,6 +684,11 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
         "note": "Code-owned adopted V38 rules only; unresolved execution details remain DATA_REQUIRED.",
         "source": rules_obj.get("source") if rules_obj else None,
     }
+    tqqq_state = _read(root / "tqqq_panic.json")
+    if tqqq_state and tqqq_state.get("session_date") == session:
+        rules["tqqq_panic_state"] = tqqq_state
+        rules["rows"].append({"key": "tqqq_panic.action_next_open",
+                               "value": tqqq_state.get("action_next_open") or "BASELINE_30"})
 
     return {
         "session_date": session,

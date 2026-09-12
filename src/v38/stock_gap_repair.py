@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,7 @@ import pandas as pd
 from .f123_engine import calculate_f123_from_files
 from .freshness import atomic_write_json
 from .live_acquisition import (
+    TRADINGVIEW_URL,
     _download,
     adjusted_ohlcv_rows,
     select_yfinance_symbol_frame,
@@ -17,7 +19,22 @@ from .live_acquisition import (
 )
 from .stock_adapter import calculate_from_files
 
-CALCULATION_VERSION = "v38-stock-gap-repair-1.0.0"
+CALCULATION_VERSION = "v38-stock-gap-repair-1.1.0"
+
+# Verified corporate-action continuity used only when the new Yahoo symbol is
+# temporarily missing.  JAB Acquisition Corp I changed its Nasdaq Class A ticker
+# from JAB to ATLQ effective 2026-08-31 without a CUSIP change.  The mapping does
+# not create synthetic prices; it joins real pre-change Yahoo history to a real
+# current TradingView scanner bar for the same security.
+CORPORATE_ACTION_ALIASES: dict[str, dict[str, Any]] = {
+    "ATLQ": {
+        "prior_ticker": "JAB",
+        "exchange": "NASDAQ",
+        "effective_from": "2026-08-31",
+        "same_cusip": True,
+        "provenance": "Nasdaq issuer notice 2026-08-26; effective 2026-08-31",
+    },
+}
 
 
 class StockGapRepairError(RuntimeError):
@@ -50,6 +67,114 @@ def _ticker_history_fallback(yf: Any, symbol: str) -> pd.DataFrame:
     return frame
 
 
+def _yahoo_rows(yf: Any, *, ticker: str, symbol: str, target_session: str) -> list[dict[str, Any]]:
+    try:
+        raw = _download(yf, [symbol], period="2y", threads=False)
+    except Exception:
+        raw = pd.DataFrame()
+    frame = select_yfinance_symbol_frame(raw, symbol)
+    rows = adjusted_ohlcv_rows(frame, ticker=ticker, target_session=target_session)
+    if rows:
+        return rows
+    fallback = _ticker_history_fallback(yf, symbol)
+    return adjusted_ohlcv_rows(fallback, ticker=ticker, target_session=target_session)
+
+
+def _tradingview_current_bar(*, ticker: str, exchange: str, target_session: str) -> dict[str, Any] | None:
+    payload = {
+        "filter": [],
+        "options": {"lang": "en"},
+        "symbols": {"query": {"types": []}, "tickers": [f"{exchange}:{ticker}"]},
+        "columns": ["open", "high", "low", "close", "volume"],
+        "range": [0, 1],
+    }
+    req = urllib.request.Request(
+        TRADINGVIEW_URL,
+        data=json.dumps(payload, separators=(",", ":")).encode(),
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "Mozilla/5.0 (v38-market-dashboard-gap-repair)",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            obj = json.loads(response.read().decode("utf-8"))
+    except Exception:
+        return None
+    data = obj.get("data") if isinstance(obj, dict) else None
+    if not isinstance(data, list) or not data:
+        return None
+    values = data[0].get("d") if isinstance(data[0], dict) else None
+    if not isinstance(values, list) or len(values) < 5:
+        return None
+    try:
+        open_, high, low, close, volume = [float(x) for x in values[:5]]
+    except (TypeError, ValueError):
+        return None
+    if not all(pd.notna(x) for x in (open_, high, low, close, volume)):
+        return None
+    if close <= 0 or high < low or volume < 0:
+        return None
+    return {
+        "ticker": ticker,
+        "date": target_session,
+        "open": open_,
+        "high": high,
+        "low": low,
+        "close": close,
+        "volume": volume,
+        "is_complete": True,
+        "split_checked": True,
+        "split_anomaly": False,
+    }
+
+
+def _corporate_action_rows(
+    yf: Any,
+    *,
+    ticker: str,
+    target_session: str,
+) -> list[dict[str, Any]]:
+    alias = CORPORATE_ACTION_ALIASES.get(ticker)
+    if not alias or alias.get("same_cusip") is not True:
+        return []
+    prior = str(alias["prior_ticker"])
+    effective = str(alias["effective_from"])
+    exchange = str(alias["exchange"])
+
+    prior_rows = _yahoo_rows(
+        yf,
+        ticker=ticker,
+        symbol=yahoo_symbol(prior),
+        target_session=target_session,
+    )
+    direct_rows = _yahoo_rows(
+        yf,
+        ticker=ticker,
+        symbol=yahoo_symbol(ticker),
+        target_session=target_session,
+    )
+    by_date: dict[str, dict[str, Any]] = {}
+    for row in prior_rows:
+        if str(row.get("date") or "") < effective:
+            by_date[str(row["date"])] = row
+    for row in direct_rows:
+        if str(row.get("date") or "") >= effective:
+            by_date[str(row["date"])] = row
+
+    if target_session not in by_date:
+        current = _tradingview_current_bar(
+            ticker=ticker,
+            exchange=exchange,
+            target_session=target_session,
+        )
+        if current is not None:
+            by_date[target_session] = current
+    return [by_date[day] for day in sorted(by_date)]
+
+
 def isolated_history_rows(
     yf: Any,
     *,
@@ -57,18 +182,19 @@ def isolated_history_rows(
     target_session: str,
 ) -> list[dict[str, Any]]:
     symbol = yahoo_symbol(ticker)
-    try:
-        raw = _download(yf, [symbol], period="2y", threads=False)
-    except Exception:
-        raw = pd.DataFrame()
-    frame = select_yfinance_symbol_frame(raw, symbol)
-    rows = adjusted_ohlcv_rows(frame, ticker=ticker, target_session=target_session)
+    rows = _yahoo_rows(yf, ticker=ticker, symbol=symbol, target_session=target_session)
     if any(row.get("date") == target_session and row.get("close") is not None for row in rows):
         return rows
 
-    fallback = _ticker_history_fallback(yf, symbol)
-    rows = adjusted_ohlcv_rows(fallback, ticker=ticker, target_session=target_session)
-    return rows if any(row.get("date") == target_session and row.get("close") is not None for row in rows) else []
+    alias_rows = _corporate_action_rows(
+        yf,
+        ticker=ticker,
+        target_session=target_session,
+    )
+    return alias_rows if any(
+        row.get("date") == target_session and row.get("close") is not None
+        for row in alias_rows
+    ) else []
 
 
 def _rewrite_ohlcv(path: Path, repaired: dict[str, list[dict[str, Any]]]) -> None:
@@ -121,7 +247,7 @@ def repair_failed_live_tickers(
         return {"status": "UNRESOLVED", "repaired": [], "remaining": failed}
 
     _rewrite_ohlcv(ohlcv_path, repaired)
-    source = "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated gap retry"
+    source = "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated gap retry; verified corporate-action alias when required"
     calculate_from_files(
         ohlcv_path,
         universe_path,
@@ -148,7 +274,13 @@ def repair_failed_live_tickers(
     yahoo["target_session_coverage"] = yahoo["target_session_received"] / requested if requested else None
     yahoo["failed_tickers"] = remaining
     yahoo["isolated_retry_repaired"] = sorted(repaired)
+    yahoo["isolated_retry_source"] = "Yahoo isolated retry; ATLQ may join verified JAB pre-change history to completed TradingView current bar"
     manifest["yahoo"] = yahoo
+    manifest["corporate_action_aliases"] = {
+        ticker: CORPORATE_ACTION_ALIASES[ticker]
+        for ticker in repaired
+        if ticker in CORPORATE_ACTION_ALIASES
+    }
     if yahoo.get("target_session_coverage") is not None:
         manifest["coverage"] = yahoo["target_session_coverage"]
         state["coverage"] = yahoo["target_session_coverage"]
