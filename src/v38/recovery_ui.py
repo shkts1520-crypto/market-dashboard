@@ -8,7 +8,7 @@ from typing import Any
 
 READY = "READY"
 DATA_REQUIRED = "DATA_REQUIRED"
-CALCULATION_VERSION = "v38-recovery-ui-1.0.0"
+CALCULATION_VERSION = "v38-recovery-ui-1.1.0"
 
 
 def _read(path: Path) -> dict[str, Any] | None:
@@ -31,11 +31,68 @@ def _finite(value: Any) -> float | None:
     return number if math.isfinite(number) else None
 
 
-def _theme_as_legacy_group(row: dict[str, Any]) -> dict[str, Any] | None:
+def _qualified_leaders_by_theme(
+    rs: dict[str, Any] | None,
+    membership: dict[str, Any] | None,
+) -> dict[str, list[str]]:
+    """Recover the old 'strong stock in strong group' display definition.
+
+    The archived Command Center described leaders as RS189>=85 and above 200MA.
+    This is display recovery only; it does not change Core 12 eligibility/ranking.
+    """
+    if not isinstance(rs, dict) or not isinstance(membership, dict):
+        return {}
+    member_rows = membership.get("rows")
+    rs_rows = rs.get("rows")
+    if not isinstance(member_rows, list) or not isinstance(rs_rows, list):
+        return {}
+
+    ticker_to_theme: dict[str, str] = {}
+    for row in member_rows:
+        if not isinstance(row, dict):
+            continue
+        ticker = str(row.get("ticker") or "").strip().upper()
+        theme = str(row.get("theme_name") or row.get("theme_id") or "").strip()
+        if ticker and theme:
+            ticker_to_theme[ticker] = theme
+
+    grouped: dict[str, list[tuple[float, str]]] = defaultdict(list)
+    for row in rs_rows:
+        if not isinstance(row, dict):
+            continue
+        ticker = str(row.get("ticker") or "").strip().upper()
+        theme = ticker_to_theme.get(ticker)
+        rs189 = _finite(row.get("rs189"))
+        price = _finite(row.get("price"))
+        sma200 = _finite(row.get("sma200"))
+        if (
+            not ticker
+            or not theme
+            or rs189 is None
+            or rs189 < 85.0
+            or price is None
+            or sma200 is None
+            or price <= sma200
+        ):
+            continue
+        grouped[theme].append((rs189, ticker))
+
+    out: dict[str, list[str]] = {}
+    for theme, values in grouped.items():
+        values.sort(key=lambda item: (-item[0], item[1]))
+        out[theme] = [ticker for _, ticker in values[:5]]
+    return out
+
+
+def _theme_as_legacy_group(
+    row: dict[str, Any],
+    qualified_leaders: dict[str, list[str]],
+) -> dict[str, Any] | None:
     name = str(row.get("theme_name") or row.get("theme_id") or "").strip()
     if not name:
         return None
-    leaders = row.get("leaders")
+    raw_leaders = row.get("leaders")
+    fallback = [str(x) for x in raw_leaders] if isinstance(raw_leaders, list) else []
     return {
         "group": name,
         "major_theme": row.get("major_theme"),
@@ -45,7 +102,7 @@ def _theme_as_legacy_group(row: dict[str, Any]) -> dict[str, Any] | None:
         "rs63_avg": _finite(row.get("rs63_median")),
         "rs189_avg": _finite(row.get("rs189_median")),
         "theme_rs": _finite(row.get("theme_rs")),
-        "leaders": [str(x) for x in leaders] if isinstance(leaders, list) else [],
+        "leaders": qualified_leaders.get(name, fallback),
         "scope": "RECOVERED_FINE_THEME_DISPLAY",
     }
 
@@ -117,10 +174,11 @@ def attach_recovered_theme_ui(
 ) -> dict[str, Any]:
     """Attach recovered legacy fine themes without changing trade authority.
 
-    Existing v38-site.js already knows how to render `rotation.diagnostics.industry`
-    and `.sector`.  Project the recovered 367-theme display dataset into those
-    fields so the original Rotation cards become useful immediately, while also
-    exposing the full rows separately for the later exact card restoration.
+    Existing v38-site.js already knows how to render `rotation.diagnostics.industry`.
+    We project the recovered fine-theme ranking there so the two most important
+    Rotation cards become useful immediately. Existing sector diagnostics are kept
+    intact so the current heatmap is not silently relabelled as a different object.
+    The full recovered rows are also exposed for exact Sub-Theme RS rendering.
     """
     if not isinstance(view, dict):
         return view
@@ -132,6 +190,7 @@ def attach_recovered_theme_ui(
     root = Path(data_dir)
     recovered = _read(root / "theme_rotation_recovered.json")
     membership = _read(root / "theme_membership.json")
+    rs = _read(root / "rs.json")
     if (
         recovered is None
         or recovered.get("session_date") != session
@@ -144,9 +203,13 @@ def attach_recovered_theme_ui(
         return view
 
     full_rows = [dict(row) for row in recovered["rows"] if isinstance(row, dict)]
+    qualified = _qualified_leaders_by_theme(rs, membership)
     fine_groups = [
         projected
-        for projected in (_theme_as_legacy_group(row) for row in full_rows)
+        for projected in (
+            _theme_as_legacy_group(row, qualified)
+            for row in full_rows
+        )
         if projected is not None
     ]
     fine_groups.sort(
@@ -161,8 +224,9 @@ def attach_recovered_theme_ui(
     if not isinstance(diagnostics, dict):
         diagnostics = {}
         rotation["diagnostics"] = diagnostics
-    diagnostics["industry"] = fine_groups[:60]
-    diagnostics["sector"] = major_groups[:30]
+    if isinstance(diagnostics.get("industry"), list):
+        rotation["original_industry_diagnostics"] = diagnostics["industry"]
+    diagnostics["industry"] = fine_groups[:120]
 
     detail = membership.get("coverage_detail") if isinstance(membership, dict) else None
     rotation["fine_theme_status"] = READY
@@ -172,6 +236,8 @@ def attach_recovered_theme_ui(
     )
     rotation["fine_theme_coverage_detail"] = detail if isinstance(detail, dict) else {}
     rotation["fine_theme_rows"] = full_rows
+    rotation["fine_theme_groups"] = fine_groups
+    rotation["major_theme_groups"] = major_groups
     rotation["fine_theme_count"] = len(full_rows)
     rotation["fine_theme_calculation_version"] = CALCULATION_VERSION
     rotation["diagnostic_status"] = READY if fine_groups else rotation.get("diagnostic_status", DATA_REQUIRED)
