@@ -2,7 +2,7 @@
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": null,
   "dependency": "positions_ledger.json",
-  "generated_at": "2026-09-12T06:23:18Z",
+  "generated_at": "2026-09-12T07:09:37Z",
   "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
   "rows": [],
   "schema_version": "v38.positions.1",
