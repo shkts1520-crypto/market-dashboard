@@ -44,9 +44,6 @@ def _assert_live_binding(page, view):
     page.wait_for_function("document.body.dataset.v38PolishStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38FinalUiStatus === 'ready'")
     page.wait_for_function("document.documentElement.dataset.v38NavReady === 'true'")
-    # The observables extension used to inject MC57 debug charts after the old
-    # acceptance had already passed. Wait beyond every delayed UI pass and inspect
-    # the actual final DOM the user sees.
     page.wait_for_timeout(2100)
     page.wait_for_function("document.body.dataset.v38FinalUiStatus === 'ready'")
 
@@ -64,7 +61,6 @@ def _assert_live_binding(page, view):
         row = by_key[key]
         assert row["display"] in daily_text
 
-    # Recovery/debug scaffolding must never leak into the final Command Center UI.
     for text in (
         "通常株PIT履歴", "遡及推計なし", "MC57 Raw", "MC57 EMA2 Raw", "MC57 Z",
         "MC57内部 12指標履歴", "日次保存済み履歴", "各指標は同一セッションの正本値のみ",
@@ -73,10 +69,6 @@ def _assert_live_binding(page, view):
     assert daily_section.locator(".v38-mc57-trend").count() == 0
     assert daily_section.locator('.v38-bind-note[data-v38-status="READY"]').count() == 0
 
-    # Original trend-card convention: a long trend plus calendar anchors. The PR
-    # fixture may still contain only the previously persisted history, so require
-    # visible quarterly anchors here; main production separately rebuilds 504
-    # sessions before publish.
     for title in ("ブレッドス推移（50日線上の割合）", "ブレッドス推移（200日線上の割合）"):
         card = daily_section.locator(".card").filter(has_text=title).first
         assert card.count() == 1
@@ -127,6 +119,21 @@ def _assert_live_binding(page, view):
         if first.get("sparkline"):
             assert row.locator("svg.v38-live-spark").count() == 1
 
+        # Tapping a ticker must stay on the Command Center and open the embedded
+        # TradingView chart. The options overlay is populated from the local
+        # options shard; external TradingView loading itself is not a CI dependency.
+        before_url = page.url
+        link.click()
+        modal = page.locator("#v38-options-chart-modal")
+        assert modal.is_visible()
+        assert modal.locator(".v38-oc-title").inner_text().strip() == first["ticker"]
+        assert modal.locator(".v38-oc-tv .tradingview-widget-container").count() == 1
+        page.wait_for_timeout(250)
+        assert "Options" in modal.locator(".v38-oc-levels").inner_text()
+        assert page.url == before_url
+        modal.locator(".v38-oc-close").click()
+        assert not modal.is_visible()
+
     positions = view.get("positions") or {}
     if positions.get("status") == "READY" and not positions.get("rows"):
         page.locator('a.tabx[href="#t-alloc"]').click()
@@ -167,7 +174,6 @@ def main() -> int:
                 view = _view_model(page)
                 _assert_live_binding(page, view)
 
-                # A tab click must be a same-document state change, never a reload.
                 sentinel = "v38-tab-no-reload-" + str(width)
                 page.evaluate("value => { window.__v38TabSentinel = value; }", sentinel)
                 for i in range(9):
