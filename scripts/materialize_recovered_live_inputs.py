@@ -37,12 +37,7 @@ def _current_authoritative_nqsar(obj: dict, session: str) -> bool:
 
 
 def _resolve_theme_map(configured: str, root: Path) -> tuple[Path, bool]:
-    """Prefer the complete split legacy map when present.
-
-    GitHub connector payloads have a practical per-call size ceiling, so the
-    recovered 5k+ ticker map is committed as ordered base64 chunks. They are
-    concatenated losslessly at runtime and decoded by recovered_theme.py.
-    """
+    """Prefer the complete split legacy map when present."""
     configured_path = Path(configured)
     parts = sorted(configured_path.parent.glob("theme_s2t.part*.b64"))
     if not parts:
@@ -63,6 +58,7 @@ def main() -> int:
     )
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--theme-map", default="config/theme_s2t.json.gz.b64")
+    parser.add_argument("--theme-overrides", default="config/theme_manual_overrides.json")
     parser.add_argument("--no-fundamentals", action="store_true")
     args = parser.parse_args()
 
@@ -108,6 +104,7 @@ def main() -> int:
             session_date=session,
             generated_at=generated_at,
             theme_map_path=theme_map_path,
+            theme_overrides_path=args.theme_overrides,
         )
     finally:
         if cleanup_theme_map:
@@ -143,6 +140,7 @@ def main() -> int:
         "classification_revenue_coverage": classifications.get("coverage_detail", {}).get("revenue_ttm_available"),
         "theme_rows": len(theme_scores.get("rows") or []),
         "theme_tag_exact": tag_detail.get("exact"),
+        "theme_tag_manual": tag_detail.get("manual"),
         "theme_tag_inferred": tag_detail.get("inferred"),
         "theme_tag_unmapped": tag_detail.get("unmapped"),
         "theme_membership_coverage": theme_membership.get("coverage") if isinstance(theme_membership, dict) else None,
