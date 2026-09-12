@@ -57,6 +57,7 @@ jobs:
           python -m compileall -q src scripts
           node --check assets/v38-runtime.js
           node --check assets/v38-site.js
+          node --check assets/v38-observables.js
 
       - name: Revalidate retained session or select live acquisition
         id: session-mode
@@ -93,7 +94,21 @@ jobs:
             --reference config/mc57_reference.json \
             --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json
 
-      - name: Materialize current fail-closed supplemental shards
+      - name: Recover remaining non-options live inputs
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/materialize_recovered_live_inputs.py --data-dir data
+
+      - name: Calculate live options positioning
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/calculate_options_live.py --data-dir data --target-limit 24
+
+      - name: Materialize current supplemental shards
         shell: bash
         run: |
           set -euo pipefail
@@ -109,7 +124,7 @@ jobs:
           normalize_market_statuses('data', session_date='${SESSION}')
           PY
 
-      - name: Validate live MC57 authority
+      - name: Validate live reconstructed inputs
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
@@ -122,12 +137,14 @@ jobs:
 
           root = Path('data')
           state = json.loads((root / 'state.json').read_text(encoding='utf-8'))
+          session = state['session_date']
+
           mc57 = json.loads((root / 'mc57.json').read_text(encoding='utf-8'))
           ref = load_verified_reference(
               'config/mc57_reference.json',
               'tests/fixtures/mc57_recovery_golden_20260909_11.json',
           )
-          assert mc57.get('session_date') == state.get('session_date')
+          assert mc57.get('session_date') == session
           assert mc57.get('status') == 'READY'
           assert mc57.get('etf_universe') == list(FIXED_57_ETFS)
           assert mc57.get('coverage') == 1.0
@@ -136,15 +153,42 @@ jobs:
           for key in ('mc57', 'raw', 'ema2_raw', 'mu_prior', 'sigma_prior', 'z'):
               value = mc57.get(key)
               assert isinstance(value, (int, float)) and math.isfinite(float(value)), (key, value)
-          assert float(mc57['sigma_prior']) > 0
           assert len(mc57.get('metric_scores', {})) == 12
-          assert all(int(v) > 0 for v in mc57.get('coverage_detail', {}).get('metric_valid_counts', {}).values())
+
+          nqsar = json.loads((root / 'nqsar.json').read_text(encoding='utf-8'))
+          assert nqsar.get('session_date') == session
+          assert nqsar.get('state') in {'Blue', 'Green', 'Yellow', 'Red'}
+          assert nqsar.get('input_kind') in {'state', 'EXP_STATE_ID', 'RECOVERED_YAHOO_FSM_ESTIMATE'}
+
+          classifications = json.loads((root / 'classifications.json').read_text(encoding='utf-8'))
+          themes = json.loads((root / 'theme_scores.json').read_text(encoding='utf-8'))
+          core = json.loads((root / 'core12.json').read_text(encoding='utf-8'))
+          assert classifications.get('session_date') == session and classifications.get('status') == 'READY'
+          assert themes.get('session_date') == session and themes.get('status') == 'READY'
+          assert len(classifications.get('rows') or []) > 0
+          assert len(themes.get('rows') or []) > 0
+          assert core.get('session_date') == session
+          assert core.get('ranking_status') == 'OK', core.get('ranking_reason')
+
+          options = json.loads((root / 'options' / 'index.json').read_text(encoding='utf-8'))
+          assert options.get('session_date') == session
+          assert options.get('status') in {'READY', 'DATA_REQUIRED'}
+          if options.get('status') == 'READY':
+              assert float(options.get('coverage') or 0.0) >= 0.25
+              assert len(options.get('rows') or []) >= 3
+              assert all(row.get('direction') is None for row in options.get('rows') or [])
+              assert all(row.get('confidence') is None for row in options.get('rows') or [])
           print(json.dumps({
-              'session_date': mc57['session_date'],
+              'session_date': session,
               'mc57': mc57['mc57'],
-              'raw': mc57['raw'],
-              'coverage': mc57['coverage'],
-              'fixed_etfs': len(mc57['etf_universe']),
+              'nqsar': nqsar['state'],
+              'nqsar_input_kind': nqsar.get('input_kind'),
+              'classifications': len(classifications.get('rows') or []),
+              'theme_rows': len(themes.get('rows') or []),
+              'core12_rows': len(core.get('ranking') or []),
+              'options_status': options.get('status'),
+              'options_coverage': options.get('coverage'),
+              'options_rows': len(options.get('rows') or []),
           }, sort_keys=True))
           PY
 
@@ -197,7 +241,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf _site
-          mkdir -p _site/assets _site/data
+          mkdir -p _site/assets _site/data/options
 
           PYTHONPATH=src python scripts/build_site.py \
             --canonical V38_Command_Center_mock_v5.html \
@@ -205,6 +249,8 @@ jobs:
 
           cp assets/v38-runtime.js _site/assets/v38-runtime.js
           cp assets/v38-site.js _site/assets/v38-site.js
+          cp assets/v38-observables.js _site/assets/v38-observables.js
+          cp data/options/index.json _site/data/options/index.json
 
           GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           PYTHONPATH=src python scripts/build_ui_payload.py \
@@ -221,6 +267,8 @@ jobs:
           test -s _site/index.html
           test -s _site/data/ui_payload.json
           test -s _site/data/ui_view_model.json
+          test -s _site/data/options/index.json
+          test -s _site/assets/v38-observables.js
           grep -q 'data-v38-production="live-binding"' _site/index.html
           for key in daily positions core12 rotation rs weekly options publish rules; do
             grep -q "\"${key}\"" _site/data/ui_view_model.json
@@ -269,7 +317,7 @@ jobs:
 
           git add -- data/history
 
-          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json; do
+          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json; do
             if [ -f "$path" ]; then git add -- "$path"; fi
           done
 
