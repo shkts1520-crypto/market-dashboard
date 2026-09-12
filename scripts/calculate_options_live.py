@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+import csv
+from datetime import date, datetime, timedelta, timezone
+import io
 import json
 import time
 from pathlib import Path
+import urllib.request
 
 import pandas as pd
 
@@ -19,6 +22,8 @@ from v38.options_engine import (
 )
 
 CHART_TARGET_FLOOR = 0
+RISK_FREE_MAX_AGE_DAYS = 10
+FRED_DGS3MO_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS3MO&cosd={start}&coed={end}"
 
 
 def _load(path: Path) -> dict:
@@ -39,32 +44,127 @@ def _finite(value):
     return x if pd.notna(x) else None
 
 
-def _risk_free_rate(yf) -> float:
-    raw = yf.download(
-        "^IRX", period="10d", interval="1d", auto_adjust=False,
-        actions=False, progress=False, threads=False, timeout=20,
-    )
+def _validate_rate(value) -> float:
+    rate = _finite(value)
+    if rate is None or not (0.0 <= rate <= 0.25):
+        raise RuntimeError(f"risk-free rate out of range: {value}")
+    return float(rate)
+
+
+def _observed_date_from_index(index, fallback: str) -> str:
+    if index is None or len(index) == 0:
+        return fallback
+    try:
+        stamp = pd.Timestamp(index[-1])
+        if pd.isna(stamp):
+            return fallback
+        return stamp.date().isoformat()
+    except Exception:
+        return fallback
+
+
+def _rate_from_yahoo_frame(raw, *, session_date: str) -> tuple[float, str]:
     if raw is None or raw.empty:
-        raise RuntimeError("^IRX short Treasury rate unavailable")
+        raise RuntimeError("empty frame")
+    closes = None
     if isinstance(raw.columns, pd.MultiIndex):
-        closes = None
         for key in (("Close", "^IRX"), ("^IRX", "Close")):
             if key in raw.columns:
                 closes = raw[key]
                 break
-        if closes is None:
-            raise RuntimeError("^IRX Close column unavailable")
-    else:
-        closes = raw["Close"] if "Close" in raw.columns else None
+    elif "Close" in raw.columns:
+        closes = raw["Close"]
     if closes is None:
-        raise RuntimeError("^IRX Close column unavailable")
+        raise RuntimeError("Close column unavailable")
     values = pd.to_numeric(closes, errors="coerce").dropna()
     if values.empty:
-        raise RuntimeError("^IRX has no finite close")
-    rate = float(values.iloc[-1]) / 100.0
-    if not (0.0 <= rate <= 0.25):
-        raise RuntimeError(f"^IRX rate out of range: {rate}")
-    return rate
+        raise RuntimeError("no finite close")
+    rate = _validate_rate(float(values.iloc[-1]) / 100.0)
+    observed = _observed_date_from_index(values.index, session_date)
+    return rate, observed
+
+
+def _fred_risk_free_rate(session_date: str) -> tuple[float, str]:
+    end = date.fromisoformat(session_date)
+    start = end - timedelta(days=35)
+    url = FRED_DGS3MO_URL.format(start=start.isoformat(), end=end.isoformat())
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "V38-market-dashboard/1.0 (+GitHub Actions)"},
+    )
+    with urllib.request.urlopen(request, timeout=20) as response:
+        payload = response.read().decode("utf-8", errors="replace")
+    latest: tuple[str, float] | None = None
+    for row in csv.DictReader(io.StringIO(payload)):
+        observed = str(row.get("DATE") or row.get("observation_date") or "").strip()
+        value = _finite(row.get("DGS3MO"))
+        if not observed or value is None:
+            continue
+        try:
+            age = (end - date.fromisoformat(observed)).days
+        except ValueError:
+            continue
+        if 0 <= age <= RISK_FREE_MAX_AGE_DAYS:
+            latest = (observed, value)
+    if latest is None:
+        raise RuntimeError("FRED DGS3MO has no recent finite observation")
+    observed, percent = latest
+    return _validate_rate(percent / 100.0), observed
+
+
+def _previous_risk_free_rate(previous: dict, session_date: str) -> tuple[float, str, str]:
+    rate = _validate_rate(previous.get("risk_free_rate"))
+    observed = str(previous.get("risk_free_rate_observed_date") or "")
+    if not observed:
+        raise RuntimeError("previous observation date unavailable")
+    end = date.fromisoformat(session_date)
+    age = (end - date.fromisoformat(observed)).days
+    if age < 0 or age > RISK_FREE_MAX_AGE_DAYS:
+        raise RuntimeError(f"previous risk-free observation stale: {observed}")
+    source = str(previous.get("risk_free_rate_source") or "previous observed rate")
+    return rate, observed, "CACHED:" + source.removeprefix("CACHED:")
+
+
+def _risk_free_rate(yf, *, session_date: str, previous: dict) -> tuple[float, str, str]:
+    """Resolve a measured short Treasury rate without inventing a fixed fallback.
+
+    Yahoo ^IRX remains first choice. If that endpoint is temporarily unavailable,
+    use a second Yahoo history path, then the Federal Reserve/FRED DGS3MO series,
+    and finally a recently persisted measured rate. Every successful path records
+    its source and observation date in the published options shard.
+    """
+    errors: list[str] = []
+    try:
+        raw = yf.download(
+            "^IRX", period="10d", interval="1d", auto_adjust=False,
+            actions=False, progress=False, threads=False, timeout=20,
+        )
+        rate, observed = _rate_from_yahoo_frame(raw, session_date=session_date)
+        return rate, "YAHOO:^IRX:download", observed
+    except Exception as exc:
+        errors.append("Yahoo download=" + str(exc)[:120])
+
+    try:
+        raw = yf.Ticker("^IRX").history(
+            period="1mo", interval="1d", auto_adjust=False, actions=False,
+        )
+        rate, observed = _rate_from_yahoo_frame(raw, session_date=session_date)
+        return rate, "YAHOO:^IRX:history", observed
+    except Exception as exc:
+        errors.append("Yahoo history=" + str(exc)[:120])
+
+    try:
+        rate, observed = _fred_risk_free_rate(session_date)
+        return rate, "FRED:DGS3MO", observed
+    except Exception as exc:
+        errors.append("FRED DGS3MO=" + str(exc)[:120])
+
+    try:
+        return _previous_risk_free_rate(previous, session_date)
+    except Exception as exc:
+        errors.append("previous=" + str(exc)[:120])
+
+    raise RuntimeError("; ".join(errors))
 
 
 def _spot_map(rs: dict) -> dict[str, float]:
@@ -172,6 +272,7 @@ def main() -> int:
     state = _load(root / "state.json")
     rs = _load(root / "rs.json")
     core12 = _load(root / "core12.json")
+    previous = _load(root / "options" / "index.json")
     session = str(state.get("session_date") or "")
     if not session:
         raise SystemExit("state.json session_date is required")
@@ -186,18 +287,19 @@ def main() -> int:
     spots = _spot_map(rs)
 
     try:
-        rate = _risk_free_rate(yf)
+        rate, rate_source, rate_observed_date = _risk_free_rate(
+            yf, session_date=session, previous=previous,
+        )
     except Exception as exc:
-        previous = _load(root / "options" / "index.json")
         out = {
             "session_date": session,
             "generated_at": generated_at,
             "coverage": 0.0,
             "source": "Yahoo Finance option chains via yfinance 0.2.66",
             "schema_version": "v38.options.1",
-            "calculation_version": "v38-options-live-1.0.1",
+            "calculation_version": "v38-options-live-1.0.2",
             "status": "DATA_REQUIRED",
-            "reason": f"RISK_FREE_RATE_UNAVAILABLE:{str(exc)[:160]}",
+            "reason": f"RISK_FREE_RATE_UNAVAILABLE:{str(exc)[:400]}",
             "rows": [], "buckets": {},
             "history": previous.get("history", {}) if isinstance(previous, dict) else {},
         }
@@ -221,7 +323,6 @@ def main() -> int:
         print(f"options {index}/{len(targets)} {ticker} {'ok' if ticker in snapshots else 'failed'}")
         time.sleep(0.10)
 
-    previous = _load(root / "options" / "index.json")
     out = build_options_index(
         session_date=session,
         generated_at=generated_at,
@@ -230,6 +331,10 @@ def main() -> int:
         rate=rate,
         previous=previous,
     )
+    out["calculation_version"] = "v38-options-live-1.0.2"
+    out["risk_free_rate"] = rate
+    out["risk_free_rate_source"] = rate_source
+    out["risk_free_rate_observed_date"] = rate_observed_date
     out["fetch_errors"] = fetch_errors
     out["chart_overlay_contract"] = {
         "requested_cli_limit": int(args.target_limit),
@@ -251,6 +356,8 @@ def main() -> int:
         "effective_target_floor": CHART_TARGET_FLOOR,
         "rows_0_45": len(out.get("buckets", {}).get("0-45", [])),
         "risk_free_rate": rate,
+        "risk_free_rate_source": rate_source,
+        "risk_free_rate_observed_date": rate_observed_date,
     }, sort_keys=True))
     return 0
 
