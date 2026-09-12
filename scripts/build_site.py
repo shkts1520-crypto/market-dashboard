@@ -46,6 +46,8 @@ def main() -> int:
     observables_enabled = _copy_asset(out, observables)
     polish = Path("assets/v38-polish.js")
     polish_enabled = _copy_asset(out, polish)
+    final_ui = Path("assets/v38-final-ui.js")
+    final_ui_enabled = _copy_asset(out, final_ui)
 
     recovery = Path("assets/v38-recovery.js")
     recovery_enabled = _inject_external_extension(out, recovery)
@@ -67,6 +69,7 @@ def main() -> int:
                 "legacy_replacement_cards": False,
                 "observables_extension": observables_enabled,
                 "polish_extension": polish_enabled,
+                "final_ui_extension": final_ui_enabled,
                 "recovery_extension": recovery_enabled,
             },
             ensure_ascii=False,
