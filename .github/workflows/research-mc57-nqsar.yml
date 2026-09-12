@@ -6,6 +6,7 @@ on:
       - research/mc57-nqsar-recovery-20260912
     paths:
       - research/mc57_nqsar_shadow.py
+      - research/mc57_golden_check.py
       - .github/workflows/research-mc57-nqsar.yml
   workflow_dispatch:
 
@@ -34,13 +35,20 @@ jobs:
           set -euo pipefail
           python research/mc57_nqsar_shadow.py | tee research_shadow.log
 
+      - name: Run MC57 golden reproduction
+        run: |
+          set -euo pipefail
+          python research/mc57_golden_check.py | tee mc57_golden.log
+
       - name: Assert research outputs exist
         run: |
           set -euo pipefail
           test -s research_out/mc57_nqsar_shadow.json
           test -s research_out/mc57_candidate57_tail.csv
           test -s research_out/nqsar_shadow_tail.csv
+          test -s research_out/mc57_golden_20260828.json
           python -m json.tool research_out/mc57_nqsar_shadow.json >/dev/null
+          python -m json.tool research_out/mc57_golden_20260828.json >/dev/null
 
       - name: Upload research artifact
         uses: actions/upload-artifact@v4
@@ -49,5 +57,6 @@ jobs:
           path: |
             research_out/
             research_shadow.log
+            mc57_golden.log
           if-no-files-found: error
           retention-days: 14
