@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 from v38.site_builder import (
@@ -43,6 +44,12 @@ def main() -> int:
         args.canonical,
         args.output,
     )
+
+    extension = Path("assets/v38-observables.js")
+    if extension.is_file():
+        asset_dir = out.parent / "assets"
+        asset_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(extension, asset_dir / extension.name)
 
     report = (
         validate_production_html(
@@ -89,6 +96,7 @@ def main() -> int:
                 ),
                 "canonical_dom_preserved": True,
                 "legacy_replacement_cards": False,
+                "observables_extension": extension.is_file(),
             },
             ensure_ascii=False,
             sort_keys=True,
