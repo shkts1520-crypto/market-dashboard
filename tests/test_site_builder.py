@@ -240,7 +240,7 @@ def test_builder_preserves_canonical_dom_for_live_binding():
     assert 'v38-production-state' not in out
 
 
-def test_builder_injects_only_two_external_runtime_scripts():
+def test_builder_injects_only_three_external_runtime_scripts():
     out = build_safe_shell(
         shell()
     )
@@ -255,7 +255,7 @@ def test_builder_injects_only_two_external_runtime_scripts():
         report[
             "external_script_count"
         ]
-        == 2
+        == 3
     )
 
     assert (
@@ -265,6 +265,11 @@ def test_builder_injects_only_two_external_runtime_scripts():
 
     assert (
         'src="assets/v38-site.js"'
+        in out
+    )
+
+    assert (
+        'src="assets/v38-observables.js"'
         in out
     )
 
