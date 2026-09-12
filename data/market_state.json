@@ -2,7 +2,7 @@
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": null,
   "dependency": "market_state.json",
-  "generated_at": "2026-09-12T04:29:26Z",
+  "generated_at": "2026-09-12T06:23:18Z",
   "schema_version": "v38.data_required.1",
   "session_date": "2026-09-11",
   "source": "reference-gate:market-engine",

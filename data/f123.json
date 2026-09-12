@@ -56,7 +56,7 @@
     "status": "DATA_INCOMPLETE",
     "value": null
   },
-  "generated_at": "2026-09-12T04:29:26Z",
+  "generated_at": "2026-09-12T06:23:18Z",
   "rules": {
     "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
     "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",

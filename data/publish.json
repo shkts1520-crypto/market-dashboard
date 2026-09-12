@@ -1,11 +1,6 @@
 {
   "blockers": [
     {
-      "name": "mc57.json",
-      "reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
-      "status": "DATA_REQUIRED"
-    },
-    {
       "name": "core12.json",
       "reason": "CORE12_RANKING_UNRESOLVED",
       "status": "DATA_REQUIRED"
@@ -36,7 +31,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "market_state.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.data_required.1",
@@ -47,7 +42,7 @@
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997051017398997,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "breadth.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.breadth.1",
@@ -56,20 +51,20 @@
       "status": "READY"
     },
     {
-      "calculation_version": "v38-supplemental-engine-1.0.0",
-      "coverage": null,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "calculation_version": "v38-mc57-live-1.0.0",
+      "coverage": 1.0,
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "mc57.json",
-      "reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
-      "schema_version": "v38.data_required.1",
+      "reason": "CURRENT_SESSION",
+      "schema_version": "v38.mc57.1",
       "session_date": "2026-09-11",
-      "source": "reference-gate:mc57_fixed57_golden",
-      "status": "DATA_REQUIRED"
+      "source": "Yahoo Finance via yfinance 0.2.66; auto_adjust=False with explicit Adj Close; fixed recovered 56 MICRO_ETFS + QQQE",
+      "status": "READY"
     },
     {
       "calculation_version": "v38-f123-engine-1.1.0",
       "coverage": 0.9997051017398997,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "f123.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.f123.1",
@@ -80,7 +75,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "core12.json",
       "reason": "CORE12_RANKING_UNRESOLVED",
       "schema_version": "v38.data_required.1",
@@ -91,7 +86,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "positions.json",
       "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
       "schema_version": "v38.positions.1",
@@ -102,7 +97,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "rotation.json",
       "reason": "PEER_THEME_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
       "schema_version": "v38.rotation.1",
@@ -113,7 +108,7 @@
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997051017398997,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "rs.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rs.1",
@@ -124,7 +119,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "weekly.json",
       "reason": "NQSAR_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
       "schema_version": "v38.weekly.1",
@@ -146,7 +141,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T04:29:26Z",
+      "generated_at": "2026-09-12T06:23:18Z",
       "name": "rules.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rules.1",
@@ -155,11 +150,11 @@
       "status": "READY"
     }
   ],
-  "coverage": 0.45454545454545453,
+  "coverage": 0.5454545454545454,
   "full_v38_ready": false,
-  "generated_at": "2026-09-12T04:29:26Z",
+  "generated_at": "2026-09-12T06:23:18Z",
   "note": "This shard reports publication readiness; READY means the report itself is current, not that every trading dependency is available.",
-  "ready_count": 5,
+  "ready_count": 6,
   "required_count": 11,
   "schema_version": "v38.publish.1",
   "session_date": "2026-09-11",

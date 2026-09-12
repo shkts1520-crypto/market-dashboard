@@ -2,8 +2,8 @@
   "authority_status": {
     "mc57_status": {
       "path": "mc57.json",
-      "reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
-      "status": "DATA_REQUIRED"
+      "reason": "CURRENT_SESSION_AUTHORITY",
+      "status": "READY"
     },
     "nqsar_status": {
       "path": "nqsar.json",
@@ -34,9 +34,8 @@
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 0.9997051017398997,
-  "generated_at": "2026-09-12T04:29:26Z",
-  "mc57_reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
-  "mc57_status": "DATA_REQUIRED",
+  "generated_at": "2026-09-12T06:23:18Z",
+  "mc57_status": "READY",
   "nqsar_status": "DATA_REQUIRED",
   "options_reason": "OPTIONS_AUTHORITATIVE_INPUT_MISSING",
   "options_status": "DATA_REQUIRED",
