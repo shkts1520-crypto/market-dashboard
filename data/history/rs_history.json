@@ -2,7 +2,7 @@
   "calculation_version": "v38-rs-history-1.1.0",
   "coverage": 1.0,
   "first_observed_session": "2025-06-04",
-  "generated_at": "2026-09-12T13:12:10Z",
+  "generated_at": "2026-09-12T13:47:43Z",
   "history_kind": "CURRENT_UNIVERSE_RECONSTRUCTED",
   "history_policy": "Historical RS ranks are recomputed from downloaded split-adjusted Yahoo OHLC using the current universe; exact PIT membership is unavailable for reconstructed dates. Exact observed sessions override reconstructed windows.",
   "latest_observed_session": "2026-09-11",
@@ -40826,7 +40826,7 @@
             "rank": 15,
             "rs126": 96.39448568398727,
             "rs189": 99.25492283129324,
-            "rs63": 56.81818181818182,
+            "rs63": 56.76532769556025,
             "ticker": "DAVE"
           },
           {
