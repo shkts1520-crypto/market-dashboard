@@ -68,7 +68,7 @@ def _assert_live_binding(page, view):
     rs = view["rs"]
     page.locator('a.tabx[href="#t-rs"]').click()
     rs_text = page.locator("#t-rs").inner_text()
-    assert "Core 12の適格性・採用順位ではありません" in rs_text
+    assert "存在しない過去履歴は補完しません" in rs_text
     assert str(rs["status"]) in rs_text
     assert "OBSERVED_ARCHIVE_ONLY" in rs_text
     assert "保存開始前の履歴は推測しません" in rs_text
