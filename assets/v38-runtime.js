@@ -55,6 +55,7 @@
   function loadDisplayExtensions() {
     appendExtension('assets/v38-observables.js', 'observables');
     appendExtension('assets/v38-polish.js', 'polish');
+    appendExtension('assets/v38-final-ui.js', 'final-ui');
   }
 
   global.V38Runtime = Object.freeze({
