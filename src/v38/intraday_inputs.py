@@ -120,12 +120,21 @@ def _wilder_rsi(closes: list[float], period: int = 14) -> list[float | None]:
     down = -delta.clip(upper=0.0)
     avg_up = up.ewm(alpha=1 / period, adjust=False).mean()
     avg_down = down.ewm(alpha=1 / period, adjust=False).mean()
-    rs = avg_up / avg_down.replace(0.0, np.nan)
-    rsi = 100.0 - 100.0 / (1.0 + rs)
-    out: list[float | None] = []
-    for value in rsi:
-        out.append(float(value) if pd.notna(value) and math.isfinite(float(value)) else None)
-    return out
+    values: list[float | None] = []
+    for gain, loss in zip(avg_up, avg_down):
+        if pd.isna(gain) or pd.isna(loss):
+            values.append(None)
+        elif float(loss) == 0.0 and float(gain) > 0.0:
+            values.append(100.0)
+        elif float(gain) == 0.0 and float(loss) == 0.0:
+            values.append(50.0)
+        elif float(loss) == 0.0:
+            values.append(100.0)
+        else:
+            rs = float(gain) / float(loss)
+            value = 100.0 - 100.0 / (1.0 + rs)
+            values.append(value if math.isfinite(value) else None)
+    return values
 
 
 def add_candidate_rsi(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
