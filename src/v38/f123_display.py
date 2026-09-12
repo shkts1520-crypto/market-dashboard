@@ -7,7 +7,7 @@ from typing import Any
 
 from .freshness import atomic_write_json
 
-CALCULATION_VERSION = "v38-f123-display-completion-1.0.0"
+CALCULATION_VERSION = "v38-f123-display-completion-1.1.0"
 
 
 class F123DisplayError(RuntimeError):
@@ -52,12 +52,13 @@ def complete_f123_for_display(
     session_date: str,
     generated_at: str,
 ) -> dict[str, Any]:
-    """Fill display-only F1/F3 gaps from the already downloaded OHLC history.
+    """Attach display-only F1/F3 alternatives without mutating strict authority.
 
-    The historical reconstruction intentionally uses today's universe for old
-    dates.  It is therefore appropriate for dashboard diagnostics, but it is not
-    PIT evidence and must never become a normal-stock hard gate.  Existing exact
-    F1 evidence always wins.
+    The current-universe historical reconstruction is useful for the restored
+    dashboard but is not PIT evidence. Therefore f1/f2/f3 remain exactly as the
+    strict engine produced them. Display fallbacks live under display_overrides,
+    making it impossible for downstream trading code to mistake them for exact
+    current-session authority.
     """
     out = dict(f123)
     if out.get("session_date") != session_date:
@@ -76,17 +77,19 @@ def complete_f123_for_display(
     if current is None:
         return out
 
+    overrides: dict[str, Any] = {}
     exact_f1 = out.get("f1") if isinstance(out.get("f1"), dict) else {}
     exact_dep = exact_f1.get("dependency") if isinstance(exact_f1.get("dependency"), dict) else {}
     exact_proven = exact_dep.get("status") == "OK" and _finite(exact_f1.get("value")) is not None
     reconstructed_f1 = current.get("f1") if isinstance(current.get("f1"), dict) else {}
     if not exact_proven and _finite(reconstructed_f1.get("value")) is not None:
-        patched = dict(reconstructed_f1)
-        patched["strict_pit_status"] = exact_f1.get("status")
-        patched["strict_pit_dependency"] = exact_dep
-        patched["display_source"] = "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC_NOT_PIT"
-        patched["display_only"] = True
-        out["f1"] = patched
+        display_f1 = dict(reconstructed_f1)
+        display_f1["strict_pit_status"] = exact_f1.get("status")
+        display_f1["strict_pit_dependency"] = exact_dep
+        display_f1["display_source"] = "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC_NOT_PIT"
+        display_f1["display_only"] = True
+        display_f1["trading_gate_eligible"] = False
+        overrides["f1"] = display_f1
 
     f3 = out.get("f3") if isinstance(out.get("f3"), dict) else {}
     if _finite(f3.get("value")) is None:
@@ -94,26 +97,24 @@ def complete_f123_for_display(
         observed = int(f3.get("observable_count") or 0)
         broken = int(f3.get("break_count") or 0)
         coverage = observed / queue if queue > 0 else None
-        # Preserve the original denominator.  Unknown names are not silently
-        # reclassified as healthy; instead the display is explicitly PARTIAL.
         if queue >= 3 and coverage is not None and coverage >= 0.90:
             value = broken / queue
-            patched = dict(f3)
-            patched["strict_status"] = f3.get("status")
-            patched["strict_value"] = f3.get("value")
-            patched["value"] = value
-            patched["status"] = "PARTIAL"
-            patched["coverage"] = coverage
-            patched["severity"] = _severity(value, 0.40, 0.60)
-            patched["display_source"] = "OBSERVED_BREAKS_OVER_FULL_QUEUE_WITH_UNKNOWN_COVERAGE_REPORTED"
-            patched["display_only"] = True
-            out["f3"] = patched
+            display_f3 = dict(f3)
+            display_f3["value"] = value
+            display_f3["status"] = "PARTIAL"
+            display_f3["coverage"] = coverage
+            display_f3["severity"] = _severity(value, 0.40, 0.60)
+            display_f3["display_source"] = "OBSERVED_BREAKS_OVER_FULL_QUEUE_WITH_UNKNOWN_COVERAGE_REPORTED"
+            display_f3["display_only"] = True
+            display_f3["trading_gate_eligible"] = False
+            overrides["f3"] = display_f3
 
     out["generated_at"] = generated_at
+    out["display_overrides"] = overrides
     out["display_completion_version"] = CALCULATION_VERSION
     out["display_completion_policy"] = {
-        "f1": "Use exact PIT F1 when proven; otherwise current-universe reconstructed OHLC F1 for display only.",
-        "f3": "If strict F3 is incomplete but >=90% of the queue is observable, display observed breaks/full queue and report coverage.",
+        "f1": "Strict f1 remains unchanged. If PIT is unavailable, the current-universe reconstructed value is display-only.",
+        "f3": "Strict f3 remains unchanged. If >=90% of the queue is observable, observed breaks/full queue may be displayed with coverage.",
         "hard_gate": False,
     }
     return out
