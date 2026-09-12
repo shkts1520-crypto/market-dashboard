@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-12T11:29:16Z",
+  "generated_at": "2026-09-12T11:53:46Z",
   "ledger_version": "EMPTY",
   "note": "Actions are derived only from explicit ledger fields; quantities/cash are never inferred.",
   "rows": [],
