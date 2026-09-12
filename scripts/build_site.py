@@ -42,15 +42,19 @@ def main() -> int:
 
     out = build_site(args.canonical, args.output)
 
+    # These extensions already contain the recovered current-data bindings, the
+    # polished F1/F2/F3 card, recovered fine-theme/RS history, and the two-year
+    # quarterly trend renderer.  Copying them without loading them left acquired
+    # data invisible in production, so load them in dependency order.  Final UI
+    # runs last so its two-year chart redraw/cleanup wins without changing v5 CSS.
     observables = Path("assets/v38-observables.js")
-    observables_enabled = _copy_asset(out, observables)
+    observables_enabled = _inject_external_extension(out, observables)
     polish = Path("assets/v38-polish.js")
-    polish_enabled = _copy_asset(out, polish)
-    final_ui = Path("assets/v38-final-ui.js")
-    final_ui_enabled = _copy_asset(out, final_ui)
-
+    polish_enabled = _inject_external_extension(out, polish)
     recovery = Path("assets/v38-recovery.js")
     recovery_enabled = _inject_external_extension(out, recovery)
+    final_ui = Path("assets/v38-final-ui.js")
+    final_ui_enabled = _inject_external_extension(out, final_ui)
 
     report = validate_production_html(out.read_text(encoding="utf-8"))
 
@@ -69,8 +73,8 @@ def main() -> int:
                 "legacy_replacement_cards": False,
                 "observables_extension": observables_enabled,
                 "polish_extension": polish_enabled,
-                "final_ui_extension": final_ui_enabled,
                 "recovery_extension": recovery_enabled,
+                "final_ui_extension": final_ui_enabled,
             },
             ensure_ascii=False,
             sort_keys=True,
