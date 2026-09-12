@@ -324,20 +324,18 @@ def download_stock_ohlcv(yf: Any, tickers: list[str], *, target_session: str, ou
             for round_no in range(2):
                 if not missing:
                     break
+                retry_map = {t: yahoo_symbol(t) for t in missing}
+                try:
+                    retry = _download(yf, list(retry_map.values()), period="2y", threads=16)
+                except Exception:
+                    retry = pd.DataFrame()
                 next_missing = []
-                for start in range(0, len(missing), 20):
-                    sub = missing[start:start + 20]
-                    sub_map = {t: yahoo_symbol(t) for t in sub}
-                    try:
-                        retry = _download(yf, list(sub_map.values()), period="2y", threads=8)
-                    except Exception:
-                        retry = pd.DataFrame()
-                    for ticker, symbol in sub_map.items():
-                        rows = adjusted_ohlcv_rows(select_yfinance_symbol_frame(retry, symbol), ticker=ticker, target_session=target_session)
-                        if any(r["date"] == target_session and r["close"] is not None for r in rows):
-                            rows_by[ticker] = rows
-                        else:
-                            next_missing.append(ticker)
+                for ticker, symbol in retry_map.items():
+                    rows = adjusted_ohlcv_rows(select_yfinance_symbol_frame(retry, symbol), ticker=ticker, target_session=target_session)
+                    if any(r["date"] == target_session and r["close"] is not None for r in rows):
+                        rows_by[ticker] = rows
+                    else:
+                        next_missing.append(ticker)
                 missing = next_missing
                 if missing:
                     time.sleep(1.5 * (round_no + 1))
