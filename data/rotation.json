@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": 0.9660666863381528,
-  "generated_at": "2026-09-12T09:29:28Z",
+  "generated_at": "2026-09-12T09:37:37Z",
   "loo_required": true,
   "ordering": "authoritative source order; dashboard does not re-rank themes",
   "rows": [
