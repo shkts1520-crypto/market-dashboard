@@ -8,11 +8,12 @@ from typing import Any
 from .freshness import atomic_write_json
 from .tqqq_engine import panic_position_action, panic_seed, panic_trigger
 
-CALCULATION_VERSION = "v38-tqqq-panic-state-1.0.0"
+CALCULATION_VERSION = "v38-tqqq-panic-state-1.0.1"
 SCHEMA_VERSION = "v38.tqqq_panic_state.1"
 BASE_TARGET_PCT = 30
 PANIC_TARGET_PCT = 80
 SEED_MAX_AGE_SESSIONS = 30
+PERSISTED_HISTORY_NAME = "tqqq_panic_state.json"
 
 
 class TQQQPanicStateError(RuntimeError):
@@ -98,7 +99,7 @@ def _seed_inputs(market_inputs: dict[str, Any], session: str) -> dict[str, Any]:
     if len(closes) < 50:
         return {"status": "DATA_REQUIRED", "reason": "QQQ_SMA50_HISTORY_MISSING"}
     sma50 = sum(closes[-50:]) / 50.0
-    atr14 = _wilder_atr14(qqq[-80:])
+    atr14 = _wilder_atr14(qqq)
     if atr14 is None:
         return {"status": "DATA_REQUIRED", "reason": "QQQ_ATR14_HISTORY_MISSING"}
     close = closes[-1]
@@ -183,7 +184,7 @@ def build_tqqq_panic_state(
         seed_session = None
         seed_consumed = True
     else:
-        # A seed is an event, not a condition that refreshes every day.  A new
+        # A seed is an event, not a condition that refreshes every day. A new
         # window begins only on a false->true transition of the combined seed.
         if current_seed_condition and not prior_seed_condition:
             seed_session = session_date
@@ -296,6 +297,8 @@ def materialize_tqqq_panic_state(
     market_inputs = _load(root / "market_inputs.json")
     mc57 = _load(root / "mc57.json")
     prior = _load(root / "tqqq_panic.json")
+    if not prior:
+        prior = _load(root / "history" / PERSISTED_HISTORY_NAME)
     out = build_tqqq_panic_state(
         market_inputs=market_inputs,
         mc57=mc57,
@@ -303,4 +306,9 @@ def materialize_tqqq_panic_state(
         session_date=session_date,
         generated_at=generated_at,
     )
-    return atomic_write_json(root / "tqqq_panic.json", out)
+    live_path = atomic_write_json(root / "tqqq_panic.json", out)
+    # data/history is already an atomic production-commit path. Persist a canonical
+    # copy there so the next Actions run always resumes the prior state even though
+    # the root shard is an ephemeral runtime artifact.
+    atomic_write_json(root / "history" / PERSISTED_HISTORY_NAME, out)
+    return live_path
