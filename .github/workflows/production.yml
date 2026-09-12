@@ -58,8 +58,22 @@ jobs:
           node --check assets/v38-runtime.js
           node --check assets/v38-site.js
 
-      - name: Fetch and calculate current V38 session
+      - name: Revalidate retained session or select live acquisition
+        id: session-mode
         if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODE="$(PYTHONPATH=src python scripts/select_session_mode.py --data-dir data)"
+          case "$MODE" in
+            acquire|retain) ;;
+            *) echo "::error::Unexpected session mode: $MODE"; exit 1 ;;
+          esac
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "Session mode: $MODE"
+
+      - name: Fetch and calculate current V38 session
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
         shell: bash
         run: |
           set -euo pipefail
