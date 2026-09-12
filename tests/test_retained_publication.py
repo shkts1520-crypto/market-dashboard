@@ -77,8 +77,7 @@ def _fixture(root: Path) -> None:
         {
             **_meta("v38.market_inputs.1", "test"),
             "coverage": 1.0,
-            "required_coverage": 1.0,
-            "required_symbols": list(symbols),
+            "symbols": list(symbols),
             "series": {
                 symbol: [{"date": SESSION, "close": 100.0 + i}]
                 for i, symbol in enumerate(symbols)
@@ -113,4 +112,22 @@ def test_retained_publication_rejects_missing_required_market_session(tmp_path: 
     market["series"]["QQQ"][-1]["date"] = "2026-09-10"
     _write(tmp_path / "market_inputs.json", market)
     with pytest.raises(RetainedPublicationError, match="QQQ"):
+        validate_retained_publication(tmp_path, session_date=SESSION)
+
+
+def test_retained_publication_rejects_market_symbol_contract_mismatch(tmp_path: Path) -> None:
+    _fixture(tmp_path)
+    market = json.loads((tmp_path / "market_inputs.json").read_text(encoding="utf-8"))
+    market["symbols"] = ["QQQ", "TQQQ", "^VIX", "NQ=F"]
+    _write(tmp_path / "market_inputs.json", market)
+    with pytest.raises(RetainedPublicationError, match="market_inputs.symbols"):
+        validate_retained_publication(tmp_path, session_date=SESSION)
+
+
+def test_retained_publication_rejects_incomplete_market_coverage(tmp_path: Path) -> None:
+    _fixture(tmp_path)
+    market = json.loads((tmp_path / "market_inputs.json").read_text(encoding="utf-8"))
+    market["coverage"] = 0.8
+    _write(tmp_path / "market_inputs.json", market)
+    with pytest.raises(RetainedPublicationError, match="market_inputs.coverage"):
         validate_retained_publication(tmp_path, session_date=SESSION)
