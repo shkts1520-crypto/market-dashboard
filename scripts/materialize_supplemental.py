@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
@@ -49,6 +52,42 @@ def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_a
     return path
 
 
+def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path | None:
+    """Reuse the production 2y OHLC download for display-history reconstruction.
+
+    Pull-request verification intentionally never performs network acquisition. On
+    main/scheduled/manual Actions runs, an acquisition run reuses RUNNER_TEMP OHLC;
+    a retained-session run downloads the same Yahoo 2y history once so Breadth,
+    RS63/126/189 and F1/F2/F3 do not have to wait for 21 future sessions.
+    """
+    event = str(os.environ.get("GITHUB_EVENT_NAME") or "").strip().lower()
+    if event in {"", "pull_request", "pull_request_target"}:
+        return None
+
+    command = [
+        sys.executable,
+        "scripts/reconstruct_stock_history.py",
+        "--data-dir", str(root),
+        "--sessions", "126",
+        "--generated-at", generated_at,
+    ]
+    runner_temp = str(os.environ.get("RUNNER_TEMP") or "").strip()
+    if runner_temp:
+        work = Path(runner_temp) / "v38-live"
+        ohlcv = work / "ohlcv.csv"
+        universe = work / "universe.csv"
+        if ohlcv.is_file() and ohlcv.stat().st_size > 0:
+            command += ["--ohlcv", str(ohlcv)]
+        if universe.is_file() and universe.stat().st_size > 0:
+            command += ["--universe", str(universe)]
+
+    subprocess.run(command, check=True)
+    output = root / "history" / "reconstructed_stock_metrics.json"
+    if not output.is_file() or output.stat().st_size <= 0:
+        raise SystemExit("historical reconstruction did not produce its output shard")
+    return output
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description="Materialize fail-closed V38 supplemental shards")
     p.add_argument("--data-dir", default="data")
@@ -83,9 +122,14 @@ def main() -> int:
         positions_ledger_path=ledger_arg,
     )
 
-    # Refresh the current observed session even when the workflow is retaining an
-    # already-published market session. This is not historical backfill: it only
-    # rewrites the current observed session from current authoritative shards.
+    reconstructed_history = _reconstruct_history_if_production(
+        root,
+        generated_at=generated_at,
+    )
+
+    # Refresh the current observed session after reconstruction. The exact current
+    # session remains authoritative and overrides the current-universe historical
+    # reconstruction inside the RS history builder.
     history_snapshot, history_index = stage_session_snapshot(
         root,
         root / "history",
@@ -107,6 +151,7 @@ def main() -> int:
                 "positions_mode": "EMPTY" if empty_ledger is not None else "LEDGER_REQUIRED",
                 "positions_ledger": empty_ledger.as_posix() if empty_ledger is not None else ledger_arg,
                 "outputs": [p.as_posix() for p in outputs],
+                "historical_reconstruction": reconstructed_history.as_posix() if reconstructed_history is not None else None,
                 "history_snapshot": history_snapshot.as_posix(),
                 "history_index": history_index.as_posix(),
                 "rs_history": rs_history.as_posix(),
