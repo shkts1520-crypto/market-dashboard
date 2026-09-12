@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from v38.mc57_ui import attach_mc57_ui_detail
+from v38.recovery_ui import attach_recovered_theme_ui
 from v38.ui_view_model import build_ui_view_model
 
 
@@ -16,6 +17,7 @@ def main() -> int:
     a = p.parse_args()
     out = build_ui_view_model(a.data_dir)
     out = attach_mc57_ui_detail(out, a.data_dir)
+    out = attach_recovered_theme_ui(out, a.data_dir)
     path = Path(a.output)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -32,6 +34,9 @@ def main() -> int:
                 "rs_rows": len(out["rs"]["rows"]),
                 "mc57_history_status": out["daily"]["mc57_detail"]["status"],
                 "mc57_history_sessions": out["daily"]["mc57_detail"].get("history_sessions", 0),
+                "fine_theme_status": out["rotation"].get("fine_theme_status"),
+                "fine_theme_count": out["rotation"].get("fine_theme_count", 0),
+                "fine_theme_coverage": out["rotation"].get("fine_theme_coverage"),
             },
             sort_keys=True,
         )
