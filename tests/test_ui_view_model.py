@@ -45,9 +45,14 @@ def fixtures(root):
         "rs.json",
         meta(
             coverage=0.9829,
+            market_diagnostics={
+                "status": "READY",
+                "reason": "CURRENT_UNIVERSE_DISPLAY_DIAGNOSTIC_NOT_TRADING_GATE",
+                "series": [{"date": SESSION, "observed": 2, "mcclellan": 1.5}],
+            },
             rows=[
-                {"ticker": "AAA", "price": 10, "rs189": 99, "rs63": 91, "ddv20": 20_000_000},
-                {"ticker": "BBB", "price": 20, "rs189": 98, "rs63": 90, "ddv20": 30_000_000},
+                {"ticker": "AAA", "price": 10, "rs189": 99, "rs126": 97, "rs63": 91, "ret1": 0.01, "ret20": 0.10, "ddv20": 20_000_000, "sector": "Technology", "industry": "Software", "sparkline": [{"date": "2026-09-09", "close": 9}, {"date": SESSION, "close": 10}]},
+                {"ticker": "BBB", "price": 20, "rs189": 98, "rs126": 96, "rs63": 90, "ret1": -0.01, "ret20": 0.05, "ddv20": 30_000_000, "sector": "Technology", "industry": "Software"},
             ],
         ),
     )
@@ -123,7 +128,30 @@ def test_rs_order_is_preserved_and_not_re_ranked(tmp_path):
     assert out["rs"]["rows"][0]["price_display"] == "10.00"
     assert out["rs"]["rows"][0]["rs189_display"] == "99.0"
     assert out["rs"]["rows"][0]["rs63_display"] == "91.0"
+    assert out["rs"]["rows"][0]["rs126_display"] == "97.0"
+    assert len(out["rs"]["rows"][0]["sparkline"]) == 2
+    assert out["rs"]["windows"]["63"][0]["ticker"] == "AAA"
     assert "not Core 12" in out["rs"]["note"]
+
+
+def test_market_series_summaries_and_current_history_are_exposed(tmp_path):
+    fixtures(tmp_path)
+    dates = ["2026-09-04", "2026-09-08", "2026-09-09", SESSION]
+    dump(
+        tmp_path,
+        "market_inputs.json",
+        meta(series={"QQQ": [
+            {"date": day, "close": close, "high": close + 1, "volume": 1000 + i}
+            for i, (day, close) in enumerate(zip(dates, (100, 102, 101, 104)))
+        ]}),
+    )
+    out = build_ui_view_model(tmp_path)
+    assert len(out["daily"]["market_series"]["QQQ"]) == 4
+    assert out["daily"]["market_summaries"]["QQQ"]["change_1d"] == pytest.approx(104 / 101 - 1)
+    assert out["daily"]["history"][-1]["date"] == SESSION
+    assert out["daily"]["history"][-1]["breadth50"] == pytest.approx(39.5015)
+    assert out["daily"]["market_diagnostics"]["status"] == READY
+    assert out["daily"]["market_diagnostics"]["series"][-1]["mcclellan"] == pytest.approx(1.5)
 
 
 def test_rs_view_is_limited_to_first_24_source_rows(tmp_path):

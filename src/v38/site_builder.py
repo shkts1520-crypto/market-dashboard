@@ -11,7 +11,7 @@ from .ui_contract import (
 )
 
 CALCULATION_VERSION = (
-    "v38-live-site-builder-1.1.0"
+    "v38-live-site-builder-1.2.0"
 )
 
 CANONICAL_BLOB_SHA = (
@@ -87,6 +87,12 @@ body[data-v38-production="live-binding"][data-v38-binding-status] .wrap{opacity:
 .v38-live-kv:first-of-type{border-top:0}
 .v38-live-kv span{font-size:10px;color:#575242;min-width:0}
 .v38-live-kv b{font-size:12px;text-align:right;overflow-wrap:anywhere;min-width:0}
+.v38-ticker-link{color:inherit;text-decoration:none;font-weight:800}
+.v38-ticker-link:hover,.v38-ticker-link:focus{text-decoration:underline}
+.v38-live-spark{width:100%;height:58px;display:block;margin:6px 0 0}
+.chart>.v38-live-spark{height:150px;margin:3px 0 0}
+.hm[data-v38-direction="up"]{background:rgba(37,194,95,.10)}
+.hm[data-v38-direction="down"]{background:rgba(223,84,84,.10)}
 </style>"""
 
 RUNTIME_SCRIPTS = (

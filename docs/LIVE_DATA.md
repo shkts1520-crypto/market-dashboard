@@ -11,6 +11,7 @@ This layer only acquires/normalizes inputs and runs the already-audited stock/F1
 - Transport cleanup: preferred/warrant/right/unit/subordinated-note descriptions, slash/space symbols, and only the six historically explicit duplicate share-class pairs are removed.
 - The old heuristic "healthcare and market cap < $10B" biotech deletion is intentionally **not** used. Structural Clinical Biotech remains `DATA_REQUIRED` until its authoritative classification table is recovered.
 - Prices: Yahoo Finance through `yfinance==0.2.66`, requested with `auto_adjust=False`; OHLC is normalized by the `Adj Close / Close` factor. A bar is marked `split_checked=true` only when that factor is finite and positive.
+- Display market history: the five required symbols plus broad/equal-weight, volatility-term, credit/rates, macro, commodity, leveraged-semiconductor, and 11 sector ETF series are requested in bounded chunks. Missing diagnostic symbols remain unavailable, while any missing required current-session symbol aborts the run.
 - Session authority: latest common completed QQQ/SPY daily session. A manual run before 16:10 America/New_York does not promote the current forming US daily bar.
 - Yahoo current-session coverage must be >=80%. TradingView universe count must not fall below 80% of the preceding successful active-universe count. Failure aborts before publication.
 
@@ -29,6 +30,8 @@ A successful acquisition atomically publishes:
 - `data/nqsar.json` only when an authoritative `sar_state.txt` is present and passes the strict same-session adapter
 
 Large transient universe/OHLCV tables are not committed; they exist only inside the Actions runner for the calculation run.
+
+`rs.json` retains 63 completed-session closes for the union of the Top 100 RS63/RS126/RS189 rows. It also stores 126 sessions of explicitly display-only current-universe diagnostics: advancing participation, aggregate volume versus its prior 200-session average, up/down dollar-volume ratio, A/D line, and McClellan EMA19 minus EMA39. These series do not enter any V38 trading gate.
 
 ## Deliberately unresolved / fail-closed
 

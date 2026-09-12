@@ -56,6 +56,16 @@ def _assert_live_binding(page, view):
         text = row.inner_text()
         assert first["ticker"] in text
         assert first["rs189_display"] in text
+        link = row.locator("a.v38-ticker-link").first
+        assert link.get_attribute("target") == "_blank"
+        assert "tradingview.com/chart/?symbol=" in (link.get_attribute("href") or "")
+        if first.get("sparkline"):
+            assert row.locator("svg.v38-live-spark").count() == 1
+
+    diagnostics = daily.get("market_diagnostics") or {}
+    if diagnostics.get("series"):
+        page.locator('a.tabx[href="#t-market"]').click()
+        assert page.locator("#t-market svg.v38-live-spark").count() >= 3
 
     for section_id, view_key in GENERIC_BINDINGS:
         page.locator(f'a.tabx[href="#{section_id}"]').click()

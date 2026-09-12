@@ -12,12 +12,14 @@ from typing import Any, Iterable
 import numpy as np
 import pandas as pd
 
-CALCULATION_VERSION = "v38-stock-adapter-1.1.0"
+CALCULATION_VERSION = "v38-stock-adapter-1.2.0"
 RS_SCHEMA_VERSION = "v38.rs.1"
 BREADTH_SCHEMA_VERSION = "v38.breadth.1"
 REQUIRED_OHLCV = {"ticker", "date", "high", "low", "close", "volume"}
 RS_PERIODS = (63, 126, 189)
-RETURN_PERIODS = (5, 20, 21, 63, 126, 189, 252)
+RETURN_PERIODS = (1, 5, 20, 21, 63, 126, 189, 252)
+SPARKLINE_POINTS = 63
+SPARKLINE_ROW_LIMIT = 100
 MIN_PRICE = 5.0
 MIN_DDV20 = 10_000_000.0
 
@@ -249,6 +251,11 @@ def _ticker_metrics(group: pd.DataFrame, session_date: str) -> tuple[dict[str, A
     high = complete["high"].astype(float)
     volume = complete["volume"].astype(float)
     out: dict[str, Any] = {"ticker": t, "price": float(close.iloc[-1])}
+    spark = complete.tail(SPARKLINE_POINTS)
+    out["_sparkline"] = [
+        {"date": str(row.date), "close": float(row.close)}
+        for row in spark[["date", "close"]].itertuples(index=False)
+    ]
 
     def sma(n: int) -> float | None:
         return float(close.tail(n).mean()) if len(close) >= n else None
@@ -274,6 +281,76 @@ def _percentile(values: pd.Series) -> pd.Series:
     # Equal returns receive the same percentile (average rank); deterministic row
     # ordering is ticker-ascending downstream. This avoids arbitrary tie inflation.
     return values.rank(method="average", pct=True) * 100.0
+
+
+def _display_market_diagnostics(
+    prepared: pd.DataFrame,
+    active: list[str],
+    session_date: str,
+) -> dict[str, Any]:
+    d = prepared[
+        prepared["ticker"].isin(active)
+        & (prepared["date"] <= session_date)
+        & (prepared["_complete"] == True)  # noqa: E712
+        & (prepared["_split_checked"] == True)  # noqa: E712
+        & (~prepared["_split_anomaly"].fillna(False))
+    ].copy()
+    d = d.dropna(subset=["close", "volume"])
+    d = d[(d["close"] > 0) & (d["volume"] >= 0)]
+    if d.empty:
+        return {"status": "DATA_REQUIRED", "reason": "NO_VALID_DIAGNOSTIC_ROWS", "series": []}
+    d = d.sort_values(["ticker", "date"], kind="mergesort")
+    d["prior_close"] = d.groupby("ticker", sort=False)["close"].shift(1)
+    d["advance"] = d["close"] > d["prior_close"]
+    d["decline"] = d["close"] < d["prior_close"]
+    d["dollar_volume"] = d["close"] * d["volume"]
+    d["advance_dollar_volume"] = d["dollar_volume"].where(d["advance"], 0.0)
+    d["decline_dollar_volume"] = d["dollar_volume"].where(d["decline"], 0.0)
+    daily = d.groupby("date", sort=True).agg(
+        observed=("ticker", "nunique"),
+        advances=("advance", "sum"),
+        declines=("decline", "sum"),
+        total_volume=("volume", "sum"),
+        advance_dollar_volume=("advance_dollar_volume", "sum"),
+        decline_dollar_volume=("decline_dollar_volume", "sum"),
+    )
+    daily["ad_net"] = daily["advances"] - daily["declines"]
+    daily["ad_line"] = daily["ad_net"].cumsum()
+    daily["mcclellan"] = (
+        daily["ad_net"].ewm(span=19, adjust=False).mean()
+        - daily["ad_net"].ewm(span=39, adjust=False).mean()
+    )
+    prior_volume = daily["total_volume"].shift(1).rolling(200, min_periods=20).mean()
+    daily["volume_participation"] = daily["total_volume"] / prior_volume
+    daily["up_down_dollar_ratio"] = (
+        daily["advance_dollar_volume"]
+        / daily["decline_dollar_volume"].replace(0, np.nan)
+    )
+    daily["advancing_pct"] = 100.0 * daily["advances"] / daily["observed"].replace(0, np.nan)
+
+    def number(value: Any) -> float | None:
+        return float(value) if pd.notna(value) and math.isfinite(float(value)) else None
+
+    rows = []
+    for day, row in daily.tail(126).iterrows():
+        rows.append({
+            "date": str(day),
+            "observed": int(row["observed"]),
+            "advances": int(row["advances"]),
+            "declines": int(row["declines"]),
+            "advancing_pct": number(row["advancing_pct"]),
+            "volume_participation": number(row["volume_participation"]),
+            "up_down_dollar_ratio": number(row["up_down_dollar_ratio"]),
+            "ad_line": number(row["ad_line"]),
+            "mcclellan": number(row["mcclellan"]),
+        })
+    return {
+        "status": "READY" if rows and rows[-1]["date"] == session_date else "DATA_REQUIRED",
+        "reason": "CURRENT_UNIVERSE_DISPLAY_DIAGNOSTIC_NOT_TRADING_GATE",
+        "universe_scope": "current point-in-time universe applied to historical bars",
+        "survivorship_warning": True,
+        "series": rows,
+    }
 
 
 def calculate_stock_outputs(
@@ -340,6 +417,33 @@ def calculate_stock_outputs(
             return None
         return float(v)
 
+    universe_rows = _normalise_columns(universe)
+    universe_rows["ticker"] = universe_rows["ticker"].astype(str).str.strip().str.upper()
+    if "session_date" in universe_rows.columns:
+        universe_rows["session_date"] = _date_only(
+            universe_rows["session_date"], "universe.session_date"
+        )
+        universe_rows = universe_rows[universe_rows["session_date"] == session_date]
+    elif "date" in universe_rows.columns and "effective_from" not in universe_rows.columns:
+        universe_rows["date"] = _date_only(universe_rows["date"], "universe.date")
+        universe_rows = universe_rows[universe_rows["date"] == session_date]
+    elif "effective_from" in universe_rows.columns:
+        universe_rows["effective_from"] = _date_only(
+            universe_rows["effective_from"], "universe.effective_from"
+        )
+        universe_rows = universe_rows[universe_rows["effective_from"] <= session_date]
+        universe_rows = universe_rows.sort_values(
+            ["ticker", "effective_from"], kind="mergesort"
+        )
+    metadata_columns = [
+        name for name in ("name", "sector", "industry", "exchange")
+        if name in universe_rows.columns
+    ]
+    metadata = (
+        universe_rows.drop_duplicates("ticker", keep="last").set_index("ticker")
+        if metadata_columns else None
+    )
+
     rows: list[dict[str, Any]] = []
     for ticker in active:
         r = frame.loc[ticker]
@@ -351,6 +455,7 @@ def calculate_stock_outputs(
             "ddv20": num(r.get("ddv20")),
             "sma50": num(r.get("sma50")),
             "sma200": num(r.get("sma200")),
+            "ret1": num(r.get("ret1")),
             "ret20": num(r.get("ret20")),
             "high52": num(r.get("high52")),
             "dist52": num(r.get("dist52")),
@@ -361,6 +466,15 @@ def calculate_stock_outputs(
             "rs126": num(r.get("rs126")),
             "rs189": num(r.get("rs189")),
         }
+        if metadata is not None and ticker in metadata.index:
+            meta = metadata.loc[ticker]
+            for key in metadata_columns:
+                value = meta.get(key)
+                if value is not None and not pd.isna(value) and str(value).strip():
+                    row[key] = str(value).strip()
+        sparkline = r.get("_sparkline")
+        if isinstance(sparkline, list):
+            row["sparkline"] = sparkline
         rows.append(row)
 
     rows.sort(
@@ -370,6 +484,19 @@ def calculate_stock_outputs(
             x["ticker"],
         )
     )
+    sparkline_tickers: set[str] = set()
+    for key in ("rs63", "rs126", "rs189"):
+        ranked = sorted(
+            rows,
+            key=lambda row: (
+                -(row[key] if row[key] is not None else -1e100),
+                row["ticker"],
+            ),
+        )
+        sparkline_tickers.update(row["ticker"] for row in ranked[:SPARKLINE_ROW_LIMIT])
+    for row in rows:
+        if row["ticker"] not in sparkline_tickers:
+            row.pop("sparkline", None)
 
     valid50 = frame["sma50"].notna() & quality_ok if "sma50" in frame.columns else pd.Series(False, index=frame.index)
     above50 = valid50 & (frame["price"] > frame["sma50"])
@@ -407,8 +534,11 @@ def calculate_stock_outputs(
             "pit_universe_required": True,
             "completed_bar_required": True,
             "split_checked_required": True,
+            "display_sparkline_points": SPARKLINE_POINTS,
+            "display_sparkline_row_limit": SPARKLINE_ROW_LIMIT,
         },
         "rows": rows,
+        "market_diagnostics": _display_market_diagnostics(d, active, session_date),
         "excluded": sorted(excluded, key=lambda x: x["ticker"]),
     }
     breadth_out: dict[str, Any] = {

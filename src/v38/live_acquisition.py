@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-CALCULATION_VERSION = "v38-live-acquisition-1.1.0"
+CALCULATION_VERSION = "v38-live-acquisition-1.2.0"
 STATE_SCHEMA_VERSION = "v38.state.1"
 MANIFEST_SCHEMA_VERSION = "v38.acquisition.1"
 MARKET_INPUT_SCHEMA_VERSION = "v38.market_inputs.1"
@@ -36,7 +36,14 @@ CLASS_PAIRS = (
 SPECIAL_SECURITY_RE = re.compile(
     r"\bPfd\b|Preferred|Warrant|\bRight(?:s)?\b|\bUnit(?:s)?\b|Subordinated Notes", re.I
 )
-MARKET_SYMBOLS = ("QQQ", "TQQQ", "^VIX", "NQ=F", "SPY")
+PRIMARY_MARKET_SYMBOLS = ("QQQ", "TQQQ", "^VIX", "NQ=F", "SPY")
+MARKET_SYMBOLS = (
+    "QQQ", "TQQQ", "SPY", "RSP", "QQQE", "SOXL",
+    "^VIX", "^VIX3M", "^VXN", "NQ=F",
+    "HYG", "IEF", "^TNX", "^FVX", "DX-Y.NYB", "CL=F", "GC=F",
+    "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE",
+    "XLU", "XLV", "XLY",
+)
 
 
 class LiveAcquisitionError(RuntimeError):
@@ -332,18 +339,54 @@ def download_stock_ohlcv(yf: Any, tickers: list[str], *, target_session: str, ou
 
 
 def download_market_inputs(yf: Any, *, target_session: str, generated_at: str) -> dict[str, Any]:
-    raw = _download(yf, list(MARKET_SYMBOLS), period="2y", threads=False)
-    series, present = {}, 0
-    for symbol in MARKET_SYMBOLS:
-        rows = market_rows(select_yfinance_symbol_frame(raw, symbol), target_session=target_session)
-        series[symbol] = rows
-        present += int(bool(rows and rows[-1]["date"] == target_session))
+    series: dict[str, list[dict[str, Any]]] = {}
+    present = 0
+    for offset in range(0, len(MARKET_SYMBOLS), 10):
+        symbols = list(MARKET_SYMBOLS[offset:offset + 10])
+        try:
+            raw = _download(yf, symbols, period="2y", threads=False)
+        except Exception:
+            raw = pd.DataFrame()
+        for symbol in symbols:
+            rows = market_rows(
+                select_yfinance_symbol_frame(raw, symbol),
+                target_session=target_session,
+            )
+            if not rows or rows[-1]["date"] != target_session:
+                try:
+                    retry = _download(yf, [symbol], period="2y", threads=False)
+                except Exception:
+                    retry = pd.DataFrame()
+                retried = market_rows(
+                    select_yfinance_symbol_frame(retry, symbol),
+                    target_session=target_session,
+                )
+                if retried:
+                    rows = retried
+            series[symbol] = rows
+            present += int(bool(rows and rows[-1]["date"] == target_session))
+    primary_present = sum(
+        int(bool(series.get(symbol) and series[symbol][-1]["date"] == target_session))
+        for symbol in PRIMARY_MARKET_SYMBOLS
+    )
+    if primary_present != len(PRIMARY_MARKET_SYMBOLS):
+        missing = [
+            symbol for symbol in PRIMARY_MARKET_SYMBOLS
+            if not series.get(symbol) or series[symbol][-1]["date"] != target_session
+        ]
+        raise LiveAcquisitionError(
+            "required market inputs missing current session: " + ",".join(missing)
+        )
     return {
         "session_date": target_session, "generated_at": generated_at,
         "coverage": present / len(MARKET_SYMBOLS),
+        "required_coverage": primary_present / len(PRIMARY_MARKET_SYMBOLS),
         "source": "Yahoo Finance via yfinance 0.2.66; OHLC adjusted by Adj Close when available",
         "schema_version": MARKET_INPUT_SCHEMA_VERSION, "calculation_version": CALCULATION_VERSION,
-        "symbols": list(MARKET_SYMBOLS), "series": series,
+        "symbols": list(MARKET_SYMBOLS),
+        "required_symbols": list(PRIMARY_MARKET_SYMBOLS),
+        "diagnostic_symbols": [s for s in MARKET_SYMBOLS if s not in PRIMARY_MARKET_SYMBOLS],
+        "series": series,
         "qqq_4h_status": "DATA_REQUIRED", "qqq_4h_reason": "STAGE56_4H_FIXTURE_NOT_AVAILABLE",
     }
 

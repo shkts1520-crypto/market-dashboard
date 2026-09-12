@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from v38.f123_engine import calculate_f123_from_files
+from v38.authority_status import sync_acquisition_manifest
 from v38.live_acquisition import (
     LiveAcquisitionError,
     choose_completed_session,
@@ -294,6 +295,7 @@ def main() -> int:
         positions_ledger_path=stage / "positions_ledger.json" if (stage / "positions_ledger.json").exists() else None,
     )
     normalize_market_statuses(stage, session_date=session_date)
+    sync_acquisition_manifest(stage)
 
     required = (
         "rs.json",
