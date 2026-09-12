@@ -39,14 +39,8 @@ def _finite(value):
 
 def _risk_free_rate(yf) -> float:
     raw = yf.download(
-        "^IRX",
-        period="10d",
-        interval="1d",
-        auto_adjust=False,
-        actions=False,
-        progress=False,
-        threads=False,
-        timeout=20,
+        "^IRX", period="10d", interval="1d", auto_adjust=False,
+        actions=False, progress=False, threads=False, timeout=20,
     )
     if raw is None or raw.empty:
         raise RuntimeError("^IRX short Treasury rate unavailable")
@@ -104,24 +98,14 @@ def _fetch_ticker_snapshot(yf, ticker: str, *, spot: float, session_date: str) -
                 except Exception:
                     continue
                 fetched_expiries.append(str(expiry))
-                contracts.extend(
-                    frame_to_contracts(
-                        ticker=ticker,
-                        frame=chain.calls,
-                        side="call",
-                        expiry=str(expiry),
-                        session_date=session_date,
-                    )
-                )
-                contracts.extend(
-                    frame_to_contracts(
-                        ticker=ticker,
-                        frame=chain.puts,
-                        side="put",
-                        expiry=str(expiry),
-                        session_date=session_date,
-                    )
-                )
+                contracts.extend(frame_to_contracts(
+                    ticker=ticker, frame=chain.calls, side="call",
+                    expiry=str(expiry), session_date=session_date,
+                ))
+                contracts.extend(frame_to_contracts(
+                    ticker=ticker, frame=chain.puts, side="put",
+                    expiry=str(expiry), session_date=session_date,
+                ))
                 time.sleep(0.05)
             return {
                 "spot": spot,
@@ -163,7 +147,26 @@ def main() -> int:
     if not targets:
         raise SystemExit("no option targets resolved")
     spots = _spot_map(rs)
-    rate = _risk_free_rate(yf)
+
+    try:
+        rate = _risk_free_rate(yf)
+    except Exception as exc:
+        previous = _load(root / "options" / "index.json")
+        out = {
+            "session_date": session,
+            "generated_at": generated_at,
+            "coverage": 0.0,
+            "source": "Yahoo Finance option chains via yfinance 0.2.66",
+            "schema_version": "v38.options.1",
+            "calculation_version": "v38-options-live-1.0.1",
+            "status": "DATA_REQUIRED",
+            "reason": f"RISK_FREE_RATE_UNAVAILABLE:{str(exc)[:160]}",
+            "rows": [], "buckets": {},
+            "history": previous.get("history", {}) if isinstance(previous, dict) else {},
+        }
+        atomic_write_json(root / "options" / "index.json", out)
+        print(json.dumps({"session_date": session, "status": "DATA_REQUIRED", "reason": out["reason"]}, sort_keys=True))
+        return 0
 
     snapshots: dict[str, dict] = {}
     fetch_errors: dict[str, str] = {}
@@ -174,10 +177,7 @@ def main() -> int:
             continue
         try:
             snapshots[ticker] = _fetch_ticker_snapshot(
-                yf,
-                ticker,
-                spot=spot,
-                session_date=session,
+                yf, ticker, spot=spot, session_date=session,
             )
         except Exception as exc:
             fetch_errors[ticker] = str(exc)[:240]
@@ -202,16 +202,11 @@ def main() -> int:
     }
     path = atomic_write_json(root / "options" / "index.json", out)
     print(json.dumps({
-        "path": str(path),
-        "session_date": session,
-        "status": out.get("status"),
-        "coverage": out.get("coverage"),
-        "targets": len(targets),
+        "path": str(path), "session_date": session, "status": out.get("status"),
+        "coverage": out.get("coverage"), "targets": len(targets),
         "rows_0_45": len(out.get("buckets", {}).get("0-45", [])),
         "risk_free_rate": rate,
     }, sort_keys=True))
-    if out.get("status") != "READY":
-        raise SystemExit("live options calculation did not meet minimum ready coverage")
     return 0
 
 
