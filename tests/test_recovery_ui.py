@@ -11,7 +11,7 @@ def _write(path: Path, obj: dict) -> None:
     path.write_text(json.dumps(obj), encoding="utf-8")
 
 
-def test_attach_recovered_theme_ui_projects_fine_and_major_groups(tmp_path: Path) -> None:
+def test_attach_recovered_theme_ui_projects_fine_groups_and_qualified_leaders(tmp_path: Path) -> None:
     session = "2026-09-11"
     _write(
         tmp_path / "theme_rotation_recovered.json",
@@ -28,7 +28,7 @@ def test_attach_recovered_theme_ui_projects_fine_and_major_groups(tmp_path: Path
                     "rs189_median": 99.0,
                     "theme_rs": 99.0,
                     "ret20_median": 0.12,
-                    "leaders": ["DELL", "HPE"],
+                    "leaders": ["DELL", "HPE", "OLD"],
                 },
                 {
                     "major_theme": "1. AI・テック成長テーマ",
@@ -62,15 +62,34 @@ def test_attach_recovered_theme_ui_projects_fine_and_major_groups(tmp_path: Path
             "status": "READY",
             "coverage": 0.96,
             "coverage_detail": {"exact": 3000, "inferred": 200, "unmapped": 100},
+            "rows": [
+                {"ticker": "DELL", "theme_name": "AIサーバー/冷却"},
+                {"ticker": "HPE", "theme_name": "AIサーバー/冷却"},
+                {"ticker": "OLD", "theme_name": "AIサーバー/冷却"},
+                {"ticker": "ANET", "theme_name": "AIネットワーキング"},
+            ],
         },
     )
+    _write(
+        tmp_path / "rs.json",
+        {
+            "session_date": session,
+            "rows": [
+                {"ticker": "DELL", "rs189": 99.0, "price": 150.0, "sma200": 100.0},
+                {"ticker": "HPE", "rs189": 97.0, "price": 50.0, "sma200": 40.0},
+                {"ticker": "OLD", "rs189": 99.5, "price": 80.0, "sma200": 90.0},
+                {"ticker": "ANET", "rs189": 96.0, "price": 120.0, "sma200": 100.0},
+            ],
+        },
+    )
+    old_sector = [{"group": "Electronic Technology", "ret20_avg": 0.01}]
     view = {
         "session_date": session,
         "rotation": {
             "status": "READY",
             "diagnostics": {
                 "industry": [{"group": "old diagnostic"}],
-                "sector": [{"group": "old diagnostic"}],
+                "sector": old_sector.copy(),
             },
         },
     }
@@ -84,8 +103,9 @@ def test_attach_recovered_theme_ui_projects_fine_and_major_groups(tmp_path: Path
     assert rotation["diagnostics"]["industry"][0]["group"] == "AIサーバー/冷却"
     assert rotation["diagnostics"]["industry"][0]["leaders"] == ["DELL", "HPE"]
     assert rotation["diagnostics"]["industry"][0]["theme_rs"] == 99.0
-    assert rotation["diagnostics"]["sector"][0]["group"] == "1. AI・テック成長テーマ"
-    assert set(rotation["diagnostics"]["sector"][0]["leaders"]) >= {"DELL", "HPE", "ANET"}
+    assert rotation["diagnostics"]["sector"] == old_sector
+    assert rotation["original_industry_diagnostics"][0]["group"] == "old diagnostic"
+    assert rotation["major_theme_groups"][0]["group"] == "1. AI・テック成長テーマ"
 
 
 def test_attach_recovered_theme_ui_fails_closed_when_missing(tmp_path: Path) -> None:
