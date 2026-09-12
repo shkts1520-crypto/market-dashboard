@@ -8,7 +8,7 @@ from typing import Any
 from .freshness import DATA_REQUIRED, READY, STALE, assess_shard_file, atomic_write_json
 from .positions_engine import PositionsRuleError, normal_stock_next_open_action
 
-CALCULATION_VERSION = "v38-supplemental-engine-1.0.0"
+CALCULATION_VERSION = "v38-supplemental-engine-1.0.1"
 VALID_NQSAR = {"Blue", "Green", "Yellow", "Red"}
 
 SCHEMAS = {
@@ -164,6 +164,8 @@ def build_rules_shard(*, session_date: str, generated_at: str) -> dict[str, Any]
             "tqqq_panic": {
                 "seed": "VIX Close>=23 AND QQQ SMA50 deviation<=-0.5ATR AND QQQ 10d DD<=-2%",
                 "seed_max_age_sessions": 30,
+                "qqq_4h_definition": "QQQ RTH only, America/New_York, 09:30 anchor: 09:30-13:30 full 4H + 13:30-16:00 session-tail; extended hours excluded; completed standard sessions only; nonstandard sessions fail closed",
+                "qqq_4h_rsi": "Textbook Wilder RSI14: 14-delta SMA seed, then Wilder recursive smoothing",
                 "trigger": "first QQQ 4H RSI14 touch from >30 to <=30 AND MC57>=20",
                 "target_pct": 80,
                 "max_hold_sessions": 10,
