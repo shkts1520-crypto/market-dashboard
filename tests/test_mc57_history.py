@@ -12,7 +12,7 @@ from v38.mc57_history import (
 from v38.mc57_live import FIXED_57_ETFS, build_mc57_object, load_verified_reference
 
 
-def _closes(periods: int = 4400) -> dict[str, pd.Series]:
+def _closes(periods: int = 4600) -> dict[str, pd.Series]:
     idx = pd.bdate_range("2010-01-04", periods=periods)
     x = np.arange(periods, dtype=float)
     out: dict[str, pd.Series] = {}
@@ -26,7 +26,7 @@ def _closes(periods: int = 4400) -> dict[str, pd.Series]:
     return out
 
 
-def test_enriched_history_contains_fixed57_breadth_and_all_metrics():
+def test_enriched_history_contains_two_year_fixed57_breadth_and_all_metrics():
     closes = _closes()
     target = closes[FIXED_57_ETFS[0]].index[-1].strftime("%Y-%m-%d")
     reference = load_verified_reference(
@@ -42,8 +42,8 @@ def test_enriched_history_contains_fixed57_breadth_and_all_metrics():
     out = enrich_mc57_history(base, closes=closes, target_session=target)
 
     assert out["history_contract_version"] == HISTORY_CONTRACT_VERSION
-    assert out["history_window_sessions"] == 260
-    assert len(out["history"]) == 260
+    assert out["history_window_sessions"] == 504
+    assert len(out["history"]) == 504
     assert len(out["metric_history"]) == 12
     assert all(out["metric_history"][key] for key in out["metric_history"])
     assert set(out["fixed57_breadth"]) == {"sma20", "sma50", "sma200"}
@@ -51,7 +51,7 @@ def test_enriched_history_contains_fixed57_breadth_and_all_metrics():
     assert len(out["history"][-1]["metrics"]) == 12
 
 
-def test_ui_detail_limits_history_to_126_sessions_without_inference():
+def test_ui_detail_preserves_full_two_year_history_without_inference():
     closes = _closes()
     target = closes[FIXED_57_ETFS[0]].index[-1].strftime("%Y-%m-%d")
     reference = load_verified_reference(
@@ -67,6 +67,7 @@ def test_ui_detail_limits_history_to_126_sessions_without_inference():
     enriched = enrich_mc57_history(base, closes=closes, target_session=target)
     detail = build_mc57_ui_detail(enriched, session=target)
 
+    assert UI_HISTORY_LIMIT == 504
     assert detail["status"] == "READY"
     assert detail["history_sessions"] == UI_HISTORY_LIMIT
     assert len(detail["series"]["mc57"]) == UI_HISTORY_LIMIT

@@ -8,9 +8,9 @@ import pandas as pd
 from .mc57_engine import MC57_METRICS
 from .mc57_live import calculate_mc57_panel
 
-HISTORY_CONTRACT_VERSION = "v38.mc57.history.1"
-HISTORY_LIMIT = 260
-UI_HISTORY_LIMIT = 126
+HISTORY_CONTRACT_VERSION = "v38.mc57.history.2"
+HISTORY_LIMIT = 504
+UI_HISTORY_LIMIT = 504
 
 BREADTH_KEYS = {
     "sma20": "close_gt_sma20",
@@ -42,10 +42,10 @@ def enrich_mc57_history(
     closes: dict[str, pd.Series],
     target_session: str,
 ) -> dict[str, Any]:
-    """Attach audited fixed-57 historical diagnostics to a READY MC57 object.
+    """Attach the original-style two-year fixed-57 history.
 
-    The same adjusted-close histories and the same final MC57 engine are reused.
-    No current-universe backfill or inferred stock breadth is introduced here.
+    The same adjusted-close histories and final MC57 engine are reused. This is a
+    display-history contract only and does not change any V38 trading gate.
     """
     target = pd.Timestamp(target_session)
     panel, _ = calculate_mc57_panel(closes)

@@ -53,12 +53,12 @@ def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_a
 
 
 def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path | None:
-    """Reuse the production 2y OHLC download for display-history reconstruction.
+    """Rebuild the original two-year display window in production.
 
-    Pull-request verification intentionally never performs network acquisition. On
-    main/scheduled/manual Actions runs, an acquisition run reuses RUNNER_TEMP OHLC;
-    a retained-session run downloads the same Yahoo 2y history once so Breadth,
-    RS63/126/189 and F1/F2/F3 do not have to wait for 21 future sessions.
+    Pull-request verification never performs network acquisition. Main/scheduled/
+    manual runs fetch 3 years of stock OHLC so the two-year Breadth display has the
+    required 200-session indicator warm-up, and fetch 2 years for market ratios.
+    These histories remain display-only and never become trading gates.
     """
     event = str(os.environ.get("GITHUB_EVENT_NAME") or "").strip().lower()
     if event in {"", "pull_request", "pull_request_target"}:
@@ -66,26 +66,21 @@ def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path
 
     command = [
         sys.executable,
-        "scripts/reconstruct_stock_history.py",
+        "scripts/reconstruct_display_history_2y.py",
         "--data-dir", str(root),
-        "--sessions", "126",
         "--generated-at", generated_at,
     ]
-    runner_temp = str(os.environ.get("RUNNER_TEMP") or "").strip()
-    if runner_temp:
-        work = Path(runner_temp) / "v38-live"
-        ohlcv = work / "ohlcv.csv"
-        universe = work / "universe.csv"
-        if ohlcv.is_file() and ohlcv.stat().st_size > 0:
-            command += ["--ohlcv", str(ohlcv)]
-        if universe.is_file() and universe.stat().st_size > 0:
-            command += ["--universe", str(universe)]
-
     subprocess.run(command, check=True)
-    output = root / "history" / "reconstructed_stock_metrics.json"
-    if not output.is_file() or output.stat().st_size <= 0:
-        raise SystemExit("historical reconstruction did not produce its output shard")
-    return output
+
+    outputs = (
+        root / "history" / "reconstructed_stock_metrics.json",
+        root / "history" / "market_diagnostics_2y.json",
+        root / "history" / "market_series_2y.json",
+    )
+    for output in outputs:
+        if not output.is_file() or output.stat().st_size <= 0:
+            raise SystemExit(f"two-year display reconstruction missing output: {output}")
+    return outputs[0]
 
 
 def main() -> int:
@@ -128,8 +123,7 @@ def main() -> int:
     )
 
     # Refresh the current observed session after reconstruction. The exact current
-    # session remains authoritative and overrides the current-universe historical
-    # reconstruction inside the RS history builder.
+    # session remains authoritative and overrides display-only reconstructed values.
     history_snapshot, history_index = stage_session_snapshot(
         root,
         root / "history",
