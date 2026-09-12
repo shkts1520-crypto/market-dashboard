@@ -163,9 +163,17 @@ def validate_retained_publication(
                 f"{label}: {value:.12f} disagrees with actual {actual_coverage:.12f}"
             )
 
-    required = market.get("required_symbols")
-    if not isinstance(required, list) or set(required) != set(PRIMARY_MARKET_SYMBOLS):
-        raise RetainedPublicationError("market_inputs.required_symbols contract mismatch")
+    # Production market_inputs.json contract uses `symbols` and top-level
+    # `coverage`. Validate those persisted fields exactly; do not invent a second
+    # required_symbols/required_coverage schema just for the retained path.
+    symbols = market.get("symbols")
+    if (
+        not isinstance(symbols, list)
+        or len(symbols) != len(PRIMARY_MARKET_SYMBOLS)
+        or len(set(symbols)) != len(symbols)
+        or set(symbols) != set(PRIMARY_MARKET_SYMBOLS)
+    ):
+        raise RetainedPublicationError("market_inputs.symbols contract mismatch")
     series = market.get("series")
     if not isinstance(series, dict):
         raise RetainedPublicationError("market_inputs.series missing")
@@ -192,12 +200,10 @@ def validate_retained_publication(
             "required market inputs missing retained session: " + ",".join(missing_market)
         )
 
-    required_coverage = _number(
-        market.get("required_coverage"), label="market_inputs.required_coverage"
-    )
-    if not math.isclose(required_coverage, 1.0, rel_tol=0.0, abs_tol=1e-12):
+    market_coverage = _number(market.get("coverage"), label="market_inputs.coverage")
+    if not math.isclose(market_coverage, 1.0, rel_tol=0.0, abs_tol=1e-12):
         raise RetainedPublicationError(
-            f"market_inputs.required_coverage must be 1.0, got {required_coverage:.3f}"
+            f"market_inputs.coverage must be 1.0, got {market_coverage:.3f}"
         )
 
     return {
@@ -206,6 +212,6 @@ def validate_retained_publication(
         "current_valid_ohlcv": current_valid,
         "stock_coverage": actual_coverage,
         "required_market_symbols": list(PRIMARY_MARKET_SYMBOLS),
-        "required_market_coverage": required_coverage,
+        "required_market_coverage": market_coverage,
         "retained_generated_at": state.get("generated_at"),
     }
