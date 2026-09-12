@@ -2,10 +2,10 @@
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": null,
   "dependency": "mc57_fixed57_golden",
-  "generated_at": "2026-09-12T00:57:08Z",
+  "generated_at": "2026-09-11T22:29:06Z",
   "reason": "FIXED57_AND_GOLDEN_FIXTURE_NOT_AVAILABLE",
   "schema_version": "v38.data_required.1",
-  "session_date": "2026-09-10",
+  "session_date": "2026-09-11",
   "source": "reference-gate:mc57_fixed57_golden",
   "status": "DATA_REQUIRED",
   "value": null

@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-12T00:57:08Z",
+  "generated_at": "2026-09-11T22:29:06Z",
   "rules": {
     "allocation": {
       "gross_max_pct": 100,
@@ -59,7 +59,7 @@
     }
   },
   "schema_version": "v38.rules.1",
-  "session_date": "2026-09-10",
+  "session_date": "2026-09-11",
   "source": "code:adopted-v38-contracts",
   "status": "READY"
 }
