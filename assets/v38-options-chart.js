@@ -96,7 +96,6 @@
           <div class="v38-oc-title">—</div>
           <div class="v38-oc-sub">TradingView • Options positioning</div>
           <div class="v38-oc-spacer"></div>
-          <a class="v38-oc-link" target="_blank" rel="noopener noreferrer">TradingViewで開く</a>
           <button class="v38-oc-close" type="button" aria-label="閉じる">×</button>
         </div>
         <div class="v38-oc-body">
@@ -215,8 +214,6 @@
     lastTicker = ticker;
     modal.hidden = false;
     modal.querySelector('.v38-oc-title').textContent = ticker;
-    const link = modal.querySelector('.v38-oc-link');
-    link.href = 'https://www.tradingview.com/chart/?symbol=' + encodeURIComponent(ticker);
     renderTradingView(modal.querySelector('.v38-oc-tv'), ticker);
     const levelHost = modal.querySelector('.v38-oc-levels');
     levelHost.textContent = 'Options levels loading…';
