@@ -11,13 +11,12 @@ from .ui_contract import (
 )
 
 CALCULATION_VERSION = (
-    "v38-live-site-builder-1.2.0"
+    "v38-live-site-builder-1.3.0"
 )
 
 CANONICAL_BLOB_SHA = (
     "966fe157e3d35344f6e373877b3de5689409dd67"
 )
-
 CANONICAL_SIZE = 1412062
 
 _SCRIPT_RE = re.compile(
@@ -28,7 +27,6 @@ _SCRIPT_RE = re.compile(
     ),
     re.I | re.S,
 )
-
 _EVENT_RE = re.compile(
     (
         r"\s+on[a-zA-Z0-9_-]+"
@@ -41,7 +39,6 @@ _EVENT_RE = re.compile(
     ),
     re.I | re.S,
 )
-
 _STYLE_RE = re.compile(
     (
         r"<style\b[^>]*>"
@@ -50,7 +47,6 @@ _STYLE_RE = re.compile(
     ),
     re.I | re.S,
 )
-
 _BODY_RE = re.compile(
     (
         r"<body\b"
@@ -58,22 +54,10 @@ _BODY_RE = re.compile(
     ),
     re.I | re.S,
 )
+_HEAD_END_RE = re.compile(r"</head\s*>", re.I)
+_BODY_END_RE = re.compile(r"</body\s*>", re.I)
 
-_HEAD_END_RE = re.compile(
-    r"</head\s*>",
-    re.I,
-)
-
-_BODY_END_RE = re.compile(
-    r"</body\s*>",
-    re.I,
-)
-
-SECTION_IDS = tuple(
-    href[1:]
-    for _, href
-    in EXPECTED_TABS
-)
+SECTION_IDS = tuple(href[1:] for _, href in EXPECTED_TABS)
 
 BINDING_STYLE = """<style id="v38-live-binding-bootstrap">
 body[data-v38-production="live-binding"] .wrap{opacity:0;pointer-events:none}
@@ -96,301 +80,106 @@ body[data-v38-production="live-binding"][data-v38-binding-status] .wrap{opacity:
 </style>"""
 
 RUNTIME_SCRIPTS = (
-    '<script '
-    'src="assets/v38-runtime.js" '
-    'defer></script>\n'
-    '<script '
-    'src="assets/v38-site.js" '
-    'defer></script>'
+    '<script src="assets/v38-runtime.js" defer></script>\n'
+    '<script src="assets/v38-site.js" defer></script>\n'
+    '<script src="assets/v38-recovery.js" defer></script>'
 )
 
 
-class SiteBuildError(
-    RuntimeError
-):
+class SiteBuildError(RuntimeError):
     pass
 
 
-def git_blob_sha(
-    data: bytes,
-) -> str:
-    header = (
-        f"blob {len(data)}\0"
-    ).encode(
-        "ascii"
-    )
-
-    return hashlib.sha1(
-        header + data
-    ).hexdigest()
+def git_blob_sha(data: bytes) -> str:
+    header = f"blob {len(data)}\0".encode("ascii")
+    return hashlib.sha1(header + data).hexdigest()
 
 
-def canonical_fingerprint(
-    data: bytes,
-) -> dict[str, object]:
-    return {
-        "size": len(data),
-        "blob_sha": (
-            git_blob_sha(
-                data
-            )
-        ),
-    }
+def canonical_fingerprint(data: bytes) -> dict[str, object]:
+    return {"size": len(data), "blob_sha": git_blob_sha(data)}
 
 
-def verify_canonical_bytes(
-    data: bytes,
-) -> None:
-    fp = canonical_fingerprint(
-        data
-    )
-
-    if (
-        fp["size"]
-        != CANONICAL_SIZE
-    ):
+def verify_canonical_bytes(data: bytes) -> None:
+    fp = canonical_fingerprint(data)
+    if fp["size"] != CANONICAL_SIZE:
         raise SiteBuildError(
             "canonical size mismatch: "
-            f"{fp['size']} != "
-            f"{CANONICAL_SIZE}"
+            f"{fp['size']} != {CANONICAL_SIZE}"
         )
-
-    if (
-        fp["blob_sha"]
-        != CANONICAL_BLOB_SHA
-    ):
+    if fp["blob_sha"] != CANONICAL_BLOB_SHA:
         raise SiteBuildError(
             "canonical blob mismatch: "
-            f"{fp['blob_sha']} != "
-            f"{CANONICAL_BLOB_SHA}"
+            f"{fp['blob_sha']} != {CANONICAL_BLOB_SHA}"
         )
 
 
-def _style_blocks(
-    html: str,
-) -> tuple[str, ...]:
-    return tuple(
-        _STYLE_RE.findall(
-            html
-        )
-    )
+def _style_blocks(html: str) -> tuple[str, ...]:
+    return tuple(_STYLE_RE.findall(html))
 
 
-def _strip_active_inline_logic(
-    html: str,
-) -> str:
-    without_scripts = (
-        _SCRIPT_RE.sub(
-            "",
-            html,
-        )
-    )
-
-    return _EVENT_RE.sub(
-        "",
-        without_scripts,
-    )
+def _strip_active_inline_logic(html: str) -> str:
+    without_scripts = _SCRIPT_RE.sub("", html)
+    return _EVENT_RE.sub("", without_scripts)
 
 
-def _mark_body_live(
-    html: str,
-) -> str:
-    match = _BODY_RE.search(
-        html
-    )
-
+def _mark_body_live(html: str) -> str:
+    match = _BODY_RE.search(html)
     if not match:
+        raise SiteBuildError("canonical body element is missing")
+    attrs = match.group("attrs") or ""
+    if "data-v38-production" in attrs:
         raise SiteBuildError(
-            "canonical body element "
-            "is missing"
+            "canonical unexpectedly already contains production marker"
         )
-
-    attrs = (
-        match.group(
-            "attrs"
-        )
-        or ""
-    )
-
-    if (
-        "data-v38-production"
-        in attrs
-    ):
-        raise SiteBuildError(
-            "canonical unexpectedly "
-            "already contains "
-            "production marker"
-        )
-
-    replacement = (
-        '<body '
-        'data-v38-production="live-binding"'
-        f"{attrs}>"
-    )
-
-    return (
-        html[
-            : match.start()
-        ]
-        + replacement
-        + html[
-            match.end() :
-        ]
-    )
+    replacement = '<body data-v38-production="live-binding"' + attrs + '>'
+    return html[: match.start()] + replacement + html[match.end() :]
 
 
-def build_safe_shell(
-    canonical_html: str,
-) -> str:
-    validate_canonical_shell(
-        canonical_html
-    )
+def build_safe_shell(canonical_html: str) -> str:
+    validate_canonical_shell(canonical_html)
+    original_styles = _style_blocks(canonical_html)
+    out = _strip_active_inline_logic(canonical_html)
+    out = _mark_body_live(out)
 
-    original_styles = (
-        _style_blocks(
-            canonical_html
-        )
-    )
+    if not _HEAD_END_RE.search(out):
+        raise SiteBuildError("head end tag is missing")
+    out = _HEAD_END_RE.sub(BINDING_STYLE + "\n</head>", out, count=1)
 
-    out = (
-        _strip_active_inline_logic(
-            canonical_html
-        )
-    )
-
-    out = _mark_body_live(
-        out
-    )
-
-    if not _HEAD_END_RE.search(
-        out
-    ):
-        raise SiteBuildError(
-            "head end tag is missing"
-        )
-
-    out = _HEAD_END_RE.sub(
-        (
-            BINDING_STYLE
-            + "\n</head>"
-        ),
-        out,
-        count=1,
-    )
-
-    if not _BODY_END_RE.search(
-        out
-    ):
-        raise SiteBuildError(
-            "body end tag is missing"
-        )
-
-    out = _BODY_END_RE.sub(
-        (
-            RUNTIME_SCRIPTS
-            + "\n</body>"
-        ),
-        out,
-        count=1,
-    )
+    if not _BODY_END_RE.search(out):
+        raise SiteBuildError("body end tag is missing")
+    out = _BODY_END_RE.sub(RUNTIME_SCRIPTS + "\n</body>", out, count=1)
 
     generated_styles = tuple(
         block
-        for block
-        in _style_blocks(
-            out
-        )
-        if (
-            'id="v38-live-binding-bootstrap"'
-            not in block
-        )
+        for block in _style_blocks(out)
+        if 'id="v38-live-binding-bootstrap"' not in block
     )
+    if generated_styles != original_styles:
+        raise SiteBuildError("canonical style blocks changed during build")
 
-    if (
-        generated_styles
-        != original_styles
-    ):
+    report = validate_production_html(out)
+    if report["external_script_count"] != 3:
         raise SiteBuildError(
-            "canonical style blocks "
-            "changed during build"
+            "production HTML must contain exactly three external scripts"
         )
-
-    report = (
-        validate_production_html(
-            out
-        )
-    )
-
-    if (
-        report[
-            "external_script_count"
-        ]
-        != 2
-    ):
-        raise SiteBuildError(
-            "production HTML must "
-            "contain exactly two "
-            "external scripts"
-        )
-
     if 'v38-production-state' in out:
-        raise SiteBuildError(
-            "legacy replacement cards "
-            "must not be injected"
-        )
-
-    if (
-        'data-v38-production="live-binding"'
-        not in out
-    ):
-        raise SiteBuildError(
-            "live binding "
-            "marker missing"
-        )
-
+        raise SiteBuildError("legacy replacement cards must not be injected")
+    if 'data-v38-production="live-binding"' not in out:
+        raise SiteBuildError("live binding marker missing")
     return out
 
 
-def build_site(
-    canonical_path: str | Path,
-    output_path: str | Path,
-) -> Path:
-    src = Path(
-        canonical_path
-    )
-
+def build_site(canonical_path: str | Path, output_path: str | Path) -> Path:
+    src = Path(canonical_path)
     raw = src.read_bytes()
-
-    verify_canonical_bytes(
-        raw
-    )
-
+    verify_canonical_bytes(raw)
     try:
-        html = raw.decode(
-            "utf-8"
-        )
-
+        html = raw.decode("utf-8")
     except UnicodeDecodeError as exc:
-        raise SiteBuildError(
-            "canonical must be UTF-8"
-        ) from exc
+        raise SiteBuildError("canonical must be UTF-8") from exc
 
-    out_html = build_safe_shell(
-        html
-    )
-
-    dst = Path(
-        output_path
-    )
-
-    dst.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    dst.write_text(
-        out_html,
-        encoding="utf-8",
-    )
-
+    out_html = build_safe_shell(html)
+    dst = Path(output_path)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    dst.write_text(out_html, encoding="utf-8")
     return dst
