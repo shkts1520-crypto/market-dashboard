@@ -84,13 +84,11 @@ def _assert_live_binding(page, view):
 
     rs = view["rs"]
     page.locator('a.tabx[href="#t-rs"]').click()
-    rs_text = page.locator("#t-rs").inner_text()
     history = _rs_history(page)
     assert history["status"] == "READY"
     assert history["session_date"] == view["session_date"]
     if history.get("history_kind") == "CURRENT_UNIVERSE_RECONSTRUCTED":
-        assert "RECONSTRUCTED_OHLC_HISTORY" in rs_text
-        assert "PIT Universe未回収期間は再構成値" in rs_text
+        # Technical provenance belongs in data, not as visual clutter in the card.
         assert history.get("survivorship_warning") is True
         assert history.get("trading_gate_eligible") is False
         assert history.get("reconstructed_sessions", 0) > 0
