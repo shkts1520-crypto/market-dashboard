@@ -7,6 +7,7 @@ on:
     paths:
       - research/mc57_nqsar_shadow.py
       - research/mc57_golden_check.py
+      - research/mc57_generation_compare.py
       - .github/workflows/research-mc57-nqsar.yml
   workflow_dispatch:
 
@@ -40,6 +41,11 @@ jobs:
           set -euo pipefail
           python research/mc57_golden_check.py | tee mc57_golden.log
 
+      - name: Compare MC57 generations
+        run: |
+          set -euo pipefail
+          python research/mc57_generation_compare.py | tee mc57_generation_compare.log
+
       - name: Assert research outputs exist
         run: |
           set -euo pipefail
@@ -47,8 +53,10 @@ jobs:
           test -s research_out/mc57_candidate57_tail.csv
           test -s research_out/nqsar_shadow_tail.csv
           test -s research_out/mc57_golden_20260828.json
+          test -s research_out/mc57_generation_compare_20260828.json
           python -m json.tool research_out/mc57_nqsar_shadow.json >/dev/null
           python -m json.tool research_out/mc57_golden_20260828.json >/dev/null
+          python -m json.tool research_out/mc57_generation_compare_20260828.json >/dev/null
 
       - name: Upload research artifact
         uses: actions/upload-artifact@v4
@@ -58,5 +66,6 @@ jobs:
             research_out/
             research_shadow.log
             mc57_golden.log
+            mc57_generation_compare.log
           if-no-files-found: error
           retention-days: 14
