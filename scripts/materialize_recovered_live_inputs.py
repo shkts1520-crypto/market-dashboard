@@ -36,6 +36,27 @@ def _current_authoritative_nqsar(obj: dict, session: str) -> bool:
     return str(obj.get("input_kind") or "") in AUTHORITATIVE_INPUT_KINDS
 
 
+def _resolve_theme_map(configured: str, root: Path) -> tuple[Path, bool]:
+    """Prefer the complete split legacy map when present.
+
+    GitHub connector payloads have a practical per-call size ceiling, so the
+    recovered 5k+ ticker map is committed as ordered base64 chunks. They are
+    concatenated losslessly at runtime and decoded by recovered_theme.py.
+    """
+    configured_path = Path(configured)
+    parts = sorted(configured_path.parent.glob("theme_s2t.part*.b64"))
+    if not parts:
+        return configured_path, False
+    if len(parts) < 2:
+        raise SystemExit(f"incomplete split theme map: found {len(parts)} part(s)")
+    combined = "".join(part.read_text(encoding="utf-8").strip() for part in parts)
+    if len(combined) < 40000:
+        raise SystemExit(f"split theme map unexpectedly small: {len(combined)} base64 chars")
+    temp_path = root / ".theme_s2t_recovered.b64"
+    temp_path.write_text(combined, encoding="utf-8")
+    return temp_path, True
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Recover current V38 non-options inputs from legacy acquisition/calculation logic without restoring obsolete trading rules"
@@ -79,13 +100,18 @@ def main() -> int:
     )
     write_json(root / "classifications.json", classifications)
 
-    membership_path, recovered_rotation_path, theme_scores_path = write_theme_outputs(
-        root,
-        rs,
-        session_date=session,
-        generated_at=generated_at,
-        theme_map_path=args.theme_map,
-    )
+    theme_map_path, cleanup_theme_map = _resolve_theme_map(args.theme_map, root)
+    try:
+        membership_path, recovered_rotation_path, theme_scores_path = write_theme_outputs(
+            root,
+            rs,
+            session_date=session,
+            generated_at=generated_at,
+            theme_map_path=theme_map_path,
+        )
+    finally:
+        if cleanup_theme_map:
+            theme_map_path.unlink(missing_ok=True)
     theme_membership = _load(membership_path)
     theme_scores = _load(theme_scores_path)
 
