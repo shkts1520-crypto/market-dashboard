@@ -11,7 +11,7 @@ from .ui_contract import (
 )
 
 CALCULATION_VERSION = (
-    "v38-live-site-builder-1.2.0"
+    "v38-live-site-builder-1.3.0"
 )
 
 CANONICAL_BLOB_SHA = (
@@ -101,6 +101,9 @@ RUNTIME_SCRIPTS = (
     'defer></script>\n'
     '<script '
     'src="assets/v38-site.js" '
+    'defer></script>\n'
+    '<script '
+    'src="assets/v38-observables.js" '
     'defer></script>'
 )
 
@@ -325,11 +328,11 @@ def build_safe_shell(
         report[
             "external_script_count"
         ]
-        != 2
+        != 3
     ):
         raise SiteBuildError(
             "production HTML must "
-            "contain exactly two "
+            "contain exactly three "
             "external scripts"
         )
 
