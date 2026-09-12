@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-CALCULATION_VERSION = "v38-tqqq-panic-rules-1.2.0"
+CALCULATION_VERSION = "v38-tqqq-panic-rules-1.3.0"
 BASE_TARGET_PCT = 30
 PANIC_TARGET_PCT = 80
 SEED_MAX_AGE_SESSIONS = 30
@@ -35,8 +35,10 @@ def panic_seed(*, vix_close: float, qqq_sma50_atr_deviation: float, qqq_dd10: fl
 def qqq_4h_rsi30_touch(*, prior_rsi14: float, current_rsi14: float) -> bool:
     """Return True only for the first downward touch/cross of RSI14=30.
 
-    The audited Stage56 contract is TOUCH30, not merely "RSI currently <=30".
-    Remaining below 30 on subsequent 4H bars must not create a new trigger.
+    The >30 -> <=30 crossing rule is the adopted V38 trigger semantics.  The
+    actual 4H bar construction is separately defined by the V38 canonical QQQ
+    RTH convention in intraday_inputs.py; it is not attributed to Stage56.
+    Remaining below 30 on subsequent canonical bars must not retrigger.
     """
     prior = _finite(prior_rsi14, "prior_rsi14")
     current = _finite(current_rsi14, "current_rsi14")

@@ -35,7 +35,13 @@ def test_rules_shard_is_current_code_contract():
     assert out["rules"]["allocation"]["normal_tqqq_pct"] == 30
     assert out["rules"]["allocation"]["panic_tqqq_target_pct"] == 80
     assert out["rules"]["allocation"]["share_level_golden_ledger_status"] == DATA_REQUIRED
-    assert "first QQQ 4H RSI14 touch" in out["rules"]["tqqq_panic"]["trigger"]
+    panic = out["rules"]["tqqq_panic"]
+    assert "first QQQ 4H RSI14 touch" in panic["trigger"]
+    assert "09:30-13:30 full 4H" in panic["qqq_4h_definition"]
+    assert "13:30-16:00 session-tail" in panic["qqq_4h_definition"]
+    assert "extended hours excluded" in panic["qqq_4h_definition"]
+    assert "nonstandard sessions fail closed" in panic["qqq_4h_definition"]
+    assert "14-delta SMA seed" in panic["qqq_4h_rsi"]
 
 
 def test_weekly_fails_closed_without_authoritative_nqsar():
