@@ -84,9 +84,8 @@ def main() -> int:
     )
 
     # Refresh the current observed session even when the workflow is retaining an
-    # already-published market session.  This is not a historical backfill: it only
-    # rewrites the current session from current authoritative shards and preserves
-    # the actually accumulated archive.
+    # already-published market session. This is not historical backfill: it only
+    # rewrites the current observed session from current authoritative shards.
     history_snapshot, history_index = stage_session_snapshot(
         root,
         root / "history",
@@ -95,7 +94,7 @@ def main() -> int:
     rs_history = write_rs_history(
         root / "history",
         root / "rs.json",
-        root / "rs_history.json",
+        root / "history" / "rs_history.json",
         session_date=session,
         generated_at=generated_at,
     )
