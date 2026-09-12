@@ -44,6 +44,16 @@ def _assert_live_binding(page, view):
         assert row["label"].split()[0] in daily_text
         assert row["display"] in daily_text
 
+    mc57_detail = daily.get("mc57_detail") or {}
+    if mc57_detail.get("status") == "READY":
+        page.locator('a.tabx[href="#t-market"]').click()
+        page.wait_for_function(
+            "document.querySelectorAll('#t-market svg.v38-mc57-spark').length >= 12"
+        )
+        assert page.locator("#t-market svg.v38-mc57-spark").count() >= 12
+        assert "57ETF 50MA上" in page.locator("#t-market").inner_text()
+        assert "MC57内部 12指標履歴" in page.locator("#t-market").inner_text()
+
     rs = view["rs"]
     page.locator('a.tabx[href="#t-rs"]').click()
     rs_text = page.locator("#t-rs").inner_text()
