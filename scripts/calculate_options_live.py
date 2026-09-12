@@ -18,7 +18,7 @@ from v38.options_engine import (
     select_targets,
 )
 
-CHART_TARGET_FLOOR = 48
+CHART_TARGET_FLOOR = 0
 
 
 def _load(path: Path) -> dict:
@@ -109,7 +109,11 @@ def _chart_targets(rs: dict, core12: dict, *, requested_limit: int) -> list[str]
 
     for ticker in select_targets(rs, core12, limit=limit):
         add(ticker)
-    return out[:limit]
+    # Never truncate the explicit clickable priority union.
+    priority_count = len(out)
+    for ticker in select_targets(rs, core12, limit=limit):
+        add(ticker)
+    return out[:max(priority_count, limit)]
 
 
 def _fetch_ticker_snapshot(yf, ticker: str, *, spot: float, session_date: str) -> dict:
