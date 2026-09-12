@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -95,3 +96,27 @@ def test_exact_legacy_map_remains_authoritative_over_manual_override(tmp_path, m
     assert row["major_theme"] == "Major A"
     assert row["tag_method"] == "EXACT_SECTOR_SNAPSHOT"
     assert membership["coverage_detail"]["manual"] == 0
+
+
+def test_production_override_file_matches_all_current_unmapped_and_legacy_taxonomy(tmp_path):
+    config = Path("config")
+    parts = sorted(config.glob("theme_s2t.part*.b64"))
+    assert len(parts) >= 2
+    combined = "".join(part.read_text(encoding="utf-8").strip() for part in parts)
+    reconstructed = tmp_path / "theme_s2t.b64"
+    reconstructed.write_text(combined, encoding="utf-8")
+
+    exact = rt.load_theme_map(reconstructed)
+    manual, meta = rt.load_theme_overrides(config / "theme_manual_overrides.json", exact)
+    current = json.loads(Path("data/theme_membership.json").read_text(encoding="utf-8"))
+    unmapped = {
+        str(row.get("ticker") or "").strip().upper()
+        for row in current.get("rows", [])
+        if row.get("tag_method") == "UNMAPPED"
+    }
+
+    assert current["coverage_detail"]["unmapped"] == 115
+    assert len(manual) == 115
+    assert set(manual) == unmapped
+    assert all(ticker not in exact for ticker in manual)
+    assert meta["policy"].startswith("Only current-universe legacy-map gaps")
