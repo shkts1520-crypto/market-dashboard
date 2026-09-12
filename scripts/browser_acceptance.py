@@ -42,7 +42,13 @@ def _assert_live_binding(page, view):
     page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38RecoveryStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38PolishStatus === 'ready'")
+    page.wait_for_function("document.body.dataset.v38FinalUiStatus === 'ready'")
     page.wait_for_function("document.documentElement.dataset.v38NavReady === 'true'")
+    # The observables extension used to inject MC57 debug charts after the old
+    # acceptance had already passed. Wait beyond every delayed UI pass and inspect
+    # the actual final DOM the user sees.
+    page.wait_for_timeout(2100)
+    page.wait_for_function("document.body.dataset.v38FinalUiStatus === 'ready'")
 
     body_text = page.locator("body").inner_text()
     assert "MOCK DATA" not in body_text
@@ -51,20 +57,35 @@ def _assert_live_binding(page, view):
     assert page.locator(".v38-live-grid,.v38-generic-row,.v38-rs-row").count() == 0
 
     daily = view["daily"]
-    daily_text = page.locator("#t-market").inner_text()
+    daily_section = page.locator("#t-market")
+    daily_text = daily_section.inner_text()
     by_key = {row["key"]: row for row in daily["metrics"]}
     for key in ("breadth50", "breadth200", "f1", "f2", "f3", "market_QQQ"):
         row = by_key[key]
         assert row["display"] in daily_text
 
-    # Recovery/debug scaffolding must not leak into the original Command Center UI.
+    # Recovery/debug scaffolding must never leak into the final Command Center UI.
     for text in (
-        "通常株PIT履歴", "遡及推計なし", "MC57 Raw", "MC57 EMA2 Raw",
+        "通常株PIT履歴", "遡及推計なし", "MC57 Raw", "MC57 EMA2 Raw", "MC57 Z",
         "MC57内部 12指標履歴", "日次保存済み履歴", "各指標は同一セッションの正本値のみ",
     ):
         assert text not in daily_text
+    assert daily_section.locator(".v38-mc57-trend").count() == 0
+    assert daily_section.locator('.v38-bind-note[data-v38-status="READY"]').count() == 0
 
-    regime = page.locator("#t-market .reg-card").filter(has_text="レジーム警戒灯").first
+    # Original trend-card convention: a long trend plus calendar anchors. The PR
+    # fixture may still contain only the previously persisted history, so require
+    # visible quarterly anchors here; main production separately rebuilds 504
+    # sessions before publish.
+    for title in ("ブレッドス推移（50日線上の割合）", "ブレッドス推移（200日線上の割合）"):
+        card = daily_section.locator(".card").filter(has_text=title).first
+        assert card.count() == 1
+        axis = card.locator(".v38-quarter-axis")
+        assert axis.count() == 1
+        assert axis.locator("span").count() >= 2
+        assert card.locator("svg.v38-two-year-trend").count() == 1
+
+    regime = daily_section.locator(".reg-card").filter(has_text="レジーム警戒灯").first
     assert regime.count() == 1
     assert regime.locator(".reg-grid .reg-cell").count() == 3
     assert "F1 リーダー脱落率" in regime.inner_text()
@@ -88,7 +109,6 @@ def _assert_live_binding(page, view):
     assert history["status"] == "READY"
     assert history["session_date"] == view["session_date"]
     if history.get("history_kind") == "CURRENT_UNIVERSE_RECONSTRUCTED":
-        # Technical provenance belongs in data, not as visual clutter in the card.
         assert history.get("survivorship_warning") is True
         assert history.get("trading_gate_eligible") is False
         assert history.get("reconstructed_sessions", 0) > 0
