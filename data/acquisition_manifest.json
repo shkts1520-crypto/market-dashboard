@@ -34,7 +34,7 @@
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 0.9997050147492625,
-  "generated_at": "2026-09-12T09:21:45Z",
+  "generated_at": "2026-09-12T09:29:28Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
   "options_reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
