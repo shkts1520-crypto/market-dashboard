@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.0",
-  "coverage": 0.9660666863381528,
-  "generated_at": "2026-09-12T09:37:37Z",
+  "coverage": 1.0,
+  "generated_at": "2026-09-12T10:26:51Z",
   "loo_required": true,
   "ordering": "authoritative source order; dashboard does not re-rank themes",
   "rows": [
@@ -996,13 +996,13 @@
       "ticker": "WT"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "ドローン",
+      "theme_name": "ドローン",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "UMAC"
     },
     {
@@ -1336,13 +1336,13 @@
       "ticker": "PSX"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "大麻・カンナビス",
+      "theme_name": "大麻・カンナビス",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "TRLV"
     },
     {
@@ -4046,13 +4046,13 @@
       "ticker": "XOM"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.88,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AIデータセンター/HPC",
+      "theme_name": "AIデータセンター/HPC",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "BRUN"
     },
     {
@@ -4116,13 +4116,13 @@
       "ticker": "EQIX"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "資産運用（カストディ）",
+      "theme_name": "資産運用（カストディ）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "BNY"
     },
     {
@@ -4356,13 +4356,13 @@
       "ticker": "ZVRA"
     },
     {
-      "major_theme": null,
+      "major_theme": "8. デジタルインフラ・先進テック",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "データストレージ",
+      "theme_name": "データストレージ",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "P"
     },
     {
@@ -4496,13 +4496,13 @@
       "ticker": "CNO"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（北東部）",
+      "theme_name": "地方銀行（北東部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "TMP"
     },
     {
@@ -4696,13 +4696,13 @@
       "ticker": "SLDE"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "再保険",
+      "theme_name": "再保険",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PLGO"
     },
     {
@@ -8066,13 +8066,13 @@
       "ticker": "IQV"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（中西部）",
+      "theme_name": "地方銀行（中西部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PRK"
     },
     {
@@ -9926,13 +9926,13 @@
       "ticker": "TFIN"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "診断/ラボサービス",
+      "theme_name": "診断/ラボサービス",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "FRNM"
     },
     {
@@ -9996,13 +9996,13 @@
       "ticker": "MCHP"
     },
     {
-      "major_theme": null,
+      "major_theme": "14. 不動産・住宅・建設",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "REIT（住宅/アパート）",
+      "theme_name": "REIT（住宅/アパート）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "VMRK"
     },
     {
@@ -13136,13 +13136,13 @@
       "ticker": "HBAN"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "銀鉱山",
+      "theme_name": "銀鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "USAS"
     },
     {
@@ -13266,13 +13266,13 @@
       "ticker": "ZYME"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.92,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "メディア・エンタメ（総合）",
+      "theme_name": "メディア・エンタメ（総合）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PPLI"
     },
     {
@@ -13936,13 +13936,13 @@
       "ticker": "TYRA"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "衛星通信",
+      "theme_name": "衛星通信",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ECHO"
     },
     {
@@ -14306,13 +14306,13 @@
       "ticker": "JBS"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.92,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "穀物/農産物",
+      "theme_name": "穀物/農産物",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SEB"
     },
     {
@@ -16476,13 +16476,13 @@
       "ticker": "FCN"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "EQX"
     },
     {
@@ -16706,13 +16706,13 @@
       "ticker": "PIPR"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "農業・アグリビジネス",
+      "theme_name": "農業・アグリビジネス",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "DMC"
     },
     {
@@ -16726,13 +16726,13 @@
       "ticker": "MDB"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "消費者ローン",
+      "theme_name": "消費者ローン",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "HAPN"
     },
     {
@@ -18096,13 +18096,13 @@
       "ticker": "SGML"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "NG"
     },
     {
@@ -18726,13 +18726,13 @@
       "ticker": "KKR"
     },
     {
-      "major_theme": null,
+      "major_theme": "4. 原子力・エネルギー代替",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "ウラン鉱山",
+      "theme_name": "ウラン鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "UEC"
     },
     {
@@ -19146,13 +19146,13 @@
       "ticker": "FG"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "スポーツベッティング/ゲーミング",
+      "theme_name": "スポーツベッティング/ゲーミング",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "DKNG"
     },
     {
@@ -19296,13 +19296,13 @@
       "ticker": "INTR"
     },
     {
-      "major_theme": null,
+      "major_theme": "8. デジタルインフラ・先進テック",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.92,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "ITサービス",
+      "theme_name": "ITサービス",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "EFOR"
     },
     {
@@ -19576,13 +19576,13 @@
       "ticker": "IONQ"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "銅鉱山",
+      "theme_name": "銅鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "IE"
     },
     {
@@ -21066,13 +21066,13 @@
       "ticker": "COAG"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "医療機器",
+      "theme_name": "医療機器",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "MMED"
     },
     {
@@ -21086,13 +21086,13 @@
       "ticker": "BTGO"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "防衛電子部品",
+      "theme_name": "防衛電子部品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ARXS"
     },
     {
@@ -21156,33 +21156,33 @@
       "ticker": "WLTH"
     },
     {
-      "major_theme": null,
+      "major_theme": "7. フィンテック・デジタル金融",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "決済ネットワーク",
+      "theme_name": "決済ネットワーク",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "WSE"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "資産運用",
+      "theme_name": "資産運用",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PS"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "投資銀行",
+      "theme_name": "投資銀行",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "LCLN"
     },
     {
@@ -21196,33 +21196,33 @@
       "ticker": "MANE"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "投資ファンド・ETF",
+      "theme_name": "投資ファンド・ETF",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PSUS"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.82,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "自動車部品",
+      "theme_name": "自動車部品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "VGNT"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.82,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AIエンタープライズSaaS",
+      "theme_name": "AIエンタープライズSaaS",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "OCTV"
     },
     {
@@ -21266,13 +21266,13 @@
       "ticker": "SUNB"
     },
     {
-      "major_theme": null,
+      "major_theme": "14. 不動産・住宅・建設",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "データセンターREIT/コロケーション",
+      "theme_name": "データセンターREIT/コロケーション",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "BXDC"
     },
     {
@@ -21286,23 +21286,23 @@
       "ticker": "MDLN"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "量子コンピューティング",
+      "theme_name": "量子コンピューティング",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "QNT"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AI GPU/トレーニングチップ",
+      "theme_name": "AI GPU/トレーニングチップ",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CBRS"
     },
     {
@@ -21326,23 +21326,23 @@
       "ticker": "MWH"
     },
     {
-      "major_theme": null,
+      "major_theme": "4. 原子力・エネルギー代替",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "SMR（小型モジュール炉）",
+      "theme_name": "SMR（小型モジュール炉）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "XE"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "量子コンピューティング",
+      "theme_name": "量子コンピューティング",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PSQL"
     },
     {
@@ -21356,23 +21356,23 @@
       "ticker": "SWMR"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "防衛（ドローン/C4ISR）",
+      "theme_name": "防衛（ドローン/C4ISR）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "AVEX"
     },
     {
-      "major_theme": null,
+      "major_theme": "8. デジタルインフラ・先進テック",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "広告技術",
+      "theme_name": "広告技術",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "LFTO"
     },
     {
@@ -21396,13 +21396,13 @@
       "ticker": "FDXF"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AIデータセンター電力",
+      "theme_name": "AIデータセンター電力",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "EROC"
     },
     {
@@ -21416,43 +21416,43 @@
       "ticker": "XNDU"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "衛星観測",
+      "theme_name": "衛星観測",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "HAWK"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "空調/HVAC",
+      "theme_name": "空調/HVAC",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "MAIR"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AIデータセンター電力",
+      "theme_name": "AIデータセンター電力",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "INIO"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "防衛・軍事（総合）",
+      "theme_name": "防衛・軍事（総合）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "AADX"
     },
     {
@@ -21476,13 +21476,13 @@
       "ticker": "CDNL"
     },
     {
-      "major_theme": null,
+      "major_theme": "3. クリーンエネルギー・資源",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地熱/再生可能",
+      "theme_name": "地熱/再生可能",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "FRVO"
     },
     {
@@ -21696,13 +21696,13 @@
       "ticker": "ACTG"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.88,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "オフィス用品",
+      "theme_name": "オフィス用品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ACU"
     },
     {
@@ -21736,13 +21736,13 @@
       "ticker": "ADAM"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.88,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "セキュリティ・安全機器",
+      "theme_name": "セキュリティ・安全機器",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ADIG"
     },
     {
@@ -21886,13 +21886,13 @@
       "ticker": "AHRT"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.88,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "産業コングロマリット",
+      "theme_name": "産業コングロマリット",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "AIAI"
     },
     {
@@ -21906,13 +21906,13 @@
       "ticker": "AII"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.91,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "タバコ",
+      "theme_name": "タバコ",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "AIIR"
     },
     {
@@ -23016,13 +23016,13 @@
       "ticker": "BGS"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（北東部）",
+      "theme_name": "地方銀行（北東部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "BHB"
     },
     {
@@ -23066,13 +23066,13 @@
       "ticker": "BIXI"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "防衛電子部品",
+      "theme_name": "防衛電子部品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "BKTI"
     },
     {
@@ -23216,13 +23216,13 @@
       "ticker": "BRAI"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（南東部）",
+      "theme_name": "地方銀行（南東部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "BRBS"
     },
     {
@@ -23306,13 +23306,13 @@
       "ticker": "BSM"
     },
     {
-      "major_theme": null,
+      "major_theme": "8. デジタルインフラ・先進テック",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.88,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "ソフトウェア（デスクトップ）",
+      "theme_name": "ソフトウェア（デスクトップ）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "BSP"
     },
     {
@@ -23536,13 +23536,13 @@
       "ticker": "CASS"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.93,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "がん関連",
+      "theme_name": "がん関連",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CATX"
     },
     {
@@ -23906,13 +23906,13 @@
       "ticker": "CHMG"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AIデータセンター/HPC",
+      "theme_name": "AIデータセンター/HPC",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CHRN"
     },
     {
@@ -23966,13 +23966,13 @@
       "ticker": "CIVB"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.86,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "セキュリティ・安全機器",
+      "theme_name": "セキュリティ・安全機器",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CIX"
     },
     {
@@ -24076,13 +24076,13 @@
       "ticker": "CLW"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CMCL"
     },
     {
@@ -24136,13 +24136,13 @@
       "ticker": "CMRE"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.8,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "産業機械",
+      "theme_name": "産業機械",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CMT"
     },
     {
@@ -24386,13 +24386,13 @@
       "ticker": "CSHR"
     },
     {
-      "major_theme": null,
+      "major_theme": "14. 不動産・住宅・建設",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "データセンターREIT/コロケーション",
+      "theme_name": "データセンターREIT/コロケーション",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CSQR"
     },
     {
@@ -24426,13 +24426,13 @@
       "ticker": "CTEV"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "CTGO"
     },
     {
@@ -24706,13 +24706,13 @@
       "ticker": "DBI"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "DC"
     },
     {
@@ -24766,13 +24766,13 @@
       "ticker": "DFH"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "SPAC・ブランクチェック",
+      "theme_name": "SPAC・ブランクチェック",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "DGAC"
     },
     {
@@ -24876,13 +24876,13 @@
       "ticker": "DNUT"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "航空宇宙部品",
+      "theme_name": "航空宇宙部品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "DPC"
     },
     {
@@ -25076,13 +25076,13 @@
       "ticker": "EIKN"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.78,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "専門小売",
+      "theme_name": "専門小売",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ELA"
     },
     {
@@ -25106,23 +25106,23 @@
       "ticker": "ELLO"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "医療機器",
+      "theme_name": "医療機器",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ELMD"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.92,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "特殊合金/金属加工",
+      "theme_name": "特殊合金/金属加工",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ELMT"
     },
     {
@@ -25236,13 +25236,13 @@
       "ticker": "EROK"
     },
     {
-      "major_theme": null,
+      "major_theme": "14. 不動産・住宅・建設",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "REIT（オフィス）",
+      "theme_name": "REIT（オフィス）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ESBA"
     },
     {
@@ -25346,13 +25346,13 @@
       "ticker": "EVH"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "産業機械",
+      "theme_name": "産業機械",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "EVI"
     },
     {
@@ -25486,13 +25486,13 @@
       "ticker": "FCBC"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（南東部）",
+      "theme_name": "地方銀行（南東部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "FCBM"
     },
     {
@@ -25626,13 +25626,13 @@
       "ticker": "FISI"
     },
     {
-      "major_theme": null,
+      "major_theme": "4. 原子力・エネルギー代替",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "SMR（小型モジュール炉）",
+      "theme_name": "SMR（小型モジュール炉）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "FISN"
     },
     {
@@ -25706,13 +25706,13 @@
       "ticker": "FNLC"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（西部）",
+      "theme_name": "地方銀行（西部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "FNRN"
     },
     {
@@ -25796,13 +25796,13 @@
       "ticker": "FRBA"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "商業貸付",
+      "theme_name": "商業貸付",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "FRBT"
     },
     {
@@ -25966,13 +25966,13 @@
       "ticker": "FWRD"
     },
     {
-      "major_theme": null,
+      "major_theme": "8. デジタルインフラ・先進テック",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.91,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "通信機器（消費者）",
+      "theme_name": "通信機器（消費者）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "FXHO"
     },
     {
@@ -26136,13 +26136,13 @@
       "ticker": "GEMI"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "産業機械",
+      "theme_name": "産業機械",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "GENC"
     },
     {
@@ -26166,13 +26166,13 @@
       "ticker": "GEVO"
     },
     {
-      "major_theme": null,
+      "major_theme": "4. 原子力・エネルギー代替",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.68,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "原発機器/インフラ",
+      "theme_name": "原発機器/インフラ",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "GFUZ"
     },
     {
@@ -26296,13 +26296,13 @@
       "ticker": "GLSI"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "ヘルスケアサービス",
+      "theme_name": "ヘルスケアサービス",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "GMRS"
     },
     {
@@ -26376,13 +26376,13 @@
       "ticker": "GRNT"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.86,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "GROY"
     },
     {
@@ -26736,13 +26736,13 @@
       "ticker": "HNRG"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "航空宇宙部品",
+      "theme_name": "航空宇宙部品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "HONA"
     },
     {
@@ -26906,13 +26906,13 @@
       "ticker": "HYLN"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "航空宇宙部品",
+      "theme_name": "航空宇宙部品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "IA"
     },
     {
@@ -26976,13 +26976,13 @@
       "ticker": "IDAC"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "IDR"
     },
     {
@@ -27096,13 +27096,13 @@
       "ticker": "ILPT"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "レアアース/戦略金属",
+      "theme_name": "レアアース/戦略金属",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "IMC"
     },
     {
@@ -27196,13 +27196,13 @@
       "ticker": "INDP"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "医療機器",
+      "theme_name": "医療機器",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "INFU"
     },
     {
@@ -27246,23 +27246,23 @@
       "ticker": "INR"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AIデータセンター/HPC",
+      "theme_name": "AIデータセンター/HPC",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "IOND"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "SPAC・ブランクチェック",
+      "theme_name": "SPAC・ブランクチェック",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "IPFX"
     },
     {
@@ -27376,13 +27376,13 @@
       "ticker": "ISTR"
     },
     {
-      "major_theme": null,
+      "major_theme": "8. デジタルインフラ・先進テック",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "通信インフラ",
+      "theme_name": "通信インフラ",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "ITG"
     },
     {
@@ -27896,13 +27896,13 @@
       "ticker": "KTWO"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.82,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "産業コングロマリット",
+      "theme_name": "産業コングロマリット",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "KWY"
     },
     {
@@ -28066,13 +28066,13 @@
       "ticker": "LILA"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "配車/モビリティサービス",
+      "theme_name": "配車/モビリティサービス",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "LIME"
     },
     {
@@ -28126,13 +28126,13 @@
       "ticker": "LOCO"
     },
     {
-      "major_theme": null,
+      "major_theme": "3. クリーンエネルギー・資源",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.76,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "太陽光",
+      "theme_name": "太陽光",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "LODE"
     },
     {
@@ -28326,13 +28326,13 @@
       "ticker": "LYEL"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.9,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "防衛IT/システム",
+      "theme_name": "防衛IT/システム",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "LYNX"
     },
     {
@@ -28416,13 +28416,13 @@
       "ticker": "MAX"
     },
     {
-      "major_theme": null,
+      "major_theme": "8. デジタルインフラ・先進テック",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.78,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "ITサービス",
+      "theme_name": "ITサービス",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "MBGL"
     },
     {
@@ -28606,13 +28606,13 @@
       "ticker": "MFIN"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "産業機械",
+      "theme_name": "産業機械",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "MFP"
     },
     {
@@ -28786,13 +28786,13 @@
       "ticker": "MNTK"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "医療機器",
+      "theme_name": "医療機器",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "MOBI"
     },
     {
@@ -28856,13 +28856,13 @@
       "ticker": "MPT"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "防衛電子部品",
+      "theme_name": "防衛電子部品",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "MPTI"
     },
     {
@@ -29276,13 +29276,13 @@
       "ticker": "NHIV"
     },
     {
-      "major_theme": null,
+      "major_theme": "14. 不動産・住宅・建設",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "REIT（ヘルスケア）",
+      "theme_name": "REIT（ヘルスケア）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "NHP"
     },
     {
@@ -29466,13 +29466,13 @@
       "ticker": "NRP"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "投資ファンド・ETF",
+      "theme_name": "投資ファンド・ETF",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "NSLR"
     },
     {
@@ -29886,13 +29886,13 @@
       "ticker": "OPFI"
     },
     {
-      "major_theme": null,
+      "major_theme": "14. 不動産・住宅・建設",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "REIT（オフィス）",
+      "theme_name": "REIT（オフィス）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "OPI"
     },
     {
@@ -30176,13 +30176,13 @@
       "ticker": "PAYS"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（西部）",
+      "theme_name": "地方銀行（西部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PBAM"
     },
     {
@@ -30736,13 +30736,13 @@
       "ticker": "PTOR"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "投資ファンド・ETF",
+      "theme_name": "投資ファンド・ETF",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "PWRL"
     },
     {
@@ -30786,23 +30786,23 @@
       "ticker": "QLEP"
     },
     {
-      "major_theme": null,
+      "major_theme": "1. AI・テック成長テーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "AIデータセンター/HPC",
+      "theme_name": "AIデータセンター/HPC",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "QMLS"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（北東部）",
+      "theme_name": "地方銀行（北東部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "QNBC"
     },
     {
@@ -30906,13 +30906,13 @@
       "ticker": "RC"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（西部）",
+      "theme_name": "地方銀行（西部）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "RCBC"
     },
     {
@@ -30986,13 +30986,13 @@
       "ticker": "RDWR"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "レアアース/戦略金属",
+      "theme_name": "レアアース/戦略金属",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "REA"
     },
     {
@@ -31116,13 +31116,13 @@
       "ticker": "RJET"
     },
     {
-      "major_theme": null,
+      "major_theme": "13. 産業・資本財・輸送",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.98,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "物流/フォワーディング",
+      "theme_name": "物流/フォワーディング",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "RLGT"
     },
     {
@@ -31496,13 +31496,13 @@
       "ticker": "SBGI"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.96,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "銀鉱山",
+      "theme_name": "銀鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SBMT"
     },
     {
@@ -31606,13 +31606,13 @@
       "ticker": "SDHI"
     },
     {
-      "major_theme": null,
+      "major_theme": "7. フィンテック・デジタル金融",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.95,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "ブロックチェーン技術",
+      "theme_name": "ブロックチェーン技術",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SECZ"
     },
     {
@@ -31786,13 +31786,13 @@
       "ticker": "SILC"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "銀鉱山",
+      "theme_name": "銀鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SIND"
     },
     {
@@ -31816,13 +31816,13 @@
       "ticker": "SKYH"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.92,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "がん免疫療法",
+      "theme_name": "がん免疫療法",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SLBT"
     },
     {
@@ -32046,13 +32046,13 @@
       "ticker": "SPCE"
     },
     {
-      "major_theme": null,
+      "major_theme": "5. 宇宙・防衛・モビリティ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.88,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "衛星通信",
+      "theme_name": "衛星通信",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SPCX"
     },
     {
@@ -32176,13 +32176,13 @@
       "ticker": "SSII"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "銀鉱山",
+      "theme_name": "銀鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SSMR"
     },
     {
@@ -32206,13 +32206,13 @@
       "ticker": "SSYS"
     },
     {
-      "major_theme": null,
+      "major_theme": "4. 原子力・エネルギー代替",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.82,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "原発機器/インフラ",
+      "theme_name": "原発機器/インフラ",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "STDN"
     },
     {
@@ -32236,13 +32236,13 @@
       "ticker": "STIM"
     },
     {
-      "major_theme": null,
+      "major_theme": "6. バイオ・ヘルスケア",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.94,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "病院/クリニック",
+      "theme_name": "病院/クリニック",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "STLN"
     },
     {
@@ -32266,13 +32266,13 @@
       "ticker": "STRT"
     },
     {
-      "major_theme": null,
+      "major_theme": "14. 不動産・住宅・建設",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "REIT（ヘルスケア）",
+      "theme_name": "REIT（ヘルスケア）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "STRW"
     },
     {
@@ -32386,13 +32386,13 @@
       "ticker": "SWIM"
     },
     {
-      "major_theme": null,
+      "major_theme": "12. 金融・銀行・保険",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.82,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "商業貸付",
+      "theme_name": "商業貸付",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "SWRD"
     },
     {
@@ -32896,13 +32896,13 @@
       "ticker": "TRTX"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "TRX"
     },
     {
@@ -33306,13 +33306,13 @@
       "ticker": "VFS"
     },
     {
-      "major_theme": null,
+      "major_theme": "11. 素材・鉱業・化学",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "金鉱山",
+      "theme_name": "金鉱山",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "VGZ"
     },
     {
@@ -33526,13 +33526,13 @@
       "ticker": "WEYS"
     },
     {
-      "major_theme": null,
+      "major_theme": "10. エネルギー（化石燃料）",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.82,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "E&P（探査・生産）",
+      "theme_name": "E&P（探査・生産）",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "WHK"
     },
     {
@@ -33686,13 +33686,13 @@
       "ticker": "XIFR"
     },
     {
-      "major_theme": null,
+      "major_theme": "9. 消費者・小売りテーマ",
       "peer_theme_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_status": "MISSING_NEUTRAL",
+      "tag_confidence": 0.97,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "家具",
+      "theme_name": "家具",
+      "theme_status": "RECOVERED_MEMBERSHIP_NEUTRAL_SCORE",
       "ticker": "XMAX"
     },
     {

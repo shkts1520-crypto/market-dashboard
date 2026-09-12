@@ -1,8 +1,8 @@
 {
-  "calculation_version": "v38-recovered-theme-1.0.0",
-  "coverage": 0.9660666863381528,
+  "calculation_version": "v38-recovered-theme-1.1.0",
+  "coverage": 1.0,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-12T09:37:37Z",
+  "generated_at": "2026-09-12T10:26:51Z",
   "rows": [
     {
       "leaders": [
@@ -38,7 +38,7 @@
       "rs63_median": 96.0679385760819,
       "theme_id": "石油精製",
       "theme_name": "石油精製",
-      "theme_rs": 99.66442953020133
+      "theme_rs": 99.66996699669967
     },
     {
       "leaders": [
@@ -57,7 +57,7 @@
       "rs63_median": 97.02187063750581,
       "theme_id": "ゲノミクス/シーケンシング",
       "theme_name": "ゲノミクス/シーケンシング",
-      "theme_rs": 99.32885906040269
+      "theme_rs": 99.33993399339934
     },
     {
       "leaders": [
@@ -68,7 +68,7 @@
         "AACP"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 197,
+      "member_count": 199,
       "raw_strength": 94.72717379224909,
       "ret1_median": 0.0,
       "ret20_median": 0.0029836177396513897,
@@ -76,7 +76,7 @@
       "rs63_median": 90.78641228478362,
       "theme_id": "SPAC・ブランクチェック",
       "theme_name": "SPAC・ブランクチェック",
-      "theme_rs": 98.99328859060402
+      "theme_rs": 99.00990099009901
     },
     {
       "leaders": [
@@ -93,7 +93,7 @@
       "rs63_median": 90.69334574220568,
       "theme_id": "AIサーバー/冷却",
       "theme_name": "AIサーバー/冷却",
-      "theme_rs": 98.65771812080537
+      "theme_rs": 98.67986798679867
     },
     {
       "leaders": [
@@ -109,25 +109,7 @@
       "rs63_median": 93.71800837598883,
       "theme_id": "アイデンティティ/IAM",
       "theme_name": "アイデンティティ/IAM",
-      "theme_rs": 98.3221476510067
-    },
-    {
-      "leaders": [
-        "IOVA",
-        "IBRX",
-        "ADPT",
-        "SMMT"
-      ],
-      "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 4,
-      "raw_strength": 92.04680091508054,
-      "ret1_median": 0.02848215167112822,
-      "ret20_median": 0.14377913467208803,
-      "rs189_median": 93.98192197906755,
-      "rs63_median": 90.11167985109353,
-      "theme_id": "がん免疫療法",
-      "theme_name": "がん免疫療法",
-      "theme_rs": 97.98657718120806
+      "theme_rs": 98.34983498349835
     },
     {
       "leaders": [
@@ -138,15 +120,34 @@
         "NTAP"
       ],
       "major_theme": "8. デジタルインフラ・先進テック",
-      "member_count": 5,
-      "raw_strength": 91.78621348898145,
-      "ret1_median": 0.023881859342690825,
-      "ret20_median": -0.044570517336624316,
-      "rs189_median": 97.8116079923882,
-      "rs63_median": 85.76081898557469,
+      "member_count": 6,
+      "raw_strength": 93.60926286605104,
+      "ret1_median": 0.033620004576839446,
+      "ret20_median": -0.10225242972271575,
+      "rs189_median": 97.50237868696479,
+      "rs63_median": 89.71614704513728,
       "theme_id": "データストレージ",
       "theme_name": "データストレージ",
-      "theme_rs": 97.6510067114094
+      "theme_rs": 98.01980198019803
+    },
+    {
+      "leaders": [
+        "IOVA",
+        "IBRX",
+        "ADPT",
+        "SMMT",
+        "SLBT"
+      ],
+      "major_theme": "6. バイオ・ヘルスケア",
+      "member_count": 5,
+      "raw_strength": 92.04680091508054,
+      "ret1_median": 0.024611407044577316,
+      "ret20_median": 0.0339868952684228,
+      "rs189_median": 93.98192197906755,
+      "rs63_median": 90.11167985109353,
+      "theme_id": "がん免疫療法",
+      "theme_name": "がん免疫療法",
+      "theme_rs": 97.6897689768977
     },
     {
       "leaders": [
@@ -165,7 +166,7 @@
       "rs63_median": 82.13122382503491,
       "theme_id": "海運",
       "theme_name": "海運",
-      "theme_rs": 97.31543624161074
+      "theme_rs": 97.35973597359737
     },
     {
       "leaders": [
@@ -184,7 +185,7 @@
       "rs63_median": 78.687761749651,
       "theme_id": "電子製品卸売り",
       "theme_name": "電子製品卸売り",
-      "theme_rs": 96.97986577181209
+      "theme_rs": 97.02970297029702
     },
     {
       "leaders": [
@@ -200,7 +201,24 @@
       "rs63_median": 86.27268496975337,
       "theme_id": "エンドポイント/EDR",
       "theme_name": "エンドポイント/EDR",
-      "theme_rs": 96.64429530201343
+      "theme_rs": 96.69966996699671
+    },
+    {
+      "leaders": [
+        "OOMA",
+        "MSI",
+        "FXHO"
+      ],
+      "major_theme": "8. デジタルインフラ・先進テック",
+      "member_count": 3,
+      "raw_strength": 82.41778421047738,
+      "ret1_median": 0.004411132824577946,
+      "ret20_median": 0.015663609117126498,
+      "rs189_median": 82.58801141769743,
+      "rs63_median": 82.24755700325733,
+      "theme_id": "通信機器（消費者）",
+      "theme_name": "通信機器（消費者）",
+      "theme_rs": 96.36963696369637
     },
     {
       "leaders": [
@@ -211,65 +229,32 @@
         "GOLD"
       ],
       "major_theme": "11. 素材・鉱業・化学",
-      "member_count": 11,
-      "raw_strength": 83.52981206491282,
-      "ret1_median": 0.005311544095348397,
-      "ret20_median": 0.10066194268828954,
-      "rs189_median": 88.53472882968602,
-      "rs63_median": 78.5248953001396,
+      "member_count": 20,
+      "raw_strength": 79.23174388193743,
+      "ret1_median": 0.0059344574967222785,
+      "ret20_median": 0.06883439282894066,
+      "rs189_median": 81.66032350142721,
+      "rs63_median": 76.80316426244764,
       "theme_id": "金鉱山",
       "theme_name": "金鉱山",
-      "theme_rs": 96.30872483221476
-    },
-    {
-      "leaders": [
-        "OOMA",
-        "MSI"
-      ],
-      "major_theme": "8. デジタルインフラ・先進テック",
-      "member_count": 2,
-      "raw_strength": 82.41778421047738,
-      "ret1_median": 0.004663097191043741,
-      "ret20_median": 0.046201825606611235,
-      "rs189_median": 82.58801141769743,
-      "rs63_median": 82.24755700325733,
-      "theme_id": "通信機器（消費者）",
-      "theme_name": "通信機器（消費者）",
-      "theme_rs": 95.9731543624161
+      "theme_rs": 96.03960396039604
     },
     {
       "leaders": [
         "STT",
-        "NTRS"
+        "NTRS",
+        "BNY"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 2,
-      "raw_strength": 79.3259947870339,
-      "ret1_median": 0.010830902735853076,
-      "ret20_median": 0.008305685742521773,
-      "rs189_median": 83.89628924833491,
-      "rs63_median": 74.7557003257329,
+      "member_count": 3,
+      "raw_strength": 78.55102875720746,
+      "ret1_median": 0.01068433128861157,
+      "ret20_median": 0.0025269871316448977,
+      "rs189_median": 81.11322549952426,
+      "rs63_median": 75.98883201489065,
       "theme_id": "資産運用（カストディ）",
       "theme_name": "資産運用（カストディ）",
-      "theme_rs": 95.63758389261746
-    },
-    {
-      "leaders": [
-        "GH",
-        "NTRA",
-        "DGX",
-        "LH"
-      ],
-      "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 4,
-      "raw_strength": 78.70275445087861,
-      "ret1_median": 0.011737553799934242,
-      "ret20_median": -0.008930053671043325,
-      "rs189_median": 76.90294957183634,
-      "rs63_median": 80.5025593299209,
-      "theme_id": "診断/ラボサービス",
-      "theme_name": "診断/ラボサービス",
-      "theme_rs": 95.30201342281879
+      "theme_rs": 95.7095709570957
     },
     {
       "leaders": [
@@ -287,7 +272,7 @@
       "rs63_median": 77.19869706840392,
       "theme_id": "LNG/天然ガス輸出",
       "theme_name": "LNG/天然ガス輸出",
-      "theme_rs": 94.96644295302013
+      "theme_rs": 95.37953795379538
     },
     {
       "leaders": [
@@ -303,7 +288,26 @@
       "rs63_median": 74.94183341088879,
       "theme_id": "マシンビジョン/AI認識",
       "theme_name": "マシンビジョン/AI認識",
-      "theme_rs": 94.63087248322147
+      "theme_rs": 95.04950495049505
+    },
+    {
+      "leaders": [
+        "GH",
+        "NTRA",
+        "DGX",
+        "LH",
+        "FRNM"
+      ],
+      "major_theme": "6. バイオ・ヘルスケア",
+      "member_count": 5,
+      "raw_strength": 78.41047702580228,
+      "ret1_median": 0.008554540694281965,
+      "ret20_median": -0.004321255052890383,
+      "rs189_median": 74.64319695528069,
+      "rs63_median": 82.17775709632387,
+      "theme_id": "診断/ラボサービス",
+      "theme_name": "診断/ラボサービス",
+      "theme_rs": 94.71947194719472
     },
     {
       "leaders": [
@@ -322,26 +326,7 @@
       "rs63_median": 83.55048859934854,
       "theme_id": "臨床段階・中小型バイオ",
       "theme_name": "臨床段階・中小型バイオ",
-      "theme_rs": 94.29530201342283
-    },
-    {
-      "leaders": [
-        "PUBM",
-        "MGNI",
-        "ASST",
-        "QNST",
-        "DV"
-      ],
-      "major_theme": "8. デジタルインフラ・先進テック",
-      "member_count": 23,
-      "raw_strength": 77.08010585323026,
-      "ret1_median": 0.00934329662373723,
-      "ret20_median": -0.03664493640475475,
-      "rs189_median": 62.55946717411989,
-      "rs63_median": 91.60074453234063,
-      "theme_id": "広告技術",
-      "theme_name": "広告技術",
-      "theme_rs": 93.95973154362416
+      "theme_rs": 94.38943894389439
     },
     {
       "leaders": [
@@ -358,7 +343,7 @@
       "rs63_median": 81.20055839925546,
       "theme_id": "RF/ワイヤレス",
       "theme_name": "RF/ワイヤレス",
-      "theme_rs": 93.6241610738255
+      "theme_rs": 94.05940594059405
     },
     {
       "leaders": [
@@ -374,7 +359,7 @@
       "rs63_median": 84.34155421126106,
       "theme_id": "農業化学（肥料）",
       "theme_name": "農業化学（肥料）",
-      "theme_rs": 93.28859060402685
+      "theme_rs": 93.72937293729373
     },
     {
       "leaders": [
@@ -391,25 +376,45 @@
       "rs63_median": 58.77152163797115,
       "theme_id": "通信キャリア（海外）",
       "theme_name": "通信キャリア（海外）",
-      "theme_rs": 92.9530201342282
+      "theme_rs": 93.3993399339934
+    },
+    {
+      "leaders": [
+        "PUBM",
+        "MGNI",
+        "ASST",
+        "QNST",
+        "DV"
+      ],
+      "major_theme": "8. デジタルインフラ・先進テック",
+      "member_count": 24,
+      "raw_strength": 76.34720683042895,
+      "ret1_median": 0.010728898179793056,
+      "ret20_median": -0.03785320683340415,
+      "rs189_median": 62.55946717411989,
+      "rs63_median": 90.13494648673802,
+      "theme_id": "広告技術",
+      "theme_name": "広告技術",
+      "theme_rs": 93.06930693069307
     },
     {
       "leaders": [
         "MLKN",
         "HNI",
         "SGI",
-        "NL"
+        "NL",
+        "XMAX"
       ],
       "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 4,
+      "member_count": 5,
       "raw_strength": 75.96335161752927,
-      "ret1_median": 0.011071564869486794,
-      "ret20_median": -0.017408759031014964,
+      "ret1_median": 0.009832121008589656,
+      "ret20_median": -0.03824523503458166,
       "rs189_median": 59.372026641294006,
       "rs63_median": 92.55467659376454,
       "theme_id": "家具",
       "theme_name": "家具",
-      "theme_rs": 92.61744966442953
+      "theme_rs": 92.73927392739274
     },
     {
       "leaders": [
@@ -428,7 +433,7 @@
       "rs63_median": 64.86738017682643,
       "theme_id": "人材派遣",
       "theme_name": "人材派遣",
-      "theme_rs": 92.28187919463086
+      "theme_rs": 92.4092409240924
     },
     {
       "leaders": [
@@ -439,15 +444,15 @@
         "CHRD"
       ],
       "major_theme": "10. エネルギー（化石燃料）",
-      "member_count": 47,
+      "member_count": 48,
       "raw_strength": 74.9817253970271,
-      "ret1_median": -0.002044881299933854,
-      "ret20_median": 0.09118796436438803,
+      "ret1_median": -0.0013615363334144592,
+      "ret20_median": 0.09368268557561998,
       "rs189_median": 78.11607992388203,
       "rs63_median": 71.84737087017218,
       "theme_id": "E&P（探査・生産）",
       "theme_name": "E&P（探査・生産）",
-      "theme_rs": 91.94630872483222
+      "theme_rs": 92.07920792079209
     },
     {
       "leaders": [
@@ -466,7 +471,7 @@
       "rs63_median": 74.12750116333177,
       "theme_id": "ミッドストリーム/パイプライン",
       "theme_name": "ミッドストリーム/パイプライン",
-      "theme_rs": 91.61073825503355
+      "theme_rs": 91.74917491749174
     },
     {
       "leaders": [
@@ -477,15 +482,15 @@
         "AKTS"
       ],
       "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 9,
+      "member_count": 10,
       "raw_strength": 74.92742182211185,
-      "ret1_median": -0.0074626792643007756,
-      "ret20_median": 0.024809155938957383,
+      "ret1_median": -0.0018621889406104652,
+      "ret20_median": 0.012404577969478692,
       "rs189_median": 62.511893434823975,
       "rs63_median": 87.34295020939972,
       "theme_id": "がん関連",
       "theme_name": "がん関連",
-      "theme_rs": 91.2751677852349
+      "theme_rs": 91.41914191419141
     },
     {
       "leaders": [
@@ -502,23 +507,7 @@
       "rs63_median": 87.73848301535598,
       "theme_id": "デート/マッチング",
       "theme_name": "デート/マッチング",
-      "theme_rs": 90.93959731543623
-    },
-    {
-      "leaders": [
-        "FCX",
-        "SCCO"
-      ],
-      "major_theme": "11. 素材・鉱業・化学",
-      "member_count": 2,
-      "raw_strength": 74.00677920250561,
-      "ret1_median": -0.0026570376723417666,
-      "ret20_median": 0.04744807322716926,
-      "rs189_median": 84.70504281636536,
-      "rs63_median": 63.308515588645875,
-      "theme_id": "銅鉱山",
-      "theme_name": "銅鉱山",
-      "theme_rs": 90.60402684563759
+      "theme_rs": 91.0891089108911
     },
     {
       "leaders": [
@@ -537,7 +526,24 @@
       "rs63_median": 72.31270358306189,
       "theme_id": "大手製薬",
       "theme_name": "大手製薬",
-      "theme_rs": 90.26845637583892
+      "theme_rs": 90.75907590759076
+    },
+    {
+      "leaders": [
+        "FCX",
+        "SCCO",
+        "IE"
+      ],
+      "major_theme": "11. 素材・鉱業・化学",
+      "member_count": 3,
+      "raw_strength": 71.78199848667249,
+      "ret1_median": -0.001966007463114372,
+      "ret20_median": 0.03145161933180174,
+      "rs189_median": 81.25594671741199,
+      "rs63_median": 62.30805025593299,
+      "theme_id": "銅鉱山",
+      "theme_name": "銅鉱山",
+      "theme_rs": 90.42904290429043
     },
     {
       "leaders": [
@@ -555,24 +561,7 @@
       "rs63_median": 89.53001395998139,
       "theme_id": "CRO/CDMO",
       "theme_name": "CRO/CDMO",
-      "theme_rs": 89.93288590604027
-    },
-    {
-      "leaders": [
-        "CDE",
-        "HL",
-        "PPTA"
-      ],
-      "major_theme": "11. 素材・鉱業・化学",
-      "member_count": 3,
-      "raw_strength": 71.7048931660733,
-      "ret1_median": -0.0016899415039464127,
-      "ret20_median": 0.1154471042107017,
-      "rs189_median": 57.18363463368221,
-      "rs63_median": 86.2261516984644,
-      "theme_id": "銀鉱山",
-      "theme_name": "銀鉱山",
-      "theme_rs": 89.59731543624162
+      "theme_rs": 90.0990099009901
     },
     {
       "leaders": [
@@ -583,15 +572,15 @@
         "HCA"
       ],
       "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 10,
+      "member_count": 11,
       "raw_strength": 71.06553664461907,
-      "ret1_median": 0.008860027679765459,
-      "ret20_median": 0.008715473519243455,
+      "ret1_median": 0.007339442798700135,
+      "ret20_median": -0.0036298469932606325,
       "rs189_median": 60.418648905804,
       "rs63_median": 81.71242438343415,
       "theme_id": "病院/クリニック",
       "theme_name": "病院/クリニック",
-      "theme_rs": 89.26174496644296
+      "theme_rs": 89.76897689768977
     },
     {
       "leaders": [
@@ -608,7 +597,7 @@
       "rs63_median": 46.09120521172639,
       "theme_id": "水素エネルギー",
       "theme_name": "水素エネルギー",
-      "theme_rs": 88.9261744966443
+      "theme_rs": 89.43894389438944
     },
     {
       "leaders": [
@@ -627,7 +616,7 @@
       "rs63_median": 76.17496510004653,
       "theme_id": "長期介護",
       "theme_name": "長期介護",
-      "theme_rs": 88.59060402684564
+      "theme_rs": 89.10891089108911
     },
     {
       "leaders": [
@@ -646,23 +635,25 @@
       "rs63_median": 77.52442996742671,
       "theme_id": "在宅医療/外来",
       "theme_name": "在宅医療/外来",
-      "theme_rs": 88.25503355704699
+      "theme_rs": 88.77887788778878
     },
     {
       "leaders": [
-        "AMD",
-        "NVDA"
+        "PLGO",
+        "RGA",
+        "RNR",
+        "EG"
       ],
-      "major_theme": "1. AI・テック成長テーマ",
-      "member_count": 2,
-      "raw_strength": 69.05081424369709,
-      "ret1_median": 0.012280125011935206,
-      "ret20_median": 0.019270005576624838,
-      "rs189_median": 78.30637488106565,
-      "rs63_median": 59.79525360632853,
-      "theme_id": "AI GPU/トレーニングチップ",
-      "theme_name": "AI GPU/トレーニングチップ",
-      "theme_rs": 87.91946308724832
+      "major_theme": "12. 金融・銀行・保険",
+      "member_count": 4,
+      "raw_strength": 68.83199496679137,
+      "ret1_median": 0.0015123192765472693,
+      "ret20_median": 0.018511007997933593,
+      "rs189_median": 68.93434823977165,
+      "rs63_median": 68.72964169381108,
+      "theme_id": "再保険",
+      "theme_name": "再保険",
+      "theme_rs": 88.44884488448845
     },
     {
       "leaders": [
@@ -681,7 +672,7 @@
       "rs63_median": 56.7240577012564,
       "theme_id": "医療保険/マネージドケア",
       "theme_name": "医療保険/マネージドケア",
-      "theme_rs": 87.58389261744966
+      "theme_rs": 88.11881188118812
     },
     {
       "leaders": [
@@ -700,7 +691,7 @@
       "rs63_median": 64.79758026989298,
       "theme_id": "スーパーメジャー",
       "theme_name": "スーパーメジャー",
-      "theme_rs": 87.24832214765101
+      "theme_rs": 87.78877887788778
     },
     {
       "leaders": [
@@ -716,7 +707,7 @@
       "rs63_median": 84.80688692415077,
       "theme_id": "データセキュリティ",
       "theme_name": "データセキュリティ",
-      "theme_rs": 86.91275167785236
+      "theme_rs": 87.45874587458746
     },
     {
       "leaders": [
@@ -735,7 +726,7 @@
       "rs63_median": 72.49883666821778,
       "theme_id": "大手バイオ",
       "theme_name": "大手バイオ",
-      "theme_rs": 86.57718120805369
+      "theme_rs": 87.12871287128714
     },
     {
       "leaders": [
@@ -754,7 +745,7 @@
       "rs63_median": 72.77803629595161,
       "theme_id": "医療機器（大型）",
       "theme_name": "医療機器（大型）",
-      "theme_rs": 86.24161073825503
+      "theme_rs": 86.79867986798679
     },
     {
       "leaders": [
@@ -770,43 +761,43 @@
       "rs63_median": 46.71940437412751,
       "theme_id": "半導体素材/ガス",
       "theme_name": "半導体素材/ガス",
-      "theme_rs": 85.90604026845638
+      "theme_rs": 86.46864686468648
     },
     {
       "leaders": [
-        "EZPW",
-        "ATLC",
-        "FCFS",
-        "WRLD",
-        "CACC"
+        "AMD",
+        "NVDA",
+        "CBRS"
       ],
-      "major_theme": "12. 金融・銀行・保険",
-      "member_count": 12,
-      "raw_strength": 68.41192261220341,
-      "ret1_median": 0.0068191718546194435,
-      "ret20_median": 0.007226917002719713,
-      "rs189_median": 73.0732635585157,
-      "rs63_median": 63.75058166589112,
-      "theme_id": "消費者ローン",
-      "theme_name": "消費者ローン",
-      "theme_rs": 85.57046979865773
-    },
-    {
-      "leaders": [
-        "RGA",
-        "RNR",
-        "EG"
-      ],
-      "major_theme": "12. 金融・銀行・保険",
+      "major_theme": "1. AI・テック成長テーマ",
       "member_count": 3,
-      "raw_strength": 68.23405792706009,
-      "ret1_median": 0.0018327161631632727,
-      "ret20_median": 0.016038282741662968,
-      "rs189_median": 65.31874405328259,
-      "rs63_median": 71.1493718008376,
-      "theme_id": "再保険",
-      "theme_name": "再保険",
-      "theme_rs": 85.23489932885906
+      "raw_strength": 68.42261508129597,
+      "ret1_median": 0.0030834971735271832,
+      "ret20_median": -0.030029986253757635,
+      "rs189_median": 78.30637488106565,
+      "rs63_median": 58.538855281526295,
+      "theme_id": "AI GPU/トレーニングチップ",
+      "theme_name": "AI GPU/トレーニングチップ",
+      "theme_rs": 86.13861386138613
+    },
+    {
+      "leaders": [
+        "DAR",
+        "AGRO",
+        "BG",
+        "DMC",
+        "ALCO"
+      ],
+      "major_theme": "9. 消費者・小売りテーマ",
+      "member_count": 7,
+      "raw_strength": 68.0209114145539,
+      "ret1_median": -0.01898451234123777,
+      "ret20_median": -0.0015348813890416757,
+      "rs189_median": 78.80589914367269,
+      "rs63_median": 57.23592368543508,
+      "theme_id": "農業・アグリビジネス",
+      "theme_name": "農業・アグリビジネス",
+      "theme_rs": 85.8085808580858
     },
     {
       "leaders": [
@@ -824,7 +815,7 @@
       "rs63_median": 51.04699860400186,
       "theme_id": "3Dプリンティング/積層造形",
       "theme_name": "3Dプリンティング/積層造形",
-      "theme_rs": 84.8993288590604
+      "theme_rs": 85.47854785478548
     },
     {
       "leaders": [
@@ -843,7 +834,7 @@
       "rs63_median": 67.24057701256399,
       "theme_id": "保険（複合）",
       "theme_name": "保険（複合）",
-      "theme_rs": 84.56375838926175
+      "theme_rs": 85.14851485148515
     },
     {
       "leaders": [
@@ -860,7 +851,7 @@
       "rs63_median": 49.883666821777574,
       "theme_id": "ジェネリック医薬",
       "theme_name": "ジェネリック医薬",
-      "theme_rs": 84.22818791946308
+      "theme_rs": 84.81848184818482
     },
     {
       "leaders": [
@@ -879,7 +870,25 @@
       "rs63_median": 59.376454164727775,
       "theme_id": "石油機器/装置",
       "theme_name": "石油機器/装置",
-      "theme_rs": 83.89261744966443
+      "theme_rs": 84.48844884488449
+    },
+    {
+      "leaders": [
+        "TRLV",
+        "SNDL",
+        "TLRY",
+        "VFF"
+      ],
+      "major_theme": "6. バイオ・ヘルスケア",
+      "member_count": 4,
+      "raw_strength": 66.70605317721295,
+      "ret1_median": -0.0004416641111789632,
+      "ret20_median": 0.11899598118172816,
+      "rs189_median": 93.67269267364415,
+      "rs63_median": 39.73941368078176,
+      "theme_id": "大麻・カンナビス",
+      "theme_name": "大麻・カンナビス",
+      "theme_rs": 84.15841584158416
     },
     {
       "leaders": [
@@ -896,7 +905,7 @@
       "rs63_median": 46.76593764541647,
       "theme_id": "SoC/ロジック",
       "theme_name": "SoC/ロジック",
-      "theme_rs": 83.55704697986577
+      "theme_rs": 83.82838283828383
     },
     {
       "leaders": [
@@ -913,7 +922,7 @@
       "rs63_median": 34.38808748255002,
       "theme_id": "メモリ/HBM",
       "theme_name": "メモリ/HBM",
-      "theme_rs": 83.22147651006712
+      "theme_rs": 83.4983498349835
     },
     {
       "leaders": [
@@ -931,7 +940,26 @@
       "rs63_median": 58.42252210330386,
       "theme_id": "神経疾患（アルツハイマー等）",
       "theme_name": "神経疾患（アルツハイマー等）",
-      "theme_rs": 82.88590604026845
+      "theme_rs": 83.16831683168317
+    },
+    {
+      "leaders": [
+        "SEZL",
+        "BFH",
+        "CPAY",
+        "FLYW",
+        "XYZ"
+      ],
+      "major_theme": "7. フィンテック・デジタル金融",
+      "member_count": 25,
+      "raw_strength": 65.99260205109451,
+      "ret1_median": 0.001932972428243973,
+      "ret20_median": -0.0649428156665014,
+      "rs189_median": 56.08943862987631,
+      "rs63_median": 75.8957654723127,
+      "theme_id": "決済ネットワーク",
+      "theme_name": "決済ネットワーク",
+      "theme_rs": 82.83828382838284
     },
     {
       "leaders": [
@@ -950,26 +978,7 @@
       "rs63_median": 85.99348534201954,
       "theme_id": "遺伝子治療/細胞治療",
       "theme_name": "遺伝子治療/細胞治療",
-      "theme_rs": 82.5503355704698
-    },
-    {
-      "leaders": [
-        "SEZL",
-        "BFH",
-        "CPAY",
-        "FLYW",
-        "XYZ"
-      ],
-      "major_theme": "7. フィンテック・デジタル金融",
-      "member_count": 24,
-      "raw_strength": 65.78320233029413,
-      "ret1_median": 0.001874242848079799,
-      "ret20_median": -0.06320058244720334,
-      "rs189_median": 56.08943862987631,
-      "rs63_median": 75.47696603071195,
-      "theme_id": "決済ネットワーク",
-      "theme_name": "決済ネットワーク",
-      "theme_rs": 82.21476510067114
+      "theme_rs": 82.50825082508251
     },
     {
       "leaders": [
@@ -988,7 +997,7 @@
       "rs63_median": 70.59097254536994,
       "theme_id": "公益事業（水道）",
       "theme_name": "公益事業（水道）",
-      "theme_rs": 81.87919463087249
+      "theme_rs": 82.17821782178217
     },
     {
       "leaders": [
@@ -1006,7 +1015,7 @@
       "rs63_median": 86.50535132619824,
       "theme_id": "AI創薬/ヘルスケアAI",
       "theme_name": "AI創薬/ヘルスケアAI",
-      "theme_rs": 81.54362416107382
+      "theme_rs": 81.84818481848185
     },
     {
       "leaders": [
@@ -1024,7 +1033,7 @@
       "rs63_median": 79.85109353187529,
       "theme_id": "証券/ブローカー",
       "theme_name": "証券/ブローカー",
-      "theme_rs": 81.20805369127517
+      "theme_rs": 81.51815181518151
     },
     {
       "leaders": [
@@ -1043,7 +1052,7 @@
       "rs63_median": 67.7059097254537,
       "theme_id": "メガバンク",
       "theme_name": "メガバンク",
-      "theme_rs": 80.87248322147651
+      "theme_rs": 81.1881188118812
     },
     {
       "leaders": [
@@ -1062,7 +1071,7 @@
       "rs63_median": 53.9320614239181,
       "theme_id": "産業流通/MRO",
       "theme_name": "産業流通/MRO",
-      "theme_rs": 80.53691275167785
+      "theme_rs": 80.85808580858085
     },
     {
       "leaders": [
@@ -1081,7 +1090,7 @@
       "rs63_median": 79.10656119125174,
       "theme_id": "アウトソーシング",
       "theme_name": "アウトソーシング",
-      "theme_rs": 80.20134228187919
+      "theme_rs": 80.52805280528052
     },
     {
       "leaders": [
@@ -1100,25 +1109,7 @@
       "rs63_median": 92.48487668683109,
       "theme_id": "コラボレーションSaaS",
       "theme_name": "コラボレーションSaaS",
-      "theme_rs": 79.86577181208054
-    },
-    {
-      "leaders": [
-        "ADM",
-        "ANDE",
-        "INGR",
-        "AFRI"
-      ],
-      "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 4,
-      "raw_strength": 64.36462382211273,
-      "ret1_median": -0.009408681023461651,
-      "ret20_median": 0.06708208118454195,
-      "rs189_median": 81.68411037107516,
-      "rs63_median": 47.0451372731503,
-      "theme_id": "穀物/農産物",
-      "theme_name": "穀物/農産物",
-      "theme_rs": 79.53020134228188
+      "theme_rs": 80.19801980198021
     },
     {
       "leaders": [
@@ -1137,7 +1128,7 @@
       "rs63_median": 70.77710563052582,
       "theme_id": "生命保険",
       "theme_name": "生命保険",
-      "theme_rs": 79.19463087248322
+      "theme_rs": 79.86798679867987
     },
     {
       "leaders": [
@@ -1155,26 +1146,7 @@
       "rs63_median": 44.113541181945095,
       "theme_id": "スポーツ・エンタメ",
       "theme_name": "スポーツ・エンタメ",
-      "theme_rs": 78.85906040268456
-    },
-    {
-      "leaders": [
-        "DAR",
-        "AGRO",
-        "BG",
-        "ALCO",
-        "AVO"
-      ],
-      "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 6,
-      "raw_strength": 63.77151278292429,
-      "ret1_median": -0.018240922756454003,
-      "ret20_median": -0.005559023246162309,
-      "rs189_median": 80.63748810656519,
-      "rs63_median": 46.90553745928339,
-      "theme_id": "農業・アグリビジネス",
-      "theme_name": "農業・アグリビジネス",
-      "theme_rs": 78.52348993288591
+      "theme_rs": 79.53795379537954
     },
     {
       "leaders": [
@@ -1193,7 +1165,7 @@
       "rs63_median": 84.0856212191717,
       "theme_id": "ライフサイエンスツール",
       "theme_name": "ライフサイエンスツール",
-      "theme_rs": 78.18791946308725
+      "theme_rs": 79.20792079207921
     },
     {
       "leaders": [
@@ -1209,7 +1181,7 @@
       "rs63_median": 59.422987436016754,
       "theme_id": "AIオブザーバビリティ",
       "theme_name": "AIオブザーバビリティ",
-      "theme_rs": 77.85234899328859
+      "theme_rs": 78.87788778877888
     },
     {
       "leaders": [
@@ -1226,7 +1198,7 @@
       "rs63_median": 91.94974406700791,
       "theme_id": "サイバーセキュリティ（脆弱性管理）",
       "theme_name": "サイバーセキュリティ（脆弱性管理）",
-      "theme_rs": 77.51677852348993
+      "theme_rs": 78.54785478547855
     },
     {
       "leaders": [
@@ -1245,7 +1217,7 @@
       "rs63_median": 44.85807352256863,
       "theme_id": "掘削サービス",
       "theme_name": "掘削サービス",
-      "theme_rs": 77.18120805369128
+      "theme_rs": 78.21782178217822
     },
     {
       "leaders": [
@@ -1261,7 +1233,7 @@
       "rs63_median": 51.79153094462541,
       "theme_id": "CDN/エッジ",
       "theme_name": "CDN/エッジ",
-      "theme_rs": 76.84563758389261
+      "theme_rs": 77.88778877887789
     },
     {
       "leaders": [
@@ -1280,7 +1252,7 @@
       "rs63_median": 47.97580269892973,
       "theme_id": "施設管理",
       "theme_name": "施設管理",
-      "theme_rs": 76.51006711409396
+      "theme_rs": 77.55775577557755
     },
     {
       "leaders": [
@@ -1299,7 +1271,7 @@
       "rs63_median": 67.47324336900884,
       "theme_id": "農機/建機",
       "theme_name": "農機/建機",
-      "theme_rs": 76.1744966442953
+      "theme_rs": 77.22772277227723
     },
     {
       "leaders": [
@@ -1317,7 +1289,7 @@
       "rs63_median": 71.05630525825966,
       "theme_id": "肥満治療/GLP-1",
       "theme_name": "肥満治療/GLP-1",
-      "theme_rs": 75.83892617449665
+      "theme_rs": 76.89768976897689
     },
     {
       "leaders": [
@@ -1336,7 +1308,7 @@
       "rs63_median": 91.76361098185203,
       "theme_id": "ヘルスケアIT",
       "theme_name": "ヘルスケアIT",
-      "theme_rs": 75.50335570469798
+      "theme_rs": 76.56765676567657
     },
     {
       "leaders": [
@@ -1353,7 +1325,7 @@
       "rs63_median": 61.563517915309454,
       "theme_id": "ネットワークセキュリティ",
       "theme_name": "ネットワークセキュリティ",
-      "theme_rs": 75.16778523489933
+      "theme_rs": 76.23762376237624
     },
     {
       "leaders": [
@@ -1369,7 +1341,7 @@
       "rs63_median": 67.42671009771986,
       "theme_id": "宝飾",
       "theme_name": "宝飾",
-      "theme_rs": 74.83221476510067
+      "theme_rs": 75.9075907590759
     },
     {
       "leaders": [
@@ -1385,7 +1357,7 @@
       "rs63_median": 92.78734295020939,
       "theme_id": "EV充電インフラ",
       "theme_name": "EV充電インフラ",
-      "theme_rs": 74.49664429530202
+      "theme_rs": 75.57755775577559
     },
     {
       "leaders": [
@@ -1402,7 +1374,7 @@
       "rs63_median": 77.47789669613773,
       "theme_id": "決済ネットワーク（カード）",
       "theme_name": "決済ネットワーク（カード）",
-      "theme_rs": 74.16107382550335
+      "theme_rs": 75.24752475247524
     },
     {
       "leaders": [
@@ -1421,7 +1393,7 @@
       "rs63_median": 66.07724523033968,
       "theme_id": "ケーブル/衛星機器",
       "theme_name": "ケーブル/衛星機器",
-      "theme_rs": 73.8255033557047
+      "theme_rs": 74.91749174917491
     },
     {
       "leaders": [
@@ -1432,15 +1404,15 @@
         "UMBF"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 44,
-      "raw_strength": 60.6049148166629,
-      "ret1_median": 0.0024457487026477986,
-      "ret20_median": -0.027332154107266637,
-      "rs189_median": 61.27497621313035,
-      "rs63_median": 59.934853420195445,
+      "member_count": 45,
+      "raw_strength": 60.53719584574331,
+      "ret1_median": 0.002343729103450043,
+      "ret20_median": -0.028055022475724,
+      "rs189_median": 61.46527117031398,
+      "rs63_median": 59.60912052117264,
       "theme_id": "地方銀行（中西部）",
       "theme_name": "地方銀行（中西部）",
-      "theme_rs": 73.48993288590604
+      "theme_rs": 74.58745874587459
     },
     {
       "leaders": [
@@ -1459,26 +1431,7 @@
       "rs63_median": 62.35458352722197,
       "theme_id": "石炭",
       "theme_name": "石炭",
-      "theme_rs": 73.15436241610739
-    },
-    {
-      "leaders": [
-        "IRDM",
-        "VSAT",
-        "GSAT",
-        "ASTS",
-        "GILT"
-      ],
-      "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 5,
-      "raw_strength": 60.17180340556247,
-      "ret1_median": 0.005741026254980852,
-      "ret20_median": -0.10361886380187357,
-      "rs189_median": 79.11512844909609,
-      "rs63_median": 41.22847836202885,
-      "theme_id": "衛星通信",
-      "theme_name": "衛星通信",
-      "theme_rs": 72.81879194630872
+      "theme_rs": 74.25742574257426
     },
     {
       "leaders": [
@@ -1497,7 +1450,7 @@
       "rs63_median": 30.01395998138669,
       "theme_id": "電子部品",
       "theme_name": "電子部品",
-      "theme_rs": 72.48322147651007
+      "theme_rs": 73.92739273927393
     },
     {
       "leaders": [
@@ -1514,7 +1467,26 @@
       "rs63_median": 53.373662168450444,
       "theme_id": "鉄道",
       "theme_name": "鉄道",
-      "theme_rs": 72.14765100671141
+      "theme_rs": 73.5973597359736
+    },
+    {
+      "leaders": [
+        "CLBK",
+        "NBN",
+        "DCOM",
+        "TMP",
+        "FCF"
+      ],
+      "major_theme": "12. 金融・銀行・保険",
+      "member_count": 58,
+      "raw_strength": 59.7774162212947,
+      "ret1_median": 0.0015434856246056006,
+      "ret20_median": -0.016204174242991365,
+      "rs189_median": 65.39010466222645,
+      "rs63_median": 54.16472778036296,
+      "theme_id": "地方銀行（北東部）",
+      "theme_name": "地方銀行（北東部）",
+      "theme_rs": 73.26732673267327
     },
     {
       "leaders": [
@@ -1533,7 +1505,7 @@
       "rs63_median": 51.09353187529083,
       "theme_id": "外資銀行",
       "theme_name": "外資銀行",
-      "theme_rs": 71.81208053691275
+      "theme_rs": 72.93729372937293
     },
     {
       "leaders": [
@@ -1550,7 +1522,7 @@
       "rs63_median": 47.46393671475105,
       "theme_id": "工具/ツール",
       "theme_name": "工具/ツール",
-      "theme_rs": 71.47651006711409
+      "theme_rs": 72.60726072607261
     },
     {
       "leaders": [
@@ -1566,26 +1538,26 @@
       "rs63_median": 46.97533736621684,
       "theme_id": "新聞",
       "theme_name": "新聞",
-      "theme_rs": 71.14093959731544
+      "theme_rs": 72.27722772277228
     },
     {
       "leaders": [
-        "CLBK",
-        "NBN",
-        "DCOM",
-        "FCF",
-        "CFG"
+        "EZPW",
+        "ATLC",
+        "FCFS",
+        "WRLD",
+        "CACC"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 55,
-      "raw_strength": 58.50704352565462,
-      "ret1_median": 0.0011261089041045835,
-      "ret20_median": -0.016361059987155202,
-      "rs189_median": 65.17602283539486,
-      "rs63_median": 51.83806421591438,
-      "theme_id": "地方銀行（北東部）",
-      "theme_name": "地方銀行（北東部）",
-      "theme_rs": 70.80536912751678
+      "member_count": 13,
+      "raw_strength": 58.47513768490998,
+      "ret1_median": 0.006403460015956819,
+      "ret20_median": -0.0018496319159755359,
+      "rs189_median": 55.875356803044724,
+      "rs63_median": 61.074918566775246,
+      "theme_id": "消費者ローン",
+      "theme_name": "消費者ローン",
+      "theme_rs": 71.94719471947195
     },
     {
       "leaders": [
@@ -1604,7 +1576,7 @@
       "rs63_median": 57.23592368543508,
       "theme_id": "自動車ディーラー",
       "theme_name": "自動車ディーラー",
-      "theme_rs": 70.46979865771812
+      "theme_rs": 71.61716171617162
     },
     {
       "leaders": [
@@ -1623,7 +1595,7 @@
       "rs63_median": 67.3801768264309,
       "theme_id": "通信キャリア（大手）",
       "theme_name": "通信キャリア（大手）",
-      "theme_rs": 70.13422818791946
+      "theme_rs": 71.28712871287128
     },
     {
       "leaders": [
@@ -1642,25 +1614,7 @@
       "rs63_median": 65.79804560260587,
       "theme_id": "医薬品流通",
       "theme_name": "医薬品流通",
-      "theme_rs": 69.79865771812081
-    },
-    {
-      "leaders": [
-        "UNIT",
-        "EQIX",
-        "IRM",
-        "DLR"
-      ],
-      "major_theme": "14. 不動産・住宅・建設",
-      "member_count": 4,
-      "raw_strength": 58.11634778904976,
-      "ret1_median": 0.01875580310778402,
-      "ret20_median": -0.037257953354208784,
-      "rs189_median": 79.44814462416747,
-      "rs63_median": 36.784550953932055,
-      "theme_id": "データセンターREIT/コロケーション",
-      "theme_name": "データセンターREIT/コロケーション",
-      "theme_rs": 69.46308724832215
+      "theme_rs": 70.95709570957096
     },
     {
       "leaders": [
@@ -1679,7 +1633,7 @@
       "rs63_median": 68.28757561656585,
       "theme_id": "モーゲージ/住宅ローン",
       "theme_name": "モーゲージ/住宅ローン",
-      "theme_rs": 69.12751677852349
+      "theme_rs": 70.62706270627062
     },
     {
       "leaders": [
@@ -1695,7 +1649,7 @@
       "rs63_median": 41.43787808282922,
       "theme_id": "AIデータセンター冷却/電力装置",
       "theme_name": "AIデータセンター冷却/電力装置",
-      "theme_rs": 68.79194630872483
+      "theme_rs": 70.29702970297029
     },
     {
       "leaders": [
@@ -1711,7 +1665,7 @@
       "rs63_median": 83.66682177757096,
       "theme_id": "フードデリバリー",
       "theme_name": "フードデリバリー",
-      "theme_rs": 68.45637583892618
+      "theme_rs": 69.96699669966998
     },
     {
       "leaders": [
@@ -1719,18 +1673,18 @@
         "BRC",
         "AVY",
         "ACCO",
-        "EBF"
+        "ACU"
       ],
       "major_theme": "13. 産業・資本財・輸送",
-      "member_count": 5,
+      "member_count": 6,
       "raw_strength": 57.60658487850212,
-      "ret1_median": 0.006140725569111938,
-      "ret20_median": -0.03532611817666098,
+      "ret1_median": 0.004877557768585228,
+      "ret20_median": -0.024354052439084617,
       "rs189_median": 53.04471931493815,
       "rs63_median": 62.16845044206608,
       "theme_id": "オフィス用品",
       "theme_name": "オフィス用品",
-      "theme_rs": 68.12080536912751
+      "theme_rs": 69.63696369636963
     },
     {
       "leaders": [
@@ -1741,15 +1695,15 @@
         "FBNC"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 56,
+      "member_count": 58,
       "raw_strength": 57.56190009824675,
       "ret1_median": 0.002104337510219989,
-      "ret20_median": -0.028358697550088185,
+      "ret20_median": -0.027419219497929137,
       "rs189_median": 57.46907706945766,
       "rs63_median": 57.65472312703584,
       "theme_id": "地方銀行（南東部）",
       "theme_name": "地方銀行（南東部）",
-      "theme_rs": 67.78523489932886
+      "theme_rs": 69.3069306930693
     },
     {
       "leaders": [
@@ -1766,7 +1720,7 @@
       "rs63_median": 73.42950209399721,
       "theme_id": "決済（新興国）",
       "theme_name": "決済（新興国）",
-      "theme_rs": 67.4496644295302
+      "theme_rs": 68.97689768976898
     },
     {
       "leaders": [
@@ -1782,7 +1736,26 @@
       "rs63_median": 35.458352722196366,
       "theme_id": "出版/書籍",
       "theme_name": "出版/書籍",
-      "theme_rs": 67.11409395973155
+      "theme_rs": 68.64686468646865
+    },
+    {
+      "leaders": [
+        "CDE",
+        "HL",
+        "USAS",
+        "PPTA",
+        "SBMT"
+      ],
+      "major_theme": "11. 素材・鉱業・化学",
+      "member_count": 7,
+      "raw_strength": 57.19541738042034,
+      "ret1_median": -0.0016899415039464127,
+      "ret20_median": 0.041871940564009114,
+      "rs189_median": 47.35965746907707,
+      "rs63_median": 67.03117729176361,
+      "theme_id": "銀鉱山",
+      "theme_name": "銀鉱山",
+      "theme_rs": 68.31683168316832
     },
     {
       "leaders": [
@@ -1801,7 +1774,7 @@
       "rs63_median": 59.00418799441601,
       "theme_id": "パッケージング",
       "theme_name": "パッケージング",
-      "theme_rs": 66.77852348993288
+      "theme_rs": 67.98679867986799
     },
     {
       "leaders": [
@@ -1819,7 +1792,7 @@
       "rs63_median": 45.18380642159144,
       "theme_id": "ロイヤリティトラスト",
       "theme_name": "ロイヤリティトラスト",
-      "theme_rs": 66.44295302013423
+      "theme_rs": 67.65676567656766
     },
     {
       "leaders": [
@@ -1838,7 +1811,7 @@
       "rs63_median": 51.000465332712885,
       "theme_id": "AIデータ基盤/データクラウド",
       "theme_name": "AIデータ基盤/データクラウド",
-      "theme_rs": 66.10738255033557
+      "theme_rs": 67.32673267326733
     },
     {
       "leaders": [
@@ -1854,7 +1827,7 @@
       "rs63_median": 46.04467194043741,
       "theme_id": "安全機器/工業機器",
       "theme_name": "安全機器/工業機器",
-      "theme_rs": 65.77181208053692
+      "theme_rs": 66.996699669967
     },
     {
       "leaders": [
@@ -1870,7 +1843,7 @@
       "rs63_median": 87.66868310842251,
       "theme_id": "AI防衛/政府",
       "theme_name": "AI防衛/政府",
-      "theme_rs": 65.43624161073825
+      "theme_rs": 66.66666666666666
     },
     {
       "leaders": [
@@ -1887,7 +1860,7 @@
       "rs63_median": 37.73848301535598,
       "theme_id": "ドキュメント管理",
       "theme_name": "ドキュメント管理",
-      "theme_rs": 65.1006711409396
+      "theme_rs": 66.33663366336634
     },
     {
       "leaders": [
@@ -1898,15 +1871,15 @@
         "OHI"
       ],
       "major_theme": "14. 不動産・住宅・建設",
-      "member_count": 5,
+      "member_count": 7,
       "raw_strength": 56.09127605210132,
-      "ret1_median": -0.0003818743121455359,
+      "ret1_median": -0.003436504628808179,
       "ret20_median": -0.003322660856305504,
       "rs189_median": 54.90009514747859,
       "rs63_median": 57.28245695672406,
       "theme_id": "REIT（ヘルスケア）",
       "theme_name": "REIT（ヘルスケア）",
-      "theme_rs": 64.76510067114094
+      "theme_rs": 66.006600660066
     },
     {
       "leaders": [
@@ -1925,7 +1898,7 @@
       "rs63_median": 29.08329455560726,
       "theme_id": "コンピューター/ハードウェア",
       "theme_name": "コンピューター/ハードウェア",
-      "theme_rs": 64.42953020134227
+      "theme_rs": 65.67656765676567
     },
     {
       "leaders": [
@@ -1944,26 +1917,62 @@
       "rs63_median": 52.210330386226154,
       "theme_id": "準大手銀行",
       "theme_name": "準大手銀行",
-      "theme_rs": 64.09395973154362
+      "theme_rs": 65.34653465346535
     },
     {
       "leaders": [
         "AGL",
         "HCSG",
         "CRVL",
-        "HSTM",
-        "NRC"
+        "GMRS",
+        "HSTM"
       ],
       "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 6,
+      "member_count": 7,
       "raw_strength": 55.20341370911791,
-      "ret1_median": 0.007187133881726315,
-      "ret20_median": 0.025993143604343794,
+      "ret1_median": 0.007964039344482199,
+      "ret20_median": 0.009786221622664959,
       "rs189_median": 60.941960038058994,
       "rs63_median": 49.46486738017683,
       "theme_id": "ヘルスケアサービス",
       "theme_name": "ヘルスケアサービス",
-      "theme_rs": 63.758389261744966
+      "theme_rs": 65.01650165016501
+    },
+    {
+      "leaders": [
+        "MS",
+        "GS",
+        "LCLN"
+      ],
+      "major_theme": "12. 金融・銀行・保険",
+      "member_count": 3,
+      "raw_strength": 55.15799285309167,
+      "ret1_median": 0.009227604263177813,
+      "ret20_median": -0.008065558872967782,
+      "rs189_median": 62.107516650808755,
+      "rs63_median": 48.20846905537459,
+      "theme_id": "投資銀行",
+      "theme_name": "投資銀行",
+      "theme_rs": 64.68646864686468
+    },
+    {
+      "leaders": [
+        "CDNA",
+        "NEOG",
+        "ITGR",
+        "LNTH",
+        "GKOS"
+      ],
+      "major_theme": "6. バイオ・ヘルスケア",
+      "member_count": 55,
+      "raw_strength": 54.81112406407689,
+      "ret1_median": 0.0008495560593562157,
+      "ret20_median": -0.05525092857554259,
+      "rs189_median": 39.96194100856327,
+      "rs63_median": 69.66030711959051,
+      "theme_id": "医療機器",
+      "theme_name": "医療機器",
+      "theme_rs": 64.35643564356435
     },
     {
       "leaders": [
@@ -1982,42 +1991,7 @@
       "rs63_median": 70.84690553745929,
       "theme_id": "化粧品/パーソナルケア",
       "theme_name": "化粧品/パーソナルケア",
-      "theme_rs": 63.42281879194631
-    },
-    {
-      "leaders": [
-        "MS",
-        "GS"
-      ],
-      "major_theme": "12. 金融・銀行・保険",
-      "member_count": 2,
-      "raw_strength": 54.285494016423456,
-      "ret1_median": 0.008657818850962284,
-      "ret20_median": -0.013191127065760866,
-      "rs189_median": 62.107516650808755,
-      "rs63_median": 46.46347138203816,
-      "theme_id": "投資銀行",
-      "theme_name": "投資銀行",
-      "theme_rs": 63.08724832214765
-    },
-    {
-      "leaders": [
-        "CDNA",
-        "NEOG",
-        "ITGR",
-        "LNTH",
-        "GKOS"
-      ],
-      "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 51,
-      "raw_strength": 54.22945817296475,
-      "ret1_median": 0.0006635224436415399,
-      "ret20_median": -0.05525092857554259,
-      "rs189_median": 39.96194100856327,
-      "rs63_median": 68.49697533736622,
-      "theme_id": "医療機器",
-      "theme_name": "医療機器",
-      "theme_rs": 62.751677852349
+      "theme_rs": 64.02640264026402
     },
     {
       "leaders": [
@@ -2036,7 +2010,26 @@
       "rs63_median": 70.497906002792,
       "theme_id": "医療サービス",
       "theme_name": "医療サービス",
-      "theme_rs": 62.41610738255034
+      "theme_rs": 63.6963696369637
+    },
+    {
+      "leaders": [
+        "UNIT",
+        "EQIX",
+        "IRM",
+        "DLR",
+        "BXDC"
+      ],
+      "major_theme": "14. 不動産・住宅・建設",
+      "member_count": 6,
+      "raw_strength": 54.0330532334425,
+      "ret1_median": 0.01875580310778402,
+      "ret20_median": -0.037257953354208784,
+      "rs189_median": 79.44814462416747,
+      "rs63_median": 28.61796184271754,
+      "theme_id": "データセンターREIT/コロケーション",
+      "theme_name": "データセンターREIT/コロケーション",
+      "theme_rs": 63.366336633663366
     },
     {
       "leaders": [
@@ -2052,7 +2045,7 @@
       "rs63_median": 41.43787808282922,
       "theme_id": "産業ガス",
       "theme_name": "産業ガス",
-      "theme_rs": 62.08053691275168
+      "theme_rs": 63.03630363036304
     },
     {
       "leaders": [
@@ -2068,7 +2061,7 @@
       "rs63_median": 64.89064681247092,
       "theme_id": "医療保険（民間）",
       "theme_name": "医療保険（民間）",
-      "theme_rs": 61.74496644295302
+      "theme_rs": 62.70627062706271
     },
     {
       "leaders": [
@@ -2087,7 +2080,7 @@
       "rs63_median": 87.3894834806887,
       "theme_id": "フィンテックSaaS",
       "theme_name": "フィンテックSaaS",
-      "theme_rs": 61.40939597315436
+      "theme_rs": 62.37623762376238
     },
     {
       "leaders": [
@@ -2106,7 +2099,7 @@
       "rs63_median": 61.54025127966496,
       "theme_id": "損害保険",
       "theme_name": "損害保険",
-      "theme_rs": 61.07382550335571
+      "theme_rs": 62.04620462046204
     },
     {
       "leaders": [
@@ -2125,7 +2118,7 @@
       "rs63_median": 82.2940902745463,
       "theme_id": "AIサイバーセキュリティ（プラットフォーム）",
       "theme_name": "AIサイバーセキュリティ（プラットフォーム）",
-      "theme_rs": 60.738255033557046
+      "theme_rs": 61.71617161716172
     },
     {
       "leaders": [
@@ -2144,7 +2137,7 @@
       "rs63_median": 66.12377850162866,
       "theme_id": "AIハイパースケーラー",
       "theme_name": "AIハイパースケーラー",
-      "theme_rs": 60.40268456375839
+      "theme_rs": 61.386138613861384
     },
     {
       "leaders": [
@@ -2162,7 +2155,7 @@
       "rs63_median": 52.16379711493718,
       "theme_id": "医療用品",
       "theme_name": "医療用品",
-      "theme_rs": 60.06711409395973
+      "theme_rs": 61.05610561056105
     },
     {
       "leaders": [
@@ -2181,7 +2174,7 @@
       "rs63_median": 32.875756165658444,
       "theme_id": "ネットワーキング機器",
       "theme_name": "ネットワーキング機器",
-      "theme_rs": 59.73154362416108
+      "theme_rs": 60.726072607260726
     },
     {
       "leaders": [
@@ -2198,7 +2191,7 @@
       "rs63_median": 57.375523499302005,
       "theme_id": "家電小売",
       "theme_name": "家電小売",
-      "theme_rs": 59.395973154362416
+      "theme_rs": 60.396039603960396
     },
     {
       "leaders": [
@@ -2217,26 +2210,7 @@
       "rs63_median": 38.80874825500233,
       "theme_id": "通信キャリア（ワイヤレス）",
       "theme_name": "通信キャリア（ワイヤレス）",
-      "theme_rs": 59.06040268456376
-    },
-    {
-      "leaders": [
-        "BAND",
-        "DOCN",
-        "APPS",
-        "FSLY",
-        "MITK"
-      ],
-      "major_theme": "1. AI・テック成長テーマ",
-      "member_count": 66,
-      "raw_strength": 52.500997299653456,
-      "ret1_median": 0.00839350016245044,
-      "ret20_median": -0.06324331402736988,
-      "rs189_median": 24.45290199809705,
-      "rs63_median": 80.54909260120986,
-      "theme_id": "AIエンタープライズSaaS",
-      "theme_name": "AIエンタープライズSaaS",
-      "theme_rs": 58.7248322147651
+      "theme_rs": 60.066006600660074
     },
     {
       "leaders": [
@@ -2255,7 +2229,7 @@
       "rs63_median": 37.785016286644954,
       "theme_id": "建機/重機",
       "theme_name": "建機/重機",
-      "theme_rs": 58.38926174496645
+      "theme_rs": 59.73597359735974
     },
     {
       "leaders": [
@@ -2272,7 +2246,26 @@
       "rs63_median": 65.65844578873894,
       "theme_id": "天然ガス",
       "theme_name": "天然ガス",
-      "theme_rs": 58.053691275167786
+      "theme_rs": 59.4059405940594
+    },
+    {
+      "leaders": [
+        "BAND",
+        "DOCN",
+        "APPS",
+        "FSLY",
+        "MITK"
+      ],
+      "major_theme": "1. AI・テック成長テーマ",
+      "member_count": 67,
+      "raw_strength": 51.81463154814112,
+      "ret1_median": 0.009434066238082961,
+      "ret20_median": -0.06240086275501833,
+      "rs189_median": 24.45290199809705,
+      "rs63_median": 79.1763610981852,
+      "theme_id": "AIエンタープライズSaaS",
+      "theme_name": "AIエンタープライズSaaS",
+      "theme_rs": 59.07590759075908
     },
     {
       "leaders": [
@@ -2291,7 +2284,7 @@
       "rs63_median": 12.750116333178223,
       "theme_id": "半導体製造装置",
       "theme_name": "半導体製造装置",
-      "theme_rs": 57.71812080536913
+      "theme_rs": 58.745874587458744
     },
     {
       "leaders": [
@@ -2310,7 +2303,26 @@
       "rs63_median": 71.312238250349,
       "theme_id": "旅行予約",
       "theme_name": "旅行予約",
-      "theme_rs": 57.38255033557047
+      "theme_rs": 58.415841584158414
+    },
+    {
+      "leaders": [
+        "ADM",
+        "ANDE",
+        "SEB",
+        "INGR",
+        "AFRI"
+      ],
+      "major_theme": "9. 消費者・小売りテーマ",
+      "member_count": 5,
+      "raw_strength": 51.71495139243398,
+      "ret1_median": -0.006328482221201748,
+      "ret20_median": 0.0453257351577121,
+      "rs189_median": 56.82683158896289,
+      "rs63_median": 46.60307119590507,
+      "theme_id": "穀物/農産物",
+      "theme_name": "穀物/農産物",
+      "theme_rs": 58.08580858085809
     },
     {
       "leaders": [
@@ -2329,7 +2341,26 @@
       "rs63_median": 61.19125174499768,
       "theme_id": "資産運用（大手）",
       "theme_name": "資産運用（大手）",
-      "theme_rs": 57.04697986577181
+      "theme_rs": 57.755775577557756
+    },
+    {
+      "leaders": [
+        "WT",
+        "AAMI",
+        "VCTR",
+        "TRIN",
+        "SEIC"
+      ],
+      "major_theme": "12. 金融・銀行・保険",
+      "member_count": 58,
+      "raw_strength": 51.56959026369887,
+      "ret1_median": 0.0036154592558585996,
+      "ret20_median": -0.044381859812486046,
+      "rs189_median": 40.34253092293054,
+      "rs63_median": 62.79664960446719,
+      "theme_id": "資産運用",
+      "theme_name": "資産運用",
+      "theme_rs": 57.42574257425742
     },
     {
       "leaders": [
@@ -2347,7 +2378,7 @@
       "rs63_median": 39.623080502559326,
       "theme_id": "食品卸売り",
       "theme_name": "食品卸売り",
-      "theme_rs": 56.711409395973156
+      "theme_rs": 57.0957095709571
     },
     {
       "leaders": [
@@ -2366,7 +2397,7 @@
       "rs63_median": 80.59562587249883,
       "theme_id": "経営コンサルティング",
       "theme_name": "経営コンサルティング",
-      "theme_rs": 56.375838926174495
+      "theme_rs": 56.76567656765676
     },
     {
       "leaders": [
@@ -2385,7 +2416,7 @@
       "rs63_median": 77.31503024662635,
       "theme_id": "特殊金融",
       "theme_name": "特殊金融",
-      "theme_rs": 56.04026845637584
+      "theme_rs": 56.43564356435643
     },
     {
       "leaders": [
@@ -2404,7 +2435,7 @@
       "rs63_median": 62.26151698464402,
       "theme_id": "廃棄物処理/環境",
       "theme_name": "廃棄物処理/環境",
-      "theme_rs": 55.70469798657718
+      "theme_rs": 56.10561056105611
     },
     {
       "leaders": [
@@ -2423,7 +2454,7 @@
       "rs63_median": 19.730107026523967,
       "theme_id": "鉄鋼",
       "theme_name": "鉄鋼",
-      "theme_rs": 55.369127516778526
+      "theme_rs": 55.775577557755774
     },
     {
       "leaders": [
@@ -2442,7 +2473,7 @@
       "rs63_median": 68.869241507678,
       "theme_id": "保険ブローカー",
       "theme_name": "保険ブローカー",
-      "theme_rs": 55.033557046979865
+      "theme_rs": 55.44554455445545
     },
     {
       "leaders": [
@@ -2461,26 +2492,7 @@
       "rs63_median": 52.02419730107026,
       "theme_id": "貯蓄金融機関（S&L）",
       "theme_name": "貯蓄金融機関（S&L）",
-      "theme_rs": 54.69798657718121
-    },
-    {
-      "leaders": [
-        "WT",
-        "AAMI",
-        "VCTR",
-        "TRIN",
-        "SEIC"
-      ],
-      "major_theme": "12. 金融・銀行・保険",
-      "member_count": 57,
-      "raw_strength": 50.06889226462953,
-      "ret1_median": 0.003496472405355666,
-      "ret20_median": -0.04324135589044609,
-      "rs189_median": 40.34253092293054,
-      "rs63_median": 59.79525360632852,
-      "theme_id": "資産運用",
-      "theme_name": "資産運用",
-      "theme_rs": 54.36241610738255
+      "theme_rs": 55.115511551155116
     },
     {
       "leaders": [
@@ -2499,7 +2511,7 @@
       "rs63_median": 49.604467194043735,
       "theme_id": "農業化学",
       "theme_name": "農業化学",
-      "theme_rs": 54.0268456375839
+      "theme_rs": 54.78547854785478
     },
     {
       "leaders": [
@@ -2518,7 +2530,7 @@
       "rs63_median": 52.675663099115866,
       "theme_id": "REITs（総合）",
       "theme_name": "REITs（総合）",
-      "theme_rs": 53.691275167785236
+      "theme_rs": 54.45544554455446
     },
     {
       "leaders": [
@@ -2534,7 +2546,7 @@
       "rs63_median": 49.11586784550954,
       "theme_id": "飲料大手",
       "theme_name": "飲料大手",
-      "theme_rs": 53.355704697986575
+      "theme_rs": 54.12541254125413
     },
     {
       "leaders": [
@@ -2553,7 +2565,7 @@
       "rs63_median": 29.920893438808747,
       "theme_id": "電子製品（その他）",
       "theme_name": "電子製品（その他）",
-      "theme_rs": 53.02013422818792
+      "theme_rs": 53.79537953795379
     },
     {
       "leaders": [
@@ -2570,7 +2582,7 @@
       "rs63_median": 47.41740344346207,
       "theme_id": "自動車製造",
       "theme_name": "自動車製造",
-      "theme_rs": 52.68456375838926
+      "theme_rs": 53.46534653465347
     },
     {
       "leaders": [
@@ -2589,7 +2601,7 @@
       "rs63_median": 8.88785481619358,
       "theme_id": "AI光接続/フォトニクス",
       "theme_name": "AI光接続/フォトニクス",
-      "theme_rs": 52.348993288590606
+      "theme_rs": 53.135313531353134
     },
     {
       "leaders": [
@@ -2608,44 +2620,26 @@
       "rs63_median": 6.793857608189856,
       "theme_id": "ファウンドリー/IDM",
       "theme_name": "ファウンドリー/IDM",
-      "theme_rs": 52.013422818791945
+      "theme_rs": 52.8052805280528
     },
     {
       "leaders": [
         "SAIC",
         "CACI",
         "BAH",
-        "LDOS"
+        "LDOS",
+        "LYNX"
       ],
       "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 4,
+      "member_count": 5,
       "raw_strength": 48.56780685725974,
-      "ret1_median": -0.0008221296093355313,
+      "ret1_median": 0.0029069928622618146,
       "ret20_median": -0.04871382067349056,
       "rs189_median": 30.73263558515699,
       "rs63_median": 66.40297812936248,
       "theme_id": "防衛IT/システム",
       "theme_name": "防衛IT/システム",
-      "theme_rs": 51.67785234899329
-    },
-    {
-      "leaders": [
-        "DAVE",
-        "PRCH",
-        "GCT",
-        "RAMP",
-        "INGM"
-      ],
-      "major_theme": "8. デジタルインフラ・先進テック",
-      "member_count": 28,
-      "raw_strength": 48.321470522213104,
-      "ret1_median": 0.022278353546529628,
-      "ret20_median": -0.0017005161951995085,
-      "rs189_median": 27.354900095147478,
-      "rs63_median": 69.28804094927874,
-      "theme_id": "ITサービス",
-      "theme_name": "ITサービス",
-      "theme_rs": 51.34228187919463
+      "theme_rs": 52.475247524752476
     },
     {
       "leaders": [
@@ -2662,7 +2656,7 @@
       "rs63_median": 10.795718939041414,
       "theme_id": "AIネットワーキング",
       "theme_name": "AIネットワーキング",
-      "theme_rs": 51.006711409395976
+      "theme_rs": 52.14521452145215
     },
     {
       "leaders": [
@@ -2681,7 +2675,7 @@
       "rs63_median": 40.367612843182876,
       "theme_id": "REITs（商業/プロパティ）",
       "theme_name": "REITs（商業/プロパティ）",
-      "theme_rs": 50.671140939597315
+      "theme_rs": 51.81518151815182
     },
     {
       "leaders": [
@@ -2700,7 +2694,7 @@
       "rs63_median": 12.028850628199162,
       "theme_id": "電子製造受託（EMS）",
       "theme_name": "電子製造受託（EMS）",
-      "theme_rs": 50.33557046979866
+      "theme_rs": 51.48514851485149
     },
     {
       "leaders": [
@@ -2719,7 +2713,45 @@
       "rs63_median": 34.760353652861795,
       "theme_id": "オイルフィールドサービス",
       "theme_name": "オイルフィールドサービス",
-      "theme_rs": 50.0
+      "theme_rs": 51.15511551155115
+    },
+    {
+      "leaders": [
+        "IRDM",
+        "VSAT",
+        "GSAT",
+        "ECHO",
+        "ASTS"
+      ],
+      "major_theme": "5. 宇宙・防衛・モビリティ",
+      "member_count": 7,
+      "raw_strength": 47.869365035581794,
+      "ret1_median": 0.006221814427662231,
+      "ret20_median": -0.04981919652572886,
+      "rs189_median": 62.60704091341579,
+      "rs63_median": 33.13168915774779,
+      "theme_id": "衛星通信",
+      "theme_name": "衛星通信",
+      "theme_rs": 50.82508250825083
+    },
+    {
+      "leaders": [
+        "DAVE",
+        "PRCH",
+        "GCT",
+        "RAMP",
+        "INGM"
+      ],
+      "major_theme": "8. デジタルインフラ・先進テック",
+      "member_count": 30,
+      "raw_strength": 47.84209149122974,
+      "ret1_median": 0.022278353546529628,
+      "ret20_median": -0.0017005161951995085,
+      "rs189_median": 26.070409134157945,
+      "rs63_median": 69.61377384830153,
+      "theme_id": "ITサービス",
+      "theme_name": "ITサービス",
+      "theme_rs": 50.495049504950494
     },
     {
       "leaders": [
@@ -2736,7 +2768,7 @@
       "rs63_median": 58.86458818054909,
       "theme_id": "取引所/データ",
       "theme_name": "取引所/データ",
-      "theme_rs": 49.664429530201346
+      "theme_rs": 50.165016501650165
     },
     {
       "leaders": [
@@ -2755,7 +2787,7 @@
       "rs63_median": 74.17403443462075,
       "theme_id": "IT統合システム",
       "theme_name": "IT統合システム",
-      "theme_rs": 49.328859060402685
+      "theme_rs": 49.834983498349835
     },
     {
       "leaders": [
@@ -2766,15 +2798,34 @@
         "BOKF"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 48,
+      "member_count": 51,
       "raw_strength": 47.52626517589001,
-      "ret1_median": -0.0002931631987845851,
-      "ret20_median": -0.027666485277234365,
+      "ret1_median": -0.0003383599654399605,
+      "ret20_median": -0.025596056469824102,
       "rs189_median": 50.38058991436727,
       "rs63_median": 44.67194043741275,
       "theme_id": "地方銀行（西部）",
       "theme_name": "地方銀行（西部）",
-      "theme_rs": 48.99328859060403
+      "theme_rs": 49.504950495049506
+    },
+    {
+      "leaders": [
+        "ATI",
+        "CSTM",
+        "CRS",
+        "ELMT",
+        "GSM"
+      ],
+      "major_theme": "11. 素材・鉱業・化学",
+      "member_count": 6,
+      "raw_strength": 47.195551313004216,
+      "ret1_median": 0.0007248632278994416,
+      "ret20_median": -0.10357287956372535,
+      "rs189_median": 83.96764985727879,
+      "rs63_median": 10.423452768729643,
+      "theme_id": "特殊合金/金属加工",
+      "theme_name": "特殊合金/金属加工",
+      "theme_rs": 49.17491749174918
     },
     {
       "leaders": [
@@ -2785,34 +2836,15 @@
         "NMAX"
       ],
       "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 21,
-      "raw_strength": 47.35851738179288,
-      "ret1_median": 0.0068985386414557315,
-      "ret20_median": -0.003692553659962017,
-      "rs189_median": 39.29590865842055,
-      "rs63_median": 55.4211261051652,
+      "member_count": 22,
+      "raw_strength": 46.955181065784586,
+      "ret1_median": 0.006807858542427825,
+      "ret20_median": -0.012830112783955128,
+      "rs189_median": 38.582302568981916,
+      "rs63_median": 55.328059562587256,
       "theme_id": "メディア・エンタメ（総合）",
       "theme_name": "メディア・エンタメ（総合）",
-      "theme_rs": 48.65771812080537
-    },
-    {
-      "leaders": [
-        "ATI",
-        "CSTM",
-        "CRS",
-        "GSM",
-        "MTUS"
-      ],
-      "major_theme": "11. 素材・鉱業・化学",
-      "member_count": 5,
-      "raw_strength": 47.195551313004216,
-      "ret1_median": -0.001155757424819548,
-      "ret20_median": -0.10553233071172674,
-      "rs189_median": 83.96764985727879,
-      "rs63_median": 10.423452768729643,
-      "theme_id": "特殊合金/金属加工",
-      "theme_name": "特殊合金/金属加工",
-      "theme_rs": 48.322147651006716
+      "theme_rs": 48.84488448844885
     },
     {
       "leaders": [
@@ -2828,7 +2860,7 @@
       "rs63_median": 29.711493718008377,
       "theme_id": "陸運/パーセル",
       "theme_name": "陸運/パーセル",
-      "theme_rs": 47.98657718120805
+      "theme_rs": 48.51485148514851
     },
     {
       "leaders": [
@@ -2847,7 +2879,7 @@
       "rs63_median": 61.796184271754306,
       "theme_id": "消費者製品（特殊）",
       "theme_name": "消費者製品（特殊）",
-      "theme_rs": 47.651006711409394
+      "theme_rs": 48.18481848184818
     },
     {
       "leaders": [
@@ -2864,7 +2896,7 @@
       "rs63_median": 74.77896696137739,
       "theme_id": "ペット関連",
       "theme_name": "ペット関連",
-      "theme_rs": 47.31543624161073
+      "theme_rs": 47.85478547854785
     },
     {
       "leaders": [
@@ -2883,7 +2915,7 @@
       "rs63_median": 23.68543508608655,
       "theme_id": "計測/試験装置",
       "theme_name": "計測/試験装置",
-      "theme_rs": 46.97986577181208
+      "theme_rs": 47.524752475247524
     },
     {
       "leaders": [
@@ -2900,7 +2932,7 @@
       "rs63_median": 45.55607259190322,
       "theme_id": "AI貸付",
       "theme_name": "AI貸付",
-      "theme_rs": 46.644295302013425
+      "theme_rs": 47.194719471947195
     },
     {
       "leaders": [
@@ -2919,7 +2951,7 @@
       "rs63_median": 26.43089809213588,
       "theme_id": "電力設備/送配電",
       "theme_name": "電力設備/送配電",
-      "theme_rs": 46.308724832214764
+      "theme_rs": 46.864686468646866
     },
     {
       "leaders": [
@@ -2935,7 +2967,7 @@
       "rs63_median": 35.691019078641226,
       "theme_id": "航空機リース/特殊金融",
       "theme_name": "航空機リース/特殊金融",
-      "theme_rs": 45.97315436241611
+      "theme_rs": 46.53465346534654
     },
     {
       "leaders": [
@@ -2952,7 +2984,7 @@
       "rs63_median": 28.24569567240577,
       "theme_id": "REIT（商業/ストリップモール）",
       "theme_name": "REIT（商業/ストリップモール）",
-      "theme_rs": 45.63758389261745
+      "theme_rs": 46.2046204620462
     },
     {
       "leaders": [
@@ -2971,7 +3003,7 @@
       "rs63_median": 36.156351791530945,
       "theme_id": "大型トラック/部品",
       "theme_name": "大型トラック/部品",
-      "theme_rs": 45.302013422818796
+      "theme_rs": 45.87458745874587
     },
     {
       "leaders": [
@@ -2982,7 +3014,7 @@
         "PH"
       ],
       "major_theme": "13. 産業・資本財・輸送",
-      "member_count": 15,
+      "member_count": 17,
       "raw_strength": 44.90264208033387,
       "ret1_median": 0.0031396893786534985,
       "ret20_median": -0.07747925850303561,
@@ -2990,7 +3022,7 @@
       "rs63_median": 42.11261051651931,
       "theme_id": "産業コングロマリット",
       "theme_name": "産業コングロマリット",
-      "theme_rs": 44.966442953020135
+      "theme_rs": 45.54455445544555
     },
     {
       "leaders": [
@@ -3009,7 +3041,7 @@
       "rs63_median": 43.18287575616566,
       "theme_id": "公益事業（ガス）",
       "theme_name": "公益事業（ガス）",
-      "theme_rs": 44.63087248322148
+      "theme_rs": 45.21452145214521
     },
     {
       "leaders": [
@@ -3028,7 +3060,7 @@
       "rs63_median": 63.00604932526757,
       "theme_id": "医療機器大",
       "theme_name": "医療機器大",
-      "theme_rs": 44.29530201342282
+      "theme_rs": 44.884488448844884
     },
     {
       "leaders": [
@@ -3047,7 +3079,7 @@
       "rs63_median": 41.50767798976268,
       "theme_id": "REIT（物流/倉庫）",
       "theme_name": "REIT（物流/倉庫）",
-      "theme_rs": 43.95973154362416
+      "theme_rs": 44.554455445544555
     },
     {
       "leaders": [
@@ -3066,24 +3098,25 @@
       "rs63_median": 40.71661237785017,
       "theme_id": "リース/レンタル",
       "theme_name": "リース/レンタル",
-      "theme_rs": 43.624161073825505
+      "theme_rs": 44.224422442244226
     },
     {
       "leaders": [
         "PD",
         "LIF",
+        "BSP",
         "CRNC"
       ],
       "major_theme": "8. デジタルインフラ・先進テック",
-      "member_count": 3,
+      "member_count": 4,
       "raw_strength": 44.40316762736546,
-      "ret1_median": 0.026948962821847777,
-      "ret20_median": -0.011614335863284087,
+      "ret1_median": 0.025838123323210782,
+      "ret20_median": -0.0320779133787093,
       "rs189_median": 24.357754519505235,
       "rs63_median": 64.44858073522569,
       "theme_id": "ソフトウェア（デスクトップ）",
       "theme_name": "ソフトウェア（デスクトップ）",
-      "theme_rs": 43.288590604026844
+      "theme_rs": 43.89438943894389
     },
     {
       "leaders": [
@@ -3102,7 +3135,7 @@
       "rs63_median": 43.054909260120986,
       "theme_id": "工作機械",
       "theme_name": "工作機械",
-      "theme_rs": 42.95302013422819
+      "theme_rs": 43.56435643564357
     },
     {
       "leaders": [
@@ -3118,7 +3151,7 @@
       "rs63_median": 0.13959981386691486,
       "theme_id": "マテハン/自動化",
       "theme_name": "マテハン/自動化",
-      "theme_rs": 42.61744966442953
+      "theme_rs": 43.23432343234324
     },
     {
       "leaders": [
@@ -3135,7 +3168,7 @@
       "rs63_median": 6.281991624011169,
       "theme_id": "アルミ",
       "theme_name": "アルミ",
-      "theme_rs": 42.281879194630875
+      "theme_rs": 42.9042904290429
     },
     {
       "leaders": [
@@ -3154,7 +3187,7 @@
       "rs63_median": 27.68729641693811,
       "theme_id": "ホテル",
       "theme_name": "ホテル",
-      "theme_rs": 41.946308724832214
+      "theme_rs": 42.57425742574257
     },
     {
       "leaders": [
@@ -3173,7 +3206,7 @@
       "rs63_median": 33.41088878548162,
       "theme_id": "レジャーサービス",
       "theme_name": "レジャーサービス",
-      "theme_rs": 41.61073825503356
+      "theme_rs": 42.244224422442244
     },
     {
       "leaders": [
@@ -3192,7 +3225,7 @@
       "rs63_median": 31.13075849232201,
       "theme_id": "特殊化学",
       "theme_name": "特殊化学",
-      "theme_rs": 41.2751677852349
+      "theme_rs": 41.914191419141915
     },
     {
       "leaders": [
@@ -3209,7 +3242,7 @@
       "rs63_median": 27.221963704048395,
       "theme_id": "REIT（ショッピングモール）",
       "theme_name": "REIT（ショッピングモール）",
-      "theme_rs": 40.939597315436245
+      "theme_rs": 41.584158415841586
     },
     {
       "leaders": [
@@ -3228,7 +3261,7 @@
       "rs63_median": 64.44858073522569,
       "theme_id": "ストリーミング",
       "theme_name": "ストリーミング",
-      "theme_rs": 40.604026845637584
+      "theme_rs": 41.254125412541256
     },
     {
       "leaders": [
@@ -3247,7 +3280,7 @@
       "rs63_median": 33.24802233597022,
       "theme_id": "飲料（非アルコール）",
       "theme_name": "飲料（非アルコール）",
-      "theme_rs": 40.26845637583892
+      "theme_rs": 40.92409240924093
     },
     {
       "leaders": [
@@ -3258,15 +3291,15 @@
         "FSS"
       ],
       "major_theme": "13. 産業・資本財・輸送",
-      "member_count": 21,
+      "member_count": 23,
       "raw_strength": 43.0950890352825,
-      "ret1_median": 0.004918928304114445,
+      "ret1_median": 0.004583150684443371,
       "ret20_median": -0.06598233306596912,
       "rs189_median": 32.3977164605138,
       "rs63_median": 53.79246161005119,
       "theme_id": "セキュリティ・安全機器",
       "theme_name": "セキュリティ・安全機器",
-      "theme_rs": 39.93288590604027
+      "theme_rs": 40.5940594059406
     },
     {
       "leaders": [
@@ -3285,7 +3318,7 @@
       "rs63_median": 66.26337831549557,
       "theme_id": "市場調査",
       "theme_name": "市場調査",
-      "theme_rs": 39.59731543624161
+      "theme_rs": 40.26402640264026
     },
     {
       "leaders": [
@@ -3301,7 +3334,7 @@
       "rs63_median": 57.88738948348069,
       "theme_id": "債券ファンド/ETF",
       "theme_name": "債券ファンド/ETF",
-      "theme_rs": 39.261744966442954
+      "theme_rs": 39.93399339933993
     },
     {
       "leaders": [
@@ -3320,7 +3353,7 @@
       "rs63_median": 45.88180549092601,
       "theme_id": "レストラン",
       "theme_name": "レストラン",
-      "theme_rs": 38.92617449664429
+      "theme_rs": 39.603960396039604
     },
     {
       "leaders": [
@@ -3339,7 +3372,7 @@
       "rs63_median": 48.99953466728711,
       "theme_id": "大手小売（ディスカウント）",
       "theme_name": "大手小売（ディスカウント）",
-      "theme_rs": 38.59060402684564
+      "theme_rs": 39.273927392739274
     },
     {
       "leaders": [
@@ -3356,7 +3389,7 @@
       "rs63_median": 28.385295486272682,
       "theme_id": "REIT（セルフストレージ）",
       "theme_name": "REIT（セルフストレージ）",
-      "theme_rs": 38.25503355704698
+      "theme_rs": 38.943894389438945
     },
     {
       "leaders": [
@@ -3375,24 +3408,26 @@
       "rs63_median": 51.07026523964635,
       "theme_id": "おもちゃ・ホビー",
       "theme_name": "おもちゃ・ホビー",
-      "theme_rs": 37.919463087248324
+      "theme_rs": 38.613861386138616
     },
     {
       "leaders": [
         "SLG",
         "VNO",
-        "BXP"
+        "BXP",
+        "ESBA",
+        "OPI"
       ],
       "major_theme": "14. 不動産・住宅・建設",
-      "member_count": 3,
+      "member_count": 5,
       "raw_strength": 41.99031125046987,
       "ret1_median": 0.02808446122297137,
-      "ret20_median": -0.07895192005432583,
+      "ret20_median": -0.10662968836604791,
       "rs189_median": 42.00761179828735,
       "rs63_median": 41.973010702652395,
       "theme_id": "REIT（オフィス）",
       "theme_name": "REIT（オフィス）",
-      "theme_rs": 37.58389261744966
+      "theme_rs": 38.28382838283829
     },
     {
       "leaders": [
@@ -3408,7 +3443,26 @@
       "rs63_median": 23.382968822708236,
       "theme_id": "AIカスタムチップ/ASIC",
       "theme_name": "AIカスタムチップ/ASIC",
-      "theme_rs": 37.24832214765101
+      "theme_rs": 37.95379537953795
+    },
+    {
+      "leaders": [
+        "NBIS",
+        "BRUN",
+        "APLD",
+        "CHRN",
+        "IOND"
+      ],
+      "major_theme": "1. AI・テック成長テーマ",
+      "member_count": 6,
+      "raw_strength": 41.83263607218457,
+      "ret1_median": 0.01757674749946958,
+      "ret20_median": -0.11786621639923817,
+      "rs189_median": 80.7802093244529,
+      "rs63_median": 2.8850628199162403,
+      "theme_id": "AIデータセンター/HPC",
+      "theme_name": "AIデータセンター/HPC",
+      "theme_rs": 37.62376237623762
     },
     {
       "leaders": [
@@ -3427,7 +3481,7 @@
       "rs63_median": 18.892508143322477,
       "theme_id": "化学・素材（大手）",
       "theme_name": "化学・素材（大手）",
-      "theme_rs": 36.91275167785235
+      "theme_rs": 37.29372937293729
     },
     {
       "leaders": [
@@ -3443,7 +3497,7 @@
       "rs63_median": 58.32945556072592,
       "theme_id": "ケーブル",
       "theme_name": "ケーブル",
-      "theme_rs": 36.577181208053695
+      "theme_rs": 36.96369636963696
     },
     {
       "leaders": [
@@ -3462,7 +3516,7 @@
       "rs63_median": 39.13448115402513,
       "theme_id": "生活必需品大手",
       "theme_name": "生活必需品大手",
-      "theme_rs": 36.241610738255034
+      "theme_rs": 36.633663366336634
     },
     {
       "leaders": [
@@ -3480,7 +3534,7 @@
       "rs63_median": 16.75197766402978,
       "theme_id": "製紙",
       "theme_name": "製紙",
-      "theme_rs": 35.90604026845637
+      "theme_rs": 36.303630363036305
     },
     {
       "leaders": [
@@ -3497,7 +3551,7 @@
       "rs63_median": 36.29595160539786,
       "theme_id": "REIT（ネットリース）",
       "theme_name": "REIT（ネットリース）",
-      "theme_rs": 35.57046979865772
+      "theme_rs": 35.973597359735976
     },
     {
       "leaders": [
@@ -3516,7 +3570,7 @@
       "rs63_median": 44.88134015821312,
       "theme_id": "中堅製薬",
       "theme_name": "中堅製薬",
-      "theme_rs": 35.23489932885906
+      "theme_rs": 35.64356435643564
     },
     {
       "leaders": [
@@ -3534,7 +3588,7 @@
       "rs63_median": 39.99534667287111,
       "theme_id": "化学・プラスチック",
       "theme_name": "化学・プラスチック",
-      "theme_rs": 34.899328859060404
+      "theme_rs": 35.31353135313531
     },
     {
       "leaders": [
@@ -3553,7 +3607,7 @@
       "rs63_median": 64.51838064215914,
       "theme_id": "家具小売",
       "theme_name": "家具小売",
-      "theme_rs": 34.56375838926174
+      "theme_rs": 34.98349834983499
     },
     {
       "leaders": [
@@ -3572,7 +3626,7 @@
       "rs63_median": 33.108422522103304,
       "theme_id": "教育テック/エドテック",
       "theme_name": "教育テック/エドテック",
-      "theme_rs": 34.22818791946309
+      "theme_rs": 34.65346534653465
     },
     {
       "leaders": [
@@ -3590,7 +3644,7 @@
       "rs63_median": 64.96044671940437,
       "theme_id": "糖尿病デバイス/CGM",
       "theme_name": "糖尿病デバイス/CGM",
-      "theme_rs": 33.89261744966443
+      "theme_rs": 34.32343234323432
     },
     {
       "leaders": [
@@ -3609,7 +3663,7 @@
       "rs63_median": 46.53327128897162,
       "theme_id": "モーゲージREIT",
       "theme_name": "モーゲージREIT",
-      "theme_rs": 33.557046979865774
+      "theme_rs": 33.993399339933994
     },
     {
       "leaders": [
@@ -3625,7 +3679,7 @@
       "rs63_median": 78.89716147045138,
       "theme_id": "AIマーケティングSaaS",
       "theme_name": "AIマーケティングSaaS",
-      "theme_rs": 33.22147651006711
+      "theme_rs": 33.663366336633665
     },
     {
       "leaders": [
@@ -3644,7 +3698,7 @@
       "rs63_median": 54.118194509073994,
       "theme_id": "加工食品",
       "theme_name": "加工食品",
-      "theme_rs": 32.88590604026846
+      "theme_rs": 33.33333333333333
     },
     {
       "leaders": [
@@ -3662,7 +3716,7 @@
       "rs63_median": 40.4839460214053,
       "theme_id": "塗料/コーティング",
       "theme_name": "塗料/コーティング",
-      "theme_rs": 32.5503355704698
+      "theme_rs": 33.003300330033
     },
     {
       "leaders": [
@@ -3678,7 +3732,7 @@
       "rs63_median": 68.5202419730107,
       "theme_id": "デジタルバンク",
       "theme_name": "デジタルバンク",
-      "theme_rs": 32.21476510067114
+      "theme_rs": 32.67326732673268
     },
     {
       "leaders": [
@@ -3697,23 +3751,7 @@
       "rs63_median": 53.88552815262913,
       "theme_id": "投資銀行/ブローカー",
       "theme_name": "投資銀行/ブローカー",
-      "theme_rs": 31.879194630872483
-    },
-    {
-      "leaders": [
-        "NBIS",
-        "APLD"
-      ],
-      "major_theme": "1. AI・テック成長テーマ",
-      "member_count": 2,
-      "raw_strength": 40.59576866012958,
-      "ret1_median": 0.004609463428446425,
-      "ret20_median": -0.1283575560063105,
-      "rs189_median": 55.970504281636536,
-      "rs63_median": 25.221033038622615,
-      "theme_id": "AIデータセンター/HPC",
-      "theme_name": "AIデータセンター/HPC",
-      "theme_rs": 31.543624161073826
+      "theme_rs": 32.34323432343234
     },
     {
       "leaders": [
@@ -3729,7 +3767,7 @@
       "rs63_median": 34.15542112610517,
       "theme_id": "REIT（住宅/一戸建て賃貸）",
       "theme_name": "REIT（住宅/一戸建て賃貸）",
-      "theme_rs": 31.20805369127517
+      "theme_rs": 32.01320132013201
     },
     {
       "leaders": [
@@ -3748,7 +3786,7 @@
       "rs63_median": 9.236854350860867,
       "theme_id": "トラック輸送",
       "theme_name": "トラック輸送",
-      "theme_rs": 30.87248322147651
+      "theme_rs": 31.683168316831683
     },
     {
       "leaders": [
@@ -3766,7 +3804,26 @@
       "rs63_median": 42.15914378780828,
       "theme_id": "自動車アフターマーケット",
       "theme_name": "自動車アフターマーケット",
-      "theme_rs": 30.536912751677853
+      "theme_rs": 31.353135313531354
+    },
+    {
+      "leaders": [
+        "MOG.A",
+        "VSEC",
+        "TDY",
+        "MRCY",
+        "DRS"
+      ],
+      "major_theme": "5. 宇宙・防衛・モビリティ",
+      "member_count": 9,
+      "raw_strength": 39.93545888402501,
+      "ret1_median": 0.009041962771108247,
+      "ret20_median": -0.14018647423371466,
+      "rs189_median": 55.16175071360609,
+      "rs63_median": 24.709167054443927,
+      "theme_id": "防衛電子部品",
+      "theme_name": "防衛電子部品",
+      "theme_rs": 31.02310231023102
     },
     {
       "leaders": [
@@ -3785,7 +3842,7 @@
       "rs63_median": 40.71661237785017,
       "theme_id": "住宅建設関連",
       "theme_name": "住宅建設関連",
-      "theme_rs": 30.201342281879196
+      "theme_rs": 30.693069306930692
     },
     {
       "leaders": [
@@ -3802,7 +3859,7 @@
       "rs63_median": 57.561656584457886,
       "theme_id": "金融データ/格付",
       "theme_name": "金融データ/格付",
-      "theme_rs": 29.86577181208054
+      "theme_rs": 30.363036303630363
     },
     {
       "leaders": [
@@ -3821,26 +3878,7 @@
       "rs63_median": 37.087017217310375,
       "theme_id": "公益事業",
       "theme_name": "公益事業",
-      "theme_rs": 29.53020134228188
-    },
-    {
-      "leaders": [
-        "DCO",
-        "ATRO",
-        "NPK",
-        "VOYG",
-        "HXL"
-      ],
-      "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 23,
-      "raw_strength": 38.64089530722364,
-      "ret1_median": 0.01649054136523076,
-      "ret20_median": -0.1321408994275367,
-      "rs189_median": 52.73549000951475,
-      "rs63_median": 24.546300604932526,
-      "theme_id": "防衛・軍事（総合）",
-      "theme_name": "防衛・軍事（総合）",
-      "theme_rs": 29.194630872483224
+      "theme_rs": 30.033003300330037
     },
     {
       "leaders": [
@@ -3857,7 +3895,7 @@
       "rs63_median": 31.03769194974407,
       "theme_id": "産業オートメーション",
       "theme_name": "産業オートメーション",
-      "theme_rs": 28.859060402684566
+      "theme_rs": 29.7029702970297
     },
     {
       "leaders": [
@@ -3876,7 +3914,7 @@
       "rs63_median": 55.467659376454165,
       "theme_id": "水処理/環境",
       "theme_name": "水処理/環境",
-      "theme_rs": 28.523489932885905
+      "theme_rs": 29.372937293729372
     },
     {
       "leaders": [
@@ -3895,7 +3933,7 @@
       "rs63_median": 6.910190786412286,
       "theme_id": "パワー半導体/アナログ",
       "theme_name": "パワー半導体/アナログ",
-      "theme_rs": 28.187919463087248
+      "theme_rs": 29.042904290429046
     },
     {
       "leaders": [
@@ -3914,7 +3952,7 @@
       "rs63_median": 8.16658911121452,
       "theme_id": "ファブレス半導体",
       "theme_name": "ファブレス半導体",
-      "theme_rs": 27.85234899328859
+      "theme_rs": 28.71287128712871
     },
     {
       "leaders": [
@@ -3932,7 +3970,7 @@
       "rs63_median": 55.83992554676593,
       "theme_id": "ビデオゲーム",
       "theme_name": "ビデオゲーム",
-      "theme_rs": 27.516778523489933
+      "theme_rs": 28.38283828382838
     },
     {
       "leaders": [
@@ -3951,7 +3989,7 @@
       "rs63_median": 22.19637040483946,
       "theme_id": "輸送機器製造",
       "theme_name": "輸送機器製造",
-      "theme_rs": 27.181208053691275
+      "theme_rs": 28.052805280528055
     },
     {
       "leaders": [
@@ -3962,33 +4000,34 @@
         "GOGO"
       ],
       "major_theme": "8. デジタルインフラ・先進テック",
-      "member_count": 5,
+      "member_count": 6,
       "raw_strength": 37.65875438712228,
-      "ret1_median": 0.012499987892806708,
-      "ret20_median": -0.04995417817748382,
+      "ret1_median": 0.01204149440662483,
+      "ret20_median": -0.024233613047705937,
       "rs189_median": 52.28353948620361,
       "rs63_median": 23.033969288040947,
       "theme_id": "通信インフラ",
       "theme_name": "通信インフラ",
-      "theme_rs": 26.845637583892618
+      "theme_rs": 27.722772277227726
     },
     {
       "leaders": [
         "PM",
         "MO",
         "UVV",
-        "TPB"
+        "TPB",
+        "AIIR"
       ],
       "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 4,
+      "member_count": 5,
       "raw_strength": 37.36299582174614,
-      "ret1_median": -0.00027351777618200845,
-      "ret20_median": 0.008920652511889893,
+      "ret1_median": -0.0033091003710514766,
+      "ret20_median": 0.011381048408267036,
       "rs189_median": 44.38629876308278,
       "rs63_median": 30.339692880409494,
       "theme_id": "タバコ",
       "theme_name": "タバコ",
-      "theme_rs": 26.51006711409396
+      "theme_rs": 27.39273927392739
     },
     {
       "leaders": [
@@ -3999,15 +4038,34 @@
         "EYE"
       ],
       "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 5,
+      "member_count": 6,
       "raw_strength": 37.237243087418356,
-      "ret1_median": 0.011410752360962118,
-      "ret20_median": -0.045208659746312274,
+      "ret1_median": 0.010768662429867737,
+      "ret20_median": -0.06879851339073967,
       "rs189_median": 35.01427212178878,
       "rs63_median": 39.460214053047935,
       "theme_id": "専門小売",
       "theme_name": "専門小売",
-      "theme_rs": 26.174496644295303
+      "theme_rs": 27.062706270627064
+    },
+    {
+      "leaders": [
+        "GTX",
+        "BWA",
+        "DAN",
+        "ALSN",
+        "LEA"
+      ],
+      "major_theme": "5. 宇宙・防衛・モビリティ",
+      "member_count": 20,
+      "raw_strength": 37.22893041217144,
+      "ret1_median": 0.011558445827873465,
+      "ret20_median": -0.03972044013596193,
+      "rs189_median": 45.956232159847765,
+      "rs63_median": 28.50162866449511,
+      "theme_id": "自動車部品",
+      "theme_name": "自動車部品",
+      "theme_rs": 26.732673267326735
     },
     {
       "leaders": [
@@ -4024,7 +4082,7 @@
       "rs63_median": 45.4164727780363,
       "theme_id": "百貨店",
       "theme_name": "百貨店",
-      "theme_rs": 25.838926174496645
+      "theme_rs": 26.4026402640264
     },
     {
       "leaders": [
@@ -4043,7 +4101,7 @@
       "rs63_median": 53.02466263378315,
       "theme_id": "eコマース",
       "theme_name": "eコマース",
-      "theme_rs": 25.503355704697988
+      "theme_rs": 26.072607260726073
     },
     {
       "leaders": [
@@ -4062,24 +4120,44 @@
       "rs63_median": 16.240111679851093,
       "theme_id": "大型建設",
       "theme_name": "大型建設",
-      "theme_rs": 25.16778523489933
+      "theme_rs": 25.742574257425744
+    },
+    {
+      "leaders": [
+        "DCO",
+        "ATRO",
+        "NPK",
+        "VOYG",
+        "HXL"
+      ],
+      "major_theme": "5. 宇宙・防衛・モビリティ",
+      "member_count": 24,
+      "raw_strength": 36.628331323975615,
+      "ret1_median": 0.017819755389026692,
+      "ret20_median": -0.13567488456816157,
+      "rs189_median": 52.73549000951475,
+      "rs63_median": 20.521172638436482,
+      "theme_id": "防衛・軍事（総合）",
+      "theme_name": "防衛・軍事（総合）",
+      "theme_rs": 25.412541254125415
     },
     {
       "leaders": [
         "UBER",
         "LYFT",
-        "GRAB"
+        "GRAB",
+        "LIME"
       ],
       "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 3,
+      "member_count": 4,
       "raw_strength": 36.52888914765303,
-      "ret1_median": 0.01328902391354192,
-      "ret20_median": -0.10566255426841364,
+      "ret1_median": 0.0005116603884550708,
+      "ret20_median": -0.14066912672752596,
       "rs189_median": 11.726926736441484,
       "rs63_median": 61.33085155886459,
       "theme_id": "配車/モビリティサービス",
       "theme_name": "配車/モビリティサービス",
-      "theme_rs": 24.832214765100673
+      "theme_rs": 25.082508250825082
     },
     {
       "leaders": [
@@ -4098,7 +4176,7 @@
       "rs63_median": 18.659841786877617,
       "theme_id": "金属加工",
       "theme_name": "金属加工",
-      "theme_rs": 24.496644295302016
+      "theme_rs": 24.752475247524753
     },
     {
       "leaders": [
@@ -4117,7 +4195,7 @@
       "rs63_median": 33.73662168450443,
       "theme_id": "防衛（大手）",
       "theme_name": "防衛（大手）",
-      "theme_rs": 24.161073825503358
+      "theme_rs": 24.422442244224424
     },
     {
       "leaders": [
@@ -4136,7 +4214,7 @@
       "rs63_median": 60.586319218241044,
       "theme_id": "AIエンタープライズSaaS（設計/CAD）",
       "theme_name": "AIエンタープライズSaaS（設計/CAD）",
-      "theme_rs": 23.825503355704697
+      "theme_rs": 24.09240924092409
     },
     {
       "leaders": [
@@ -4153,7 +4231,7 @@
       "rs63_median": 66.5425779432294,
       "theme_id": "暗号資産取引所",
       "theme_name": "暗号資産取引所",
-      "theme_rs": 23.48993288590604
+      "theme_rs": 23.762376237623762
     },
     {
       "leaders": [
@@ -4169,7 +4247,7 @@
       "rs63_median": 12.61051651931131,
       "theme_id": "LiDAR/自動運転センサー",
       "theme_name": "LiDAR/自動運転センサー",
-      "theme_rs": 23.154362416107382
+      "theme_rs": 23.432343234323433
     },
     {
       "leaders": [
@@ -4188,45 +4266,7 @@
       "rs63_median": 12.052117263843648,
       "theme_id": "化学・素材",
       "theme_name": "化学・素材",
-      "theme_rs": 22.818791946308725
-    },
-    {
-      "leaders": [
-        "MOG.A",
-        "VSEC",
-        "TDY",
-        "MRCY",
-        "DRS"
-      ],
-      "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 6,
-      "raw_strength": 35.53806474721719,
-      "ret1_median": 0.0015280021148149636,
-      "ret20_median": -0.17209467472145357,
-      "rs189_median": 55.16175071360609,
-      "rs63_median": 15.914378780828292,
-      "theme_id": "防衛電子部品",
-      "theme_name": "防衛電子部品",
-      "theme_rs": 22.483221476510067
-    },
-    {
-      "leaders": [
-        "GTX",
-        "BWA",
-        "DAN",
-        "ALSN",
-        "LEA"
-      ],
-      "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 19,
-      "raw_strength": 35.51883269230173,
-      "ret1_median": 0.012534840492985921,
-      "ret20_median": -0.03999999717429836,
-      "rs189_median": 45.956232159847765,
-      "rs63_median": 25.0814332247557,
-      "theme_id": "自動車部品",
-      "theme_name": "自動車部品",
-      "theme_rs": 22.14765100671141
+      "theme_rs": 23.1023102310231
     },
     {
       "leaders": [
@@ -4243,7 +4283,7 @@
       "rs63_median": 40.577012563983246,
       "theme_id": "葬祭関連",
       "theme_name": "葬祭関連",
-      "theme_rs": 21.812080536912752
+      "theme_rs": 22.772277227722775
     },
     {
       "leaders": [
@@ -4262,7 +4302,7 @@
       "rs63_median": 31.782224290367616,
       "theme_id": "住宅ビルダー",
       "theme_name": "住宅ビルダー",
-      "theme_rs": 21.476510067114095
+      "theme_rs": 22.442244224422442
     },
     {
       "leaders": [
@@ -4281,7 +4321,7 @@
       "rs63_median": 49.139134481154024,
       "theme_id": "不動産開発/運営",
       "theme_name": "不動産開発/運営",
-      "theme_rs": 21.140939597315437
+      "theme_rs": 22.112211221122113
     },
     {
       "leaders": [
@@ -4292,15 +4332,15 @@
         "NDSN"
       ],
       "major_theme": "13. 産業・資本財・輸送",
-      "member_count": 26,
+      "member_count": 30,
       "raw_strength": 34.056521321403224,
-      "ret1_median": 0.019161257496629114,
-      "ret20_median": -0.06418271207053722,
+      "ret1_median": 0.017719277837659808,
+      "ret20_median": -0.06015058910720594,
       "rs189_median": 32.445290199809705,
       "rs63_median": 35.66775244299674,
       "theme_id": "産業機械",
       "theme_name": "産業機械",
-      "theme_rs": 20.80536912751678
+      "theme_rs": 21.782178217821784
     },
     {
       "leaders": [
@@ -4316,7 +4356,26 @@
       "rs63_median": 31.68915774778967,
       "theme_id": "住宅建設関連",
       "theme_name": "住宅建設関連",
-      "theme_rs": 20.469798657718123
+      "theme_rs": 21.45214521452145
+    },
+    {
+      "leaders": [
+        "VMRK",
+        "ESS",
+        "CPT",
+        "UDR",
+        "MAA"
+      ],
+      "major_theme": "14. 不動産・住宅・建設",
+      "member_count": 5,
+      "raw_strength": 33.60599867439948,
+      "ret1_median": 0.004975630597370495,
+      "ret20_median": -0.0675296370239794,
+      "rs189_median": 41.2464319695528,
+      "rs63_median": 25.965565379246158,
+      "theme_id": "REIT（住宅/アパート）",
+      "theme_name": "REIT（住宅/アパート）",
+      "theme_rs": 21.122112211221122
     },
     {
       "leaders": [
@@ -4335,7 +4394,7 @@
       "rs63_median": 28.338762214983714,
       "theme_id": "航空会社",
       "theme_name": "航空会社",
-      "theme_rs": 20.13422818791946
+      "theme_rs": 20.792079207920793
     },
     {
       "leaders": [
@@ -4346,33 +4405,15 @@
         "CION"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 10,
+      "member_count": 12,
       "raw_strength": 33.305486055736324,
       "ret1_median": 0.004870205720317489,
-      "ret20_median": -0.03811346999521603,
+      "ret20_median": -0.03939154376512832,
       "rs189_median": 31.850618458610846,
       "rs63_median": 34.760353652861795,
       "theme_id": "商業貸付",
       "theme_name": "商業貸付",
-      "theme_rs": 19.798657718120804
-    },
-    {
-      "leaders": [
-        "ESS",
-        "CPT",
-        "UDR",
-        "MAA"
-      ],
-      "major_theme": "14. 不動産・住宅・建設",
-      "member_count": 4,
-      "raw_strength": 33.194150444589766,
-      "ret1_median": 0.0037329854072722934,
-      "ret20_median": -0.06882441704664566,
-      "rs189_median": 40.818268315889625,
-      "rs63_median": 25.5700325732899,
-      "theme_id": "REIT（住宅/アパート）",
-      "theme_name": "REIT（住宅/アパート）",
-      "theme_rs": 19.463087248322147
+      "theme_rs": 20.462046204620464
     },
     {
       "leaders": [
@@ -4388,26 +4429,7 @@
       "rs63_median": 17.449976733364355,
       "theme_id": "金属製品流通",
       "theme_name": "金属製品流通",
-      "theme_rs": 19.12751677852349
-    },
-    {
-      "leaders": [
-        "GEV",
-        "ETR",
-        "VST",
-        "TLN",
-        "CEG"
-      ],
-      "major_theme": "1. AI・テック成長テーマ",
-      "member_count": 6,
-      "raw_strength": 32.84939026361032,
-      "ret1_median": 0.006448164443639937,
-      "ret20_median": -0.03365245309711734,
-      "rs189_median": 23.120837297811608,
-      "rs63_median": 42.57794322940903,
-      "theme_id": "AIデータセンター電力",
-      "theme_name": "AIデータセンター電力",
-      "theme_rs": 18.79194630872483
+      "theme_rs": 20.13201320132013
     },
     {
       "leaders": [
@@ -4426,7 +4448,7 @@
       "rs63_median": 39.78594695207073,
       "theme_id": "家電/コンシューマエレクトロニクス",
       "theme_name": "家電/コンシューマエレクトロニクス",
-      "theme_rs": 18.456375838926174
+      "theme_rs": 19.801980198019802
     },
     {
       "leaders": [
@@ -4442,7 +4464,7 @@
       "rs63_median": 0.4187994416007445,
       "theme_id": "宇宙開発",
       "theme_name": "宇宙開発",
-      "theme_rs": 18.120805369127517
+      "theme_rs": 19.471947194719473
     },
     {
       "leaders": [
@@ -4453,15 +4475,15 @@
         "KRMN"
       ],
       "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 5,
+      "member_count": 8,
       "raw_strength": 32.287460058204225,
-      "ret1_median": 0.01123239103752538,
-      "ret20_median": -0.14953169857805304,
+      "ret1_median": 0.011579537377707005,
+      "ret20_median": -0.15361891371684627,
       "rs189_median": 39.81921979067555,
       "rs63_median": 24.7557003257329,
       "theme_id": "航空宇宙部品",
       "theme_name": "航空宇宙部品",
-      "theme_rs": 17.78523489932886
+      "theme_rs": 19.141914191419144
     },
     {
       "leaders": [
@@ -4478,7 +4500,7 @@
       "rs63_median": 28.850628199162404,
       "theme_id": "機械レンタル",
       "theme_name": "機械レンタル",
-      "theme_rs": 17.449664429530202
+      "theme_rs": 18.81188118811881
     },
     {
       "leaders": [
@@ -4497,26 +4519,24 @@
       "rs63_median": 50.67473243369008,
       "theme_id": "PE/オルタナ",
       "theme_name": "PE/オルタナ",
-      "theme_rs": 17.114093959731544
+      "theme_rs": 18.48184818481848
     },
     {
       "leaders": [
-        "FIX",
-        "JCI",
-        "MOD",
-        "TT",
-        "CARR"
+        "PL",
+        "BKSY",
+        "HAWK"
       ],
-      "major_theme": "13. 産業・資本財・輸送",
-      "member_count": 11,
-      "raw_strength": 31.18191852559928,
-      "ret1_median": 0.02240737345387367,
-      "ret20_median": -0.08176000976562503,
-      "rs189_median": 41.91246431969553,
-      "rs63_median": 20.451372731503024,
-      "theme_id": "空調/HVAC",
-      "theme_name": "空調/HVAC",
-      "theme_rs": 16.778523489932887
+      "major_theme": "5. 宇宙・防衛・モビリティ",
+      "member_count": 3,
+      "raw_strength": 30.551040711520727,
+      "ret1_median": -0.007308211856018598,
+      "ret20_median": -0.3349467324114175,
+      "rs189_median": 59.75261655566128,
+      "rs63_median": 1.3494648673801768,
+      "theme_id": "衛星観測",
+      "theme_name": "衛星観測",
+      "theme_rs": 18.151815181518153
     },
     {
       "leaders": [
@@ -4533,23 +4553,7 @@
       "rs63_median": 26.710097719869708,
       "theme_id": "タワーREIT",
       "theme_name": "タワーREIT",
-      "theme_rs": 16.44295302013423
-    },
-    {
-      "leaders": [
-        "PL",
-        "BKSY"
-      ],
-      "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 2,
-      "raw_strength": 30.330007672898113,
-      "ret1_median": -0.010563406273984444,
-      "ret20_median": -0.33515011846955817,
-      "rs189_median": 59.75261655566128,
-      "rs63_median": 0.9073987901349465,
-      "theme_id": "衛星観測",
-      "theme_name": "衛星観測",
-      "theme_rs": 16.10738255033557
+      "theme_rs": 17.82178217821782
     },
     {
       "leaders": [
@@ -4566,7 +4570,7 @@
       "rs63_median": 34.66728711028385,
       "theme_id": "木材製品",
       "theme_name": "木材製品",
-      "theme_rs": 15.771812080536913
+      "theme_rs": 17.491749174917494
     },
     {
       "leaders": [
@@ -4585,7 +4589,26 @@
       "rs63_median": 39.59981386691484,
       "theme_id": "ラジオ/TV",
       "theme_name": "ラジオ/TV",
-      "theme_rs": 15.436241610738255
+      "theme_rs": 17.16171617161716
+    },
+    {
+      "leaders": [
+        "PMT",
+        "KBDC",
+        "MITT",
+        "MSIF",
+        "NSLR"
+      ],
+      "major_theme": "12. 金融・銀行・保険",
+      "member_count": 7,
+      "raw_strength": 29.86685551529953,
+      "ret1_median": 0.0,
+      "ret20_median": -0.04206069223178399,
+      "rs189_median": 15.271170313986678,
+      "rs63_median": 44.46254071661238,
+      "theme_id": "投資ファンド・ETF",
+      "theme_name": "投資ファンド・ETF",
+      "theme_rs": 16.831683168316832
     },
     {
       "leaders": [
@@ -4596,15 +4619,15 @@
         "GXO"
       ],
       "major_theme": "13. 産業・資本財・輸送",
-      "member_count": 6,
+      "member_count": 7,
       "raw_strength": 29.852499270565517,
-      "ret1_median": 0.009698904946923492,
-      "ret20_median": -0.012365368289037781,
+      "ret1_median": 0.00902487001228125,
+      "ret20_median": -0.052109189949519186,
       "rs189_median": 36.29876308277831,
       "rs63_median": 23.40623545835272,
       "theme_id": "物流/フォワーディング",
       "theme_name": "物流/フォワーディング",
-      "theme_rs": 15.100671140939598
+      "theme_rs": 16.5016501650165
     },
     {
       "leaders": [
@@ -4622,7 +4645,7 @@
       "rs63_median": 39.204281060958586,
       "theme_id": "EV完成車",
       "theme_name": "EV完成車",
-      "theme_rs": 14.76510067114094
+      "theme_rs": 16.17161716171617
     },
     {
       "leaders": [
@@ -4641,7 +4664,7 @@
       "rs63_median": 27.175430432759423,
       "theme_id": "カジノ/ゲーミング",
       "theme_name": "カジノ/ゲーミング",
-      "theme_rs": 14.429530201342283
+      "theme_rs": 15.841584158415841
     },
     {
       "leaders": [
@@ -4660,7 +4683,7 @@
       "rs63_median": 33.085155886458814,
       "theme_id": "遺伝子編集/CRISPR",
       "theme_name": "遺伝子編集/CRISPR",
-      "theme_rs": 14.093959731543624
+      "theme_rs": 15.51155115511551
     },
     {
       "leaders": [
@@ -4679,7 +4702,45 @@
       "rs63_median": 35.4118194509074,
       "theme_id": "アルコール飲料",
       "theme_name": "アルコール飲料",
-      "theme_rs": 13.758389261744966
+      "theme_rs": 15.181518151815181
+    },
+    {
+      "leaders": [
+        "FIX",
+        "JCI",
+        "MOD",
+        "TT",
+        "CARR"
+      ],
+      "major_theme": "13. 産業・資本財・輸送",
+      "member_count": 12,
+      "raw_strength": 28.02928939577145,
+      "ret1_median": 0.01844238467591741,
+      "ret20_median": -0.08517981947536662,
+      "rs189_median": 41.91246431969553,
+      "rs63_median": 14.14611447184737,
+      "theme_id": "空調/HVAC",
+      "theme_name": "空調/HVAC",
+      "theme_rs": 14.85148514851485
+    },
+    {
+      "leaders": [
+        "GEV",
+        "ETR",
+        "VST",
+        "TLN",
+        "CEG"
+      ],
+      "major_theme": "1. AI・テック成長テーマ",
+      "member_count": 8,
+      "raw_strength": 27.46316411191185,
+      "ret1_median": 0.012627953840341322,
+      "ret20_median": -0.07016826641274876,
+      "rs189_median": 23.120837297811608,
+      "rs63_median": 31.805490926012098,
+      "theme_id": "AIデータセンター電力",
+      "theme_name": "AIデータセンター電力",
+      "theme_rs": 14.521452145214523
     },
     {
       "leaders": [
@@ -4698,7 +4759,7 @@
       "rs63_median": 24.592833876221498,
       "theme_id": "ケーブル/衛星",
       "theme_name": "ケーブル/衛星",
-      "theme_rs": 13.422818791946309
+      "theme_rs": 14.19141914191419
     },
     {
       "leaders": [
@@ -4714,7 +4775,7 @@
       "rs63_median": 20.93997208003723,
       "theme_id": "REIT（カジノ/ゲーミング）",
       "theme_name": "REIT（カジノ/ゲーミング）",
-      "theme_rs": 13.087248322147651
+      "theme_rs": 13.861386138613863
     },
     {
       "leaders": [
@@ -4733,7 +4794,7 @@
       "rs63_median": 35.31875290832945,
       "theme_id": "アパレル小売",
       "theme_name": "アパレル小売",
-      "theme_rs": 12.751677852348994
+      "theme_rs": 13.531353135313532
     },
     {
       "leaders": [
@@ -4752,7 +4813,7 @@
       "rs63_median": 14.70451372731503,
       "theme_id": "スーパーマーケット",
       "theme_name": "スーパーマーケット",
-      "theme_rs": 12.416107382550337
+      "theme_rs": 13.2013201320132
     },
     {
       "leaders": [
@@ -4771,7 +4832,7 @@
       "rs63_median": 17.170777105630524,
       "theme_id": "レジャー製品",
       "theme_name": "レジャー製品",
-      "theme_rs": 12.080536912751679
+      "theme_rs": 12.871287128712872
     },
     {
       "leaders": [
@@ -4789,7 +4850,7 @@
       "rs63_median": 18.380642159143786,
       "theme_id": "クルーズ",
       "theme_name": "クルーズ",
-      "theme_rs": 11.74496644295302
+      "theme_rs": 12.541254125412541
     },
     {
       "leaders": [
@@ -4808,25 +4869,25 @@
       "rs63_median": 28.47836202885063,
       "theme_id": "肉/食肉加工",
       "theme_name": "肉/食肉加工",
-      "theme_rs": 11.409395973154362
+      "theme_rs": 12.211221122112212
     },
     {
       "leaders": [
-        "PMT",
-        "KBDC",
-        "MITT",
-        "MSIF"
+        "UEC",
+        "ASPI",
+        "LTBR",
+        "UROY"
       ],
-      "major_theme": "12. 金融・銀行・保険",
+      "major_theme": "4. 原子力・エネルギー代替",
       "member_count": 4,
-      "raw_strength": 25.853360866625724,
-      "ret1_median": 0.0,
-      "ret20_median": -0.028764587727291957,
-      "rs189_median": 15.271170313986678,
-      "rs63_median": 36.43555141926477,
-      "theme_id": "投資ファンド・ETF",
-      "theme_name": "投資ファンド・ETF",
-      "theme_rs": 11.073825503355705
+      "raw_strength": 25.68968639408766,
+      "ret1_median": -0.04766047367794457,
+      "ret20_median": -0.13054230547157208,
+      "rs189_median": 10.94196003805899,
+      "rs63_median": 40.43741275011633,
+      "theme_id": "ウラン鉱山",
+      "theme_name": "ウラン鉱山",
+      "theme_rs": 11.881188118811881
     },
     {
       "leaders": [
@@ -4845,7 +4906,7 @@
       "rs63_median": 29.781293624941835,
       "theme_id": "自動車部品小売",
       "theme_name": "自動車部品小売",
-      "theme_rs": 10.738255033557047
+      "theme_rs": 11.55115511551155
     },
     {
       "leaders": [
@@ -4864,7 +4925,7 @@
       "rs63_median": 34.24848766868311,
       "theme_id": "RV/モバイルホーム",
       "theme_name": "RV/モバイルホーム",
-      "theme_rs": 10.40268456375839
+      "theme_rs": 11.221122112211221
     },
     {
       "leaders": [
@@ -4882,7 +4943,7 @@
       "rs63_median": 43.648208469055376,
       "theme_id": "不動産テック",
       "theme_name": "不動産テック",
-      "theme_rs": 10.06711409395973
+      "theme_rs": 10.891089108910892
     },
     {
       "leaders": [
@@ -4901,7 +4962,7 @@
       "rs63_median": 14.937180083759888,
       "theme_id": "アパレル・ファッション",
       "theme_name": "アパレル・ファッション",
-      "theme_rs": 9.731543624161073
+      "theme_rs": 10.561056105610561
     },
     {
       "leaders": [
@@ -4920,7 +4981,7 @@
       "rs63_median": 8.32945556072592,
       "theme_id": "暗号資産マイニング",
       "theme_name": "暗号資産マイニング",
-      "theme_rs": 9.395973154362416
+      "theme_rs": 10.231023102310232
     },
     {
       "leaders": [
@@ -4939,7 +5000,7 @@
       "rs63_median": 15.449046067938578,
       "theme_id": "家電/家庭用品",
       "theme_name": "家電/家庭用品",
-      "theme_rs": 9.060402684563758
+      "theme_rs": 9.900990099009901
     },
     {
       "leaders": [
@@ -4958,7 +5019,7 @@
       "rs63_median": 24.569567240577012,
       "theme_id": "ホームセンター/建材小売",
       "theme_name": "ホームセンター/建材小売",
-      "theme_rs": 8.724832214765101
+      "theme_rs": 9.570957095709572
     },
     {
       "leaders": [
@@ -4977,7 +5038,7 @@
       "rs63_median": 20.288506281991623,
       "theme_id": "セメント/建材",
       "theme_name": "セメント/建材",
-      "theme_rs": 8.389261744966444
+      "theme_rs": 9.24092409240924
     },
     {
       "leaders": [
@@ -4996,7 +5057,24 @@
       "rs63_median": 7.840856212191717,
       "theme_id": "AIデータセンター建設/EPC",
       "theme_name": "AIデータセンター建設/EPC",
-      "theme_rs": 8.053691275167784
+      "theme_rs": 8.91089108910891
+    },
+    {
+      "leaders": [
+        "LEU",
+        "GFUZ",
+        "STDN"
+      ],
+      "major_theme": "4. 原子力・エネルギー代替",
+      "member_count": 3,
+      "raw_strength": 19.16159088001013,
+      "ret1_median": -0.011484773951406124,
+      "ret20_median": -0.005910188003476091,
+      "rs189_median": 3.3301617507136063,
+      "rs63_median": 34.993020009306655,
+      "theme_id": "原発機器/インフラ",
+      "theme_name": "原発機器/インフラ",
+      "theme_rs": 8.58085808580858
     },
     {
       "leaders": [
@@ -5012,7 +5090,7 @@
       "rs63_median": 28.013029315960914,
       "theme_id": "インターネット（コンテンツ）",
       "theme_name": "インターネット（コンテンツ）",
-      "theme_rs": 7.718120805369128
+      "theme_rs": 8.25082508250825
     },
     {
       "leaders": [
@@ -5029,7 +5107,7 @@
       "rs63_median": 24.546300604932526,
       "theme_id": "テレヘルス/D2C",
       "theme_name": "テレヘルス/D2C",
-      "theme_rs": 7.38255033557047
+      "theme_rs": 7.920792079207921
     },
     {
       "leaders": [
@@ -5045,7 +5123,7 @@
       "rs63_median": 31.17729176361098,
       "theme_id": "eVTOL",
       "theme_name": "eVTOL",
-      "theme_rs": 7.046979865771812
+      "theme_rs": 7.590759075907591
     },
     {
       "leaders": [
@@ -5063,7 +5141,7 @@
       "rs63_median": 25.546765937645414,
       "theme_id": "ソーシャルメディア/SNS",
       "theme_name": "ソーシャルメディア/SNS",
-      "theme_rs": 6.7114093959731544
+      "theme_rs": 7.2607260726072615
     },
     {
       "leaders": [
@@ -5082,24 +5160,26 @@
       "rs63_median": 21.59143787808283,
       "theme_id": "レジャー製品小売",
       "theme_name": "レジャー製品小売",
-      "theme_rs": 6.375838926174497
+      "theme_rs": 6.9306930693069315
     },
     {
       "leaders": [
         "USAR",
         "MP",
+        "IMC",
+        "REA",
         "UAMY"
       ],
       "major_theme": "11. 素材・鉱業・化学",
-      "member_count": 3,
+      "member_count": 5,
       "raw_strength": 16.259803090322805,
       "ret1_median": -0.015783347196175246,
-      "ret20_median": -0.0925260786920098,
+      "ret20_median": -0.1638903863892588,
       "rs189_median": 19.885823025689817,
       "rs63_median": 12.633783154955793,
       "theme_id": "レアアース/戦略金属",
       "theme_name": "レアアース/戦略金属",
-      "theme_rs": 6.0402684563758395
+      "theme_rs": 6.6006600660066
     },
     {
       "leaders": [
@@ -5115,7 +5195,7 @@
       "rs63_median": 24.03443462075384,
       "theme_id": "動物医薬/診断",
       "theme_name": "動物医薬/診断",
-      "theme_rs": 5.704697986577181
+      "theme_rs": 6.270627062706271
     },
     {
       "leaders": [
@@ -5126,15 +5206,15 @@
         "SHLS"
       ],
       "major_theme": "3. クリーンエネルギー・資源",
-      "member_count": 11,
+      "member_count": 12,
       "raw_strength": 15.524662633783155,
-      "ret1_median": 0.0027247929851150765,
-      "ret20_median": -0.10319411758710095,
+      "ret1_median": 0.001120845079193744,
+      "ret20_median": -0.10478856581661466,
       "rs189_median": 25.0,
       "rs63_median": 6.04932526756631,
       "theme_id": "太陽光",
       "theme_name": "太陽光",
-      "theme_rs": 5.369127516778524
+      "theme_rs": 5.9405940594059405
     },
     {
       "leaders": [
@@ -5153,7 +5233,7 @@
       "rs63_median": 15.286179618427173,
       "theme_id": "クリーンエネルギー総合",
       "theme_name": "クリーンエネルギー総合",
-      "theme_rs": 5.033557046979865
+      "theme_rs": 5.6105610561056105
     },
     {
       "leaders": [
@@ -5172,7 +5252,25 @@
       "rs63_median": 10.632852489530014,
       "theme_id": "半導体EDA/IP",
       "theme_name": "半導体EDA/IP",
-      "theme_rs": 4.697986577181208
+      "theme_rs": 5.2805280528052805
+    },
+    {
+      "leaders": [
+        "UMAC",
+        "RCAT",
+        "ONDS",
+        "AVAV"
+      ],
+      "major_theme": "5. 宇宙・防衛・モビリティ",
+      "member_count": 4,
+      "raw_strength": 14.253409967860609,
+      "ret1_median": -0.008805044592048394,
+      "ret20_median": -0.2052242585774562,
+      "rs189_median": 19.38629876308278,
+      "rs63_median": 9.120521172638437,
+      "theme_id": "ドローン",
+      "theme_name": "ドローン",
+      "theme_rs": 4.9504950495049505
     },
     {
       "leaders": [
@@ -5191,7 +5289,7 @@
       "rs63_median": 8.678455095393206,
       "theme_id": "高級ブランド/アパレル",
       "theme_name": "高級ブランド/アパレル",
-      "theme_rs": 4.3624161073825505
+      "theme_rs": 4.62046204620462
     },
     {
       "leaders": [
@@ -5208,7 +5306,7 @@
       "rs63_median": 22.75476966030712,
       "theme_id": "タイヤ/部品",
       "theme_name": "タイヤ/部品",
-      "theme_rs": 4.026845637583892
+      "theme_rs": 4.29042904290429
     },
     {
       "leaders": [
@@ -5227,7 +5325,7 @@
       "rs63_median": 3.024662633783155,
       "theme_id": "リチウム鉱山",
       "theme_name": "リチウム鉱山",
-      "theme_rs": 3.691275167785235
+      "theme_rs": 3.9603960396039604
     },
     {
       "leaders": [
@@ -5246,7 +5344,7 @@
       "rs63_median": 12.517449976733364,
       "theme_id": "スポーツ・アパレル",
       "theme_name": "スポーツ・アパレル",
-      "theme_rs": 3.3557046979865772
+      "theme_rs": 3.6303630363036308
     },
     {
       "leaders": [
@@ -5263,7 +5361,23 @@
       "rs63_median": 17.58957654723127,
       "theme_id": "自動運転",
       "theme_name": "自動運転",
-      "theme_rs": 3.0201342281879198
+      "theme_rs": 3.3003300330033
+    },
+    {
+      "leaders": [
+        "ORA",
+        "FRVO"
+      ],
+      "major_theme": "3. クリーンエネルギー・資源",
+      "member_count": 2,
+      "raw_strength": 10.721491508674182,
+      "ret1_median": -0.013555105102009413,
+      "ret20_median": -0.19798604032636125,
+      "rs189_median": 18.74405328258801,
+      "rs63_median": 2.698929734760354,
+      "theme_id": "地熱/再生可能",
+      "theme_name": "地熱/再生可能",
+      "theme_rs": 2.9702970297029703
     },
     {
       "leaders": [
@@ -5282,40 +5396,59 @@
       "rs63_median": 3.303862261516985,
       "theme_id": "鉱業総合（銅/ニッケル等）",
       "theme_name": "鉱業総合（銅/ニッケル等）",
-      "theme_rs": 2.684563758389262
+      "theme_rs": 2.6402640264026402
     },
     {
       "leaders": [
-        "RCAT",
-        "ONDS",
-        "AVAV"
-      ],
-      "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 3,
-      "raw_strength": 10.127572446459066,
-      "ret1_median": -0.0027586180588294873,
-      "ret20_median": -0.2218963446398281,
-      "rs189_median": 13.368220742150333,
-      "rs63_median": 6.8869241507678,
-      "theme_id": "ドローン",
-      "theme_name": "ドローン",
-      "theme_rs": 2.348993288590604
-    },
-    {
-      "leaders": [
+        "DKNG",
         "SRAD",
         "FLUT"
       ],
       "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 2,
-      "raw_strength": 9.328764202941734,
-      "ret1_median": 0.017793443980279378,
-      "ret20_median": -0.013277269012975434,
-      "rs189_median": 2.021883920076118,
-      "rs63_median": 16.63564448580735,
+      "member_count": 3,
+      "raw_strength": 8.195722215408756,
+      "ret1_median": 0.019051451637656536,
+      "ret20_median": -0.026750602011600066,
+      "rs189_median": 2.664129400570885,
+      "rs63_median": 13.727315030246626,
       "theme_id": "スポーツベッティング/ゲーミング",
       "theme_name": "スポーツベッティング/ゲーミング",
-      "theme_rs": 2.013422818791946
+      "theme_rs": 2.31023102310231
+    },
+    {
+      "leaders": [
+        "KTOS",
+        "AVEX"
+      ],
+      "major_theme": "5. 宇宙・防衛・モビリティ",
+      "member_count": 2,
+      "raw_strength": 6.806819183042231,
+      "ret1_median": 0.002256124776132351,
+      "ret20_median": -0.24333199009739243,
+      "rs189_median": 4.376784015223597,
+      "rs63_median": 9.236854350860865,
+      "theme_id": "防衛（ドローン/C4ISR）",
+      "theme_name": "防衛（ドローン/C4ISR）",
+      "theme_rs": 1.9801980198019802
+    },
+    {
+      "leaders": [
+        "IONQ",
+        "QUBT",
+        "QBTS",
+        "RGTI",
+        "ARQQ"
+      ],
+      "major_theme": "1. AI・テック成長テーマ",
+      "member_count": 8,
+      "raw_strength": 5.976951862636971,
+      "ret1_median": 0.007326371737526816,
+      "ret20_median": -0.18144214196820507,
+      "rs189_median": 4.019980970504282,
+      "rs63_median": 7.933922754769661,
+      "theme_id": "量子コンピューティング",
+      "theme_name": "量子コンピューティング",
+      "theme_rs": 1.65016501650165
     },
     {
       "leaders": [
@@ -5332,44 +5465,26 @@
       "rs63_median": 6.93345742205677,
       "theme_id": "サービスロボット/ヒューマノイド",
       "theme_name": "サービスロボット/ヒューマノイド",
-      "theme_rs": 1.6778523489932886
-    },
-    {
-      "leaders": [
-        "IONQ",
-        "QUBT",
-        "QBTS",
-        "RGTI",
-        "ARQQ"
-      ],
-      "major_theme": "1. AI・テック成長テーマ",
-      "member_count": 6,
-      "raw_strength": 5.174252932902211,
-      "ret1_median": 0.0036279885045757965,
-      "ret20_median": -0.17094292431622987,
-      "rs189_median": 4.019980970504282,
-      "rs63_median": 6.32852489530014,
-      "theme_id": "量子コンピューティング",
-      "theme_name": "量子コンピューティング",
-      "theme_rs": 1.342281879194631
+      "theme_rs": 1.3201320132013201
     },
     {
       "leaders": [
         "BWXT",
         "NNE",
         "SMR",
-        "OKLO"
+        "OKLO",
+        "FISN"
       ],
       "major_theme": "4. 原子力・エネルギー代替",
-      "member_count": 4,
-      "raw_strength": 3.940905401977066,
-      "ret1_median": -0.07324943201099665,
-      "ret20_median": -0.1630904082587934,
+      "member_count": 6,
+      "raw_strength": 4.91810409904547,
+      "ret1_median": -0.05608651454564045,
+      "ret20_median": -0.1662068267768016,
       "rs189_median": 0.8087535680304472,
-      "rs63_median": 7.073057235923685,
+      "rs63_median": 9.027454630060493,
       "theme_id": "SMR（小型モジュール炉）",
       "theme_name": "SMR（小型モジュール炉）",
-      "theme_rs": 1.006711409395973
+      "theme_rs": 0.9900990099009901
     },
     {
       "leaders": [
@@ -5385,7 +5500,7 @@
       "rs63_median": 6.65425779432294,
       "theme_id": "次世代バッテリー（固体）",
       "theme_name": "次世代バッテリー（固体）",
-      "theme_rs": 0.6711409395973155
+      "theme_rs": 0.6600660066006601
     },
     {
       "leaders": [
@@ -5403,7 +5518,7 @@
       "rs63_median": 0.18613308515588647,
       "theme_id": "エネルギー蓄電/蓄電池",
       "theme_name": "エネルギー蓄電/蓄電池",
-      "theme_rs": 0.33557046979865773
+      "theme_rs": 0.33003300330033003
     },
     {
       "leaders": [
@@ -5632,23 +5747,6 @@
     },
     {
       "leaders": [
-        "ASPI",
-        "LTBR",
-        "UROY"
-      ],
-      "major_theme": "4. 原子力・エネルギー代替",
-      "member_count": 3,
-      "raw_strength": null,
-      "ret1_median": -0.043596752726027255,
-      "ret20_median": -0.19495415528026594,
-      "rs189_median": null,
-      "rs63_median": null,
-      "theme_id": "ウラン鉱山",
-      "theme_name": "ウラン鉱山",
-      "theme_rs": null
-    },
-    {
-      "leaders": [
         "CLBT"
       ],
       "major_theme": "3. クリーンエネルギー・資源",
@@ -5770,13 +5868,14 @@
     },
     {
       "leaders": [
-        "BGIN"
+        "BGIN",
+        "SECZ"
       ],
       "major_theme": "7. フィンテック・デジタル金融",
-      "member_count": 1,
+      "member_count": 2,
       "raw_strength": null,
-      "ret1_median": -0.03703700199609328,
-      "ret20_median": -0.07614211877142041,
+      "ret1_median": -0.004214987502902612,
+      "ret20_median": 0.18736760153504062,
       "rs189_median": null,
       "rs63_median": null,
       "theme_id": "ブロックチェーン技術",
@@ -5901,53 +6000,6 @@
       "rs63_median": 75.66309911586785,
       "theme_id": "化粧品/パーソナルケア小売",
       "theme_name": "化粧品/パーソナルケア小売",
-      "theme_rs": null
-    },
-    {
-      "leaders": [
-        "LEU"
-      ],
-      "major_theme": "4. 原子力・エネルギー代替",
-      "member_count": 1,
-      "raw_strength": 19.16159088001013,
-      "ret1_median": -0.08175075636201456,
-      "ret20_median": -0.2059743939997054,
-      "rs189_median": 3.3301617507136063,
-      "rs63_median": 34.993020009306655,
-      "theme_id": "原発機器/インフラ",
-      "theme_name": "原発機器/インフラ",
-      "theme_rs": null
-    },
-    {
-      "leaders": [
-        "ORA"
-      ],
-      "major_theme": "3. クリーンエネルギー・資源",
-      "member_count": 1,
-      "raw_strength": 11.908089926542958,
-      "ret1_median": -0.018210058028392373,
-      "ret20_median": -0.16319650913334283,
-      "rs189_median": 18.74405328258801,
-      "rs63_median": 5.072126570497907,
-      "theme_id": "地熱/再生可能",
-      "theme_name": "地熱/再生可能",
-      "theme_rs": null
-    },
-    {
-      "leaders": [
-        "SNDL",
-        "TLRY",
-        "VFF"
-      ],
-      "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 3,
-      "raw_strength": null,
-      "ret1_median": 0.0,
-      "ret20_median": 0.07200002670288086,
-      "rs189_median": null,
-      "rs63_median": null,
-      "theme_id": "大麻・カンナビス",
-      "theme_name": "大麻・カンナビス",
       "theme_rs": null
     },
     {
@@ -6188,21 +6240,6 @@
       "rs63_median": null,
       "theme_id": "鉱業総合",
       "theme_name": "鉱業総合",
-      "theme_rs": null
-    },
-    {
-      "leaders": [
-        "KTOS"
-      ],
-      "major_theme": "5. 宇宙・防衛・モビリティ",
-      "member_count": 1,
-      "raw_strength": 7.632784748421478,
-      "ret1_median": -0.006172859053917845,
-      "ret20_median": -0.25641028912355046,
-      "rs189_median": 4.376784015223597,
-      "rs63_median": 10.888785481619358,
-      "theme_id": "防衛（ドローン/C4ISR）",
-      "theme_name": "防衛（ドローン/C4ISR）",
       "theme_rs": null
     },
     {
