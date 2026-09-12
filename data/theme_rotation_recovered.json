@@ -2,7 +2,7 @@
   "calculation_version": "v38-recovered-theme-1.1.0",
   "coverage": 1.0,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-12T13:47:43Z",
+  "generated_at": "2026-09-12T14:16:04Z",
   "rows": [
     {
       "leaders": [
@@ -4408,7 +4408,7 @@
       "member_count": 12,
       "raw_strength": 33.305486055736324,
       "ret1_median": 0.004870205720317489,
-      "ret20_median": -0.03939148248234303,
+      "ret20_median": -0.03939154376512832,
       "rs189_median": 31.850618458610846,
       "rs63_median": 34.760353652861795,
       "theme_id": "商業貸付",

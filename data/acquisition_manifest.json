@@ -12,8 +12,8 @@
     },
     "options_status": {
       "path": "options/index.json",
-      "reason": "CURRENT_SESSION_AUTHORITY",
-      "status": "READY"
+      "reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
+      "status": "DATA_REQUIRED"
     },
     "peer_theme_status": {
       "path": "theme_scores.json",
@@ -34,10 +34,11 @@
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 0.9997050147492625,
-  "generated_at": "2026-09-12T13:47:43Z",
+  "generated_at": "2026-09-12T14:16:04Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
-  "options_status": "READY",
+  "options_reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
+  "options_status": "DATA_REQUIRED",
   "peer_theme_status": "READY",
   "positions_status": "READY",
   "schema_version": "v38.acquisition.1",

@@ -2,7 +2,7 @@
   "calculation_version": "v38-user-confirmed-empty-ledger-1.0.0",
   "confirmed_at": "2026-09-12",
   "coverage": 1.0,
-  "generated_at": "2026-09-12T13:47:43Z",
+  "generated_at": "2026-09-12T14:16:04Z",
   "ledger_version": "EMPTY",
   "note": "No open positions. Missing positions_ledger.json must be treated as an intentional empty portfolio, not DATA_REQUIRED, while mode remains EMPTY.",
   "rows": [],

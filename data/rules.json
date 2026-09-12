@@ -1,7 +1,7 @@
 {
-  "calculation_version": "v38-supplemental-engine-1.0.0",
+  "calculation_version": "v38-supplemental-engine-1.0.1",
   "coverage": 1.0,
-  "generated_at": "2026-09-12T13:47:43Z",
+  "generated_at": "2026-09-12T14:16:04Z",
   "rules": {
     "allocation": {
       "gross_max_pct": 100,
@@ -52,6 +52,8 @@
     "tqqq_panic": {
       "early_exit": "MC57<20 -> return to 30 next open",
       "max_hold_sessions": 10,
+      "qqq_4h_definition": "QQQ RTH only, America/New_York, 09:30 anchor: 09:30-13:30 full 4H + 13:30-16:00 session-tail; extended hours excluded; completed standard sessions only; nonstandard sessions fail closed",
+      "qqq_4h_rsi": "Textbook Wilder RSI14: 14-delta SMA seed, then Wilder recursive smoothing",
       "seed": "VIX Close>=23 AND QQQ SMA50 deviation<=-0.5ATR AND QQQ 10d DD<=-2%",
       "seed_max_age_sessions": 30,
       "target_pct": 80,
