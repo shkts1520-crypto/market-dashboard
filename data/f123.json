@@ -1,7 +1,7 @@
 {
-  "base_pool_count": 1477,
+  "base_pool_count": 1479,
   "calculation_version": "v38-f123-engine-1.1.0",
-  "coverage": 0.9781775287525803,
+  "coverage": 1.0,
   "f1": {
     "coverage": null,
     "dependency": {
@@ -56,7 +56,7 @@
     "status": "DATA_INCOMPLETE",
     "value": null
   },
-  "generated_at": "2026-09-11T22:29:06Z",
+  "generated_at": "2026-09-12T01:53:48Z",
   "rules": {
     "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
     "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",

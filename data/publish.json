@@ -36,7 +36,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "market_state.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.data_required.1",
@@ -45,9 +45,9 @@
       "status": "READY"
     },
     {
-      "calculation_version": "v38-stock-adapter-1.1.0",
-      "coverage": 0.9781775287525803,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "calculation_version": "v38-stock-adapter-1.2.0",
+      "coverage": 1.0,
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "breadth.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.breadth.1",
@@ -68,8 +68,8 @@
     },
     {
       "calculation_version": "v38-f123-engine-1.1.0",
-      "coverage": 0.9781775287525803,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "coverage": 1.0,
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "f123.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.f123.1",
@@ -80,7 +80,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "core12.json",
       "reason": "CORE12_RANKING_UNRESOLVED",
       "schema_version": "v38.data_required.1",
@@ -91,7 +91,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "positions.json",
       "reason": "POSITIONS_LEDGER_MISSING_OR_STALE",
       "schema_version": "v38.positions.1",
@@ -102,7 +102,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "rotation.json",
       "reason": "PEER_THEME_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
       "schema_version": "v38.rotation.1",
@@ -111,9 +111,9 @@
       "status": "DATA_REQUIRED"
     },
     {
-      "calculation_version": "v38-stock-adapter-1.1.0",
-      "coverage": 0.9781775287525803,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "calculation_version": "v38-stock-adapter-1.2.0",
+      "coverage": 1.0,
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "rs.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rs.1",
@@ -124,7 +124,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": null,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "weekly.json",
       "reason": "NQSAR_AUTHORITATIVE_INPUT_MISSING_OR_STALE",
       "schema_version": "v38.weekly.1",
@@ -146,7 +146,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-11T22:29:06Z",
+      "generated_at": "2026-09-12T01:53:48Z",
       "name": "rules.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rules.1",
@@ -157,7 +157,7 @@
   ],
   "coverage": 0.45454545454545453,
   "full_v38_ready": false,
-  "generated_at": "2026-09-11T22:29:06Z",
+  "generated_at": "2026-09-12T01:53:48Z",
   "note": "This shard reports publication readiness; READY means the report itself is current, not that every trading dependency is available.",
   "ready_count": 5,
   "required_count": 11,
