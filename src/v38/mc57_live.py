@@ -13,7 +13,7 @@ from .freshness import atomic_write_json
 from .mc57_engine import MC57_METRICS, calibrate_mc57
 
 SCHEMA_VERSION = "v38.mc57.1"
-CALCULATION_VERSION = "v38-mc57-live-1.0.0"
+CALCULATION_VERSION = "v38-mc57-live-1.1.0"
 PRICE_START = "2004-01-01"
 EXPECTED_ETF_COUNT = 57
 
@@ -140,7 +140,6 @@ def download_fixed57_adjusted_closes(
         symbol for symbol in FIXED_57_ETFS
         if symbol not in closes or pd.Timestamp(target) not in closes[symbol].index
     ]
-    # One exact-symbol retry for provider partial responses. No symbol substitution.
     for symbol in list(missing_target):
         try:
             raw = _download_batch(yf, [symbol])
@@ -296,15 +295,20 @@ def build_mc57_object(
             raise MC57LiveError(f"MC57 metric has zero valid ETF observations: {metric}")
 
     history = []
-    hist = panel.loc[panel.index <= day, ["raw", "ema2_raw", "z", "mc57"]].dropna(subset=["mc57"]).tail(260)
+    hist_cols = ["raw", "ema2_raw", "z", "mc57", *MC57_METRICS]
+    hist = panel.loc[panel.index <= day, hist_cols].dropna(subset=["mc57"]).tail(260)
     for idx, h in hist.iterrows():
-        history.append({
+        item: dict[str, Any] = {
             "date": pd.Timestamp(idx).strftime("%Y-%m-%d"),
             "raw": float(h["raw"]),
             "ema2_raw": float(h["ema2_raw"]),
             "z": float(h["z"]),
             "mc57": float(h["mc57"]),
-        })
+        }
+        for metric in MC57_METRICS:
+            value = _finite(h.get(metric))
+            item[metric] = value
+        history.append(item)
 
     coverage = current_close / EXPECTED_ETF_COUNT
     return {
