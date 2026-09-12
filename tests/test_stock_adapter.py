@@ -136,6 +136,46 @@ def test_return_formula_is_close_t_over_close_t_minus_p_minus_one():
     assert row["ret63"] == pytest.approx(expected, rel=0, abs=1e-14)
 
 
+def test_display_sparkline_and_universe_metadata_are_preserved_without_affecting_rank():
+    d = make_prices(tickers=("AAA",), slopes={"AAA": 1})
+    universe = snap_universe(("AAA",))
+    universe["name"] = "Alpha"
+    universe["sector"] = "Technology"
+    universe["industry"] = "Software"
+    universe["exchange"] = "NASDAQ"
+    rs, _ = calc(d, universe)
+    row = rs["rows"][0]
+    assert row["name"] == "Alpha"
+    assert row["sector"] == "Technology"
+    assert row["industry"] == "Software"
+    assert row["exchange"] == "NASDAQ"
+    assert len(row["sparkline"]) == 63
+    assert row["sparkline"][-1]["date"] == SESSION
+    assert row["sparkline"][-1]["close"] == pytest.approx(row["price"])
+    assert row["ret1"] == pytest.approx(
+        d.close.iloc[-1] / d.close.iloc[-2] - 1.0
+    )
+    diagnostics = rs["market_diagnostics"]
+    assert diagnostics["status"] == "READY"
+    assert diagnostics["series"][-1]["date"] == SESSION
+    assert diagnostics["series"][-1]["observed"] == 1
+    assert diagnostics["reason"] == "CURRENT_UNIVERSE_DISPLAY_DIAGNOSTIC_NOT_TRADING_GATE"
+
+
+def test_display_metadata_does_not_leak_a_future_membership_event():
+    d = make_prices(tickers=("AAA",), slopes={"AAA": 1})
+    universe = pd.DataFrame(
+        {
+            "ticker": ["AAA", "AAA"],
+            "effective_from": ["2026-01-01", "2026-09-09"],
+            "in_universe": [True, False],
+            "name": ["Current Name", "Future Name"],
+        }
+    )
+    rs, _ = calc(d, universe)
+    assert rs["rows"][0]["name"] == "Current Name"
+
+
 def test_rs_percentiles_are_cross_sectional_and_top_is_100():
     rs, _ = calc()
     by = {x["ticker"]: x for x in rs["rows"]}

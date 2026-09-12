@@ -6,7 +6,7 @@ from typing import Any
 
 from .freshness import atomic_write_json
 
-CALCULATION_VERSION = "v38-history-archive-1.0.0"
+CALCULATION_VERSION = "v38-history-archive-1.1.0"
 SNAPSHOT_SCHEMA_VERSION = "v38.history.snapshot.1"
 INDEX_SCHEMA_VERSION = "v38.history.index.1"
 OLD_TOP24_SCHEMA_VERSION = "v38.old_top24.1"
@@ -87,6 +87,22 @@ def build_session_snapshot(data_dir: str | Path, *, top_n: int = 100) -> dict[st
             }
 
     authority = manifest.get("authority_status")
+    if not isinstance(authority, dict):
+        authority = {}
+    if not authority:
+        for key, path in (
+            ("nqsar_status", "nqsar.json"),
+            ("mc57_status", "mc57.json"),
+            ("structural_clinical_biotech_status", "classifications.json"),
+            ("peer_theme_status", "theme_scores.json"),
+            ("options_status", "options/index.json"),
+            ("positions_status", "positions_ledger.json"),
+        ):
+            authority[key] = {
+                "path": path,
+                "status": str(manifest.get(key) or "DATA_REQUIRED"),
+                "reason": manifest.get(key.replace("_status", "_reason")),
+            }
     return {
         "session_date": session,
         "generated_at": state.get("generated_at"),
@@ -98,7 +114,7 @@ def build_session_snapshot(data_dir: str | Path, *, top_n: int = 100) -> dict[st
         "acquisition": {
             "universe": manifest.get("universe"),
             "yahoo": manifest.get("yahoo"),
-            "authority_status": authority if isinstance(authority, dict) else {},
+            "authority_status": authority,
         },
         "daily": {
             "breadth50": breadth.get("breadth50"),
