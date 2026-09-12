@@ -65,7 +65,7 @@ def test_21_observed_sessions_enable_original_persistence_classification(tmp_pat
         snapshots.append({
             "date": day,
             "windows": {"63": rows[:10], "126": rows[:10], "189": rows},
-            "window_source": {"63": "TEST", "126": "TEST", "189": "TEST"},
+            "window_source": {"63": "CURRENT_RS_FULL_UNIVERSE", "126": "CURRENT_RS_FULL_UNIVERSE", "189": "CURRENT_RS_FULL_UNIVERSE"},
         })
 
     current = {
@@ -104,7 +104,7 @@ def test_existing_short_window_snapshots_accumulate_without_retrospective_backfi
             "126": [{"rank": 1, "ticker": "B", "rs63": 99, "rs126": 99, "rs189": 80}],
             "189": [{"rank": 1, "ticker": "B", "rs63": 99, "rs126": 99, "rs189": 99}],
         },
-        "window_source": {"63": "OBSERVED", "126": "OBSERVED", "189": "OBSERVED"},
+        "window_source": {"63": "CURRENT_RS_FULL_UNIVERSE", "126": "CURRENT_RS_FULL_UNIVERSE", "189": "CURRENT_RS_FULL_UNIVERSE"},
     }
     out = build_rs_history(
         tmp_path / "history",

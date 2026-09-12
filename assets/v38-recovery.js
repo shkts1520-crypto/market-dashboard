@@ -127,16 +127,19 @@
     if (!history || history.status !== 'READY') return;
     const card = findCard('t-rs', 'Top10 IN / OUT履歴');
     if (!card) return;
+    const reconstructed = history.history_kind === 'CURRENT_UNIVERSE_RECONSTRUCTED';
     card.replaceChildren();
     append(card, 'h2', '', 'Top10 IN / OUT履歴');
-    append(card, 'div', 'sub', '現在のTop10を、実際に保存された前営業日・約1週間前・約1か月前と比較。存在しない過去履歴は補完しません。');
+    append(card, 'div', 'sub', reconstructed
+      ? '取得済みYahoo過去OHLCを現在Universeで同一定義に再計算。PIT Universe未回収期間は再構成値、実観測日は実データを優先。'
+      : '現在のTop10を、実際に保存された前営業日・約1週間前・約1か月前と比較。');
 
     const labels = {'63': 'RS63 約3ヶ月', '126': 'RS126 約6ヶ月', '189': 'RS189 約9ヶ月・主指標'};
     ['63', '126', '189'].forEach((period) => {
       const data = history.windows && history.windows[period];
       const group = append(card, 'div', 'rsx-item', '');
       append(group, 'h3', '', labels[period]);
-      append(group, 'div', 'sub', '保存済み ' + String(data && data.available_sessions || 0) + ' セッション');
+      append(group, 'div', 'sub', '利用可能 ' + String(data && data.available_sessions || 0) + ' セッション');
       (data && Array.isArray(data.comparisons) ? data.comparisons : []).forEach((cmp) => {
         const block = append(group, 'div', 'rsx-item', '');
         const title = cmp.status === 'READY'
@@ -150,7 +153,7 @@
         }
       });
     });
-    statusNote(card, 'READY', 'OBSERVED_ARCHIVE_ONLY • first ' + (history.first_observed_session || '—'));
+    statusNote(card, 'READY', (reconstructed ? 'RECONSTRUCTED_OHLC_HISTORY' : 'OBSERVED_ARCHIVE_ONLY') + ' • first ' + (history.first_observed_session || '—'));
   }
 
   function renderRsPersistence(history) {
@@ -158,13 +161,16 @@
     const data = history.persistence;
     const card = findCard('t-rs', 'RS189 継続性');
     if (!card || !data) return;
+    const reconstructed = history.history_kind === 'CURRENT_UNIVERSE_RECONSTRUCTED';
     card.replaceChildren();
     append(card, 'h2', '', 'RS189 継続性 Leadership Persistence');
-    append(card, 'div', 'sub', 'Top10滞在、Top24滞在率、連続日数、順位・RS変化。保存開始前の履歴は推測しません。');
+    append(card, 'div', 'sub', reconstructed
+      ? 'Top10滞在、Top24滞在率、連続日数、順位・RS変化を取得済み過去OHLCから再計算。PIT未回収期間は現在Universe基準。'
+      : 'Top10滞在、Top24滞在率、連続日数、順位・RS変化。');
     const observed = Number(data.observed_sessions || 0);
     const required = Number(data.required_sessions || 21);
     const summary = append(card, 'div', 'v38-live-kv', '');
-    append(summary, 'span', '', '判定履歴');
+    append(summary, 'span', '', reconstructed ? '判定履歴（再構成含む）' : '判定履歴');
     append(summary, 'b', '', observed + '/' + required + '営業日' + (data.classification_ready ? '' : '（蓄積中）'));
 
     const list = append(card, 'div', 'rsc-list', '');
@@ -179,14 +185,16 @@
       const metrics = append(item, 'div', 'rsc-metrics', '');
       append(metrics, 'span', '', 'Top10 ' + row.top10_days + '/' + row.window_sessions + '日');
       append(metrics, 'span', '', 'Top24 ' + num(row.top24_pct, 0) + '%');
-      append(metrics, 'span', '', '連続Top10 ' + row.consecutive_top10_observed + '日（観測）');
+      append(metrics, 'span', '', '連続Top10 ' + row.consecutive_top10_observed + '日');
       const rankChange = finite(row.rank_change);
       append(metrics, 'span', '', (row.rank_change_sessions || 0) + '日順位 ' + (rankChange === null ? '—' : rankChange > 0 ? '↑' + rankChange : rankChange < 0 ? '↓' + Math.abs(rankChange) : '→'));
 
       const slopes = append(item, 'div', 'rsc-slopes', '');
-      slopes.textContent = '観測期間変化: 63 ' + signed(row.delta_rs63, 0) + ' / 126 ' + signed(row.delta_rs126, 0) + ' / 189 ' + signed(row.delta_rs189, 1);
+      slopes.textContent = '期間変化: 63 ' + signed(row.delta_rs63, 0) + ' / 126 ' + signed(row.delta_rs126, 0) + ' / 189 ' + signed(row.delta_rs189, 1);
     });
-    statusNote(card, data.classification_ready ? 'READY' : 'ACCUMULATING', data.classification_ready ? '21-session original persistence definitions enabled' : '21営業日そろうまで分類は「蓄積中」');
+    statusNote(card, data.classification_ready ? 'READY' : 'ACCUMULATING', reconstructed
+      ? 'CURRENT_UNIVERSE_RECONSTRUCTED_OHLC • display only • PIT未回収'
+      : (data.classification_ready ? '21-session original persistence definitions enabled' : '21営業日そろうまで分類は「蓄積中」'));
   }
 
   async function applyRecovery() {

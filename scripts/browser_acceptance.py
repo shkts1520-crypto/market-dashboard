@@ -68,14 +68,19 @@ def _assert_live_binding(page, view):
     rs = view["rs"]
     page.locator('a.tabx[href="#t-rs"]').click()
     rs_text = page.locator("#t-rs").inner_text()
-    assert "存在しない過去履歴は補完しません" in rs_text
     assert str(rs["status"]) in rs_text
-    assert "OBSERVED_ARCHIVE_ONLY" in rs_text
-    assert "保存開始前の履歴は推測しません" in rs_text
     history = _rs_history(page)
     assert history["status"] == "READY"
     assert history["session_date"] == view["session_date"]
-    assert history["history_policy"].startswith("Only actually archived sessions")
+    if history.get("history_kind") == "CURRENT_UNIVERSE_RECONSTRUCTED":
+        assert "RECONSTRUCTED_OHLC_HISTORY" in rs_text
+        assert "PIT Universe未回収期間は再構成値" in rs_text
+        assert history.get("survivorship_warning") is True
+        assert history.get("trading_gate_eligible") is False
+        assert history.get("reconstructed_sessions", 0) > 0
+    else:
+        assert "OBSERVED_ARCHIVE_ONLY" in rs_text
+        assert history.get("history_kind") in {None, "OBSERVED_ARCHIVE_ONLY"}
     if rs["rows"]:
         first = rs["rows"][0]
         row = page.locator('[data-v38-rs-ticker="' + first["ticker"] + '"]').first
