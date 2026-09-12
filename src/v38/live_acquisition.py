@@ -228,6 +228,25 @@ def choose_completed_session(qqq_dates: Iterable[str], spy_dates: Iterable[str],
     return latest
 
 
+def prevent_session_regression(observed_session: str, previous_session: str | None) -> str:
+    """Keep a transient provider response from moving publication backward.
+
+    A retained prior session still has to pass the normal stock-coverage and
+    required-market-symbol checks. Otherwise the staged run aborts without
+    replacing the existing atomic publication.
+    """
+    try:
+        observed = pd.Timestamp(observed_session).strftime("%Y-%m-%d")
+        previous = (
+            pd.Timestamp(previous_session).strftime("%Y-%m-%d")
+            if previous_session
+            else None
+        )
+    except Exception as exc:
+        raise LiveAcquisitionError("invalid observed/previous session date") from exc
+    return previous if previous is not None and previous > observed else observed
+
+
 def adjusted_ohlcv_rows(frame: pd.DataFrame, *, ticker: str, target_session: str) -> list[dict[str, Any]]:
     if frame is None or frame.empty:
         return []

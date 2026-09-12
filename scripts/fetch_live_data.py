@@ -21,6 +21,7 @@ from v38.live_acquisition import (
     frame_dates,
     manifest_object,
     parse_tradingview_universe,
+    prevent_session_regression,
     previous_active_universe,
     state_object,
     validate_universe_count,
@@ -132,10 +133,17 @@ def main() -> int:
     stage.mkdir(parents=True, exist_ok=True)
 
     benchmarks = fetch_benchmark_frames(yf)
-    session_date = choose_completed_session(
+    observed_session = choose_completed_session(
         frame_dates(benchmarks["QQQ"]),
         frame_dates(benchmarks["SPY"]),
     )
+    previous_state = _load(data_dir / "state.json")
+    previous_session = (
+        str(previous_state.get("session_date"))
+        if previous_state and previous_state.get("session_date")
+        else None
+    )
+    session_date = prevent_session_regression(observed_session, previous_session)
 
     tv_response = fetch_tradingview_response()
     universe_rows, universe_stats = parse_tradingview_universe(
@@ -276,16 +284,21 @@ def main() -> int:
             coverage=coverage,
         ),
     )
-    write_json(
-        stage / "acquisition_manifest.json",
-        manifest_object(
+    manifest = manifest_object(
             session_date=session_date,
             generated_at=generated_at,
             universe_stats=universe_stats,
             yahoo_stats=yahoo_stats,
             nqsar_status=nqsar_status,
-        ),
-    )
+        )
+    manifest["session_selection"] = {
+        "benchmark_observed_session": observed_session,
+        "previous_published_session": previous_session,
+        "selected_session": session_date,
+        "non_regression_applied": session_date != observed_session,
+        "selected_session_still_requires_normal_coverage_guards": True,
+    }
+    write_json(stage / "acquisition_manifest.json", manifest)
 
     materialize_supplemental_shards(
         stage,

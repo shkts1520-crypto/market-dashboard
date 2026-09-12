@@ -15,6 +15,7 @@ from v38.live_acquisition import (
     manifest_object,
     market_rows,
     parse_tradingview_universe,
+    prevent_session_regression,
     select_yfinance_symbol_frame,
     state_object,
     validate_universe_count,
@@ -196,6 +197,12 @@ def test_completed_session_requires_common_qqq_spy_date():
         now_utc=datetime(2026, 9, 11, 1, 0, tzinfo=timezone.utc),
     )
     assert got == "2026-09-09"
+
+
+def test_previous_published_session_prevents_provider_regression():
+    assert prevent_session_regression("2026-09-10", "2026-09-11") == "2026-09-11"
+    assert prevent_session_regression("2026-09-11", "2026-09-11") == "2026-09-11"
+    assert prevent_session_regression("2026-09-12", "2026-09-11") == "2026-09-12"
 
 
 def test_adjusted_ohlcv_uses_adj_close_factor_for_ohlc_not_volume():
