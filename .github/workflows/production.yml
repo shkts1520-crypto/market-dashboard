@@ -93,6 +93,17 @@ jobs:
             --reference config/mc57_reference.json \
             --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json
 
+      - name: Recover remaining non-options live inputs
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/v38-live"
+          if [ ! -d "$WORK" ]; then WORK=""; fi
+          PYTHONPATH=src python scripts/materialize_recovered_live_inputs.py \
+            --data-dir data \
+            --work-dir "$WORK"
+
       - name: Materialize current fail-closed supplemental shards
         shell: bash
         run: |
@@ -269,7 +280,7 @@ jobs:
 
           git add -- data/history
 
-          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json; do
+          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json; do
             if [ -f "$path" ]; then git add -- "$path"; fi
           done
 
