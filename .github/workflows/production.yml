@@ -58,6 +58,7 @@ jobs:
           node --check assets/v38-runtime.js
           node --check assets/v38-site.js
           node --check assets/v38-observables.js
+          node --check assets/v38-rs.js
 
       - name: Revalidate retained session or select live acquisition
         id: session-mode
@@ -83,6 +84,18 @@ jobs:
           PYTHONPATH=src python scripts/fetch_live_data.py \
             --data-dir data \
             --work-dir "$RUNNER_TEMP/v38-live"
+
+      - name: Calculate RS history and leadership persistence
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/v38-live/ohlcv.csv"
+          test -s data/rs.json
+          PYTHONPATH=src python scripts/calculate_rs_history.py \
+            --ohlcv "$RUNNER_TEMP/v38-live/ohlcv.csv" \
+            --rs data/rs.json \
+            --output data/rs_history.json
 
       - name: Calculate fixed-57 MC57
         if: github.event_name != 'pull_request'
@@ -155,6 +168,16 @@ jobs:
               assert isinstance(value, (int, float)) and math.isfinite(float(value)), (key, value)
           assert len(mc57.get('metric_scores', {})) == 12
 
+          rs_history = json.loads((root / 'rs_history.json').read_text(encoding='utf-8'))
+          assert rs_history.get('session_date') == session
+          assert rs_history.get('status') == 'READY', rs_history.get('reason')
+          assert rs_history.get('identity_check', {}).get('mismatch_count') == 0
+          assert rs_history.get('identity_check', {}).get('compared_values', 0) > 0
+          assert len((rs_history.get('persistence') or {}).get('rows') or []) == 24
+          comparisons = rs_history.get('comparison') or {}
+          assert set(comparisons) == {'63', '126', '189'}
+          assert all(len((comparisons[key] or {}).get('windows') or []) == 3 for key in comparisons)
+
           nqsar = json.loads((root / 'nqsar.json').read_text(encoding='utf-8'))
           assert nqsar.get('session_date') == session
           assert nqsar.get('state') in {'Blue', 'Green', 'Yellow', 'Red'}
@@ -181,6 +204,9 @@ jobs:
           print(json.dumps({
               'session_date': session,
               'mc57': mc57['mc57'],
+              'rs_history_sessions': rs_history.get('history_sessions'),
+              'rs_history_compared_values': rs_history.get('identity_check', {}).get('compared_values'),
+              'rs_persistence_rows': len((rs_history.get('persistence') or {}).get('rows') or []),
               'nqsar': nqsar['state'],
               'nqsar_input_kind': nqsar.get('input_kind'),
               'classifications': len(classifications.get('rows') or []),
@@ -250,7 +276,11 @@ jobs:
           cp assets/v38-runtime.js _site/assets/v38-runtime.js
           cp assets/v38-site.js _site/assets/v38-site.js
           cp assets/v38-observables.js _site/assets/v38-observables.js
+          cp assets/v38-rs.js _site/assets/v38-rs.js
           cp data/options/index.json _site/data/options/index.json
+          if [ -s data/rs_history.json ]; then
+            cp data/rs_history.json _site/data/rs_history.json
+          fi
 
           GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           PYTHONPATH=src python scripts/build_ui_payload.py \
@@ -269,6 +299,7 @@ jobs:
           test -s _site/data/ui_view_model.json
           test -s _site/data/options/index.json
           test -s _site/assets/v38-observables.js
+          test -s _site/assets/v38-rs.js
           grep -q 'data-v38-production="live-binding"' _site/index.html
           for key in daily positions core12 rotation rs weekly options publish rules; do
             grep -q "\"${key}\"" _site/data/ui_view_model.json
@@ -317,7 +348,7 @@ jobs:
 
           git add -- data/history
 
-          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json; do
+          for path in data/nqsar.json data/theme_scores.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json data/rs_history.json; do
             if [ -f "$path" ]; then git add -- "$path"; fi
           done
 
