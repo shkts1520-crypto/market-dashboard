@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-recovered-theme-1.1.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-12T10:26:51Z",
+  "generated_at": "2026-09-12T11:29:16Z",
   "note": "Membership is recovered without silently changing the adopted Core12 ranking engine. The display-oriented sub-theme RS is in theme_rotation_recovered.json.",
   "rows": [
     {

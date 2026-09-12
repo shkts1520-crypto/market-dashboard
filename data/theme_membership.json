@@ -10,7 +10,7 @@
     "source_map_tickers": 5197,
     "unmapped": 0
   },
-  "generated_at": "2026-09-12T10:26:51Z",
+  "generated_at": "2026-09-12T11:29:16Z",
   "note": "Legacy exact tags remain authoritative. Researched overrides are allowed only for legacy-map gaps and may reference only fine themes already present in the legacy taxonomy. Remaining gaps may use same-industry inference only with >=60% agreement and >=2 mapped peers.",
   "override_policy": "Only current-universe legacy-map gaps; existing legacy fine themes only. Each value=[theme_id, confidence, evidence].",
   "rows": [
