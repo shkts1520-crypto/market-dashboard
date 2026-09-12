@@ -38,28 +38,14 @@ def shell(
         + "".join(
             (
                 '<a class="tabx'
-                + (
-                    " active"
-                    if i == 0
-                    else ""
-                )
+                + (" active" if i == 0 else "")
                 + '" '
                 + f'href="{href}" '
-                + (
-                    'data-target="'
-                    + href[1:]
-                    + '">'
-                )
+                + ('data-target="' + href[1:] + '">')
                 + label
                 + "</a>"
             )
-            for i, (
-                label,
-                href,
-            )
-            in enumerate(
-                EXPECTED_TABS
-            )
+            for i, (label, href) in enumerate(EXPECTED_TABS)
         )
         + "</nav>"
     )
@@ -71,15 +57,10 @@ def shell(
             + '"'
             + extra_attr
             + '>'
-            + (
-                '<div class="mock">'
-                '123'
-                '</div>'
-            )
+            + '<div class="mock">123</div>'
             + '</section>'
         )
-        for _, href
-        in EXPECTED_TABS
+        for _, href in EXPECTED_TABS
     )
 
     return (
@@ -99,204 +80,73 @@ def shell(
 
 def test_git_blob_sha_matches_git_object_formula():
     data = b"abc"
-
-    expected = hashlib.sha1(
-        b"blob 3\0abc"
-    ).hexdigest()
-
-    assert (
-        git_blob_sha(
-            data
-        )
-        == expected
-    )
-
-    assert (
-        canonical_fingerprint(
-            data
-        )
-        == {
-            "size": 3,
-            "blob_sha": expected,
-        }
-    )
+    expected = hashlib.sha1(b"blob 3\0abc").hexdigest()
+    assert git_blob_sha(data) == expected
+    assert canonical_fingerprint(data) == {"size": 3, "blob_sha": expected}
 
 
 def test_builder_strips_inline_scripts_and_event_handlers():
-    html = shell(
-        (
-            "<script>"
-            "var x=Entry*0.75;"
-            "</script>"
-        ),
-        ' onclick="bad()"',
-    )
-
-    out = build_safe_shell(
-        html
-    )
-
-    report = (
-        validate_production_html(
-            out
-        )
-    )
-
-    assert (
-        report[
-            "inline_script_count"
-        ]
-        == 0
-    )
-
-    assert (
-        report[
-            "inline_event_handler_count"
-        ]
-        == 0
-    )
+    html = shell("<script>var x=Entry*0.75;</script>", ' onclick="bad()"')
+    out = build_safe_shell(html)
+    report = validate_production_html(out)
+    assert report["inline_script_count"] == 0
+    assert report["inline_event_handler_count"] == 0
 
 
 def test_builder_preserves_original_style_block_bytes():
-    html = shell(
-        (
-            "<script>"
-            "console.log(1)"
-            "</script>"
-        )
-    )
-
+    html = shell("<script>console.log(1)</script>")
     original = re.findall(
-        (
-            r"<style\b[^>]*>"
-            r".*?"
-            r"</style\s*>"
-        ),
+        r"<style\b[^>]*>.*?</style\s*>",
         html,
         flags=re.I | re.S,
     )
-
-    out = build_safe_shell(
-        html
-    )
-
+    out = build_safe_shell(html)
     generated = [
         x
-        for x
-        in re.findall(
-            (
-                r"<style\b[^>]*>"
-                r".*?"
-                r"</style\s*>"
-            ),
+        for x in re.findall(
+            r"<style\b[^>]*>.*?</style\s*>",
             out,
             flags=re.I | re.S,
         )
-        if (
-            "v38-live-binding-bootstrap"
-            not in x
-        )
+        if "v38-live-binding-bootstrap" not in x
     ]
-
-    assert (
-        generated
-        == original
-    )
+    assert generated == original
 
 
 def test_builder_keeps_exact_nine_tabs_and_sections():
-    out = build_safe_shell(
-        shell()
-    )
-
-    report = (
-        validate_production_html(
-            out
-        )
-    )
-
-    assert (
-        report["tabs"]
-        == list(
-            EXPECTED_TABS
-        )
-    )
-
+    out = build_safe_shell(shell())
+    report = validate_production_html(out)
+    assert report["tabs"] == list(EXPECTED_TABS)
     assert 'v38-production-state' not in out
 
 
 def test_builder_preserves_canonical_dom_for_live_binding():
-    out = build_safe_shell(
-        shell()
-    )
-
-    assert (
-        'data-v38-production="live-binding"'
-        in out
-    )
-
+    out = build_safe_shell(shell())
+    assert 'data-v38-production="live-binding"' in out
     assert '<div class="mock">123</div>' in out
     assert 'visibility:hidden!important' not in out
     assert 'v38-production-state' not in out
 
 
-def test_builder_injects_only_two_external_runtime_scripts():
-    out = build_safe_shell(
-        shell()
-    )
-
-    report = (
-        validate_production_html(
-            out
-        )
-    )
-
-    assert (
-        report[
-            "external_script_count"
-        ]
-        == 2
-    )
-
-    assert (
-        'src="assets/v38-runtime.js"'
-        in out
-    )
-
-    assert (
-        'src="assets/v38-site.js"'
-        in out
-    )
+def test_builder_injects_three_external_runtime_scripts_in_order():
+    out = build_safe_shell(shell())
+    report = validate_production_html(out)
+    assert report["external_script_count"] == 3
+    runtime = out.index('src="assets/v38-runtime.js"')
+    site = out.index('src="assets/v38-site.js"')
+    recovery = out.index('src="assets/v38-recovery.js"')
+    assert runtime < site < recovery
 
 
 def test_builder_fails_if_required_section_missing():
     bad = shell().replace(
-        (
-            '<section '
-            'id="t-options">'
-            '<div class="mock">'
-            '123'
-            '</div>'
-            '</section>'
-        ),
+        '<section id="t-options"><div class="mock">123</div></section>',
         "",
     )
-
-    with pytest.raises(
-        Exception
-    ):
-        build_safe_shell(
-            bad
-        )
+    with pytest.raises(Exception):
+        build_safe_shell(bad)
 
 
 def test_verify_canonical_bytes_fails_on_any_different_file():
-    with pytest.raises(
-        SiteBuildError,
-        match=(
-            "canonical size mismatch"
-        ),
-    ):
-        sb.verify_canonical_bytes(
-            b"not canonical"
-        )
+    with pytest.raises(SiteBuildError, match="canonical size mismatch"):
+        sb.verify_canonical_bytes(b"not canonical")
