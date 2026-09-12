@@ -323,7 +323,6 @@
   }
 
   function init() {
-    initNavigation();
     waitForBinding();
   }
 
