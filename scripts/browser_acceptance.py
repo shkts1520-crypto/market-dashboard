@@ -41,6 +41,9 @@ def _rs_history(page):
 def _assert_live_binding(page, view):
     page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38RecoveryStatus === 'ready'")
+    page.wait_for_function("document.body.dataset.v38PolishStatus === 'ready'")
+    page.wait_for_function("document.documentElement.dataset.v38NavReady === 'true'")
+
     body_text = page.locator("body").inner_text()
     assert "MOCK DATA" not in body_text
     assert "分析基準日 2026-09-08" not in body_text
@@ -50,25 +53,38 @@ def _assert_live_binding(page, view):
     daily = view["daily"]
     daily_text = page.locator("#t-market").inner_text()
     by_key = {row["key"]: row for row in daily["metrics"]}
-    for key in ("breadth50", "breadth200", "f2", "market_QQQ"):
+    for key in ("breadth50", "breadth200", "f1", "f2", "f3", "market_QQQ"):
         row = by_key[key]
-        assert row["label"].split()[0] in daily_text
         assert row["display"] in daily_text
 
-    mc57_detail = daily.get("mc57_detail") or {}
-    if mc57_detail.get("status") == "READY":
-        page.locator('a.tabx[href="#t-market"]').click()
-        page.wait_for_function(
-            "document.querySelectorAll('#t-market svg.v38-mc57-spark').length >= 12"
-        )
-        assert page.locator("#t-market svg.v38-mc57-spark").count() >= 12
-        assert "57ETF 50MA上" in page.locator("#t-market").inner_text()
-        assert "MC57内部 12指標履歴" in page.locator("#t-market").inner_text()
+    # Recovery/debug scaffolding must not leak into the original Command Center UI.
+    for text in (
+        "通常株PIT履歴", "遡及推計なし", "MC57 Raw", "MC57 EMA2 Raw",
+        "MC57内部 12指標履歴", "日次保存済み履歴", "各指標は同一セッションの正本値のみ",
+    ):
+        assert text not in daily_text
+
+    regime = page.locator("#t-market .reg-card").filter(has_text="レジーム警戒灯").first
+    assert regime.count() == 1
+    assert regime.locator(".reg-grid .reg-cell").count() == 3
+    assert "F1 リーダー脱落率" in regime.inner_text()
+    assert "F2 勢い細り率" in regime.inner_text()
+    assert "F3 キュー崩れ" in regime.inner_text()
+    assert "算出不可" not in regime.inner_text()
+
+    history_meta = daily.get("historical_reconstruction") or {}
+    if history_meta.get("status") == "READY":
+        assert history_meta.get("trading_gate_eligible") is False
+        assert int(history_meta.get("session_count") or 0) >= 21
+        f123_detail = daily.get("f123_detail") or {}
+        assert f123_detail.get("status") == "READY"
+        assert (f123_detail.get("f1") or {}).get("display_provenance") in {
+            "CURRENT_SESSION_EXACT", "CURRENT_UNIVERSE_RECONSTRUCTED_DISPLAY_ONLY"
+        }
 
     rs = view["rs"]
     page.locator('a.tabx[href="#t-rs"]').click()
     rs_text = page.locator("#t-rs").inner_text()
-    assert str(rs["status"]) in rs_text
     history = _rs_history(page)
     assert history["status"] == "READY"
     assert history["session_date"] == view["session_date"]
@@ -79,7 +95,6 @@ def _assert_live_binding(page, view):
         assert history.get("trading_gate_eligible") is False
         assert history.get("reconstructed_sessions", 0) > 0
     else:
-        assert "OBSERVED_ARCHIVE_ONLY" in rs_text
         assert history.get("history_kind") in {None, "OBSERVED_ARCHIVE_ONLY"}
     if rs["rows"]:
         first = rs["rows"][0]
@@ -108,7 +123,6 @@ def _assert_live_binding(page, view):
         page.locator(f'a.tabx[href="#{section_id}"]').click()
         section = page.locator("#" + section_id)
         expected = view[view_key]
-        assert str(expected["status"]) in section.inner_text()
         assert section.get_attribute("data-v38-status") == expected["status"]
         if section_id != "t-post1":
             assert section.locator(".card:visible").count() > 0
@@ -135,6 +149,9 @@ def main() -> int:
                 view = _view_model(page)
                 _assert_live_binding(page, view)
 
+                # A tab click must be a same-document state change, never a reload.
+                sentinel = "v38-tab-no-reload-" + str(width)
+                page.evaluate("value => { window.__v38TabSentinel = value; }", sentinel)
                 for i in range(9):
                     tab = tabs.nth(i)
                     href = tab.get_attribute("href")
@@ -146,6 +163,7 @@ def main() -> int:
                     assert tab.evaluate("el => el.classList.contains('on')")
                     assert section.evaluate("el => el.classList.contains('on')")
                     assert page.locator("section.on").count() == 1
+                    assert page.evaluate("window.__v38TabSentinel") == sentinel
 
                 page.locator('a.tabx[href="#t-rs"]').click()
                 page.locator('a.tabx[href="#t-weekly"]').click()
