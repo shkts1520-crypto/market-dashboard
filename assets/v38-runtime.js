@@ -107,12 +107,17 @@
     return response.json();
   }
 
-  function loadDisplayExtension() {
-    const script = document.createElement('script');
-    script.src = 'assets/v38-observables.js';
-    script.defer = true;
-    script.dataset.v38Extension = 'observables';
-    document.head.appendChild(script);
+  function loadDisplayExtensions() {
+    [
+      ['observables', 'assets/v38-observables.js'],
+      ['rs-history', 'assets/v38-rs.js']
+    ].forEach((spec) => {
+      const script = document.createElement('script');
+      script.src = spec[1];
+      script.defer = true;
+      script.dataset.v38Extension = spec[0];
+      document.head.appendChild(script);
+    });
   }
 
   global.V38Runtime =
@@ -127,6 +132,6 @@
 
   document.addEventListener(
     'DOMContentLoaded',
-    loadDisplayExtension
+    loadDisplayExtensions
   );
 })(window);
