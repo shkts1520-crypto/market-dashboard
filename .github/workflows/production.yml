@@ -83,6 +83,16 @@ jobs:
             --data-dir data \
             --work-dir "$RUNNER_TEMP/v38-live"
 
+      - name: Calculate fixed-57 MC57
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/calculate_mc57_live.py \
+            --data-dir data \
+            --reference config/mc57_reference.json \
+            --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json
+
       - name: Materialize current fail-closed supplemental shards
         shell: bash
         run: |
@@ -97,6 +107,45 @@ jobs:
           PYTHONPATH=src python - <<PY
           from v38.market_status import normalize_market_statuses
           normalize_market_statuses('data', session_date='${SESSION}')
+          PY
+
+      - name: Validate live MC57 authority
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python - <<'PY'
+          import json
+          import math
+          from pathlib import Path
+          from v38.mc57_live import FIXED_57_ETFS, load_verified_reference
+
+          root = Path('data')
+          state = json.loads((root / 'state.json').read_text(encoding='utf-8'))
+          mc57 = json.loads((root / 'mc57.json').read_text(encoding='utf-8'))
+          ref = load_verified_reference(
+              'config/mc57_reference.json',
+              'tests/fixtures/mc57_recovery_golden_20260909_11.json',
+          )
+          assert mc57.get('session_date') == state.get('session_date')
+          assert mc57.get('status') == 'READY'
+          assert mc57.get('etf_universe') == list(FIXED_57_ETFS)
+          assert mc57.get('coverage') == 1.0
+          assert mc57.get('coverage_detail', {}).get('current_close_count') == 57
+          assert mc57.get('reference', {}).get('golden_fixture_sha256') == ref.get('golden_fixture_sha256')
+          for key in ('mc57', 'raw', 'ema2_raw', 'mu_prior', 'sigma_prior', 'z'):
+              value = mc57.get(key)
+              assert isinstance(value, (int, float)) and math.isfinite(float(value)), (key, value)
+          assert float(mc57['sigma_prior']) > 0
+          assert len(mc57.get('metric_scores', {})) == 12
+          assert all(int(v) > 0 for v in mc57.get('coverage_detail', {}).get('metric_valid_counts', {}).values())
+          print(json.dumps({
+              'session_date': mc57['session_date'],
+              'mc57': mc57['mc57'],
+              'raw': mc57['raw'],
+              'coverage': mc57['coverage'],
+              'fixed_etfs': len(mc57['etf_universe']),
+          }, sort_keys=True))
           PY
 
       - name: Validate single-session publication contract
