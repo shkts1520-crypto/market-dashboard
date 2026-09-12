@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 from v38.mc57_ui import attach_mc57_ui_detail
@@ -24,6 +25,13 @@ def main() -> int:
         json.dumps(out, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n",
         encoding="utf-8",
     )
+
+    rs_history_source = Path(a.data_dir) / "history" / "rs_history.json"
+    rs_history_output = path.parent / "rs_history.json"
+    if not rs_history_source.is_file():
+        raise SystemExit(f"RS history shard is required: {rs_history_source}")
+    shutil.copy2(rs_history_source, rs_history_output)
+
     print(
         json.dumps(
             {
@@ -32,6 +40,7 @@ def main() -> int:
                 "daily_status": out["daily"]["status"],
                 "rs_status": out["rs"]["status"],
                 "rs_rows": len(out["rs"]["rows"]),
+                "rs_history": rs_history_output.as_posix(),
                 "mc57_history_status": out["daily"]["mc57_detail"]["status"],
                 "mc57_history_sessions": out["daily"]["mc57_detail"].get("history_sessions", 0),
                 "fine_theme_status": out["rotation"].get("fine_theme_status"),

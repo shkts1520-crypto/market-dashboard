@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
+from v38.history_archive import stage_session_snapshot
+from v38.rs_history import write_rs_history
 from v38.supplemental_engine import materialize_supplemental_shards
 
 
@@ -80,6 +82,23 @@ def main() -> int:
         theme_scores_path=args.theme_scores,
         positions_ledger_path=ledger_arg,
     )
+
+    # Refresh the current observed session even when the workflow is retaining an
+    # already-published market session. This is not historical backfill: it only
+    # rewrites the current observed session from current authoritative shards.
+    history_snapshot, history_index = stage_session_snapshot(
+        root,
+        root / "history",
+        root / "history",
+    )
+    rs_history = write_rs_history(
+        root / "history",
+        root / "rs.json",
+        root / "history" / "rs_history.json",
+        session_date=session,
+        generated_at=generated_at,
+    )
+
     manifest = sync_acquisition_manifest(root)
     print(
         json.dumps(
@@ -88,6 +107,9 @@ def main() -> int:
                 "positions_mode": "EMPTY" if empty_ledger is not None else "LEDGER_REQUIRED",
                 "positions_ledger": empty_ledger.as_posix() if empty_ledger is not None else ledger_arg,
                 "outputs": [p.as_posix() for p in outputs],
+                "history_snapshot": history_snapshot.as_posix(),
+                "history_index": history_index.as_posix(),
+                "rs_history": rs_history.as_posix(),
                 "authority_manifest": manifest.as_posix(),
             },
             sort_keys=True,
