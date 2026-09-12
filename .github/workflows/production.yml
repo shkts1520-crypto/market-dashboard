@@ -58,6 +58,7 @@ jobs:
           node --check assets/v38-runtime.js
           node --check assets/v38-site.js
           node --check assets/v38-observables.js
+          node --check assets/v38-options-chart.js
 
       - name: Revalidate retained session or select live acquisition
         id: session-mode
@@ -251,6 +252,7 @@ jobs:
           cp assets/v38-site.js _site/assets/v38-site.js
           cp assets/v38-observables.js _site/assets/v38-observables.js
           cp data/options/index.json _site/data/options/index.json
+          if [ -f data/tqqq_panic.json ]; then cp data/tqqq_panic.json _site/data/tqqq_panic.json; fi
 
           GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           PYTHONPATH=src python scripts/build_ui_payload.py \
@@ -268,6 +270,7 @@ jobs:
           test -s _site/data/ui_payload.json
           test -s _site/data/ui_view_model.json
           test -s _site/data/options/index.json
+          if [ -f data/tqqq_panic.json ]; then test -s _site/data/tqqq_panic.json; fi
           test -s _site/assets/v38-observables.js
           grep -q 'data-v38-production="live-binding"' _site/index.html
           for key in daily positions core12 rotation rs weekly options publish rules; do
@@ -312,10 +315,12 @@ jobs:
             data/rotation.json \
             data/weekly.json \
             data/options/index.json \
+            data/tqqq_panic.json \
             data/publish.json \
             data/rules.json
 
           git add -- data/history
+          if [ -f data/history/tqqq_panic_state.json ]; then git add -- data/history/tqqq_panic_state.json; fi
 
           for path in data/nqsar.json data/theme_scores.json data/theme_membership.json data/theme_rotation_recovered.json data/classifications.json data/positions_ledger.json data/old_top24.json data/analytics.json; do
             if [ -f "$path" ]; then git add -- "$path"; fi
