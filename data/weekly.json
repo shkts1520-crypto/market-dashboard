@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-12T12:41:12Z",
+  "generated_at": "2026-09-12T13:12:10Z",
   "input_kind": "state",
   "note": "Authoritative NQSAR state is displayed; the unrecovered FSM is not recomputed here.",
   "schema_version": "v38.weekly.1",
