@@ -44,19 +44,17 @@
     return response.json();
   }
 
-  function appendExtension(src, name, onload) {
+  function appendExtension(src, name) {
     const script = document.createElement('script');
     script.src = src;
     script.async = false;
     script.dataset.v38Extension = name;
-    if (typeof onload === 'function') script.addEventListener('load', onload, {once: true});
     document.head.appendChild(script);
   }
 
   function loadDisplayExtensions() {
-    appendExtension('assets/v38-observables.js', 'observables', function () {
-      appendExtension('assets/v38-polish.js', 'polish');
-    });
+    appendExtension('assets/v38-observables.js', 'observables');
+    appendExtension('assets/v38-polish.js', 'polish');
   }
 
   global.V38Runtime = Object.freeze({
