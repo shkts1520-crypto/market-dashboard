@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
-from v38.ui_view_model import build_ui_view_model, write_ui_view_model
+from v38.mc57_ui import attach_mc57_ui_detail
+from v38.ui_view_model import build_ui_view_model
 
 
 def main() -> int:
@@ -13,7 +15,13 @@ def main() -> int:
     p.add_argument("--output", required=True)
     a = p.parse_args()
     out = build_ui_view_model(a.data_dir)
-    write_ui_view_model(a.data_dir, a.output)
+    out = attach_mc57_ui_detail(out, a.data_dir)
+    path = Path(a.output)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(out, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
     print(
         json.dumps(
             {
@@ -22,6 +30,8 @@ def main() -> int:
                 "daily_status": out["daily"]["status"],
                 "rs_status": out["rs"]["status"],
                 "rs_rows": len(out["rs"]["rows"]),
+                "mc57_history_status": out["daily"]["mc57_detail"]["status"],
+                "mc57_history_sessions": out["daily"]["mc57_detail"].get("history_sessions", 0),
             },
             sort_keys=True,
         )

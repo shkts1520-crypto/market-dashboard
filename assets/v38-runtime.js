@@ -107,6 +107,14 @@
     return response.json();
   }
 
+  function loadDisplayExtension() {
+    const script = document.createElement('script');
+    script.src = 'assets/v38-observables.js';
+    script.defer = true;
+    script.dataset.v38Extension = 'observables';
+    document.head.appendChild(script);
+  }
+
   global.V38Runtime =
     Object.freeze(
       {
@@ -116,4 +124,9 @@
         loadJson
       }
     );
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    loadDisplayExtension
+  );
 })(window);

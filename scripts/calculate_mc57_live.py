@@ -7,6 +7,7 @@ from pathlib import Path
 
 import yfinance as yf
 
+from v38.mc57_history import HISTORY_CONTRACT_VERSION, enrich_mc57_history
 from v38.mc57_live import (
     CALCULATION_VERSION,
     FIXED_57_ETFS,
@@ -56,6 +57,7 @@ def main() -> int:
             existing.get("session_date") == session
             and existing.get("status") == "READY"
             and existing.get("calculation_version") == CALCULATION_VERSION
+            and existing.get("history_contract_version") == HISTORY_CONTRACT_VERSION
             and existing.get("etf_universe") == list(FIXED_57_ETFS)
             and ref.get("golden_fixture_sha256") == reference.get("golden_fixture_sha256")
         ):
@@ -65,6 +67,7 @@ def main() -> int:
                 "reused": True,
                 "mc57": existing.get("mc57"),
                 "coverage": existing.get("coverage"),
+                "history_sessions": existing.get("history_window_sessions"),
             }, sort_keys=True))
             return 0
 
@@ -76,6 +79,7 @@ def main() -> int:
         reference=reference,
         fetch_stats=fetch_stats,
     )
+    obj = enrich_mc57_history(obj, closes=closes, target_session=session)
     write_mc57_json(output, obj)
     print(json.dumps({
         "session_date": session,
@@ -85,6 +89,7 @@ def main() -> int:
         "raw": obj["raw"],
         "coverage": obj["coverage"],
         "current_close_count": obj["coverage_detail"]["current_close_count"],
+        "history_sessions": obj.get("history_window_sessions"),
     }, sort_keys=True))
     return 0
 
