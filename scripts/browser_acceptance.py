@@ -283,7 +283,13 @@ def main() -> int:
             for width in WIDTHS:
                 page = browser.new_page(viewport={"width": width, "height": 900})
                 page_errors: list[str] = []
-                page.on("pageerror", lambda exc: page_errors.append(str(exc)))
+                page.on(
+                    "pageerror",
+                    lambda exc: (
+                        page_errors.append(str(exc)),
+                        print(f"[pageerror width={width}] {exc}", flush=True),
+                    ),
+                )
                 page.goto(args.url, wait_until="networkidle")
 
                 tabs = page.locator("a.tabx")
@@ -329,7 +335,8 @@ def main() -> int:
                 )
                 assert metrics["scrollWidth"] <= metrics["innerWidth"] + 1
                 assert metrics["scrollY"] == 0
-                assert not page_errors
+                if page_errors:
+                    raise AssertionError(f"page errors at width {width}: {page_errors!r}")
                 page.close()
         finally:
             browser.close()
