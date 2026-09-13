@@ -327,30 +327,10 @@
     return new Set((windows && Array.isArray(windows[key]) ? windows[key] : []).map((row) => cleanTicker(row.ticker)).filter(Boolean));
   }
 
-  function renderRsWindow(card, bindingKey, rows, scoreKey) {
-    if (!card || !Array.isArray(rows)) return;
-    readyCard(card, bindingKey, '取得済み価格から算出した正本RS順位。');
-    sourceRows(card, rows,
-      (row) => ({left: 'RS189 / RS126 / RS63 ' + [num(row.rs189, 1), num(row.rs126, 1), num(row.rs63, 1)].join(' / '), right: 'DDV20 ' + (finite(row.ddv20) === null ? '—' : '$' + num(finite(row.ddv20) / 1000000, 1) + 'M')}),
-      (row) => ({value: num(row[scoreKey], 1), label: scoreKey.toUpperCase()}), 10);
-  }
-
   function repairRs(view, history) {
     const rs = view && view.rs;
     if (!rs || rs.status !== 'READY') return;
     const windows = rs.windows || {};
-    renderRsWindow(cardByTitle('t-rs', 'RS63 Top10'), 'rs-63-top10', windows['63'] || [], 'rs63');
-    renderRsWindow(cardByTitle('t-rs', 'RS126 Top10'), 'rs-126-top10', windows['126'] || [], 'rs126');
-    renderRsWindow(cardByTitle('t-rs', 'RS189 Top10'), 'rs-189-top10', windows['189'] || [], 'rs189');
-
-    const persistence = cardByTitle('t-rs', 'RS189 継続性');
-    if (persistence && Array.isArray(rs.rows)) {
-      readyCard(persistence, 'rs-189-persistence', 'RS189 Top24。Core 12採用順位とは別の表示用ランキング。');
-      sourceRows(persistence, rs.rows,
-        (row) => ({left: 'RS189 / RS63 ' + num(row.rs189, 1) + ' / ' + num(row.rs63, 1), right: '1M ' + pct(row.ret20)}),
-        (row) => ({value: num(row.rs189, 1), label: 'RS189'}), 24);
-    }
-
     const a = rsSet(windows, '63');
     const b = rsSet(windows, '126');
     const c = rsSet(windows, '189');
