@@ -7,6 +7,7 @@ from pathlib import Path
 
 CANONICAL = Path("V38_Command_Center_mock_v5.html")
 SITE_JS = Path("assets/v38-site.js")
+REPAIR_JS = Path("assets/v38-data-repair.js")
 
 
 class CardTitleParser(HTMLParser):
@@ -94,6 +95,48 @@ def test_preferred_bindings_exist_in_canonical_v5() -> None:
                 f"canonical titles={available!r}"
             )
     assert not errors, "\n".join(errors)
+
+
+def test_repair_targets_are_named_canonical_cards() -> None:
+    titles = canonical_titles()
+    required = {
+        "t-market": ("MC57推移",),
+        "t-alloc": (
+            "現在の想定ポジション",
+            "マーケット回復後のポジション入り銘柄",
+            "エクイティカーブ×21日EMA",
+        ),
+        "t-port": ("レジーム警戒灯", "個別株スリーブ", "RSリーダー控え"),
+        "t-rotation": ("サブテーマ別RS",),
+        "t-rs": (
+            "RS63 Top10", "RS126 Top10", "RS189 Top10", "RS189 継続性",
+            "RSマルチタイムフレーム比較", "三窓一致リーダー", "Top10 IN / OUT履歴",
+        ),
+        "t-weekly": ("今週の結論", "今週の変化", "週次騰落ボード", "自分 vs QQQ円建て"),
+        "t-options": ("0–6 DTE", "7–21 DTE", "22–45 DTE", "0–45 DTE"),
+    }
+    errors: list[str] = []
+    for section, needles in required.items():
+        available = titles.get(section, [])
+        for needle in needles:
+            if not any(needle in title for title in available):
+                errors.append(f"{section}: missing canonical card {needle!r}; titles={available!r}")
+    assert not errors, "\n".join(errors)
+
+
+def test_repair_never_targets_cards_by_position() -> None:
+    js = REPAIR_JS.read_text(encoding="utf-8")
+    assert "Number.isInteger(index)" not in js
+    assert not re.search(r"cardByTitle\([^\n]+,\s*['\"]['\"]\s*,", js)
+    assert "v38CanonicalTitle" in js
+    assert "v38BindingKey" in js
+
+
+def test_repair_restores_canonical_headings_instead_of_inventing_titles() -> None:
+    js = REPAIR_JS.read_text(encoding="utf-8")
+    assert "heading.cloneNode(true)" in js
+    assert "restoreAllCanonicalHeadings" in js
+    assert "h2.textContent = title" not in js
 
 
 def test_canonical_has_exact_nine_production_sections() -> None:
