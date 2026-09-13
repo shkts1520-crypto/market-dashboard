@@ -21,7 +21,7 @@ def open_tab(page, section_id: str) -> None:
     tab.click()
     page.wait_for_function(
         "id => document.querySelector(id) && document.querySelector(id).classList.contains('on')",
-        section_id,
+        arg=section_id,
     )
     page.wait_for_timeout(250)
 
