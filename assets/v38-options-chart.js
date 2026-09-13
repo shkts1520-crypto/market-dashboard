@@ -327,6 +327,7 @@
         width: host.clientWidth || 760,
         height: host.clientHeight || 520,
         layout: {background: {type: 'solid', color: '#ffffff'}, textColor: '#494640', fontSize: 11},
+        localization: {locale: 'en-US'},
         grid: {vertLines: {color: '#eceae5'}, horzLines: {color: '#eceae5'}},
         rightPriceScale: {borderColor: '#dedbd4', scaleMargins: {top: 0.08, bottom: 0.08}},
         timeScale: {borderColor: '#dedbd4', rightOffset: 3, barSpacing: 8, minBarSpacing: 3, timeVisible: false},
