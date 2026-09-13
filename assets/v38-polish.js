@@ -42,6 +42,10 @@
       if (!section) return;
       section.removeAttribute('hidden');
       section.classList.toggle('on', id === valid);
+      // Explicitly keep the same visibility contract as v38-site.js. This makes
+      // navigation deterministic even if a legacy/cached :target rule is present.
+      section.style.display = id === valid ? 'block' : 'none';
+      section.setAttribute('aria-hidden', id === valid ? 'false' : 'true');
     });
     if (updateHistory && window.location.hash !== '#' + valid) {
       history.pushState({v38Tab: valid}, '', '#' + valid);
@@ -323,6 +327,7 @@
   }
 
   function init() {
+    initNavigation();
     waitForBinding();
   }
 
