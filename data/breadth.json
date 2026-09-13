@@ -3,24 +3,16 @@
   "breadth200_status": "FULL",
   "breadth50": 42.399760622381805,
   "calculation_version": "v38-stock-adapter-1.2.0",
-  "coverage": 0.9997050147492625,
+  "coverage": 1.0,
   "coverage_detail": {
     "active_universe": 3390,
-    "current_valid_ohlcv": 3389,
+    "current_valid_ohlcv": 3390,
     "min_sma200_count": 2034,
     "valid_sma200_count": 3159,
     "valid_sma50_count": 3342
   },
-  "excluded": [
-    {
-      "reasons": [
-        "NON_NUMERIC_OHLCV",
-        "SPLIT_STATUS_UNKNOWN"
-      ],
-      "ticker": "ATLQ"
-    }
-  ],
-  "generated_at": "2026-09-13T01:55:44Z",
+  "excluded": [],
+  "generated_at": "2026-09-13T02:39:40Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,
@@ -28,5 +20,5 @@
   },
   "schema_version": "v38.breadth.1",
   "session_date": "2026-09-11",
-  "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close"
+  "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated gap retry; verified corporate-action alias with exact Nasdaq/TradingView target-session fallback when required"
 }

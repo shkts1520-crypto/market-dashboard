@@ -2,11 +2,11 @@
   "calculation_version": "v38-recovered-live-inputs-1.0.1",
   "coverage": 1.0,
   "coverage_detail": {
-    "classified_rows": 3389,
+    "classified_rows": 3390,
     "revenue_ttm_available": 3221,
-    "rs_rows": 3389
+    "rs_rows": 3390
   },
-  "generated_at": "2026-09-13T01:55:44Z",
+  "generated_at": "2026-09-13T02:39:40Z",
   "rows": [
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -18087,6 +18087,14 @@
       "revenue_ttm": 101453000.0,
       "structural_clinical_biotech": false,
       "ticker": "ATLO"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 283767569.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "ATLQ"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",

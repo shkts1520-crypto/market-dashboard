@@ -3,14 +3,14 @@
   "coverage": 1.0,
   "coverage_detail": {
     "exact": 3174,
-    "inferred": 100,
+    "inferred": 101,
     "manual": 115,
     "override_tickers": 115,
-    "rows": 3389,
+    "rows": 3390,
     "source_map_tickers": 5197,
     "unmapped": 0
   },
-  "generated_at": "2026-09-13T01:55:44Z",
+  "generated_at": "2026-09-13T02:39:40Z",
   "note": "Legacy exact tags remain authoritative. Researched overrides are allowed only for legacy-map gaps and may reference only fine themes already present in the legacy taxonomy. Remaining gaps may use same-industry inference only with >=60% agreement and >=2 mapped peers.",
   "override_policy": "Only current-universe legacy-map gaps; existing legacy fine themes only. Each value=[theme_id, confidence, evidence].",
   "rows": [
@@ -31653,6 +31653,20 @@
       "theme_id": "地方銀行（中西部）",
       "theme_name": "地方銀行（中西部）",
       "ticker": "ATLO"
+    },
+    {
+      "industry": "Financial Conglomerates",
+      "major_theme": "12. 金融・銀行・保険",
+      "sector": "Finance",
+      "tag_confidence": 0.8509316770186336,
+      "tag_evidence": null,
+      "tag_method": "INFERRED_INDUSTRY_PEERS",
+      "tag_peer_count": 161,
+      "tag_researched_at": null,
+      "tag_source_kind": null,
+      "theme_id": "SPAC・ブランクチェック",
+      "theme_name": "SPAC・ブランクチェック",
+      "ticker": "ATLQ"
     },
     {
       "industry": "Major Telecommunications",

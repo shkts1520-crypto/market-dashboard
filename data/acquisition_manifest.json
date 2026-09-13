@@ -12,8 +12,8 @@
     },
     "options_status": {
       "path": "options/index.json",
-      "reason": "CURRENT_SESSION_AUTHORITY",
-      "status": "READY"
+      "reason": "OPTION_CHAIN_COVERAGE_BELOW_MINIMUM",
+      "status": "DATA_REQUIRED"
     },
     "peer_theme_status": {
       "path": "theme_scores.json",
@@ -33,11 +33,22 @@
   },
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.2.0",
-  "coverage": 0.9997050147492625,
-  "generated_at": "2026-09-13T01:55:44Z",
+  "corporate_action_aliases": {
+    "ATLQ": {
+      "effective_from": "2026-08-31",
+      "exchange": "NASDAQ",
+      "prior_ticker": "JAB",
+      "provenance": "Nasdaq issuer notice 2026-08-26; effective 2026-08-31",
+      "same_cusip": true
+    }
+  },
+  "coverage": 1.0,
+  "gap_repair_version": "v38-stock-gap-repair-1.2.0",
+  "generated_at": "2026-09-13T02:39:40Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
-  "options_status": "READY",
+  "options_reason": "OPTION_CHAIN_COVERAGE_BELOW_MINIMUM",
+  "options_status": "DATA_REQUIRED",
   "peer_theme_status": "READY",
   "positions_status": "READY",
   "schema_version": "v38.acquisition.1",
@@ -73,12 +84,14 @@
     "special_security_rows": 1
   },
   "yahoo": {
-    "failed_tickers": [
+    "failed_tickers": [],
+    "history_received": 3390,
+    "isolated_retry_repaired": [
       "ATLQ"
     ],
-    "history_received": 3390,
+    "isolated_retry_source": "Yahoo isolated retry; ATLQ may join verified JAB pre-change history to an exact Nasdaq historical or completed TradingView ATLQ target-session bar; exact-date same-CUSIP JAB provider alias is final fallback",
     "requested": 3390,
-    "target_session_coverage": 0.9997050147492625,
-    "target_session_received": 3389
+    "target_session_coverage": 1.0,
+    "target_session_received": 3390
   }
 }
