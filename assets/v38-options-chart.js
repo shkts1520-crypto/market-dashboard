@@ -10,6 +10,7 @@
   let optionsPromise = null;
   let lastTicker = null;
   let activeBucket = null;
+  let activeOptions = null;
 
   function finite(value) {
     if (value === null || value === undefined || value === '') return null;
@@ -77,7 +78,11 @@
     if (Array.isArray(history) && history.length) {
       const observed = history.slice().reverse().find((item) => item && typeof item === 'object');
       if (observed) {
-        return {bucket: 'history', row: Object.assign({ticker: ticker}, observed), historical: true};
+        return {
+          bucket: 'history',
+          row: Object.assign({ticker: ticker}, observed),
+          historical: true
+        };
       }
     }
     return null;
@@ -144,7 +149,7 @@
       .v38-oc-price{position:absolute;right:6px;transform:translateY(-50%);display:flex;align-items:center;gap:6px;border-radius:7px;padding:3px 6px;background:rgba(255,255,255,.94);box-shadow:0 1px 6px rgba(0,0,0,.12);font:800 10px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
       .v38-oc-price strong{font-weight:900}.v38-oc-price span{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:800;opacity:.78}
       .v38-oc-call{color:#b63d34}.v38-oc-put{color:#23724b}.v38-oc-flip{color:#9b6c0d}.v38-oc-range{color:#2f64a2}.v38-oc-spot{color:#373737}
-      .v38-oc-status{position:absolute;left:12px;bottom:10px;max-width:min(560px,calc(100% - 24px));padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.88);backdrop-filter:blur(4px);font-size:10px;line-height:1.35;color:#625b53;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+      .v38-oc-status{position:absolute;left:12px;bottom:10px;max-width:min(620px,calc(100% - 24px));padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.88);backdrop-filter:blur(4px);font-size:10px;line-height:1.35;color:#625b53;box-shadow:0 2px 10px rgba(0,0,0,.08)}
       .v38-oc-unavailable{position:absolute;left:12px;top:12px;padding:7px 9px;border-radius:8px;background:rgba(255,255,255,.92);font-size:11px;font-weight:800;color:#6b645d;box-shadow:0 2px 10px rgba(0,0,0,.08)}
       .v38-ticker-link,[data-v38-rs-ticker],[data-v38-ticker],.chip,.tk,.mvr-t{cursor:pointer}
       @media(max-width:700px){#${MODAL_ID}{padding:0}.v38-oc-shell{height:100dvh;width:100%;border-radius:0}.v38-oc-head{padding:7px 8px;gap:6px;min-height:48px}.v38-oc-title{font-size:16px}.v38-oc-sub{display:none}.v38-oc-bucket-btn{padding:5px 8px;font-size:9px}.v38-oc-legend{left:7px;top:7px;max-width:calc(100% - 82px);font-size:9px;gap:4px 7px}.v38-oc-price{right:4px;font-size:9px;padding:2px 4px}.v38-oc-price span{display:none}.v38-oc-status{left:7px;bottom:7px;font-size:9px;max-width:calc(100% - 14px)}}
@@ -220,7 +225,7 @@
         </div>
         <div class="v38-oc-body">
           <div class="v38-oc-tv"></div>
-          <div class="v38-oc-overlay"></div>
+          <div class="v38-oc-overlay v38-oc-levels" aria-live="polite"></div>
         </div>
       </div>`;
     document.body.appendChild(modal);
@@ -236,11 +241,10 @@
     if (!modal) return;
     modal.hidden = true;
     const host = modal.querySelector('.v38-oc-tv');
-    const overlay = modal.querySelector('.v38-oc-overlay');
     if (host) host.replaceChildren();
-    if (overlay) overlay.replaceChildren();
     lastTicker = null;
     activeBucket = null;
+    activeOptions = null;
   }
 
   function renderTradingView(host, ticker) {
@@ -272,26 +276,22 @@
     host.appendChild(wrap);
   }
 
-  function colorClassFor(item) {
-    return item && item.cls ? item.cls : '';
-  }
-
-  function renderBucketButtons(modal, options, ticker) {
+  function renderBucketButtons(modal, options, ticker, selectedBucket) {
     const host = modal.querySelector('.v38-oc-buckets');
     host.replaceChildren();
-    const available = new Set(availableBuckets(options, ticker));
+    const available = availableBuckets(options, ticker);
     BUCKETS.forEach((bucket) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'v38-oc-bucket-btn';
       button.textContent = bucket;
-      button.disabled = !available.has(bucket);
-      button.setAttribute('aria-pressed', activeBucket === bucket ? 'true' : 'false');
+      button.disabled = !available.includes(bucket);
+      button.setAttribute('aria-pressed', selectedBucket === bucket ? 'true' : 'false');
       button.addEventListener('click', () => {
-        if (button.disabled || ticker !== lastTicker) return;
+        if (button.disabled || !lastTicker || !activeOptions) return;
         activeBucket = bucket;
-        renderBucketButtons(modal, options, ticker);
-        renderOverlay(modal.querySelector('.v38-oc-overlay'), options, ticker, bucket);
+        renderBucketButtons(modal, activeOptions, lastTicker, bucket);
+        renderOverlay(modal.querySelector('.v38-oc-levels'), activeOptions, lastTicker, bucket);
       });
       host.appendChild(button);
     });
@@ -301,78 +301,78 @@
     host.replaceChildren();
     const found = resolveRow(options, ticker, bucket);
     if (!found) {
-      const note = document.createElement('div');
-      note.className = 'v38-oc-unavailable';
-      note.textContent = 'Options未取得';
-      host.appendChild(note);
-      return;
-    }
-    if (!found.historical) activeBucket = found.bucket;
-    const row = found.row || {};
-    const levels = levelsFromRow(row);
-    if (!levels.length) {
-      const note = document.createElement('div');
-      note.className = 'v38-oc-unavailable';
-      note.textContent = found.historical ? '前回実測のみ・Levels算出不可' : 'Levels算出不可';
-      host.appendChild(note);
+      const empty = document.createElement('div');
+      empty.className = 'v38-oc-unavailable';
+      empty.textContent = 'V38 Options • この銘柄は現在のOptions取得対象外、またはチェーン取得不能です。';
+      host.appendChild(empty);
       return;
     }
 
-    const values = levels.map((item) => item.value);
-    let min = Math.min.apply(null, values);
-    let max = Math.max.apply(null, values);
-    if (!(max > min)) {
-      const base = Math.abs(max || 1);
-      min -= base * 0.05;
-      max += base * 0.05;
-    } else {
-      const pad = (max - min) * 0.12;
-      min -= pad;
-      max += pad;
-    }
-    const toTop = (value) => 10 + ((max - value) / (max - min)) * 78;
-
+    const levels = levelsFromRow(found.row);
     const legend = document.createElement('div');
     legend.className = 'v38-oc-legend';
+    const legendTitle = document.createElement('span');
+    legendTitle.className = 'v38-oc-legend-item';
+    legendTitle.textContent = 'V38 Options';
+    legend.appendChild(legendTitle);
     levels.forEach((item) => {
       const entry = document.createElement('span');
-      entry.className = 'v38-oc-legend-item ' + colorClassFor(item);
+      entry.className = 'v38-oc-legend-item ' + item.cls;
       const swatch = document.createElement('i');
       swatch.className = 'v38-oc-legend-swatch';
-      const text = document.createElement('span');
-      text.textContent = item.label;
-      entry.append(swatch, text);
+      const label = document.createElement('span');
+      label.textContent = item.label;
+      entry.append(swatch, label);
       legend.appendChild(entry);
     });
     host.appendChild(legend);
 
+    if (!levels.length) {
+      const empty = document.createElement('div');
+      empty.className = 'v38-oc-unavailable';
+      empty.textContent = 'V38 Options • 水平ライン用の価格データがありません。';
+      host.appendChild(empty);
+      return;
+    }
+
+    const values = levels.map((item) => item.value).filter((value) => Number.isFinite(value));
+    let min = Math.min.apply(null, values);
+    let max = Math.max.apply(null, values);
+    if (!(max > min)) {
+      min -= 1;
+      max += 1;
+    }
+    const padding = (max - min) * 0.12;
+    min -= padding;
+    max += padding;
+
     levels.forEach((item) => {
-      const top = Math.max(7, Math.min(93, toTop(item.value)));
+      const ratio = (item.value - min) / (max - min);
+      const top = 91 - ratio * 78;
       const line = document.createElement('div');
-      line.className = 'v38-oc-line ' + colorClassFor(item);
-      line.style.top = top + '%';
-      host.appendChild(line);
-      const label = document.createElement('div');
-      label.className = 'v38-oc-price ' + colorClassFor(item);
-      label.style.top = top + '%';
-      const name = document.createElement('span');
-      name.textContent = item.label;
-      const price = document.createElement('strong');
-      price.textContent = money(item.value);
-      label.append(name, price);
-      host.appendChild(label);
+      line.className = 'v38-oc-line ' + item.cls;
+      line.style.top = top.toFixed(2) + '%';
+      const price = document.createElement('div');
+      price.className = 'v38-oc-price ' + item.cls;
+      price.style.top = top.toFixed(2) + '%';
+      const label = document.createElement('span');
+      label.textContent = item.label;
+      const value = document.createElement('strong');
+      value.textContent = money(item.value);
+      price.append(label, value);
+      host.append(line, price);
     });
 
     const status = document.createElement('div');
     status.className = 'v38-oc-status';
-    const expiry = row.expected_move_expiry || row.expiry || '';
-    const expectedPct = firstFinite(row, ['expected_move_pct', 'em_pct']);
-    const parts = [found.historical ? '前回実測 ' + String(row.date || '') : found.bucket + ' DTE'];
-    if (expiry) parts.push('EM expiry ' + expiry);
-    if (expectedPct !== null) parts.push('Expected Move ' + pct(expectedPct));
-    if (row.quality) parts.push(String(row.quality));
-    if (found.historical) parts.push('現行チェーン未取得');
-    status.textContent = parts.filter(Boolean).join(' • ');
+    const expiry = found.row.expected_move_expiry ? ' • EM expiry ' + found.row.expected_move_expiry : '';
+    const expectedPct = firstFinite(found.row, ['expected_move_pct', 'em_pct']);
+    const expectedText = expectedPct !== null ? ' • Expected Move ' + pct(expectedPct) : '';
+    const quality = found.row.quality ? ' • ' + found.row.quality : '';
+    const historyText = found.historical
+      ? ' • 前回実測 • 現行チェーン未取得のため前回実測値を表示'
+      : ' • ' + found.bucket + ' DTE';
+    status.textContent = 'Options Wall Overlay' + historyText + expectedText + expiry + quality + ' • Direction/Confidenceは推測表示しません。';
     host.appendChild(status);
   }
 
@@ -382,18 +382,18 @@
     const modal = ensureModal();
     lastTicker = ticker;
     activeBucket = null;
+    activeOptions = null;
     modal.hidden = false;
     modal.querySelector('.v38-oc-title').textContent = ticker;
     renderTradingView(modal.querySelector('.v38-oc-tv'), ticker);
-    const overlay = modal.querySelector('.v38-oc-overlay');
-    overlay.innerHTML = '<div class="v38-oc-unavailable">Options loading…</div>';
-    const bucketHost = modal.querySelector('.v38-oc-buckets');
-    bucketHost.replaceChildren();
+    const overlay = modal.querySelector('.v38-oc-levels');
+    overlay.textContent = 'V38 Options loading…';
     loadOptions().then((options) => {
       if (modal.hidden || lastTicker !== ticker) return;
-      const available = availableBuckets(options, ticker);
-      activeBucket = available[0] || null;
-      renderBucketButtons(modal, options, ticker);
+      activeOptions = options;
+      const found = resolveRow(options, ticker, null);
+      activeBucket = found && !found.historical && BUCKETS.includes(found.bucket) ? found.bucket : null;
+      renderBucketButtons(modal, options, ticker, activeBucket);
       renderOverlay(overlay, options, ticker, activeBucket);
     });
   }
@@ -403,8 +403,7 @@
     try {
       const url = new URL(link.href, window.location.href);
       if (!/tradingview\.com$/i.test(url.hostname) && !/\.tradingview\.com$/i.test(url.hostname)) return null;
-      const symbol = url.searchParams.get('symbol');
-      return cleanTicker(symbol);
+      return cleanTicker(url.searchParams.get('symbol'));
     } catch (_) {
       return null;
     }
@@ -430,6 +429,7 @@
 
   function tickerFromElement(target) {
     if (!(target instanceof Element)) return null;
+
     const explicitData = target.closest('[data-v38-ticker],[data-v38-rs-ticker],[data-ticker],[data-symbol]');
     if (explicitData) {
       const value = explicitData.getAttribute('data-v38-ticker')
@@ -439,6 +439,7 @@
       const ticker = cleanTicker(value);
       if (ticker) return ticker;
     }
+
     const link = target.closest('a');
     if (link) {
       if (link.classList.contains('v38-ticker-link')) {
@@ -448,14 +449,17 @@
       const ticker = tickerFromTradingViewHref(link);
       if (ticker) return ticker;
     }
+
     const generic = target.closest('.rsx-item');
     const genericTicker = tickerFromGenericRow(generic);
     if (genericTicker) return genericTicker;
+
     const atom = target.closest('.mvr-t,.tk,.chip');
     if (atom) {
       const ticker = cleanTicker(atom.textContent);
       if (ticker) return ticker;
     }
+
     const item = target.closest('.slrow,.l');
     if (item) {
       const text = String(item.textContent || '').toUpperCase();
@@ -487,9 +491,8 @@
 
   function initUiPolish() {
     applyUiPolish();
-    window.setTimeout(applyUiPolish, 250);
-    window.setTimeout(applyUiPolish, 900);
-    window.setTimeout(applyUiPolish, 1800);
+    window.setTimeout(applyUiPolish, 180);
+    window.setTimeout(applyUiPolish, 700);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initUiPolish, {once: true});
