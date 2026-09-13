@@ -249,8 +249,13 @@ def _assert_live_binding(page, view):
             _assert_source_heading(card, title)
             assert card.get_attribute("data-v38-option-bucket") == bucket
             assert int(card.get_attribute("data-v38-option-rows") or "0") > 0
-            assert "Direction" not in card.inner_text()
-            assert "Confidence" not in card.inner_text()
+            rows = card.locator(".rsx-item")
+            assert rows.count() > 0
+            row_text = rows.first.inner_text()
+            for label in ("Spot", "Call / Flip / Put", "Expected Move", "Quality"):
+                assert label in row_text
+            assert "Direction" not in row_text
+            assert "Confidence" not in row_text
 
     diagnostics = daily.get("market_diagnostics") or {}
     if diagnostics.get("series"):
