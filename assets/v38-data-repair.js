@@ -2,7 +2,30 @@
   'use strict';
 
   const TICKER_RE = /^[A-Z][A-Z0-9.\-]{0,9}$/;
+  const CARD_TEMPLATES = new WeakMap();
   let running = false;
+
+  function canonicalTitleFromHeading(heading) {
+    if (!heading) return '';
+    const first = heading.childNodes && heading.childNodes.length ? heading.childNodes[0] : null;
+    return first && first.textContent ? first.textContent.trim() : heading.textContent.trim();
+  }
+
+  function captureCanonicalCards() {
+    document.querySelectorAll('section .card').forEach((card) => {
+      const heading = card.querySelector('h2');
+      if (!heading) return;
+      const parent = heading.parentElement;
+      CARD_TEMPLATES.set(card, {
+        heading: heading.cloneNode(true),
+        wrapperTag: parent && parent !== card ? parent.tagName.toLowerCase() : null,
+        wrapperClass: parent && parent !== card ? parent.className : ''
+      });
+      card.dataset.v38CanonicalTitle = canonicalTitleFromHeading(heading);
+    });
+  }
+
+  captureCanonicalCards();
 
   function finite(value) {
     if (value === null || value === undefined || value === '') return null;
@@ -28,25 +51,38 @@
     return TICKER_RE.test(text) ? text : null;
   }
 
-  function cardByTitle(sectionId, titlePart, index) {
+  function cardByTitle(sectionId, titlePart) {
     const section = document.getElementById(sectionId);
     if (!section) return null;
-    const cards = Array.from(section.querySelectorAll('.card'));
-    if (Number.isInteger(index)) return cards[index] || null;
-    return cards.find((card) => {
-      const original = String(card.dataset.v38CardTitle || '');
-      const h2 = card.querySelector('h2');
-      return original.includes(titlePart) || (h2 && h2.textContent.includes(titlePart));
+    return Array.from(section.querySelectorAll('.card')).find((card) => {
+      const canonical = String(card.dataset.v38CanonicalTitle || card.dataset.v38CardTitle || '');
+      if (canonical.includes(titlePart)) return true;
+      const template = CARD_TEMPLATES.get(card);
+      return Boolean(template && template.heading && template.heading.textContent.includes(titlePart));
     }) || null;
   }
 
-  function readyCard(card, title, subtitle) {
+  function appendCanonicalHeading(card) {
+    const template = CARD_TEMPLATES.get(card);
+    if (!template || !template.heading) return null;
+    const heading = template.heading.cloneNode(true);
+    if (template.wrapperTag) {
+      const wrapper = document.createElement(template.wrapperTag);
+      wrapper.className = template.wrapperClass || '';
+      wrapper.appendChild(heading);
+      card.appendChild(wrapper);
+    } else {
+      card.appendChild(heading);
+    }
+    return heading;
+  }
+
+  function readyCard(card, bindingKey, subtitle) {
     if (!card) return null;
     card.replaceChildren();
     card.dataset.v38Status = 'READY';
-    const h2 = document.createElement('h2');
-    h2.textContent = title;
-    card.appendChild(h2);
+    card.dataset.v38BindingKey = bindingKey;
+    appendCanonicalHeading(card);
     if (subtitle) {
       const sub = document.createElement('div');
       sub.className = 'sub';
@@ -54,6 +90,18 @@
       card.appendChild(sub);
     }
     return card;
+  }
+
+  function restoreCanonicalHeading(card) {
+    const template = CARD_TEMPLATES.get(card);
+    if (!template || !template.heading) return;
+    const current = card.querySelector('h2');
+    if (!current) return;
+    current.replaceWith(template.heading.cloneNode(true));
+  }
+
+  function restoreAllCanonicalHeadings() {
+    document.querySelectorAll('section .card').forEach(restoreCanonicalHeading);
   }
 
   function kv(parent, label, value) {
@@ -66,12 +114,13 @@
     row.appendChild(left);
     row.appendChild(right);
     parent.appendChild(row);
+    return row;
   }
 
   function tickerLink(value, extraClass) {
     const symbol = cleanTicker(value);
     const link = document.createElement('a');
-    link.className = 'v38-ticker-link' + (extraClass ? ' ' + extraClass : '');
+    link.className = 'v38-ticker-link v38-generic-ticker' + (extraClass ? ' ' + extraClass : '');
     link.textContent = symbol || String(value || '—');
     if (symbol) {
       link.href = 'https://www.tradingview.com/chart/?symbol=' + encodeURIComponent(symbol);
@@ -82,11 +131,22 @@
     return link;
   }
 
-  function tickerRows(parent, rows, describe, limit) {
+  function addSub(parent, leftText, rightText) {
+    const sub = document.createElement('div');
+    sub.className = 'rsx-sub';
+    const left = document.createElement('span');
+    left.className = 'rsx-nums';
+    left.textContent = leftText || '—';
+    const right = document.createElement('span');
+    right.className = 'rsx-ret';
+    right.textContent = rightText || '—';
+    sub.appendChild(left);
+    sub.appendChild(right);
+    parent.appendChild(sub);
+  }
+
+  function sourceRows(parent, rows, describe, score, limit, badgeText) {
     const values = Array.isArray(rows) ? rows : [];
-    const list = document.createElement('div');
-    list.className = 'rsc-list';
-    parent.appendChild(list);
     values.slice(0, limit || 20).forEach((row, index) => {
       const item = document.createElement('div');
       item.className = 'rsx-item';
@@ -99,25 +159,35 @@
       rank.textContent = String(index + 1);
       const name = document.createElement('div');
       name.className = 'rsx-name';
-      name.appendChild(tickerLink(symbol));
+      const line = document.createElement('div');
+      line.appendChild(tickerLink(symbol));
+      if (badgeText) {
+        const badge = document.createElement('span');
+        badge.className = 'rsx-badge sel';
+        badge.textContent = typeof badgeText === 'function' ? badgeText(row || {}) : badgeText;
+        line.appendChild(badge);
+      }
+      name.appendChild(line);
+      const small = document.createElement('small');
+      small.textContent = String((row && (row.theme_name || row.industry || row.sector || row.quality)) || '');
+      if (small.textContent) name.appendChild(small);
+      const scoreBox = document.createElement('div');
+      scoreBox.className = 'rsx-score';
+      const scoreValue = document.createElement('b');
+      const scoreData = score ? score(row || {}) : null;
+      scoreValue.textContent = scoreData && scoreData.value !== undefined ? String(scoreData.value) : '—';
+      const scoreLabel = document.createElement('small');
+      scoreLabel.textContent = scoreData && scoreData.label ? scoreData.label : '';
+      scoreBox.appendChild(scoreValue);
+      scoreBox.appendChild(scoreLabel);
       top.appendChild(rank);
       top.appendChild(name);
+      top.appendChild(scoreBox);
       item.appendChild(top);
-      const detail = describe ? describe(row || {}) : '';
-      if (detail) {
-        const sub = document.createElement('div');
-        sub.className = 'rsx-sub';
-        sub.textContent = detail;
-        item.appendChild(sub);
-      }
-      list.appendChild(item);
+      const detail = describe ? describe(row || {}) : null;
+      if (detail) addSub(item, detail.left, detail.right);
+      parent.appendChild(item);
     });
-    if (values.length > (limit || 20)) {
-      const more = document.createElement('div');
-      more.className = 'mut';
-      more.textContent = '表示 ' + String(limit || 20) + ' / ' + String(values.length) + '件';
-      parent.appendChild(more);
-    }
   }
 
   function metricMap(daily) {
@@ -139,9 +209,7 @@
       return point && point.date && value !== null ? {date: point.date, value: value} : null;
     }).filter(Boolean);
     if (values.length < 2) return;
-    const width = 680;
-    const height = 180;
-    const pad = 8;
+    const width = 680, height = 180, pad = 8;
     let low = Math.min.apply(null, values.map((point) => point.value));
     let high = Math.max.apply(null, values.map((point) => point.value));
     if (low === high) { low -= 1; high += 1; }
@@ -154,7 +222,7 @@
     const line = document.createElementNS(svg.namespaceURI, 'polyline');
     line.setAttribute('points', values.map((point, index) => x(index).toFixed(1) + ',' + y(point.value).toFixed(1)).join(' '));
     line.setAttribute('fill', 'none');
-    line.setAttribute('stroke', '#1E7A4D');
+    line.setAttribute('stroke', 'currentColor');
     line.setAttribute('stroke-width', '2');
     svg.appendChild(line);
     parent.appendChild(svg);
@@ -165,12 +233,20 @@
     const series = detail && detail.series && detail.series.mc57;
     const card = cardByTitle('t-market', 'MC57推移');
     if (!card || !detail || detail.status !== 'READY' || !Array.isArray(series) || !series.length) return;
-    readyCard(card, 'MC57推移 Market Status History', '取得済み固定57ETF履歴。');
+    readyCard(card, 'daily-mc57-history', '取得済み固定57ETF履歴。');
     const current = detail.current || {};
-    kv(card, 'MC57', num(current.mc57, 1));
-    kv(card, 'Raw', num(current.raw, 1));
-    kv(card, 'EMA2 Raw', num(current.ema2_raw, 1));
-    kv(card, 'Z', num(current.z, 2));
+    const row = document.createElement('div');
+    row.className = 'eqrow';
+    [['MC57', num(current.mc57, 1)], ['Raw', num(current.raw, 1)], ['EMA2 Raw', num(current.ema2_raw, 1)], ['Z', num(current.z, 2)]].forEach((item) => {
+      const cell = document.createElement('span');
+      cell.className = 'eqkv';
+      cell.textContent = item[0] + ' ';
+      const b = document.createElement('b');
+      b.textContent = item[1];
+      cell.appendChild(b);
+      row.appendChild(cell);
+    });
+    card.appendChild(row);
     const chart = document.createElement('div');
     chart.className = 'chart';
     card.appendChild(chart);
@@ -181,20 +257,35 @@
   function repairOptions(options) {
     if (!options || options.status !== 'READY' || !options.buckets) return;
     [
-      ['0–6 DTE Short Term', '0-6'],
-      ['7–21 DTE Swing', '7-21'],
-      ['22–45 DTE Medium Term', '22-45'],
-      ['0–45 DTE Multi-expiry', '0-45']
+      ['0–6 DTE', '0-6'],
+      ['7–21 DTE', '7-21'],
+      ['22–45 DTE', '22-45'],
+      ['0–45 DTE', '0-45']
     ].forEach((spec) => {
       const card = cardByTitle('t-options', spec[0]);
       const rows = Array.isArray(options.buckets[spec[1]]) ? options.buckets[spec[1]] : [];
       if (!card || !rows.length) return;
-      readyCard(card, spec[0], '実Optionsチェーン。Direction / Confidenceは推測せず表示しません。');
+      readyCard(card, 'options-' + spec[1], '期間別の実Optionsチェーン。Direction / Confidenceは推測せず表示しません。');
       const targets = options.target_policy && Array.isArray(options.target_policy.targets) ? options.target_policy.targets.length : rows.length;
       const good = rows.filter((row) => row && row.quality === 'GOOD').length;
-      kv(card, '取得銘柄', String(rows.length) + ' / ' + String(targets));
-      kv(card, 'Quality', 'GOOD ' + String(good) + ' / PARTIAL ' + String(rows.length - good));
-      tickerRows(card, rows, (row) => 'Spot ' + num(row.spot, 2) + ' • Call ' + num(row.call_wall, 2) + ' • Put ' + num(row.put_wall, 2) + ' • Flip ' + num(row.gamma_flip, 2) + ' • EM ' + pct(row.expected_move_pct) + ' • ' + String(row.quality || '—'), 20);
+      const summary = document.createElement('div');
+      summary.className = 'eqrow';
+      card.appendChild(summary);
+      [['取得銘柄', String(rows.length) + ' / ' + String(targets)], ['Quality', 'GOOD ' + String(good) + ' / PARTIAL ' + String(rows.length - good)]].forEach((item) => {
+        const cell = document.createElement('span');
+        cell.className = 'eqkv';
+        cell.textContent = item[0] + ' ';
+        const b = document.createElement('b');
+        b.textContent = item[1];
+        cell.appendChild(b);
+        summary.appendChild(cell);
+      });
+      sourceRows(card, rows,
+        (row) => ({
+          left: 'Spot ' + num(row.spot, 2) + ' ・ Call / Flip / Put ' + [num(row.call_wall, 2), num(row.gamma_flip, 2), num(row.put_wall, 2)].join(' / '),
+          right: 'Expected Move ' + pct(row.expected_move_pct) + ' ・ Quality ' + String(row.quality || '—')
+        }),
+        (row) => ({value: String(row.quality || '—'), label: 'Quality'}), 20);
       card.dataset.v38OptionBucket = spec[1];
       card.dataset.v38OptionRows = String(rows.length);
     });
@@ -205,7 +296,7 @@
     const rows = rotation && Array.isArray(rotation.fine_theme_rows) ? rotation.fine_theme_rows : [];
     const card = cardByTitle('t-rotation', 'サブテーマ別RS');
     if (!card || !rotation || rotation.status !== 'READY' || !rows.length) return;
-    readyCard(card, 'サブテーマ別RS（ユニバース内）', '取得済み細粒度Theme入力。');
+    readyCard(card, 'rotation-subtheme-rs', '取得済み細粒度Theme入力。');
     const coverage = finite(rotation.fine_theme_coverage);
     kv(card, 'Theme coverage', coverage === null ? '—' : (coverage * 100).toFixed(1) + '%');
     const list = document.createElement('div');
@@ -220,7 +311,7 @@
       const meta = document.createElement('div');
       meta.className = 'bgmeta';
       const members = row.member_count === null || row.member_count === undefined ? '—' : String(row.member_count);
-      meta.textContent = 'Theme RS ' + num(row.theme_rs, 1) + ' • 1M中央値 ' + pct(row.ret20_median) + ' • RS63 ' + num(row.rs63_median, 1) + ' • ' + members + '銘柄';
+      meta.textContent = 'Theme RS ' + num(row.theme_rs, 1) + ' ・ 1M中央値 ' + pct(row.ret20_median) + ' ・ RS63 ' + num(row.rs63_median, 1) + ' ・ ' + members + '銘柄';
       item.appendChild(name);
       item.appendChild(meta);
       const chips = document.createElement('div');
@@ -236,17 +327,37 @@
     return new Set((windows && Array.isArray(windows[key]) ? windows[key] : []).map((row) => cleanTicker(row.ticker)).filter(Boolean));
   }
 
+  function renderRsWindow(card, bindingKey, rows, scoreKey) {
+    if (!card || !Array.isArray(rows)) return;
+    readyCard(card, bindingKey, '取得済み価格から算出した正本RS順位。');
+    sourceRows(card, rows,
+      (row) => ({left: 'RS189 / RS126 / RS63 ' + [num(row.rs189, 1), num(row.rs126, 1), num(row.rs63, 1)].join(' / '), right: 'DDV20 ' + (finite(row.ddv20) === null ? '—' : '$' + num(finite(row.ddv20) / 1000000, 1) + 'M')}),
+      (row) => ({value: num(row[scoreKey], 1), label: scoreKey.toUpperCase()}), 10);
+  }
+
   function repairRs(view, history) {
     const rs = view && view.rs;
     if (!rs || rs.status !== 'READY') return;
     const windows = rs.windows || {};
+    renderRsWindow(cardByTitle('t-rs', 'RS63 Top10'), 'rs-63-top10', windows['63'] || [], 'rs63');
+    renderRsWindow(cardByTitle('t-rs', 'RS126 Top10'), 'rs-126-top10', windows['126'] || [], 'rs126');
+    renderRsWindow(cardByTitle('t-rs', 'RS189 Top10'), 'rs-189-top10', windows['189'] || [], 'rs189');
+
+    const persistence = cardByTitle('t-rs', 'RS189 継続性');
+    if (persistence && Array.isArray(rs.rows)) {
+      readyCard(persistence, 'rs-189-persistence', 'RS189 Top24。Core 12採用順位とは別の表示用ランキング。');
+      sourceRows(persistence, rs.rows,
+        (row) => ({left: 'RS189 / RS63 ' + num(row.rs189, 1) + ' / ' + num(row.rs63, 1), right: '1M ' + pct(row.ret20)}),
+        (row) => ({value: num(row.rs189, 1), label: 'RS189'}), 24);
+    }
+
     const a = rsSet(windows, '63');
     const b = rsSet(windows, '126');
     const c = rsSet(windows, '189');
     const triple = Array.from(a).filter((value) => b.has(value) && c.has(value));
     let card = cardByTitle('t-rs', 'RSマルチタイムフレーム比較');
     if (card) {
-      readyCard(card, 'RSマルチタイムフレーム比較', '取得済みRS63 / RS126 / RS189 Top10の重複。');
+      readyCard(card, 'rs-multiframe', '取得済みRS63 / RS126 / RS189 Top10の重複。');
       kv(card, 'RS63 Top10', String(a.size) + '銘柄');
       kv(card, 'RS126 Top10', String(b.size) + '銘柄');
       kv(card, 'RS189 Top10', String(c.size) + '銘柄');
@@ -258,15 +369,12 @@
     }
     card = cardByTitle('t-rs', '三窓一致リーダー');
     if (card) {
-      readyCard(card, '三窓一致リーダー', 'RS63 / 126 / 189のTop10すべてに入る銘柄。');
-      if (!triple.length) {
-        kv(card, '一致銘柄', '0');
-      } else {
-        const chips = document.createElement('div');
-        chips.className = 'chips';
-        triple.forEach((value) => chips.appendChild(tickerLink(value)));
-        card.appendChild(chips);
-      }
+      readyCard(card, 'rs-triple-leaders', 'RS63 / 126 / 189のTop10すべてに入る銘柄。');
+      const chips = document.createElement('div');
+      chips.className = 'chips';
+      if (!triple.length) kv(card, '一致銘柄', '0');
+      triple.forEach((value) => chips.appendChild(tickerLink(value)));
+      if (triple.length) card.appendChild(chips);
     }
     const snapshots = history && Array.isArray(history.snapshots) ? history.snapshots : [];
     card = cardByTitle('t-rs', 'Top10 IN / OUT履歴');
@@ -279,11 +387,55 @@
       const previousSet = new Set(previousRows.slice(0, 10).map((row) => cleanTicker(row.ticker)).filter(Boolean));
       const entered = Array.from(latestSet).filter((value) => !previousSet.has(value));
       const exited = Array.from(previousSet).filter((value) => !latestSet.has(value));
-      readyCard(card, 'Top10 IN / OUT履歴', 'RS189 Top10の直近2観測日比較（表示用再構築履歴）。');
+      readyCard(card, 'rs-top10-in-out', 'RS189 Top10の直近2観測日比較（表示用再構築履歴）。');
       kv(card, '比較', String(previous.date || '—') + ' → ' + String(latest.date || '—'));
       kv(card, 'IN', entered.join(', ') || 'なし');
       kv(card, 'OUT', exited.join(', ') || 'なし');
     }
+  }
+
+  function renderCoreTable(card, rows, startRank, limit) {
+    const table = document.createElement('table');
+    const header = document.createElement('tr');
+    ['#', '銘柄', 'RS189', 'RS63', '200MA乖離', 'DDV20'].forEach((label, index) => {
+      const th = document.createElement('th');
+      if (index < 2) th.className = 'l';
+      th.textContent = label;
+      header.appendChild(th);
+    });
+    table.appendChild(header);
+    (Array.isArray(rows) ? rows : []).slice(0, limit || 12).forEach((row, index) => {
+      const tr = document.createElement('tr');
+      const symbol = cleanTicker(row.ticker || row.symbol);
+      if (symbol) tr.dataset.v38Ticker = symbol;
+      const rank = document.createElement('td');
+      rank.className = 'l mut';
+      rank.textContent = String((startRank || 1) + index);
+      const tickerCell = document.createElement('td');
+      tickerCell.className = 'l tk';
+      tickerCell.appendChild(tickerLink(symbol));
+      const badges = document.createElement('div');
+      badges.className = 'rowbadges';
+      const status = document.createElement('span');
+      status.className = 'stb';
+      status.textContent = String(row.eligibility_status || 'ELIGIBLE');
+      badges.appendChild(status);
+      tickerCell.appendChild(badges);
+      const rs189 = document.createElement('td');
+      rs189.className = 'rsc';
+      rs189.textContent = num(row.rs189, 1);
+      const rs63 = document.createElement('td');
+      rs63.textContent = num(row.rs63, 1);
+      const vs200 = document.createElement('td');
+      const price = finite(row.price), sma200 = finite(row.sma200);
+      vs200.textContent = price !== null && sma200 !== null && sma200 > 0 ? pct(price / sma200 - 1) : '—';
+      const ddv = document.createElement('td');
+      const ddv20 = finite(row.ddv20);
+      ddv.textContent = ddv20 === null ? '—' : '$' + num(ddv20 / 1000000, 1) + 'M';
+      tr.appendChild(rank); tr.appendChild(tickerCell); tr.appendChild(rs189); tr.appendChild(rs63); tr.appendChild(vs200); tr.appendChild(ddv);
+      table.appendChild(tr);
+    });
+    card.appendChild(table);
   }
 
   function repairCore(view) {
@@ -291,56 +443,89 @@
     if (!core || core.status !== 'READY') return;
     const rows = Array.isArray(core.rows) ? core.rows : [];
     const map = metricMap(view.daily || {});
+
     let card = cardByTitle('t-port', 'レジーム警戒灯');
     if (card) {
-      readyCard(card, 'レジーム警戒灯 Regime Early-Warning', '取得済みCurrent Session正本値。');
-      kv(card, 'Market Mode', metricText(map, 'market_mode'));
-      kv(card, 'NQSAR', metricText(map, 'nqsar'));
-      kv(card, 'Breadth 50MA', metricText(map, 'breadth50'));
-      kv(card, 'MC57', metricText(map, 'mc57'));
-      kv(card, '新規上限', core.max_new_total_slots === null || core.max_new_total_slots === undefined ? '—' : core.max_new_total_slots);
-    }
-    card = cardByTitle('t-port', '', 1);
-    if (card && rows.length) {
-      readyCard(card, '流動性 / DDV20', 'Core12 rankingの取得済みDDV20分布。');
-      [10, 20, 50].forEach((million) => {
-        const count = rows.filter((row) => finite(row.ddv20) !== null && finite(row.ddv20) >= million * 1000000).length;
-        kv(card, '≥$' + million + 'M', String(count) + ' / ' + String(rows.length));
+      readyCard(card, 'core-regime', 'Current Session正本値。F1/F2/F3・MC57は通常株Hard Gateへ追加しません。');
+      const grid = document.createElement('div');
+      grid.className = 'reg-grid';
+      [['Market Mode', core.market_mode || metricText(map, 'market_mode')], ['NQSAR', metricText(map, 'nqsar')], ['Breadth 50MA', metricText(map, 'breadth50')], ['MC57', metricText(map, 'mc57')], ['新規上限', core.max_new_total_slots]].forEach((item) => {
+        const cell = document.createElement('div');
+        cell.className = 'reg-cell';
+        const label = document.createElement('span');
+        label.textContent = item[0];
+        const value = document.createElement('b');
+        value.textContent = item[1] === null || item[1] === undefined || item[1] === '' ? '—' : String(item[1]);
+        cell.appendChild(label); cell.appendChild(value); grid.appendChild(cell);
       });
+      card.appendChild(grid);
     }
+
+    card = cardByTitle('t-port', '個別株スリーブ');
+    if (card && rows.length) {
+      readyCard(card, 'core12-main', '現行V38 Core12 ranking。空席は無理に埋めず、現行Eligibilityを満たす候補だけを表示。');
+      const alloc = document.createElement('div');
+      alloc.className = 'alloc';
+      const individual = document.createElement('div');
+      individual.className = 'a-ind'; individual.style.width = '70%'; individual.textContent = '個別 最大70';
+      const lev = document.createElement('div');
+      lev.className = 'a-lev'; lev.style.width = '30%'; lev.textContent = 'TQQQ 通常30';
+      alloc.appendChild(individual); alloc.appendChild(lev); card.appendChild(alloc);
+      const note = document.createElement('div');
+      note.className = 'note rk-note';
+      note.textContent = 'Eligibility: Price≥$5、DDV20≥$10M、SMA50>SMA200、Close>SMA200、RS189≥85、RS63≥85、構造的小型Clinical Biotech除外。AttackはStock RS189 70%＋Peer Theme 30%、SelectiveはRS189中心。';
+      card.appendChild(note);
+      renderCoreTable(card, rows, 1, 12);
+      card.dataset.v38CoreRows = String(Math.min(12, rows.length));
+    }
+
     card = cardByTitle('t-port', 'RSリーダー控え');
     if (card && rows.length > 12) {
-      readyCard(card, 'RSリーダー控え Bench', '現行Core12 ranking 13–24位。採用ポジションではありません。');
-      tickerRows(card, rows.slice(12, 24), (row) => {
-        const ddv = finite(row.ddv20);
-        return 'RS189 ' + num(row.rs189, 1) + ' • Final ' + num(row.final_score, 1) + ' • DDV20 ' + (ddv === null ? '—' : '$' + num(ddv / 1000000, 1) + 'M');
-      }, 12);
+      readyCard(card, 'core12-bench', '現行Core12 ranking 13–24位。採用ポジションではありません。');
+      renderCoreTable(card, rows.slice(12, 24), 13, 12);
     }
   }
 
   function repairPositions(view) {
     const positions = view && view.positions;
     const core = view && view.core12;
-    if (!positions || positions.status !== 'READY' || !Array.isArray(positions.rows) || positions.rows.length) return;
-    if (!String(positions.source || '').includes('user-confirmed-empty')) return;
+    if (!positions || positions.status !== 'READY') return;
+    const rows = Array.isArray(positions.rows) ? positions.rows : [];
+    const isEmpty = rows.length === 0;
+
     let card = cardByTitle('t-alloc', '現在の想定ポジション');
     if (card) {
-      readyCard(card, '現在の想定ポジション Current Expected 12', 'Positionsはユーザー指定EMPTY。保有を捏造しません。');
-      kv(card, 'Current holdings', '0');
-      kv(card, 'Market Mode', core && core.market_mode || '—');
-      kv(card, '新規枠', core && core.max_new_total_slots !== undefined ? core.max_new_total_slots : '—');
+      readyCard(card, 'positions-current-expected', isEmpty ? 'Positions正本はEMPTY。保有を捏造しません。' : 'Positions正本の現在保有。');
+      if (isEmpty) {
+        kv(card, 'Current holdings', '0');
+        kv(card, 'Portfolio state', 'EMPTY');
+      } else {
+        sourceRows(card, rows,
+          (row) => ({left: 'Entry ' + num(row.entry_price, 2) + ' ・ Close ' + num(row.close, 2), right: 'Action ' + String(row.action || '—')}),
+          (row) => ({value: pct(row.pnl_pct), label: '損益'}), 20);
+      }
     }
+
     card = cardByTitle('t-alloc', 'マーケット回復後のポジション入り銘柄');
-    const ranking = core && Array.isArray(core.rows) ? core.rows.filter((row) => row.eligibility_status === 'ELIGIBLE').slice(0, 12) : [];
-    if (card && ranking.length) {
-      readyCard(card, 'マーケット回復後のポジション入り銘柄 Recovery Candidates', '現行Core12上位。現在の保有ではなく回復時の再評価候補。');
-      tickerRows(card, ranking, (row) => 'Final ' + num(row.final_score, 1) + ' • RS189 ' + num(row.rs189, 1), 12);
+    const candidates = core && Array.isArray(core.rows) ? core.rows.filter((row) => row.eligibility_status === 'ELIGIBLE').slice(0, 12) : [];
+    if (card && candidates.length) {
+      readyCard(card, 'positions-recovery-candidates', '現行Core12上位。現在の保有ではなく、回復時点に再評価する候補。');
+      sourceRows(card, candidates,
+        (row) => ({left: 'RS189 / RS63 ' + num(row.rs189, 1) + ' / ' + num(row.rs63, 1), right: '翌寄り候補ではなく再評価候補'}),
+        (row) => ({value: num(row.rs189, 1), label: 'RS189'}), 12, '候補');
     }
-    card = cardByTitle('t-alloc', 'エクイティカーブ');
-    if (card) {
-      readyCard(card, 'エクイティカーブ×21日EMA Equity Curve', 'Positionsが明示的EMPTYのため現在は対象外。');
-      kv(card, 'Portfolio state', 'EMPTY');
-      kv(card, 'Equity curve', '対象外（保有なし）');
+
+    card = cardByTitle('t-alloc', 'エクイティカーブ×21日EMA');
+    if (card && isEmpty) {
+      readyCard(card, 'positions-equity-curve', 'Positionsが明示的EMPTYのため現在は対象外。口座資産データを捏造しません。');
+      const row = document.createElement('div');
+      row.className = 'eqrow';
+      const state = document.createElement('span');
+      state.className = 'dd';
+      const badge = document.createElement('span');
+      badge.className = 'st';
+      badge.textContent = 'Portfolio EMPTY';
+      state.appendChild(badge); row.appendChild(state); card.appendChild(row);
     }
   }
 
@@ -352,7 +537,7 @@
     const summaries = daily.market_summaries || {};
     let card = cardByTitle('t-weekly', '今週の結論');
     if (card) {
-      readyCard(card, '今週の結論 This Week', '取得済みWeekly NQSARとCurrent Session指標。');
+      readyCard(card, 'weekly-conclusion', '取得済みWeekly NQSARとCurrent Session指標。');
       kv(card, 'NQSAR', weekly.state || '—');
       kv(card, 'Market Mode', metricText(map, 'market_mode'));
       kv(card, 'Breadth 50MA', metricText(map, 'breadth50'));
@@ -362,43 +547,46 @@
     const history = Array.isArray(daily.history) ? daily.history : [];
     card = cardByTitle('t-weekly', '今週の変化');
     if (card && history.length >= 6) {
-      const now = history[history.length - 1];
-      const before = history[history.length - 6];
-      readyCard(card, '今週の変化 Weekly Diff', '直近5営業日前との取得済み指標比較。');
+      readyCard(card, 'weekly-diff', '直近5営業日前との取得済み指標比較。');
+      const now = history[history.length - 1], before = history[history.length - 6];
       [['Breadth50', 'breadth50'], ['Breadth200', 'breadth200'], ['F1', 'f1'], ['F2', 'f2'], ['F3', 'f3']].forEach((spec) => {
-        const oldValue = finite(before[spec[1]]);
-        const newValue = finite(now[spec[1]]);
+        const oldValue = finite(before[spec[1]]), newValue = finite(now[spec[1]]);
         kv(card, spec[0], oldValue === null || newValue === null ? '—' : num(oldValue, 1) + ' → ' + num(newValue, 1));
       });
     }
     const sectorTickers = ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY'];
-    const movers = sectorTickers.map((value) => ({ticker: value, change_1w: summaries[value] && summaries[value].change_1w})).filter((row) => finite(row.change_1w) !== null).sort((a, b) => b.change_1w - a.change_1w);
+    const movers = sectorTickers.map((symbol) => ({ticker: symbol, change_1w: summaries[symbol] && summaries[symbol].change_1w})).filter((row) => finite(row.change_1w) !== null).sort((a, b) => b.change_1w - a.change_1w);
     card = cardByTitle('t-weekly', '週次騰落ボード');
     if (card && movers.length) {
-      readyCard(card, '週次騰落ボード Weekly Movers', '取得済みGICS11セクターETFの1週間騰落率。');
-      tickerRows(card, movers, (row) => '1W ' + pct(row.change_1w), 11);
+      readyCard(card, 'weekly-movers', '取得済みGICS11セクターETFの1週間騰落率。');
+      sourceRows(card, movers, (row) => ({left: '1W ' + pct(row.change_1w), right: ''}), (row) => ({value: pct(row.change_1w), label: '1W'}), 11);
     }
     const positions = view.positions || {};
     card = cardByTitle('t-weekly', '自分 vs QQQ円建て');
-    if (card && positions.status === 'READY' && Array.isArray(positions.rows) && positions.rows.length === 0 && String(positions.source || '').includes('user-confirmed-empty')) {
-      readyCard(card, '自分 vs QQQ円建て My Week', 'Positionsはユーザー指定EMPTY。架空の成績は作りません。');
+    if (card && positions.status === 'READY' && Array.isArray(positions.rows) && positions.rows.length === 0) {
+      readyCard(card, 'weekly-self-vs-qqq', 'PositionsはEMPTY。架空のポートフォリオ成績は作りません。');
       kv(card, 'My portfolio', '保有なし / 比較対象外');
       kv(card, 'QQQ 1週', pct(summaries.QQQ && summaries.QQQ.change_1w));
     }
   }
 
-  async function repair() {
-    if (running) return false;
-    if (!document.body || document.body.dataset.v38FinalUiStatus !== 'ready') return false;
+  async function loadJson(path) {
+    if (window.V38Runtime && typeof window.V38Runtime.loadJson === 'function') {
+      return window.V38Runtime.loadJson(path);
+    }
+    const response = await fetch(path, {cache: 'no-store'});
+    if (!response.ok) throw new Error('HTTP ' + response.status + ' for ' + path);
+    return response.json();
+  }
+
+  async function repairPublishedCards() {
+    if (running || !document.body || document.body.dataset.v38BindingStatus !== 'ready') return false;
     running = true;
     try {
-      const runtime = window.V38Runtime;
-      if (!runtime || typeof runtime.loadJson !== 'function') return false;
-      const view = await runtime.loadJson('data/ui_view_model.json');
-      let options = null;
-      let history = null;
-      try { options = await runtime.loadJson('data/options/index.json'); } catch (_) { options = null; }
-      try { history = await runtime.loadJson('data/rs_history.json'); } catch (_) { history = null; }
+      const view = await loadJson('data/ui_view_model.json');
+      let options = null, history = null;
+      try { options = await loadJson('data/options/index.json'); } catch (_) { options = null; }
+      try { history = await loadJson('data/rs_history.json'); } catch (_) { history = null; }
       repairMc57(view);
       repairOptions(options);
       repairThemes(view);
@@ -406,6 +594,7 @@
       repairCore(view);
       repairPositions(view);
       repairWeekly(view);
+      restoreAllCanonicalHeadings();
       document.body.dataset.v38DataRepairStatus = 'ready';
       return true;
     } catch (_) {
@@ -416,21 +605,22 @@
     }
   }
 
-  function start() {
+  function scheduleRepair() {
     let attempts = 0;
     const run = async () => {
       attempts += 1;
-      if (await repair()) return;
-      if (attempts < 100) window.setTimeout(run, 75);
+      const ready = document.body && document.body.dataset.v38FinalUiStatus === 'ready';
+      if (ready && await repairPublishedCards()) return;
+      if (attempts < 80) window.setTimeout(run, 75);
     };
-    run();
-    window.setTimeout(repair, 1500);
-    window.setTimeout(repair, 2600);
+    window.setTimeout(run, 75);
+    window.setTimeout(repairPublishedCards, 1200);
+    window.setTimeout(repairPublishedCards, 2400);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, {once: true});
+    document.addEventListener('DOMContentLoaded', scheduleRepair, {once: true});
   } else {
-    start();
+    scheduleRepair();
   }
 })();
