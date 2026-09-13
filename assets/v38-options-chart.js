@@ -3,14 +3,27 @@
 
   const OPTIONS_URL = 'data/options/index.json';
   const STYLE_ID = 'v38-options-chart-style';
+  const UI_STYLE_ID = 'v38-options-ui-polish-style';
   const MODAL_ID = 'v38-options-chart-modal';
   const TICKER_RE = /^[A-Z][A-Z0-9.\-]{0,9}$/;
+  const BUCKETS = ['0-45', '22-45', '7-21', '0-6'];
   let optionsPromise = null;
   let lastTicker = null;
+  let activeBucket = null;
 
   function finite(value) {
+    if (value === null || value === undefined || value === '') return null;
     const n = Number(value);
     return Number.isFinite(n) ? n : null;
+  }
+
+  function firstFinite(row, keys) {
+    if (!row) return null;
+    for (const key of keys) {
+      const n = finite(row[key]);
+      if (n !== null) return n;
+    }
+    return null;
   }
 
   function money(value) {
@@ -42,34 +55,65 @@
     return optionsPromise;
   }
 
-  function findTickerRow(options, ticker) {
-    if (!options || !ticker) return null;
-    const buckets = options.buckets && typeof options.buckets === 'object' ? options.buckets : {};
-    const order = ['0-45', '22-45', '7-21', '0-6'];
-    for (const bucket of order) {
-      const rows = Array.isArray(buckets[bucket]) ? buckets[bucket] : [];
-      const row = rows.find((item) => item && String(item.ticker || '').toUpperCase() === ticker);
-      if (row) return {bucket: bucket, row: row, historical: false};
-    }
-    const rows = Array.isArray(options.rows) ? options.rows : [];
+  function rowsForBucket(options, bucket) {
+    const buckets = options && options.buckets && typeof options.buckets === 'object' ? options.buckets : {};
+    return Array.isArray(buckets[bucket]) ? buckets[bucket] : [];
+  }
+
+  function rowForBucket(options, ticker, bucket) {
+    return rowsForBucket(options, bucket).find((item) => item && String(item.ticker || '').toUpperCase() === ticker) || null;
+  }
+
+  function availableBuckets(options, ticker) {
+    return BUCKETS.filter((bucket) => rowForBucket(options, ticker, bucket));
+  }
+
+  function fallbackRow(options, ticker) {
+    const rows = options && Array.isArray(options.rows) ? options.rows : [];
     const row = rows.find((item) => item && String(item.ticker || '').toUpperCase() === ticker);
     if (row) return {bucket: String(row.bucket || '0-45'), row: row, historical: false};
 
-    // A transient current-chain failure must not erase an already measured wall.
-    // Historical values remain explicitly labelled as previous observations and
-    // are never presented as current-session positioning.
-    const history = options.history && typeof options.history === 'object' ? options.history[ticker] : null;
+    const history = options && options.history && typeof options.history === 'object' ? options.history[ticker] : null;
     if (Array.isArray(history) && history.length) {
       const observed = history.slice().reverse().find((item) => item && typeof item === 'object');
       if (observed) {
-        return {
-          bucket: 'history',
-          historical: true,
-          row: Object.assign({ticker: ticker}, observed)
-        };
+        return {bucket: 'history', row: Object.assign({ticker: ticker}, observed), historical: true};
       }
     }
     return null;
+  }
+
+  function resolveRow(options, ticker, bucket) {
+    if (!options || !ticker) return null;
+    if (bucket && BUCKETS.includes(bucket)) {
+      const row = rowForBucket(options, ticker, bucket);
+      if (row) return {bucket: bucket, row: row, historical: false};
+    }
+    const buckets = availableBuckets(options, ticker);
+    if (buckets.length) {
+      const selected = buckets[0];
+      return {bucket: selected, row: rowForBucket(options, ticker, selected), historical: false};
+    }
+    return fallbackRow(options, ticker);
+  }
+
+  function levelsFromRow(row) {
+    const spot = firstFinite(row, ['spot', 'underlying_price', 'underlying']);
+    const expectedMove = firstFinite(row, ['expected_move', 'expected_move_abs', 'em_abs']);
+    const expectedPct = firstFinite(row, ['expected_move_pct', 'em_pct']);
+    const move = expectedMove !== null ? expectedMove : (spot !== null && expectedPct !== null ? spot * expectedPct : null);
+    const upperDirect = firstFinite(row, ['expected_upper', 'expected_move_upper', 'em_upper']);
+    const lowerDirect = firstFinite(row, ['expected_lower', 'expected_move_lower', 'em_lower']);
+    const upper = upperDirect !== null ? upperDirect : (spot !== null && move !== null ? spot + move : null);
+    const lower = lowerDirect !== null ? lowerDirect : (spot !== null && move !== null ? Math.max(0, spot - move) : null);
+    return [
+      {key: 'call', label: 'Call Wall', value: firstFinite(row, ['call_wall', 'call_wall_price']), cls: 'v38-oc-call'},
+      {key: 'upper', label: 'Expected Upper', value: upper, cls: 'v38-oc-range'},
+      {key: 'spot', label: 'Spot', value: spot, cls: 'v38-oc-spot'},
+      {key: 'flip', label: 'Gamma Flip', value: firstFinite(row, ['gamma_flip', 'gamma_flip_price']), cls: 'v38-oc-flip'},
+      {key: 'lower', label: 'Expected Lower', value: lower, cls: 'v38-oc-range'},
+      {key: 'put', label: 'Put Wall', value: firstFinite(row, ['put_wall', 'put_wall_price']), cls: 'v38-oc-put'}
+    ].filter((item) => item.value !== null);
   }
 
   function injectStyle() {
@@ -77,31 +121,85 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      #${MODAL_ID}{position:fixed;inset:0;z-index:2147483000;background:rgba(18,20,18,.58);display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+      #${MODAL_ID}{position:fixed;inset:0;z-index:2147483000;background:rgba(18,20,18,.62);display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}
       #${MODAL_ID}[hidden]{display:none!important}
-      .v38-oc-shell{width:min(1180px,100%);height:min(86vh,860px);background:#f7f1e8;border:1px solid rgba(74,63,47,.28);border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.28);overflow:hidden;display:flex;flex-direction:column}
-      .v38-oc-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(74,63,47,.18);background:rgba(255,252,247,.94)}
-      .v38-oc-title{font-weight:800;font-size:18px;color:#222;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      .v38-oc-sub{font-size:12px;color:#6a6259;white-space:nowrap}
+      .v38-oc-shell{width:min(1240px,100%);height:min(90vh,900px);background:#111;border:1px solid rgba(74,63,47,.28);border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.34);overflow:hidden;display:flex;flex-direction:column}
+      .v38-oc-head{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid rgba(74,63,47,.18);background:rgba(255,252,247,.97);min-height:52px}
+      .v38-oc-title{font-weight:900;font-size:18px;color:#222;min-width:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .v38-oc-sub{font-size:11px;color:#6a6259;white-space:nowrap}
+      .v38-oc-buckets{display:flex;align-items:center;gap:5px;overflow-x:auto;scrollbar-width:none;margin-left:4px}.v38-oc-buckets::-webkit-scrollbar{display:none}
+      .v38-oc-bucket-btn{appearance:none;border:1px solid rgba(74,63,47,.18);border-radius:999px;background:#fff;color:#5d554c;padding:5px 9px;font:700 10px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;white-space:nowrap}
+      .v38-oc-bucket-btn[aria-pressed="true"]{background:#282722;color:#fff;border-color:#282722}
+      .v38-oc-bucket-btn:disabled{opacity:.35;cursor:default}
       .v38-oc-spacer{flex:1}
-      .v38-oc-close{appearance:none;border:1px solid rgba(74,63,47,.22);border-radius:10px;background:#fffaf3;color:#332f2a;padding:7px 10px;font:inherit;cursor:pointer;font-weight:800;min-width:38px}
-      .v38-oc-body{position:relative;flex:1;min-height:0;background:#fff}
-      .v38-oc-tv{position:absolute;inset:0}
+      .v38-oc-close{appearance:none;border:1px solid rgba(74,63,47,.22);border-radius:10px;background:#fffaf3;color:#332f2a;padding:7px 10px;font:inherit;cursor:pointer;font-weight:900;min-width:38px}
+      .v38-oc-body{position:relative;flex:1;min-height:0;background:#fff;overflow:hidden}
+      .v38-oc-tv{position:absolute;inset:0;z-index:1}
       .v38-oc-tv .tradingview-widget-container,.v38-oc-tv .tradingview-widget-container__widget{width:100%;height:100%}
-      .v38-oc-levels{position:absolute;left:14px;top:14px;z-index:5;width:min(350px,calc(100% - 28px));background:rgba(255,252,247,.95);backdrop-filter:blur(5px);border:1px solid rgba(74,63,47,.20);border-radius:13px;padding:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);pointer-events:auto}
-      .v38-oc-level-head{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
-      .v38-oc-level-head b{font-size:13px;color:#27231f}
-      .v38-oc-bucket{font-size:11px;color:#6a6259;border:1px solid rgba(74,63,47,.18);border-radius:999px;padding:2px 7px;background:#fff}
-      .v38-oc-history{border-color:#b88a38;color:#765623;background:#fff7e8}
-      .v38-oc-level-grid{display:grid;grid-template-columns:1fr auto;column-gap:12px;row-gap:5px;font-size:12px}
-      .v38-oc-level-grid span:nth-child(odd){color:#5d554c}.v38-oc-level-grid b{color:#26211c;text-align:right}
-      .v38-oc-call{color:#a23d35!important}.v38-oc-put{color:#28704b!important}.v38-oc-flip{color:#9a6c13!important}.v38-oc-range{color:#315f96!important}
-      .v38-oc-note{font-size:11px;color:#746c63;margin-top:7px;line-height:1.4}
-      .v38-oc-unavailable{font-size:12px;color:#746c63;line-height:1.45}
-      .v38-ticker-link,[data-v38-rs-ticker],[data-v38-ticker],.chip,.tk{cursor:pointer}
-      @media(max-width:700px){#${MODAL_ID}{padding:0}.v38-oc-shell{height:100dvh;width:100%;border-radius:0}.v38-oc-head{padding:9px 10px}.v38-oc-title{font-size:16px}.v38-oc-sub{display:none}.v38-oc-levels{left:8px;top:8px;width:calc(100% - 16px);padding:8px}.v38-oc-level-grid{font-size:11px}.v38-oc-body{min-height:0}}
+      .v38-oc-overlay{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+      .v38-oc-legend{position:absolute;left:12px;top:10px;display:flex;flex-wrap:wrap;gap:5px 10px;max-width:calc(100% - 120px);padding:5px 7px;border-radius:8px;background:rgba(255,255,255,.84);backdrop-filter:blur(4px);font-size:10px;font-weight:800;color:#45413b;box-shadow:0 2px 10px rgba(0,0,0,.09)}
+      .v38-oc-legend-item{display:inline-flex;align-items:center;gap:4px}.v38-oc-legend-swatch{width:13px;height:2px;border-radius:2px;background:currentColor;display:inline-block}
+      .v38-oc-line{position:absolute;left:0;right:0;height:0;border-top:2px solid currentColor;opacity:.92}
+      .v38-oc-line.v38-oc-spot{border-top-style:dashed;border-top-width:1px;opacity:.75}
+      .v38-oc-price{position:absolute;right:6px;transform:translateY(-50%);display:flex;align-items:center;gap:6px;border-radius:7px;padding:3px 6px;background:rgba(255,255,255,.94);box-shadow:0 1px 6px rgba(0,0,0,.12);font:800 10px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+      .v38-oc-price strong{font-weight:900}.v38-oc-price span{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:800;opacity:.78}
+      .v38-oc-call{color:#b63d34}.v38-oc-put{color:#23724b}.v38-oc-flip{color:#9b6c0d}.v38-oc-range{color:#2f64a2}.v38-oc-spot{color:#373737}
+      .v38-oc-status{position:absolute;left:12px;bottom:10px;max-width:min(560px,calc(100% - 24px));padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.88);backdrop-filter:blur(4px);font-size:10px;line-height:1.35;color:#625b53;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+      .v38-oc-unavailable{position:absolute;left:12px;top:12px;padding:7px 9px;border-radius:8px;background:rgba(255,255,255,.92);font-size:11px;font-weight:800;color:#6b645d;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+      .v38-ticker-link,[data-v38-rs-ticker],[data-v38-ticker],.chip,.tk,.mvr-t{cursor:pointer}
+      @media(max-width:700px){#${MODAL_ID}{padding:0}.v38-oc-shell{height:100dvh;width:100%;border-radius:0}.v38-oc-head{padding:7px 8px;gap:6px;min-height:48px}.v38-oc-title{font-size:16px}.v38-oc-sub{display:none}.v38-oc-bucket-btn{padding:5px 8px;font-size:9px}.v38-oc-legend{left:7px;top:7px;max-width:calc(100% - 82px);font-size:9px;gap:4px 7px}.v38-oc-price{right:4px;font-size:9px;padding:2px 4px}.v38-oc-price span{display:none}.v38-oc-status{left:7px;bottom:7px;font-size:9px;max-width:calc(100% - 14px)}}
     `;
     document.head.appendChild(style);
+  }
+
+  function injectUiPolishStyle() {
+    if (document.getElementById(UI_STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = UI_STYLE_ID;
+    style.textContent = `
+      #t-market .card.v38-ui-focus{padding-top:13px;padding-bottom:13px}
+      #t-market .card.v38-ui-focus>.hdr,#t-market .card.v38-ui-focus .hdr{margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(27,29,28,.07)}
+      #t-market .card.v38-ui-focus h2{font-weight:850;letter-spacing:-.015em}
+      #t-market .card.v38-ui-focus .big,#t-market .card.v38-ui-focus .pbig,#t-market .card.v38-ui-focus .mbval,#t-market .card.v38-ui-focus .reg-v,#t-market .card.v38-ui-focus .chd-now b{font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+      #t-market .card.v38-ui-focus .spark{margin-top:7px;height:38px}
+      #t-market .card.v38-ui-focus .mut,#t-market .card.v38-ui-focus small{line-height:1.45}
+      @media(max-width:620px){#t-market .card.v38-ui-focus{padding-top:11px;padding-bottom:11px}#t-market .card.v38-ui-focus>.hdr,#t-market .card.v38-ui-focus .hdr{margin-bottom:6px}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function normalizeFDecimals() {
+    const section = document.getElementById('t-market');
+    if (!section || !document.createTreeWalker) return;
+    const walker = document.createTreeWalker(section, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+    nodes.forEach((textNode) => {
+      const parent = textNode.parentElement;
+      if (!parent || parent.closest('script,style')) return;
+      const original = textNode.nodeValue || '';
+      const replaced = original.replace(/\b(F[123])\s+(0(?:\.\d+)?|1(?:\.0+)?)\b(?!\s*%)/g, (all, key, raw) => {
+        const n = Number(raw);
+        if (!Number.isFinite(n) || n < 0 || n > 1) return all;
+        return key + ' ' + Math.round(n * 100) + '%';
+      });
+      if (replaced !== original) textNode.nodeValue = replaced;
+    });
+  }
+
+  function applyUiPolish() {
+    injectUiPolishStyle();
+    const section = document.getElementById('t-market');
+    if (!section) return;
+    const focusWords = ['今日のマーケット', '前回からの変化', 'MC57'];
+    section.querySelectorAll('.card').forEach((card) => {
+      const heading = card.querySelector('h2');
+      const text = (heading ? heading.textContent : card.textContent || '').trim();
+      if (focusWords.some((word) => text.includes(word))) card.classList.add('v38-ui-focus');
+    });
+    normalizeFDecimals();
+    document.body.dataset.v38UiHotfix = 'ready';
   }
 
   function ensureModal() {
@@ -112,16 +210,17 @@
     modal.id = MODAL_ID;
     modal.hidden = true;
     modal.innerHTML = `
-      <div class="v38-oc-shell" role="dialog" aria-modal="true" aria-label="TradingView chart">
+      <div class="v38-oc-shell" role="dialog" aria-modal="true" aria-label="TradingView chart with V38 options levels">
         <div class="v38-oc-head">
           <div class="v38-oc-title">—</div>
-          <div class="v38-oc-sub">TradingView • V38 Options positioning</div>
+          <div class="v38-oc-sub">TradingView • V38 Options</div>
+          <div class="v38-oc-buckets" aria-label="Options DTE bucket"></div>
           <div class="v38-oc-spacer"></div>
           <button class="v38-oc-close" type="button" aria-label="閉じる">×</button>
         </div>
         <div class="v38-oc-body">
           <div class="v38-oc-tv"></div>
-          <div class="v38-oc-levels"></div>
+          <div class="v38-oc-overlay"></div>
         </div>
       </div>`;
     document.body.appendChild(modal);
@@ -137,8 +236,11 @@
     if (!modal) return;
     modal.hidden = true;
     const host = modal.querySelector('.v38-oc-tv');
+    const overlay = modal.querySelector('.v38-oc-overlay');
     if (host) host.replaceChildren();
+    if (overlay) overlay.replaceChildren();
     lastTicker = null;
+    activeBucket = null;
   }
 
   function renderTradingView(host, ticker) {
@@ -170,66 +272,108 @@
     host.appendChild(wrap);
   }
 
-  function renderLevels(host, options, ticker) {
+  function colorClassFor(item) {
+    return item && item.cls ? item.cls : '';
+  }
+
+  function renderBucketButtons(modal, options, ticker) {
+    const host = modal.querySelector('.v38-oc-buckets');
     host.replaceChildren();
-    const found = findTickerRow(options, ticker);
+    const available = new Set(availableBuckets(options, ticker));
+    BUCKETS.forEach((bucket) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'v38-oc-bucket-btn';
+      button.textContent = bucket;
+      button.disabled = !available.has(bucket);
+      button.setAttribute('aria-pressed', activeBucket === bucket ? 'true' : 'false');
+      button.addEventListener('click', () => {
+        if (button.disabled || ticker !== lastTicker) return;
+        activeBucket = bucket;
+        renderBucketButtons(modal, options, ticker);
+        renderOverlay(modal.querySelector('.v38-oc-overlay'), options, ticker, bucket);
+      });
+      host.appendChild(button);
+    });
+  }
+
+  function renderOverlay(host, options, ticker, bucket) {
+    host.replaceChildren();
+    const found = resolveRow(options, ticker, bucket);
     if (!found) {
-      const head = document.createElement('div');
-      head.className = 'v38-oc-level-head';
-      head.innerHTML = '<b>V38 Options Levels</b><span class="v38-oc-bucket">未取得</span>';
-      host.appendChild(head);
       const note = document.createElement('div');
       note.className = 'v38-oc-unavailable';
-      note.textContent = 'この銘柄は現在のOptions取得対象外、またはチェーン取得不能です。TradingViewチャートはこの画面内に表示します。';
+      note.textContent = 'Options未取得';
       host.appendChild(note);
       return;
     }
-    const row = found.row;
-    const spot = finite(row.spot);
-    const move = finite(row.expected_move) !== null
-      ? finite(row.expected_move)
-      : (spot !== null && finite(row.expected_move_pct) !== null ? spot * finite(row.expected_move_pct) : null);
-    const lower = spot !== null && move !== null ? Math.max(0, spot - move) : null;
-    const upper = spot !== null && move !== null ? spot + move : null;
-    const head = document.createElement('div');
-    head.className = 'v38-oc-level-head';
-    const title = document.createElement('b');
-    title.textContent = 'V38 Options Levels';
-    const bucket = document.createElement('span');
-    bucket.className = 'v38-oc-bucket' + (found.historical ? ' v38-oc-history' : '');
-    bucket.textContent = found.historical
-      ? '前回実測 ' + String(row.date || '日付不明')
-      : found.bucket + ' DTE';
-    head.append(title, bucket);
-    host.appendChild(head);
-    const grid = document.createElement('div');
-    grid.className = 'v38-oc-level-grid';
-    const entries = [
-      ['Call Wall', row.call_wall, 'v38-oc-call'],
-      ['Expected Upper', upper, 'v38-oc-range'],
-      ['Spot', spot, ''],
-      ['Gamma Flip', row.gamma_flip, 'v38-oc-flip'],
-      ['Expected Lower', lower, 'v38-oc-range'],
-      ['Put Wall', row.put_wall, 'v38-oc-put']
-    ];
-    entries.forEach((entry) => {
-      const label = document.createElement('span');
-      label.textContent = entry[0];
-      if (entry[2]) label.className = entry[2];
-      const value = document.createElement('b');
-      value.textContent = money(entry[1]);
-      if (entry[2]) value.className = entry[2];
-      grid.append(label, value);
+    if (!found.historical) activeBucket = found.bucket;
+    const row = found.row || {};
+    const levels = levelsFromRow(row);
+    if (!levels.length) {
+      const note = document.createElement('div');
+      note.className = 'v38-oc-unavailable';
+      note.textContent = found.historical ? '前回実測のみ・Levels算出不可' : 'Levels算出不可';
+      host.appendChild(note);
+      return;
+    }
+
+    const values = levels.map((item) => item.value);
+    let min = Math.min.apply(null, values);
+    let max = Math.max.apply(null, values);
+    if (!(max > min)) {
+      const base = Math.abs(max || 1);
+      min -= base * 0.05;
+      max += base * 0.05;
+    } else {
+      const pad = (max - min) * 0.12;
+      min -= pad;
+      max += pad;
+    }
+    const toTop = (value) => 10 + ((max - value) / (max - min)) * 78;
+
+    const legend = document.createElement('div');
+    legend.className = 'v38-oc-legend';
+    levels.forEach((item) => {
+      const entry = document.createElement('span');
+      entry.className = 'v38-oc-legend-item ' + colorClassFor(item);
+      const swatch = document.createElement('i');
+      swatch.className = 'v38-oc-legend-swatch';
+      const text = document.createElement('span');
+      text.textContent = item.label;
+      entry.append(swatch, text);
+      legend.appendChild(entry);
     });
-    host.appendChild(grid);
-    const note = document.createElement('div');
-    note.className = 'v38-oc-note';
-    const expiry = row.expected_move_expiry ? ' • EM expiry ' + row.expected_move_expiry : '';
-    const quality = row.quality ? ' • ' + row.quality : '';
-    const source = options && options.risk_free_rate_source ? ' • rate ' + options.risk_free_rate_source : '';
-    const historical = found.historical ? ' • 現行チェーン未取得のため前回実測値を表示' : '';
-    note.textContent = 'Expected Range ' + money(lower) + ' – ' + money(upper) + ' (' + pct(row.expected_move_pct) + ')' + expiry + quality + source + historical + '。Direction/Confidenceは推測表示しません。';
-    host.appendChild(note);
+    host.appendChild(legend);
+
+    levels.forEach((item) => {
+      const top = Math.max(7, Math.min(93, toTop(item.value)));
+      const line = document.createElement('div');
+      line.className = 'v38-oc-line ' + colorClassFor(item);
+      line.style.top = top + '%';
+      host.appendChild(line);
+      const label = document.createElement('div');
+      label.className = 'v38-oc-price ' + colorClassFor(item);
+      label.style.top = top + '%';
+      const name = document.createElement('span');
+      name.textContent = item.label;
+      const price = document.createElement('strong');
+      price.textContent = money(item.value);
+      label.append(name, price);
+      host.appendChild(label);
+    });
+
+    const status = document.createElement('div');
+    status.className = 'v38-oc-status';
+    const expiry = row.expected_move_expiry || row.expiry || '';
+    const expectedPct = firstFinite(row, ['expected_move_pct', 'em_pct']);
+    const parts = [found.historical ? '前回実測 ' + String(row.date || '') : found.bucket + ' DTE'];
+    if (expiry) parts.push('EM expiry ' + expiry);
+    if (expectedPct !== null) parts.push('Expected Move ' + pct(expectedPct));
+    if (row.quality) parts.push(String(row.quality));
+    if (found.historical) parts.push('現行チェーン未取得');
+    status.textContent = parts.filter(Boolean).join(' • ');
+    host.appendChild(status);
   }
 
   function openTicker(ticker) {
@@ -237,13 +381,20 @@
     if (!ticker) return;
     const modal = ensureModal();
     lastTicker = ticker;
+    activeBucket = null;
     modal.hidden = false;
     modal.querySelector('.v38-oc-title').textContent = ticker;
     renderTradingView(modal.querySelector('.v38-oc-tv'), ticker);
-    const levelHost = modal.querySelector('.v38-oc-levels');
-    levelHost.textContent = 'Options levels loading…';
+    const overlay = modal.querySelector('.v38-oc-overlay');
+    overlay.innerHTML = '<div class="v38-oc-unavailable">Options loading…</div>';
+    const bucketHost = modal.querySelector('.v38-oc-buckets');
+    bucketHost.replaceChildren();
     loadOptions().then((options) => {
-      if (!modal.hidden && lastTicker === ticker) renderLevels(levelHost, options, ticker);
+      if (modal.hidden || lastTicker !== ticker) return;
+      const available = availableBuckets(options, ticker);
+      activeBucket = available[0] || null;
+      renderBucketButtons(modal, options, ticker);
+      renderOverlay(overlay, options, ticker, activeBucket);
     });
   }
 
@@ -279,7 +430,6 @@
 
   function tickerFromElement(target) {
     if (!(target instanceof Element)) return null;
-
     const explicitData = target.closest('[data-v38-ticker],[data-v38-rs-ticker],[data-ticker],[data-symbol]');
     if (explicitData) {
       const value = explicitData.getAttribute('data-v38-ticker')
@@ -289,7 +439,6 @@
       const ticker = cleanTicker(value);
       if (ticker) return ticker;
     }
-
     const link = target.closest('a');
     if (link) {
       if (link.classList.contains('v38-ticker-link')) {
@@ -299,19 +448,14 @@
       const ticker = tickerFromTradingViewHref(link);
       if (ticker) return ticker;
     }
-
     const generic = target.closest('.rsx-item');
     const genericTicker = tickerFromGenericRow(generic);
     if (genericTicker) return genericTicker;
-
-    // Known ticker-only visual atoms may safely use their own text. This avoids
-    // the previous bug that treated arbitrary uppercase prose as a symbol.
     const atom = target.closest('.mvr-t,.tk,.chip');
     if (atom) {
       const ticker = cleanTicker(atom.textContent);
       if (ticker) return ticker;
     }
-
     const item = target.closest('.slrow,.l');
     if (item) {
       const text = String(item.textContent || '').toUpperCase();
@@ -340,6 +484,16 @@
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeModal();
   });
+
+  function initUiPolish() {
+    applyUiPolish();
+    window.setTimeout(applyUiPolish, 250);
+    window.setTimeout(applyUiPolish, 900);
+    window.setTimeout(applyUiPolish, 1800);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initUiPolish, {once: true});
+  else initUiPolish();
 
   window.V38OpenTickerChart = openTicker;
 })();
