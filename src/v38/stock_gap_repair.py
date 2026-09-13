@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -19,13 +20,13 @@ from .live_acquisition import (
 )
 from .stock_adapter import calculate_from_files
 
-CALCULATION_VERSION = "v38-stock-gap-repair-1.1.0"
+CALCULATION_VERSION = "v38-stock-gap-repair-1.2.0"
 
 # Verified corporate-action continuity used only when the new Yahoo symbol is
-# temporarily missing.  JAB Acquisition Corp I changed its Nasdaq Class A ticker
-# from JAB to ATLQ effective 2026-08-31 without a CUSIP change.  The mapping does
-# not create synthetic prices; it joins real pre-change Yahoo history to a real
-# current TradingView scanner bar for the same security.
+# temporarily missing. JAB Acquisition Corp I changed its Nasdaq Class A ticker
+# from JAB to ATLQ effective 2026-08-31 without a CUSIP change. The mapping never
+# creates synthetic prices: pre-change history comes from the prior Yahoo symbol,
+# while post-change target-session data must be an exact observed ATLQ/JAB bar.
 CORPORATE_ACTION_ALIASES: dict[str, dict[str, Any]] = {
     "ATLQ": {
         "prior_ticker": "JAB",
@@ -78,6 +79,86 @@ def _yahoo_rows(yf: Any, *, ticker: str, symbol: str, target_session: str) -> li
         return rows
     fallback = _ticker_history_fallback(yf, symbol)
     return adjusted_ohlcv_rows(fallback, ticker=ticker, target_session=target_session)
+
+
+def _nasdaq_number(value: Any) -> float | None:
+    text = str(value if value is not None else "").strip().replace("$", "").replace(",", "")
+    if not text or text.upper() in {"N/A", "NA", "NONE", "--", "-"}:
+        return None
+    try:
+        number = float(text)
+    except (TypeError, ValueError):
+        return None
+    return number if pd.notna(number) else None
+
+
+def _nasdaq_historical_current_bar(*, ticker: str, target_session: str) -> dict[str, Any] | None:
+    """Fetch one exact target-session daily bar from Nasdaq's public quote history.
+
+    This is deliberately exact-date only. A stale prior close is never rolled
+    forward to fabricate a missing current-session observation.
+    """
+    query = urllib.parse.urlencode(
+        {
+            "assetclass": "stocks",
+            "fromdate": target_session,
+            "todate": target_session,
+            "limit": "10",
+        }
+    )
+    symbol = urllib.parse.quote(ticker, safe="")
+    url = f"https://api.nasdaq.com/api/quote/{symbol}/historical?{query}"
+    req = urllib.request.Request(
+        url,
+        method="GET",
+        headers={
+            "Accept": "application/json, text/plain, */*",
+            "Origin": "https://www.nasdaq.com",
+            "Referer": f"https://www.nasdaq.com/market-activity/stocks/{ticker.lower()}/historical",
+            "User-Agent": "Mozilla/5.0 (v38-market-dashboard-gap-repair)",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            obj = json.loads(response.read().decode("utf-8"))
+    except Exception:
+        return None
+    data = obj.get("data") if isinstance(obj, dict) else None
+    table = data.get("tradesTable") if isinstance(data, dict) else None
+    rows = table.get("rows") if isinstance(table, dict) else None
+    if not isinstance(rows, list):
+        return None
+
+    try:
+        target_mdy = pd.Timestamp(target_session).strftime("%m/%d/%Y")
+    except Exception:
+        return None
+    for raw in rows:
+        if not isinstance(raw, dict) or str(raw.get("date") or "").strip() != target_mdy:
+            continue
+        open_ = _nasdaq_number(raw.get("open"))
+        high = _nasdaq_number(raw.get("high"))
+        low = _nasdaq_number(raw.get("low"))
+        close = _nasdaq_number(raw.get("close"))
+        volume = _nasdaq_number(raw.get("volume"))
+        if None in {open_, high, low, close, volume}:
+            return None
+        assert open_ is not None and high is not None and low is not None and close is not None and volume is not None
+        if close <= 0 or high < low or volume < 0:
+            return None
+        return {
+            "ticker": ticker,
+            "date": target_session,
+            "open": open_,
+            "high": high,
+            "low": low,
+            "close": close,
+            "volume": volume,
+            "is_complete": True,
+            "split_checked": True,
+            "split_anomaly": False,
+        }
+    return None
 
 
 def _tradingview_current_bar(*, ticker: str, exchange: str, target_session: str) -> dict[str, Any] | None:
@@ -165,6 +246,14 @@ def _corporate_action_rows(
             by_date[str(row["date"])] = row
 
     if target_session not in by_date:
+        current = _nasdaq_historical_current_bar(
+            ticker=ticker,
+            target_session=target_session,
+        )
+        if current is not None:
+            by_date[target_session] = current
+
+    if target_session not in by_date:
         current = _tradingview_current_bar(
             ticker=ticker,
             exchange=exchange,
@@ -172,6 +261,21 @@ def _corporate_action_rows(
         )
         if current is not None:
             by_date[target_session] = current
+
+    if target_session not in by_date:
+        # Some data vendors keep the old symbol as an alias after a same-CUSIP
+        # rename. Accept it only when the provider returns the exact target date;
+        # never roll a pre-change or stale bar forward.
+        legacy_current = next(
+            (
+                row for row in prior_rows
+                if str(row.get("date") or "") == target_session
+                and row.get("close") is not None
+            ),
+            None,
+        )
+        if legacy_current is not None:
+            by_date[target_session] = legacy_current
     return [by_date[day] for day in sorted(by_date)]
 
 
@@ -247,7 +351,7 @@ def repair_failed_live_tickers(
         return {"status": "UNRESOLVED", "repaired": [], "remaining": failed}
 
     _rewrite_ohlcv(ohlcv_path, repaired)
-    source = "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated gap retry; verified corporate-action alias when required"
+    source = "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated gap retry; verified corporate-action alias with exact Nasdaq/TradingView target-session fallback when required"
     calculate_from_files(
         ohlcv_path,
         universe_path,
@@ -274,7 +378,11 @@ def repair_failed_live_tickers(
     yahoo["target_session_coverage"] = yahoo["target_session_received"] / requested if requested else None
     yahoo["failed_tickers"] = remaining
     yahoo["isolated_retry_repaired"] = sorted(repaired)
-    yahoo["isolated_retry_source"] = "Yahoo isolated retry; ATLQ may join verified JAB pre-change history to completed TradingView current bar"
+    yahoo["isolated_retry_source"] = (
+        "Yahoo isolated retry; ATLQ may join verified JAB pre-change history to an exact "
+        "Nasdaq historical or completed TradingView ATLQ target-session bar; exact-date "
+        "same-CUSIP JAB provider alias is final fallback"
+    )
     manifest["yahoo"] = yahoo
     manifest["corporate_action_aliases"] = {
         ticker: CORPORATE_ACTION_ALIASES[ticker]
