@@ -134,6 +134,26 @@ def _assert_live_binding(page, view):
         modal.locator(".v38-oc-close").click()
         assert not modal.is_visible()
 
+    core12 = view.get("core12") or {}
+    core_rows = core12.get("rows") or []
+    if core12.get("status") == "READY" and core_rows:
+        ticker = str(core_rows[0].get("ticker") or core_rows[0].get("symbol") or "").upper()
+        if ticker:
+            page.locator('a.tabx[href="#t-port"]').click()
+            row = page.locator('#t-port .rsx-item[data-v38-ticker="' + ticker + '"]').first
+            assert row.is_visible()
+            assert ticker in row.inner_text()
+            link = row.locator("a.v38-generic-ticker").first
+            assert link.is_visible()
+            before_url = page.url
+            link.click()
+            modal = page.locator("#v38-options-chart-modal")
+            assert modal.is_visible()
+            assert modal.locator(".v38-oc-title").inner_text().strip() == ticker
+            assert page.url == before_url
+            modal.locator(".v38-oc-close").click()
+            assert not modal.is_visible()
+
     positions = view.get("positions") or {}
     if positions.get("status") == "READY" and not positions.get("rows"):
         page.locator('a.tabx[href="#t-alloc"]').click()
@@ -149,6 +169,9 @@ def _assert_live_binding(page, view):
         section = page.locator("#" + section_id)
         expected = view[view_key]
         assert section.get_attribute("data-v38-status") == expected["status"]
+        visible_text = section.inner_text()
+        assert "DATA_REQUIRED" not in visible_text
+        assert "STALE" not in visible_text
         if section_id != "t-post1":
             assert section.locator(".card:visible").count() > 0
 
@@ -188,6 +211,9 @@ def main() -> int:
                     assert section.evaluate("el => el.classList.contains('on')")
                     assert page.locator("section.on").count() == 1
                     assert page.evaluate("window.__v38TabSentinel") == sentinel
+                    visible_text = section.inner_text()
+                    assert "DATA_REQUIRED" not in visible_text
+                    assert "STALE" not in visible_text
 
                 page.locator('a.tabx[href="#t-rs"]').click()
                 page.locator('a.tabx[href="#t-weekly"]').click()
