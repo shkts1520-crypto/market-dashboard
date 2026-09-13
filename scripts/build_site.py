@@ -42,14 +42,9 @@ def main() -> int:
 
     out = build_site(args.canonical, args.output)
 
-    # These extensions already contain the recovered current-data bindings, the
-    # polished F1/F2/F3 card, recovered fine-theme/RS history, and the two-year
-    # quarterly trend renderer. Copying them without loading them left acquired
-    # data invisible in production, so load them in dependency order. The
-    # display-only data repair runs after the normal final UI and rebinds only
-    # canonical cards whose authoritative published inputs already exist. The
-    # ticker chart extension runs last so its delegated handler sees both the
-    # canonical and dynamically repaired ticker rows without altering v5 CSS.
+    # Extensions load after the canonical v5 shell and only bind acquired data.
+    # visual_fidelity runs after data_repair so it can restore the original MC57
+    # temperature bands, robust display-only diagnostics and VIX fear-cycle card.
     observables = Path("assets/v38-observables.js")
     observables_enabled = _inject_external_extension(out, observables)
     polish = Path("assets/v38-polish.js")
@@ -60,6 +55,8 @@ def main() -> int:
     final_ui_enabled = _inject_external_extension(out, final_ui)
     data_repair = Path("assets/v38-data-repair.js")
     data_repair_enabled = _inject_external_extension(out, data_repair)
+    visual_fidelity = Path("assets/v38-visual-fidelity.js")
+    visual_fidelity_enabled = _inject_external_extension(out, visual_fidelity)
     options_chart = Path("assets/v38-options-chart.js")
     options_chart_enabled = _inject_external_extension(out, options_chart)
 
@@ -83,6 +80,7 @@ def main() -> int:
                 "recovery_extension": recovery_enabled,
                 "final_ui_extension": final_ui_enabled,
                 "data_repair_extension": data_repair_enabled,
+                "visual_fidelity_extension": visual_fidelity_enabled,
                 "options_chart_extension": options_chart_enabled,
             },
             ensure_ascii=False,

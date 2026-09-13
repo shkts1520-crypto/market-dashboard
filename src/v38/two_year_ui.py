@@ -80,11 +80,16 @@ def attach_two_year_display_history(view: dict[str, Any], data_dir: str | Path) 
             "series": [dict(row) for row in diagnostics["series"][-DISPLAY_SESSIONS:] if isinstance(row, dict)],
         }
 
+    vix_cycle = _read(root / "history" / "vix_fear_cycle.json") or {}
+    if vix_cycle.get("session_date") == session:
+        daily["vix_fear_cycle"] = vix_cycle
+
     daily["display_history"] = {
         "window_sessions": DISPLAY_SESSIONS,
         "history_points": len(daily.get("history") or []),
         "market_source": market.get("source"),
         "diagnostic_source": diagnostics.get("source"),
+        "vix_fear_cycle_source": vix_cycle.get("source"),
         "trading_gate_eligible": False,
     }
     return view

@@ -23,10 +23,12 @@ from v38.live_acquisition import (
     select_yfinance_symbol_frame,
     yahoo_symbol,
 )
+from v38.vix_fear_cycle import HISTORY_START, build_vix_fear_cycle
 
 DISPLAY_SESSIONS = 504
-STOCK_DOWNLOAD_PERIOD = "3y"  # 2y display + >=200-session indicator pre-roll
+STOCK_DOWNLOAD_PERIOD = "3y"
 MARKET_DOWNLOAD_PERIOD = "2y"
+OPTION_CHART_SESSIONS = 126
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -206,6 +208,87 @@ def _market_series(session: str) -> dict[str, list[dict[str, Any]]]:
     return series
 
 
+def _option_chart_ohlc(frame: pd.DataFrame, options: dict[str, Any], session: str) -> dict[str, Any]:
+    targets = []
+    policy = options.get("target_policy") if isinstance(options, dict) else None
+    if isinstance(policy, dict) and isinstance(policy.get("targets"), list):
+        targets = [str(value or "").strip().upper() for value in policy["targets"]]
+    if not targets:
+        seen = set()
+        for row in (options.get("rows") or []):
+            ticker = str((row or {}).get("ticker") or "").strip().upper() if isinstance(row, dict) else ""
+            if ticker and ticker not in seen:
+                seen.add(ticker)
+                targets.append(ticker)
+    targets = [ticker for ticker in targets if ticker]
+    if not targets or frame.empty:
+        return {"targets": len(targets), "ready": 0, "coverage": 0.0}
+
+    d = frame.copy()
+    d.columns = [str(column).strip().lower().replace(" ", "_") for column in d.columns]
+    required = {"ticker", "date", "open", "high", "low", "close", "volume"}
+    if not required.issubset(d.columns):
+        return {"targets": len(targets), "ready": 0, "coverage": 0.0}
+    d["ticker"] = d["ticker"].astype(str).str.strip().str.upper()
+    parsed = pd.to_datetime(d["date"], errors="coerce", utc=True)
+    d = d.loc[parsed.notna()].copy()
+    d["date"] = parsed.loc[parsed.notna()].dt.strftime("%Y-%m-%d")
+    for column in ("open", "high", "low", "close", "volume"):
+        d[column] = pd.to_numeric(d[column], errors="coerce")
+    d = d[d["ticker"].isin(targets) & (d["date"] <= session)].dropna(subset=["open", "high", "low", "close"])
+    d = d[(d[["open", "high", "low", "close"]] > 0).all(axis=1)].sort_values(["ticker", "date"], kind="mergesort")
+
+    chart: dict[str, list[dict[str, Any]]] = {}
+    for ticker in targets:
+        rows = d[d["ticker"] == ticker].tail(OPTION_CHART_SESSIONS)
+        if rows.empty:
+            continue
+        candles = []
+        for row in rows.itertuples(index=False):
+            candles.append({
+                "time": str(row.date),
+                "open": round(float(row.open), 6),
+                "high": round(float(row.high), 6),
+                "low": round(float(row.low), 6),
+                "close": round(float(row.close), 6),
+                "volume": round(float(row.volume), 3) if pd.notna(row.volume) else None,
+            })
+        if candles:
+            chart[ticker] = candles
+    options["chart_ohlc"] = chart
+    options["chart_ohlc_contract"] = {
+        "status": "READY" if chart else "DATA_REQUIRED",
+        "source": "same Yahoo Finance adjusted 3y OHLCV batch used by display reconstruction",
+        "sessions_per_ticker": OPTION_CHART_SESSIONS,
+        "target_count": len(targets),
+        "ready_count": len(chart),
+        "coverage": len(chart) / len(targets) if targets else 0.0,
+        "renderer": "TradingView Lightweight Charts candlestick-only",
+    }
+    return {"targets": len(targets), "ready": len(chart), "coverage": len(chart) / len(targets) if targets else 0.0}
+
+
+def _vix_fear_cycle(session: str, generated_at: str) -> dict[str, Any]:
+    end = (pd.Timestamp(session) + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+    try:
+        raw = yf.download(
+            tickers=["^VIX"],
+            start=HISTORY_START,
+            end=end,
+            interval="1d",
+            group_by="ticker",
+            auto_adjust=False,
+            actions=False,
+            progress=False,
+            threads=False,
+            timeout=30,
+        )
+    except Exception:
+        raw = pd.DataFrame()
+    frame = select_yfinance_symbol_frame(raw, "^VIX")
+    return build_vix_fear_cycle(frame, session_date=session, generated_at=generated_at)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Rebuild original two-year display trends")
     parser.add_argument("--data-dir", default="data")
@@ -247,10 +330,21 @@ def main() -> int:
         "coverage": stats["target_coverage"],
         "source": "Yahoo Finance 3y current-universe display reconstruction",
         "schema_version": "v38.display_diagnostics_2y.1",
-        "calculation_version": "v38-display-history-2y-1.0.0",
+        "calculation_version": "v38-display-history-2y-1.0.1",
         "trading_gate_eligible": False,
     })
     atomic_write_json(root / "history" / "market_diagnostics_2y.json", diagnostics)
+
+    options_stats = {"targets": 0, "ready": 0, "coverage": 0.0}
+    options_path = root / "options" / "index.json"
+    if options_path.is_file():
+        options = _load(options_path)
+        if options.get("session_date") == session:
+            options_stats = _option_chart_ohlc(frame, options, session)
+            atomic_write_json(options_path, options)
+
+    vix_cycle = _vix_fear_cycle(session, generated_at)
+    atomic_write_json(root / "history" / "vix_fear_cycle.json", vix_cycle)
 
     market = {
         "session_date": session,
@@ -258,7 +352,7 @@ def main() -> int:
         "coverage": None,
         "source": "Yahoo Finance 2y daily market series",
         "schema_version": "v38.market_series_2y.1",
-        "calculation_version": "v38-display-history-2y-1.0.0",
+        "calculation_version": "v38-display-history-2y-1.0.1",
         "status": "READY",
         "trading_gate_eligible": False,
         "series": _market_series(session),
@@ -275,6 +369,9 @@ def main() -> int:
         "diagnostic_sessions": len(diagnostics.get("series") or []),
         "market_symbols": len(market["series"]),
         "display_sessions": DISPLAY_SESSIONS,
+        "option_chart_ohlc": options_stats,
+        "vix_fear_cycle_status": vix_cycle.get("status"),
+        "vix_fear_cycle_state": vix_cycle.get("state"),
     }, sort_keys=True))
     return 0
 

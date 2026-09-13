@@ -53,6 +53,14 @@ def test_two_year_display_history_caps_at_504_and_preserves_current_observation(
         "source": "test",
         "series": diagnostic_rows,
     })
+    _write(history / "vix_fear_cycle.json", {
+        "session_date": session,
+        "status": "READY",
+        "source": "test-vix",
+        "state": "NORMAL",
+        "current": {"vix": 18.0},
+        "series": [{"date": session, "close": 18.0}],
+    })
 
     view = {
         "session_date": session,
@@ -79,6 +87,8 @@ def test_two_year_display_history_caps_at_504_and_preserves_current_observation(
     assert daily["history"][-1]["f1"] == 0.11
     assert len(daily["market_series"]["QQQ"]) == DISPLAY_SESSIONS
     assert len(daily["market_diagnostics"]["series"]) == DISPLAY_SESSIONS
+    assert daily["vix_fear_cycle"]["state"] == "NORMAL"
+    assert daily["display_history"]["vix_fear_cycle_source"] == "test-vix"
     assert daily["display_history"]["window_sessions"] == DISPLAY_SESSIONS
     assert daily["display_history"]["history_points"] == DISPLAY_SESSIONS
     assert daily["display_history"]["trading_gate_eligible"] is False
@@ -96,3 +106,4 @@ def test_two_year_display_history_tolerates_absent_optional_market_shards(tmp_pa
     out = attach_two_year_display_history(view, tmp_path)
     assert len(out["daily"]["history"]) == 40
     assert out["daily"]["market_series"]["QQQ"][0]["close"] == 1.0
+    assert "vix_fear_cycle" not in out["daily"]
