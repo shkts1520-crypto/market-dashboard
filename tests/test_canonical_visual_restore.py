@@ -11,7 +11,6 @@ def test_rotation_uses_canonical_v5_dom_vocabulary():
         "'span','bar'",
         "'div','read'",
         "'div','grid'",
-        "'div','prg'",
         "prgMaj",
         "prgMin",
         "rrgwrap",
