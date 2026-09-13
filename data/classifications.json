@@ -2,11 +2,11 @@
   "calculation_version": "v38-recovered-live-inputs-1.0.1",
   "coverage": 1.0,
   "coverage_detail": {
-    "classified_rows": 3390,
-    "revenue_ttm_available": 3221,
-    "rs_rows": 3390
+    "classified_rows": 3382,
+    "revenue_ttm_available": 3218,
+    "rs_rows": 3382
   },
-  "generated_at": "2026-09-13T08:49:42Z",
+  "generated_at": "2026-09-13T11:07:17Z",
   "rows": [
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -17203,7 +17203,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 499675000.00000006,
+      "market_cap": 399739999.99999994,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "AAC"
@@ -17223,14 +17223,6 @@
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "AACO"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
-      "market_cap": 236108200.0,
-      "revenue_ttm": null,
-      "structural_clinical_biotech": false,
-      "ticker": "AACP"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -17315,7 +17307,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 291586679.34,
+      "market_cap": 219904932.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "ACGC"
@@ -17439,14 +17431,6 @@
       "revenue_ttm": 1148987000.0,
       "structural_clinical_biotech": false,
       "ticker": "AENT"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
-      "market_cap": 213246734.8,
-      "revenue_ttm": 0.0,
-      "structural_clinical_biotech": false,
-      "ticker": "AESP"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -17715,7 +17699,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 358244957.9595001,
+      "market_cap": 263643086.24999997,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "AMAC"
@@ -18307,7 +18291,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 459079999.99999994,
+      "market_cap": 344310000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "BCCQ"
@@ -18635,7 +18619,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 434485621.71,
+      "market_cap": 327560625.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "BRTM"
@@ -18939,7 +18923,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 308303603.28,
+      "market_cap": 232863600.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "CCCT"
@@ -19091,7 +19075,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 341325000.0,
+      "market_cap": 270600000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "CGCF"
@@ -19691,7 +19675,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 598829000.0,
+      "market_cap": 450065000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "CXII"
@@ -19823,14 +19807,6 @@
       "revenue_ttm": 4133734999.9999995,
       "structural_clinical_biotech": false,
       "ticker": "DFH"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Finance/Rental/Leasing",
-      "market_cap": 220634999.99999997,
-      "revenue_ttm": null,
-      "structural_clinical_biotech": false,
-      "ticker": "DGAC"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -20435,7 +20411,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 369667836.62,
+      "market_cap": 279284500.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "FDMM"
@@ -20651,7 +20627,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
-      "market_cap": 908997399.06,
+      "market_cap": 526815978.72,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "FRBT"
@@ -20707,7 +20683,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 284625000.0,
+      "market_cap": 227700000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "FTRA"
@@ -21163,7 +21139,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 301167900.00000006,
+      "market_cap": 234342900.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "GSRV"
@@ -21555,7 +21531,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 322392774.51,
+      "market_cap": 259322937.48000002,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "IACQ"
@@ -21583,14 +21559,6 @@
       "revenue_ttm": 343174000.0,
       "structural_clinical_biotech": false,
       "ticker": "IBTA"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
-      "market_cap": 212000000.0,
-      "revenue_ttm": 0.0,
-      "structural_clinical_biotech": false,
-      "ticker": "IDAC"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -21843,7 +21811,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 252851100.0,
+      "market_cap": 203343600.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "IPVV"
@@ -21899,7 +21867,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 277135325.0,
+      "market_cap": 221708260.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "ISNR"
@@ -21939,7 +21907,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 318388400.0,
+      "market_cap": 256518400.0,
       "revenue_ttm": 0.0,
       "structural_clinical_biotech": false,
       "ticker": "JACS"
@@ -22115,7 +22083,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 379499996.7,
+      "market_cap": 284625000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "KEYY"
@@ -22319,14 +22287,6 @@
       "revenue_ttm": 318843000.0,
       "structural_clinical_biotech": false,
       "ticker": "KRUS"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
-      "market_cap": 202415726.10000002,
-      "revenue_ttm": 0.0,
-      "structural_clinical_biotech": false,
-      "ticker": "KTWO"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -22583,14 +22543,6 @@
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "LTGO"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
-      "market_cap": 229195000.0,
-      "revenue_ttm": null,
-      "structural_clinical_biotech": false,
-      "ticker": "LTGR"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -23195,7 +23147,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 292380006.6,
+      "market_cap": 219780000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "MTNE"
@@ -23827,14 +23779,6 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 250132063.34,
-      "revenue_ttm": null,
-      "structural_clinical_biotech": false,
-      "ticker": "OHAC"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
       "market_cap": 366072886.99999994,
       "revenue_ttm": 0.0,
       "structural_clinical_biotech": false,
@@ -24003,7 +23947,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 404007600.00000006,
+      "market_cap": 303005700.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "OSPR"
@@ -25155,7 +25099,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 282612500.0,
+      "market_cap": 226090000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "SAMO"
@@ -25779,7 +25723,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Chemicals: Specialty",
-      "market_cap": 1886436513.4,
+      "market_cap": 1746917902.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "STDN"
@@ -26410,14 +26354,6 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
-      "market_cap": 229310000.0,
-      "revenue_ttm": null,
-      "structural_clinical_biotech": false,
-      "ticker": "TVIV"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Insurance Brokers/Services",
       "market_cap": 1442642409.0,
       "revenue_ttm": 293223000.0,
@@ -26851,7 +26787,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 282037500.0,
+      "market_cap": 225630000.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "WLCO"

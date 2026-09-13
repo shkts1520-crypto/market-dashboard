@@ -2,7 +2,7 @@
   "calculation_version": "v38-recovered-theme-1.1.0",
   "coverage": 1.0,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-13T08:49:42Z",
+  "generated_at": "2026-09-13T11:07:17Z",
   "rows": [
     {
       "leaders": [
@@ -65,13 +65,13 @@
         "AAC",
         "AACI",
         "AACO",
-        "AACP"
+        "ACAA"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 200,
+      "member_count": 192,
       "raw_strength": 94.72717379224909,
       "ret1_median": 0.0,
-      "ret20_median": 0.0029836177396513897,
+      "ret20_median": 0.002938272442585821,
       "rs189_median": 98.66793529971456,
       "rs63_median": 90.78641228478362,
       "theme_id": "SPAC・ブランクチェック",

@@ -44,7 +44,7 @@
   },
   "coverage": 1.0,
   "gap_repair_version": "v38-stock-gap-repair-1.2.0",
-  "generated_at": "2026-09-13T08:49:42Z",
+  "generated_at": "2026-09-13T11:07:17Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
   "options_status": "READY",
@@ -70,7 +70,7 @@
   "status": "READY",
   "structural_clinical_biotech_status": "READY",
   "universe": {
-    "active_universe": 3390,
+    "active_universe": 3382,
     "below_floor_rows": 0,
     "biotech_heuristic_applied": false,
     "count_guard_ratio": 0.8,
@@ -78,19 +78,19 @@
     "duplicate_symbol_rows": 0,
     "malformed_rows": 0,
     "previous_active_universe": 3390,
-    "response_rows": 3391,
-    "response_total_count": 3391,
+    "response_rows": 3383,
+    "response_total_count": 3383,
     "special_security_rows": 1
   },
   "yahoo": {
     "failed_tickers": [],
-    "history_received": 3390,
+    "history_received": 3382,
     "isolated_retry_repaired": [
       "ATLQ"
     ],
     "isolated_retry_source": "Yahoo isolated retry; ATLQ may join verified JAB pre-change history to an exact Nasdaq historical or completed TradingView ATLQ target-session bar; exact-date same-CUSIP JAB provider alias is final fallback",
-    "requested": 3390,
+    "requested": 3382,
     "target_session_coverage": 1.0,
-    "target_session_received": 3390
+    "target_session_received": 3382
   }
 }

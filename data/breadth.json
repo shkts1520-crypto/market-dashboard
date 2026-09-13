@@ -1,18 +1,18 @@
 {
   "breadth200": 59.70243748021526,
   "breadth200_status": "FULL",
-  "breadth50": 42.399760622381805,
+  "breadth50": 42.33073696824446,
   "calculation_version": "v38-stock-adapter-1.2.0",
   "coverage": 1.0,
   "coverage_detail": {
-    "active_universe": 3390,
-    "current_valid_ohlcv": 3390,
-    "min_sma200_count": 2034,
+    "active_universe": 3382,
+    "current_valid_ohlcv": 3382,
+    "min_sma200_count": 2030,
     "valid_sma200_count": 3159,
-    "valid_sma50_count": 3342
+    "valid_sma50_count": 3338
   },
   "excluded": [],
-  "generated_at": "2026-09-13T08:49:42Z",
+  "generated_at": "2026-09-13T11:07:17Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,
