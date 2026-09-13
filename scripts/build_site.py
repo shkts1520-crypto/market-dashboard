@@ -45,6 +45,8 @@ def main() -> int:
     # Extensions load after the canonical v5 shell and only bind acquired data.
     # visual_fidelity runs after data_repair so it can restore the original MC57
     # temperature bands, robust display-only diagnostics and VIX fear-cycle card.
+    # detail_restore then restores the original VIX sequence-condition panel and
+    # Rotation information density without changing any trading authority.
     observables = Path("assets/v38-observables.js")
     observables_enabled = _inject_external_extension(out, observables)
     polish = Path("assets/v38-polish.js")
@@ -57,6 +59,8 @@ def main() -> int:
     data_repair_enabled = _inject_external_extension(out, data_repair)
     visual_fidelity = Path("assets/v38-visual-fidelity.js")
     visual_fidelity_enabled = _inject_external_extension(out, visual_fidelity)
+    detail_restore = Path("assets/v38-detail-restore.js")
+    detail_restore_enabled = _inject_external_extension(out, detail_restore)
     options_chart = Path("assets/v38-options-chart.js")
     options_chart_enabled = _inject_external_extension(out, options_chart)
 
@@ -81,6 +85,7 @@ def main() -> int:
                 "final_ui_extension": final_ui_enabled,
                 "data_repair_extension": data_repair_enabled,
                 "visual_fidelity_extension": visual_fidelity_enabled,
+                "detail_restore_extension": detail_restore_enabled,
                 "options_chart_extension": options_chart_enabled,
             },
             ensure_ascii=False,
