@@ -12,7 +12,7 @@
     "valid_sma50_count": 3338
   },
   "excluded": [],
-  "generated_at": "2026-09-13T11:07:17Z",
+  "generated_at": "2026-09-13T12:20:40Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,
