@@ -53,6 +53,16 @@ def _assert_repaired_card(section, title):
     return card
 
 
+def _assert_source_heading(card, japanese, english=None):
+    h2 = card.locator("h2").first
+    assert h2.count() == 1
+    assert japanese in h2.inner_text()
+    if english is not None:
+        en = h2.locator(".h2en").first
+        assert en.count() == 1
+        assert en.inner_text().strip() == english
+
+
 def _assert_live_binding(page, view):
     page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38RecoveryStatus === 'ready'")
@@ -160,16 +170,25 @@ def _assert_live_binding(page, view):
     if core12.get("status") == "READY" and core_rows:
         page.locator('a.tabx[href="#t-port"]').click()
         core_section = page.locator("#t-port")
-        for title in ("レジーム警戒灯", "流動性 / DDV20", "RSリーダー控え"):
+        for title in ("レジーム警戒灯", "RSリーダー控え"):
             _assert_repaired_card(core_section, title)
+
+        core_rank_card = core_section.locator('.card[data-v38-binding-key="core12-main"]').first
+        assert core_rank_card.count() == 1
+        assert core_rank_card.get_attribute("data-v38-status") == "READY"
+        assert "データ未取得" not in core_rank_card.inner_text()
+        _assert_source_heading(core_rank_card, "個別株スリーブ", "Core 12")
+        assert int(core_rank_card.get_attribute("data-v38-core-rows") or "0") > 0
+        header_text = core_rank_card.locator("table tr").first.inner_text()
+        for label in ("銘柄", "RS189", "RS63", "200MA乖離", "DDV20"):
+            assert label in header_text
+
         ticker = str(core_rows[0].get("ticker") or core_rows[0].get("symbol") or "").upper()
         if ticker:
-            core_rank_card = core_section.locator('.card[data-v38-card-title*="個別株スリーブ Core 12"]').first
-            assert core_rank_card.count() == 1
-            row = core_rank_card.locator('.rsx-item[data-v38-ticker="' + ticker + '"]').first
+            row = core_rank_card.locator('tr[data-v38-ticker="' + ticker + '"]').first
             assert row.is_visible()
             assert ticker in row.inner_text()
-            link = row.locator("a.v38-generic-ticker").first
+            link = row.locator('a[data-v38-ticker="' + ticker + '"]').first
             assert link.is_visible()
             before_url = page.url
             link.click()
@@ -185,8 +204,14 @@ def _assert_live_binding(page, view):
         page.locator('a.tabx[href="#t-alloc"]').click()
         positions_section = page.locator("#t-alloc")
         assert "現在ポジションなし" in positions_section.inner_text()
-        for title in ("現在の想定ポジション", "マーケット回復後のポジション入り銘柄", "エクイティカーブ"):
-            _assert_repaired_card(positions_section, title)
+        expected_position_cards = (
+            ("現在の想定ポジション", "Current Expected 12"),
+            ("マーケット回復後のポジション入り銘柄", "Recovery Candidates"),
+            ("エクイティカーブ", "Equity Curve"),
+        )
+        for title, english in expected_position_cards:
+            card = _assert_repaired_card(positions_section, title)
+            _assert_source_heading(card, title, english)
 
     rotation = view.get("rotation") or {}
     if rotation.get("status") == "READY" and rotation.get("fine_theme_rows"):
@@ -206,15 +231,18 @@ def _assert_live_binding(page, view):
         page.locator('a.tabx[href="#t-options"]').click()
         options_section = page.locator("#t-options")
         expected = {
-            "0–6 DTE Short Term": "0-6",
-            "7–21 DTE Swing": "7-21",
-            "22–45 DTE Medium Term": "22-45",
-            "0–45 DTE Multi-expiry": "0-45",
+            "0–6 DTE": ("0-6", "Short Term"),
+            "7–21 DTE": ("7-21", "Swing"),
+            "22–45 DTE": ("22-45", "Medium Term"),
+            "0–45 DTE": ("0-45", "Multi-expiry"),
         }
-        for title, bucket in expected.items():
+        for title, (bucket, english) in expected.items():
             card = _assert_repaired_card(options_section, title)
+            _assert_source_heading(card, title, english)
             assert card.get_attribute("data-v38-option-bucket") == bucket
             assert int(card.get_attribute("data-v38-option-rows") or "0") > 0
+            assert "Direction" not in card.inner_text()
+            assert "Confidence" not in card.inner_text()
 
     diagnostics = daily.get("market_diagnostics") or {}
     if diagnostics.get("series"):
