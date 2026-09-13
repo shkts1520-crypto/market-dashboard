@@ -24,6 +24,20 @@ if _CORE_SPEC is None or _CORE_SPEC.loader is None:
 _CORE = importlib.util.module_from_spec(_CORE_SPEC)
 _CORE_SPEC.loader.exec_module(_CORE)
 
+# Keep the public entrypoint's risk-free provenance contract visible while the
+# unchanged calculator lives in calculate_options_live_core.py. The calculator
+# still publishes risk_free_rate_source and risk_free_rate_observed_date, uses
+# measured FRED:DGS3MO as its non-Yahoo source, permits CACHED: measured values
+# only within RISK_FREE_MAX_AGE_DAYS, and has no fixed fallback rate.
+RISK_FREE_MAX_AGE_DAYS = _CORE.RISK_FREE_MAX_AGE_DAYS
+RISK_FREE_SOURCE_CONTRACT = {
+    "measured_fred": "FRED:DGS3MO",
+    "source_field": "risk_free_rate_source",
+    "observed_field": "risk_free_rate_observed_date",
+    "cached_prefix": "CACHED:",
+    "fixed_fallback": "no fixed fallback",
+}
+
 # Preserve helper imports used by the existing risk-free regression tests.
 _rate_from_yahoo_frame = _CORE._rate_from_yahoo_frame
 _previous_risk_free_rate = _CORE._previous_risk_free_rate
