@@ -1,0 +1,46 @@
+name: ATLQ Source Live Validation
+
+on:
+  push:
+    branches:
+      - diagnostic/atlq-live-provider-20260913
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-live:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and live dependency
+        run: python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66'
+      - name: Run production ATLQ repair function against live providers
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python - <<'PY'
+          import json
+          import math
+          import yfinance as yf
+          from v38.stock_gap_repair import isolated_history_rows, _valid_observed_row
+
+          target = '2026-09-11'
+          rows = isolated_history_rows(yf, ticker='ATLQ', target_session=target)
+          exact = [row for row in rows if row.get('date') == target]
+          result = {
+              'row_count': len(rows),
+              'exact_count': len(exact),
+              'exact': exact[-1] if exact else None,
+              'exact_valid': bool(exact and _valid_observed_row(exact[-1])),
+          }
+          print(json.dumps(result, sort_keys=True, default=str))
+          assert exact, 'ATLQ target-session row was not repaired'
+          assert _valid_observed_row(exact[-1]), exact[-1]
+          assert math.isfinite(float(exact[-1]['close'])) and float(exact[-1]['close']) > 0
+          PY
