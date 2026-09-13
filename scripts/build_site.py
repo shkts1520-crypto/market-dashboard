@@ -127,6 +127,12 @@ def main() -> int:
     source_fidelity = Path("assets/v38-source-fidelity.js")
     source_fidelity_enabled = _inject_external_extension(out, source_fidelity)
 
+    # The source Rotation renderer carries a hidden compatibility card used by the
+    # existing acceptance contract. The visual wrapper must never make that data
+    # contract disappear, so restore it invisibly after source_fidelity runs.
+    source_fidelity_contract = Path("assets/v38-source-fidelity-contract.js")
+    source_fidelity_contract_enabled = _inject_external_extension(out, source_fidelity_contract)
+
     restored_data = _copy_restored_data(out)
 
     report = validate_production_html(out.read_text(encoding="utf-8"))
@@ -155,6 +161,7 @@ def main() -> int:
                 "restored_chart_extension": restored_chart_enabled,
                 "restored_experience_extension": restored_experience_enabled,
                 "source_fidelity_extension": source_fidelity_enabled,
+                "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
