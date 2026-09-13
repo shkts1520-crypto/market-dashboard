@@ -2,7 +2,7 @@
   "calculation_version": "v38-rs-history-1.1.0",
   "coverage": 1.0,
   "first_observed_session": "2025-06-04",
-  "generated_at": "2026-09-13T00:27:48Z",
+  "generated_at": "2026-09-13T01:55:44Z",
   "history_kind": "CURRENT_UNIVERSE_RECONSTRUCTED",
   "history_policy": "Historical RS ranks are recomputed from downloaded split-adjusted Yahoo OHLC using the current universe; exact PIT membership is unavailable for reconstructed dates. Exact observed sessions override reconstructed windows.",
   "latest_observed_session": "2026-09-11",
@@ -54942,7 +54942,7 @@
             "rank": 75,
             "rs126": 93.15286624203821,
             "rs189": 96.05333333333334,
-            "rs63": 83.23638286620836,
+            "rs63": 83.18350079323109,
             "ticker": "CALX"
           },
           {
