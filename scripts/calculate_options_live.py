@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import importlib.util
 import json
 import math
 import os
@@ -11,6 +12,29 @@ from typing import Any
 
 MIN_READY_COVERAGE = 0.25
 MIN_READY_ROWS = 3
+FRED_SOURCE_COMPAT = "FRED:DGS3MO"
+
+# Keep the proven calculator implementation byte-for-byte in the adjacent core
+# module while preserving the public helpers existing tests import from this path.
+_CORE_PATH = Path(__file__).with_name("calculate_options_live_core.py")
+_CORE_SPEC = importlib.util.spec_from_file_location("calculate_options_live_core", _CORE_PATH)
+if _CORE_SPEC is None or _CORE_SPEC.loader is None:
+    raise RuntimeError(f"unable to load options calculator core: {_CORE_PATH}")
+_CORE = importlib.util.module_from_spec(_CORE_SPEC)
+_CORE_SPEC.loader.exec_module(_CORE)
+
+_rate_from_yahoo_frame = _CORE._rate_from_yahoo_frame
+_previous_risk_free_rate = _CORE._previous_risk_free_rate
+_fred_risk_free_rate = _CORE._fred_risk_free_rate
+
+
+def _risk_free_rate(yf, *, session_date: str, previous: dict):
+    # Existing tests monkeypatch these helpers on calculate_options_live.py.
+    # Mirror those overrides into the unchanged core before delegating.
+    _CORE._rate_from_yahoo_frame = _rate_from_yahoo_frame
+    _CORE._previous_risk_free_rate = _previous_risk_free_rate
+    _CORE._fred_risk_free_rate = _fred_risk_free_rate
+    return _CORE._risk_free_rate(yf, session_date=session_date, previous=previous)
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -69,8 +93,7 @@ def main(argv: list[str] | None = None) -> int:
     previous_raw = options_path.read_bytes() if options_path.exists() else b""
     previous = _load(options_path)
 
-    core = Path(__file__).with_name("calculate_options_live_core.py")
-    completed = subprocess.run([sys.executable, str(core), *args], check=False)
+    completed = subprocess.run([sys.executable, str(_CORE_PATH), *args], check=False)
     if completed.returncode != 0:
         return int(completed.returncode)
 
