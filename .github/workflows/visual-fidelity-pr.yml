@@ -1,0 +1,71 @@
+name: V38 Visual Fidelity PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'assets/v38-source-fidelity.js'
+      - 'assets/v38-source-fidelity-contract.js'
+      - 'assets/v38-restored-experience.js'
+      - 'scripts/build_site.py'
+      - 'scripts/visual_fidelity_capture.py'
+      - '.github/workflows/visual-fidelity-pr.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      TZ: Asia/Tokyo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install browser verification dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . playwright==1.55.0
+          python -m playwright install --with-deps chromium
+
+      - name: Build PR artifact without production acquisition
+        run: |
+          set -euo pipefail
+          rm -rf _site visual-fidelity
+          mkdir -p _site/assets _site/data/options
+          PYTHONPATH=src python scripts/materialize_supplemental.py --data-dir data
+          PYTHONPATH=src python scripts/build_site.py --canonical V38_Command_Center_mock_v5.html --output _site/index.html
+          cp assets/v38-runtime.js _site/assets/v38-runtime.js
+          cp assets/v38-site.js _site/assets/v38-site.js
+          cp assets/v38-observables.js _site/assets/v38-observables.js
+          cp data/options/index.json _site/data/options/index.json
+          if [ -f data/tqqq_panic.json ]; then cp data/tqqq_panic.json _site/data/tqqq_panic.json; fi
+          GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          PYTHONPATH=src python scripts/build_ui_payload.py --data-dir data --output _site/data/ui_payload.json --generated-at "$GENERATED_AT"
+          PYTHONPATH=src python scripts/build_ui_view_model.py --data-dir data --output _site/data/ui_view_model.json
+          touch _site/.nojekyll
+
+      - name: Capture 375 390 430 source-fidelity screenshots
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --directory _site > "$RUNNER_TEMP/v38-visual-http.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 2
+          python scripts/visual_fidelity_capture.py --url http://127.0.0.1:8000/ --output visual-fidelity
+
+      - name: Upload visual comparison artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v38-source-fidelity-screenshots
+          path: visual-fidelity
+          if-no-files-found: error
+          retention-days: 7
