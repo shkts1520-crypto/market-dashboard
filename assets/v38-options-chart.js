@@ -372,7 +372,7 @@
     const historyText = found.historical
       ? ' • 前回実測 • 現行チェーン未取得のため前回実測値を表示'
       : ' • ' + found.bucket + ' DTE';
-    status.textContent = 'Options Wall Overlay' + historyText + expectedText + expiry + quality + ' • Direction/Confidenceは推測表示しません。';
+    status.textContent = 'Options Wall Overlay' + historyText + expectedText + expiry + quality + ' • 推測方向・信頼度は表示しません。';
     host.appendChild(status);
   }
 
