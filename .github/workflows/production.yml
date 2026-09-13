@@ -361,8 +361,53 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-24.04
     needs: verify-build
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Deploy Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  live-smoke:
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    needs: deploy
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install live browser dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check playwright==1.55.0
+          python -m playwright install --with-deps chromium
+
+      - name: Pages live acceptance 375 390 430 tabs ticker and options overlay
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PAGE_URL"
+          success=0
+          for attempt in 1 2 3 4 5 6; do
+            echo "Live smoke attempt ${attempt}: ${PAGE_URL}"
+            if python scripts/browser_acceptance.py --url "$PAGE_URL" && \
+               python scripts/options_live_smoke.py --url "$PAGE_URL"; then
+              success=1
+              break
+            fi
+            sleep 10
+          done
+          test "$success" -eq 1
