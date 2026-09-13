@@ -2,6 +2,7 @@
   'use strict';
 
   const MAX_SESSIONS = 504;
+  const TICKER_RE = /^[A-Z][A-Z0-9.\-]{0,9}$/;
   const DEBUG_TEXT = [
     '通常株PIT履歴', '遡及推計なし', 'MC57 Raw', 'MC57 EMA2 Raw', 'MC57 Z',
     'MC57内部 12指標履歴', '日次保存済み履歴', '各指標は同一セッションの正本値のみ'
@@ -12,6 +13,11 @@
     if (value === null || value === undefined || value === '') return null;
     const number = Number(value);
     return Number.isFinite(number) ? number : null;
+  }
+
+  function cleanTicker(value) {
+    const ticker = String(value || '').trim().toUpperCase();
+    return TICKER_RE.test(ticker) ? ticker : null;
   }
 
   function cardByTitle(section, titlePart) {
@@ -46,8 +52,51 @@
       });
     }
 
-    document.querySelectorAll('section:not(#t-options) .v38-bind-note').forEach((note) => {
-      if ((note.dataset.v38Status || '') === 'READY') note.remove();
+    document.querySelectorAll('.v38-bind-note').forEach((note) => {
+      const status = note.dataset.v38Status || '';
+      if (status === 'READY') {
+        note.remove();
+        return;
+      }
+      if (status === 'DATA_REQUIRED' || status === 'STALE') {
+        note.replaceChildren();
+        const span = document.createElement('span');
+        span.className = 'mut';
+        span.textContent = status === 'STALE' ? '更新待ち' : 'データ未取得';
+        note.appendChild(span);
+      }
+    });
+  }
+
+  function decorateGenericTickerRows(view) {
+    if (!view || typeof view !== 'object') return;
+    [
+      ['t-alloc', 'positions'],
+      ['t-port', 'core12'],
+      ['t-options', 'options']
+    ].forEach((binding) => {
+      const section = document.getElementById(binding[0]);
+      const data = view[binding[1]];
+      const rows = data && Array.isArray(data.rows) ? data.rows : [];
+      if (!section || !rows.length) return;
+      section.querySelectorAll('.rsx-item[data-v38-row]').forEach((item) => {
+        const index = Number(item.dataset.v38Row || 0) - 1;
+        const row = index >= 0 ? rows[index] : null;
+        const ticker = row && cleanTicker(row.ticker || row.symbol);
+        if (!ticker) return;
+        item.dataset.v38Ticker = ticker;
+        const name = item.querySelector('.rsx-name');
+        if (!name || name.querySelector('.v38-generic-ticker')) return;
+        const link = document.createElement('a');
+        link.className = 'v38-ticker-link v38-generic-ticker';
+        link.href = 'https://www.tradingview.com/chart/?symbol=' + encodeURIComponent(ticker);
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = ticker;
+        link.style.display = 'block';
+        link.style.fontWeight = '800';
+        name.insertBefore(link, name.firstChild);
+      });
     });
   }
 
@@ -196,6 +245,7 @@
       const runtime = window.V38Runtime;
       if (runtime && typeof runtime.loadJson === 'function') {
         const view = await runtime.loadJson('data/ui_view_model.json');
+        decorateGenericTickerRows(view);
         redrawDaily(view);
       }
       cleanupTechnicalUi();

@@ -38,6 +38,13 @@ def _rs_history(page):
     )
 
 
+def _assert_status_notes_clean(section):
+    for text in section.locator('.v38-bind-note').all_inner_texts():
+        assert "DATA_REQUIRED" not in text
+        assert "STALE" not in text
+        assert "READY" not in text
+
+
 def _assert_live_binding(page, view):
     page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38RecoveryStatus === 'ready'")
@@ -68,6 +75,7 @@ def _assert_live_binding(page, view):
         assert text not in daily_text
     assert daily_section.locator(".v38-mc57-trend").count() == 0
     assert daily_section.locator('.v38-bind-note[data-v38-status="READY"]').count() == 0
+    _assert_status_notes_clean(daily_section)
 
     for title in ("ブレッドス推移（50日線上の割合）", "ブレッドス推移（200日線上の割合）"):
         card = daily_section.locator(".card").filter(has_text=title).first
@@ -119,9 +127,6 @@ def _assert_live_binding(page, view):
         if first.get("sparkline"):
             assert row.locator("svg.v38-live-spark").count() == 1
 
-        # Tapping a ticker must stay on the Command Center and open the embedded
-        # TradingView chart. The options overlay is populated from the local
-        # options shard; external TradingView loading itself is not a CI dependency.
         before_url = page.url
         link.click()
         modal = page.locator("#v38-options-chart-modal")
@@ -133,6 +138,26 @@ def _assert_live_binding(page, view):
         assert page.url == before_url
         modal.locator(".v38-oc-close").click()
         assert not modal.is_visible()
+
+    core12 = view.get("core12") or {}
+    core_rows = core12.get("rows") or []
+    if core12.get("status") == "READY" and core_rows:
+        ticker = str(core_rows[0].get("ticker") or core_rows[0].get("symbol") or "").upper()
+        if ticker:
+            page.locator('a.tabx[href="#t-port"]').click()
+            row = page.locator('#t-port .rsx-item[data-v38-ticker="' + ticker + '"]').first
+            assert row.is_visible()
+            assert ticker in row.inner_text()
+            link = row.locator("a.v38-generic-ticker").first
+            assert link.is_visible()
+            before_url = page.url
+            link.click()
+            modal = page.locator("#v38-options-chart-modal")
+            assert modal.is_visible()
+            assert modal.locator(".v38-oc-title").inner_text().strip() == ticker
+            assert page.url == before_url
+            modal.locator(".v38-oc-close").click()
+            assert not modal.is_visible()
 
     positions = view.get("positions") or {}
     if positions.get("status") == "READY" and not positions.get("rows"):
@@ -149,6 +174,7 @@ def _assert_live_binding(page, view):
         section = page.locator("#" + section_id)
         expected = view[view_key]
         assert section.get_attribute("data-v38-status") == expected["status"]
+        _assert_status_notes_clean(section)
         if section_id != "t-post1":
             assert section.locator(".card:visible").count() > 0
 
@@ -188,13 +214,11 @@ def main() -> int:
                     assert section.evaluate("el => el.classList.contains('on')")
                     assert page.locator("section.on").count() == 1
                     assert page.evaluate("window.__v38TabSentinel") == sentinel
+                    _assert_status_notes_clean(section)
 
                 page.locator('a.tabx[href="#t-rs"]').click()
                 page.locator('a.tabx[href="#t-weekly"]').click()
                 assert page.url.endswith("#t-weekly")
-                # This is a same-document hash transition. Do not wait for global
-                # network-idle because the embedded TradingView widget may still
-                # have legitimate background traffic unrelated to tab navigation.
                 page.evaluate("history.back()")
                 page.wait_for_function(
                     "location.hash === '#t-rs' && document.querySelector('#t-rs').classList.contains('on')"
