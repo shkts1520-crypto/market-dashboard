@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 from v38.site_builder import CANONICAL_BLOB_SHA, CANONICAL_SIZE, build_site
@@ -32,6 +35,46 @@ def _inject_external_extension(out: Path, asset: Path) -> bool:
     return True
 
 
+def _is_production_context() -> bool:
+    event = str(os.environ.get("GITHUB_EVENT_NAME") or "").strip().lower()
+    return event not in {"", "pull_request", "pull_request_target"}
+
+
+def _materialize_restored_experience() -> bool:
+    """Generate the recovered pre-v5 search/VWAP/chart payloads in production only.
+
+    Pull-request and local verification stay network-free. Production already has
+    current-session RS/Rotation/Options shards at this point, so this step only
+    restores display data and never changes the adopted trading gates.
+    """
+    script = Path("scripts/materialize_restored_experience.py")
+    if not _is_production_context() or not script.is_file():
+        return False
+    subprocess.run(
+        [sys.executable, str(script), "--data-dir", "data"],
+        check=True,
+        env=os.environ.copy(),
+    )
+    return True
+
+
+def _copy_restored_data(out: Path) -> dict[str, bool]:
+    target = out.parent / "data"
+    target.mkdir(parents=True, exist_ok=True)
+    sources = {
+        "search_index": Path("data/history/search_index.json"),
+        "vwap_restore": Path("data/history/vwap_restore.json"),
+    }
+    copied: dict[str, bool] = {}
+    for key, source in sources.items():
+        if source.is_file() and source.stat().st_size > 0:
+            shutil.copy2(source, target / f"{key}.json")
+            copied[key] = True
+        else:
+            copied[key] = False
+    return copied
+
+
 def main() -> int:
     p = argparse.ArgumentParser(
         description="Build live-bound V38 production UI from canonical v5"
@@ -40,13 +83,15 @@ def main() -> int:
     p.add_argument("--output", default="index.html")
     args = p.parse_args()
 
+    restored_materialized = _materialize_restored_experience()
     out = build_site(args.canonical, args.output)
 
     # Extensions load after the canonical v5 shell and only bind acquired data.
     # visual_fidelity runs after data_repair so it can restore the original MC57
     # temperature bands, robust display-only diagnostics and VIX fear-cycle card.
-    # detail_restore then restores the original VIX sequence-condition panel and
-    # Rotation information density without changing any trading authority.
+    # detail_restore restores the original VIX sequence-condition panel. The
+    # historical-experience extensions then replace only the user-approved
+    # Rotation / Options / search / VWAP surfaces with the recovered pre-v5 form.
     observables = Path("assets/v38-observables.js")
     observables_enabled = _inject_external_extension(out, observables)
     polish = Path("assets/v38-polish.js")
@@ -61,8 +106,21 @@ def main() -> int:
     visual_fidelity_enabled = _inject_external_extension(out, visual_fidelity)
     detail_restore = Path("assets/v38-detail-restore.js")
     detail_restore_enabled = _inject_external_extension(out, detail_restore)
-    options_chart = Path("assets/v38-options-chart.js")
-    options_chart_enabled = _inject_external_extension(out, options_chart)
+
+    # Keep the old chart asset available in the repository but do not bind it when
+    # the recovered chart exists. The recovered chart owns the same modal id and
+    # adds 63/252/All-time VWAP without Direction/Confidence guesses.
+    restored_chart = Path("assets/v38-restored-chart.js")
+    restored_chart_enabled = _inject_external_extension(out, restored_chart)
+    if restored_chart_enabled:
+        options_chart_enabled = False
+    else:
+        options_chart = Path("assets/v38-options-chart.js")
+        options_chart_enabled = _inject_external_extension(out, options_chart)
+
+    restored_experience = Path("assets/v38-restored-experience.js")
+    restored_experience_enabled = _inject_external_extension(out, restored_experience)
+    restored_data = _copy_restored_data(out)
 
     report = validate_production_html(out.read_text(encoding="utf-8"))
 
@@ -87,6 +145,10 @@ def main() -> int:
                 "visual_fidelity_extension": visual_fidelity_enabled,
                 "detail_restore_extension": detail_restore_enabled,
                 "options_chart_extension": options_chart_enabled,
+                "restored_chart_extension": restored_chart_enabled,
+                "restored_experience_extension": restored_experience_enabled,
+                "restored_materialized": restored_materialized,
+                "restored_data": restored_data,
             },
             ensure_ascii=False,
             sort_keys=True,
