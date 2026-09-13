@@ -164,7 +164,9 @@ def _assert_live_binding(page, view):
             _assert_repaired_card(core_section, title)
         ticker = str(core_rows[0].get("ticker") or core_rows[0].get("symbol") or "").upper()
         if ticker:
-            row = page.locator('#t-port .rsx-item[data-v38-ticker="' + ticker + '"]').first
+            core_rank_card = core_section.locator('.card[data-v38-card-title*="個別株スリーブ Core 12"]').first
+            assert core_rank_card.count() == 1
+            row = core_rank_card.locator('.rsx-item[data-v38-ticker="' + ticker + '"]').first
             assert row.is_visible()
             assert ticker in row.inner_text()
             link = row.locator("a.v38-generic-ticker").first
