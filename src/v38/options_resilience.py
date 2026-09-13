@@ -99,16 +99,45 @@ def _git(repo_root: Path, *args: str, timeout: int = 30) -> subprocess.Completed
 
 
 def _history_commits(repo_root: Path, relative_path: str, *, limit: int) -> list[str]:
-    result = _git(repo_root, "log", f"-n{limit}", "--format=%H", "--", relative_path)
-    if result.returncode != 0:
-        return []
-    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    commits: list[str] = []
+    for ref in ("origin/main", "HEAD"):
+        exists = _git(repo_root, "rev-parse", "--verify", ref)
+        if exists.returncode != 0:
+            continue
+        result = _git(
+            repo_root,
+            "log",
+            ref,
+            f"-n{limit}",
+            "--format=%H",
+            "--",
+            relative_path,
+        )
+        if result.returncode != 0:
+            continue
+        for line in result.stdout.splitlines():
+            sha = line.strip()
+            if sha and sha not in commits:
+                commits.append(sha)
+                if len(commits) >= limit:
+                    return commits
+    return commits
 
 
 def _deepen_history(repo_root: Path, *, depth: int = 50) -> None:
-    # actions/checkout persists credentials. Failure is deliberately non-fatal:
-    # without a verified same-session fallback the caller remains fail-closed.
-    _git(repo_root, "fetch", "--no-tags", f"--depth={depth}", "origin", "main", timeout=45)
+    # actions/checkout persists credentials. Fetch main explicitly so this also
+    # works from a shallow PR checkout whose HEAD cannot traverse main ancestry.
+    # Failure is deliberately non-fatal: without a verified same-session fallback
+    # the caller remains fail-closed.
+    _git(
+        repo_root,
+        "fetch",
+        "--no-tags",
+        f"--depth={depth}",
+        "origin",
+        "+refs/heads/main:refs/remotes/origin/main",
+        timeout=45,
+    )
 
 
 def find_last_good_same_session(
@@ -125,8 +154,8 @@ def find_last_good_same_session(
         return None, None
 
     commits = _history_commits(repo_root, relative_path, limit=limit)
-    # A shallow checkout can contain only the bad current commit. Deepen once so a
-    # prior successful production snapshot remains recoverable.
+    # A shallow checkout can contain only the bad current commit (or no path
+    # history at all when the current code commit did not touch the data file).
     if len(commits) < 2:
         _deepen_history(repo_root, depth=max(limit, 50))
         commits = _history_commits(repo_root, relative_path, limit=limit)
