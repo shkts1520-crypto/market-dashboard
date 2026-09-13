@@ -24,13 +24,21 @@ def test_nasdaq_historical_current_bar_requires_exact_target_date(monkeypatch):
             "tradesTable": {
                 "rows": [
                     {
+                        "date": "09/10/2026",
+                        "open": "$9.95",
+                        "high": "$9.97",
+                        "low": "$9.94",
+                        "close": "$9.96",
+                        "volume": "10,000",
+                    },
+                    {
                         "date": "09/11/2026",
                         "open": "$9.96",
                         "high": "$9.98",
                         "low": "$9.95",
                         "close": "$9.97",
                         "volume": "75,370",
-                    }
+                    },
                 ]
             }
         }
@@ -48,8 +56,11 @@ def test_nasdaq_historical_current_bar_requires_exact_target_date(monkeypatch):
 
     def fake_urlopen(request, timeout=0):
         assert "/api/quote/ATLQ/historical?" in request.full_url
-        assert "fromdate=2026-09-11" in request.full_url
-        assert "todate=2026-09-11" in request.full_url
+        # Nasdaq's live API rejects an equal from/to date for this symbol.
+        # Query a narrow surrounding window, but still accept only the exact
+        # requested target-session row below.
+        assert "fromdate=2026-09-10" in request.full_url
+        assert "todate=2026-09-12" in request.full_url
         assert timeout == 20
         return FakeResponse()
 

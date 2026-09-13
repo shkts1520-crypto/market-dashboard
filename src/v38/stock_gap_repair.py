@@ -92,17 +92,36 @@ def _nasdaq_number(value: Any) -> float | None:
     return number if pd.notna(number) else None
 
 
+def _valid_observed_row(row: Any) -> bool:
+    if not isinstance(row, dict):
+        return False
+    try:
+        open_, high, low, close, volume = [
+            float(row.get(key))
+            for key in ("open", "high", "low", "close", "volume")
+        ]
+    except (TypeError, ValueError):
+        return False
+    if not all(pd.notna(value) for value in (open_, high, low, close, volume)):
+        return False
+    return close > 0 and high >= low and volume >= 0
+
+
 def _nasdaq_historical_current_bar(*, ticker: str, target_session: str) -> dict[str, Any] | None:
     """Fetch one exact target-session daily bar from Nasdaq's public quote history.
 
     This is deliberately exact-date only. A stale prior close is never rolled
     forward to fabricate a missing current-session observation.
     """
+    try:
+        target = pd.Timestamp(target_session)
+    except Exception:
+        return None
     query = urllib.parse.urlencode(
         {
             "assetclass": "stocks",
-            "fromdate": target_session,
-            "todate": target_session,
+            "fromdate": (target - pd.Timedelta(days=1)).strftime("%Y-%m-%d"),
+            "todate": (target + pd.Timedelta(days=1)).strftime("%Y-%m-%d"),
             "limit": "10",
         }
     )
@@ -245,7 +264,8 @@ def _corporate_action_rows(
         if str(row.get("date") or "") >= effective:
             by_date[str(row["date"])] = row
 
-    if target_session not in by_date:
+    if not _valid_observed_row(by_date.get(target_session)):
+        by_date.pop(target_session, None)
         current = _nasdaq_historical_current_bar(
             ticker=ticker,
             target_session=target_session,
@@ -253,7 +273,8 @@ def _corporate_action_rows(
         if current is not None:
             by_date[target_session] = current
 
-    if target_session not in by_date:
+    if not _valid_observed_row(by_date.get(target_session)):
+        by_date.pop(target_session, None)
         current = _tradingview_current_bar(
             ticker=ticker,
             exchange=exchange,
@@ -262,7 +283,8 @@ def _corporate_action_rows(
         if current is not None:
             by_date[target_session] = current
 
-    if target_session not in by_date:
+    if not _valid_observed_row(by_date.get(target_session)):
+        by_date.pop(target_session, None)
         # Some data vendors keep the old symbol as an alias after a same-CUSIP
         # rename. Accept it only when the provider returns the exact target date;
         # never roll a pre-change or stale bar forward.
@@ -270,7 +292,7 @@ def _corporate_action_rows(
             (
                 row for row in prior_rows
                 if str(row.get("date") or "") == target_session
-                and row.get("close") is not None
+                and _valid_observed_row(row)
             ),
             None,
         )
@@ -287,7 +309,10 @@ def isolated_history_rows(
 ) -> list[dict[str, Any]]:
     symbol = yahoo_symbol(ticker)
     rows = _yahoo_rows(yf, ticker=ticker, symbol=symbol, target_session=target_session)
-    if any(row.get("date") == target_session and row.get("close") is not None for row in rows):
+    if any(
+        row.get("date") == target_session and _valid_observed_row(row)
+        for row in rows
+    ):
         return rows
 
     alias_rows = _corporate_action_rows(
@@ -296,7 +321,7 @@ def isolated_history_rows(
         target_session=target_session,
     )
     return alias_rows if any(
-        row.get("date") == target_session and row.get("close") is not None
+        row.get("date") == target_session and _valid_observed_row(row)
         for row in alias_rows
     ) else []
 
