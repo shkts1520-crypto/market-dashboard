@@ -6,7 +6,7 @@
     "revenue_ttm_available": 3221,
     "rs_rows": 3389
   },
-  "generated_at": "2026-09-12T14:16:04Z",
+  "generated_at": "2026-09-13T00:27:48Z",
   "rows": [
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -23132,7 +23132,7 @@
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Steel",
       "market_cap": 298217808.0,
-      "revenue_ttm": 15035127.0,
+      "revenue_ttm": 11908728.0,
       "structural_clinical_biotech": false,
       "ticker": "MSB"
     },

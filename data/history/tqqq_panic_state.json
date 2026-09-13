@@ -1,0 +1,58 @@
+{
+  "action_next_open": "BASELINE_30",
+  "action_reason": "NO_PANIC_TRIGGER",
+  "calculation_version": "v38-tqqq-panic-state-1.0.1",
+  "coverage": 1.0,
+  "current_target_pct": 30,
+  "generated_at": "2026-09-13T00:27:48Z",
+  "holding_sessions_completed": 0,
+  "mc57": 33.58914481060642,
+  "normal_tqqq_pct": 30,
+  "panic_active": false,
+  "panic_entry_session": null,
+  "panic_tqqq_pct": 80,
+  "qqq_4h": {
+    "current_rsi14": 50.218096304300566,
+    "prior_rsi14": 52.77588230875498,
+    "status": "READY",
+    "touch30": false,
+    "trading_gate_eligible": true
+  },
+  "reason": "CURRENT_SESSION",
+  "rules": {
+    "early_exit": "MC57<20 -> 80% -> 30% next open",
+    "entry": "30% -> 80% next open",
+    "max_hold_sessions": 10,
+    "nqsar_hard_gate": false,
+    "seed": "VIX Close>=23 AND (QQQ Close-SMA50)/WilderATR14<=-0.5 AND QQQ Close/10-session max Close-1<=-2%",
+    "seed_event": "false->true transition; consecutive qualifying sessions do not refresh the 30-session window",
+    "seed_max_age_sessions": 30,
+    "trigger": "first canonical QQQ RTH 4H RSI14 cross >30 to <=30 while seed active AND MC57>=20"
+  },
+  "schema_version": "v38.tqqq_panic_state.1",
+  "seed_active": false,
+  "seed_age_sessions": null,
+  "seed_condition": false,
+  "seed_consumed": false,
+  "seed_inputs": {
+    "condition": false,
+    "qqq_atr14": 9.00200378654043,
+    "qqq_close": 714.8800048828125,
+    "qqq_dd10": -0.005674887288794062,
+    "qqq_sma50": 710.4063989257812,
+    "qqq_sma50_atr_deviation": 0.49695668465726545,
+    "reason": "CURRENT_SESSION",
+    "status": "READY",
+    "vix_close": 15.84000015258789
+  },
+  "seed_session": null,
+  "session_date": "2026-09-11",
+  "source": "derived:QQQ daily + VIX daily + canonical QQQ RTH 4H RSI14 + MC57; persistent state machine",
+  "status": "READY",
+  "target_pct_next_open": 30,
+  "trigger": {
+    "reason": "NO_ACTIVE_SEED",
+    "status": "OK",
+    "trigger": false
+  }
+}

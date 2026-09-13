@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.1",
   "coverage": 1.0,
-  "generated_at": "2026-09-12T14:16:04Z",
+  "generated_at": "2026-09-13T00:27:48Z",
   "rules": {
     "allocation": {
       "gross_max_pct": 100,

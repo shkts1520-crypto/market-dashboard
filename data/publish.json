@@ -1,17 +1,11 @@
 {
-  "blockers": [
-    {
-      "name": "options/index.json",
-      "reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
-      "status": "DATA_REQUIRED"
-    }
-  ],
+  "blockers": [],
   "calculation_version": "v38-supplemental-engine-1.0.1",
   "components": [
     {
       "calculation_version": "v38-market-engine-1.0.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "market_state.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.market_state.1",
@@ -22,7 +16,7 @@
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "breadth.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.breadth.1",
@@ -44,7 +38,7 @@
     {
       "calculation_version": "v38-f123-engine-1.1.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "f123.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.f123.1",
@@ -55,7 +49,7 @@
     {
       "calculation_version": "v38-market-engine-1.0.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "core12.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.core12.1",
@@ -66,7 +60,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "positions.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.positions.1",
@@ -77,7 +71,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "rotation.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rotation.1",
@@ -88,7 +82,7 @@
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 0.9997050147492625,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "rs.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rs.1",
@@ -99,7 +93,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "weekly.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.weekly.1",
@@ -108,36 +102,53 @@
       "status": "READY"
     },
     {
-      "calculation_version": "v38-options-live-1.0.1",
-      "coverage": 0.0,
-      "generated_at": "2026-09-12T14:21:21Z",
+      "calculation_version": "v38-options-live-1.0.2",
+      "coverage": 0.967741935483871,
+      "generated_at": "2026-09-13T00:33:08Z",
       "name": "options/index.json",
-      "reason": "RISK_FREE_RATE_UNAVAILABLE:^IRX short Treasury rate unavailable",
+      "reason": "CURRENT_SESSION",
       "schema_version": "v38.options.1",
       "session_date": "2026-09-11",
-      "source": "Yahoo Finance option chains via yfinance 0.2.66",
-      "status": "DATA_REQUIRED"
+      "source": "Yahoo Finance option chains via yfinance 0.2.66; recovered V38 GEX/Wall/Flip/Expected-Move contract",
+      "status": "READY"
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-12T14:16:04Z",
+      "generated_at": "2026-09-13T00:27:48Z",
       "name": "rules.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rules.1",
       "session_date": "2026-09-11",
       "source": "code:adopted-v38-contracts",
       "status": "READY"
+    },
+    {
+      "calculation_version": "v38-tqqq-panic-state-1.0.1",
+      "coverage": 1.0,
+      "generated_at": "2026-09-13T00:27:48Z",
+      "name": "tqqq_panic.json",
+      "reason": "CURRENT_SESSION",
+      "schema_version": "v38.tqqq_panic_state.1",
+      "session_date": "2026-09-11",
+      "source": "derived:QQQ daily + VIX daily + canonical QQQ RTH 4H RSI14 + MC57; persistent state machine",
+      "status": "READY"
     }
   ],
-  "coverage": 0.9090909090909091,
-  "full_v38_ready": false,
-  "generated_at": "2026-09-12T14:16:04Z",
+  "coverage": 1.0,
+  "full_v38_ready": true,
+  "generated_at": "2026-09-13T00:27:48Z",
   "note": "This shard reports publication readiness; READY means the report itself is current, not that every trading dependency is available.",
-  "ready_count": 10,
-  "required_count": 11,
+  "publish_extension_version": "v38-publish-tqqq-extension-1.0.0",
+  "ready_count": 12,
+  "required_count": 12,
   "schema_version": "v38.publish.1",
   "session_date": "2026-09-11",
   "source": "derived:publication-readiness",
-  "status": "READY"
+  "status": "READY",
+  "tqqq_panic_readiness": {
+    "reason": "CURRENT_SESSION",
+    "required": true,
+    "status": "READY"
+  }
 }
