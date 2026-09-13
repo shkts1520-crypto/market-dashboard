@@ -46,8 +46,19 @@
       });
     }
 
-    document.querySelectorAll('section:not(#t-options) .v38-bind-note').forEach((note) => {
-      if ((note.dataset.v38Status || '') === 'READY') note.remove();
+    document.querySelectorAll('.v38-bind-note').forEach((note) => {
+      const status = note.dataset.v38Status || '';
+      if (status === 'READY') {
+        note.remove();
+        return;
+      }
+      if (status === 'DATA_REQUIRED' || status === 'STALE') {
+        note.replaceChildren();
+        const span = document.createElement('span');
+        span.className = 'mut';
+        span.textContent = status === 'STALE' ? '更新待ち' : 'データ未取得';
+        note.appendChild(span);
+      }
     });
   }
 
