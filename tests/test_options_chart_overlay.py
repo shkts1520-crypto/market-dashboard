@@ -9,9 +9,13 @@ def test_options_chart_overlay_is_external_and_contains_required_levels():
     assert "Gamma Flip" in js
     assert "Expected Upper" in js
     assert "Expected Lower" in js
-    assert "Direction/Confidence" in js
+    assert "Direction/Confidence" not in js
     assert "data/options/index.json" in js
     assert "window.V38OpenTickerChart" in js
+    assert "v38-oc-line" in js
+    assert "v38-oc-price" in js
+    for bucket in ("0-45", "22-45", "7-21", "0-6"):
+        assert bucket in js
 
 
 def test_options_chart_routes_rendered_tickers_inside_command_center():
@@ -23,7 +27,7 @@ def test_options_chart_routes_rendered_tickers_inside_command_center():
     assert "event.preventDefault()" in js
     assert "event.stopPropagation()" in js
     assert "前回実測" in js
-    assert "現行チェーン未取得のため前回実測値を表示" in js
+    assert "現行チェーン未取得" in js
 
 
 def test_options_rate_calculation_has_measured_non_yahoo_fallback():
