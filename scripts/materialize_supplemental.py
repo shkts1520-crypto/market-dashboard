@@ -11,6 +11,7 @@ from pathlib import Path
 from v38.authority_status import sync_acquisition_manifest
 from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
+from v38.options_resilience import recover_options_if_transient_failure
 from v38.publish_extension import include_tqqq_panic_readiness
 from v38.rs_history import write_rs_history
 from v38.supplemental_engine import materialize_supplemental_shards
@@ -124,6 +125,15 @@ def main() -> int:
     if not isinstance(generated_at, str) or not generated_at:
         raise SystemExit("state.generated_at is required")
 
+    # Options acquisition may temporarily degrade because Yahoo rate-limits the
+    # whole target set. Preserve only a verified READY snapshot from the exact
+    # same session and exact target policy; otherwise remain fail-closed.
+    options_resilience = recover_options_if_transient_failure(
+        root,
+        session_date=session,
+        repo_root=Path.cwd(),
+    )
+
     empty_ledger = _materialize_confirmed_empty_ledger(
         root,
         session=session,
@@ -183,6 +193,7 @@ def main() -> int:
         json.dumps(
             {
                 "session_date": session,
+                "options_resilience": options_resilience,
                 "positions_mode": "EMPTY" if empty_ledger is not None else "LEDGER_REQUIRED",
                 "positions_ledger": empty_ledger.as_posix() if empty_ledger is not None else ledger_arg,
                 "outputs": [p.as_posix() for p in outputs],
