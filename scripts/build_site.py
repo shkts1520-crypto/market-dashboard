@@ -120,6 +120,13 @@ def main() -> int:
 
     restored_experience = Path("assets/v38-restored-experience.js")
     restored_experience_enabled = _inject_external_extension(out, restored_experience)
+
+    # Final visual-only layer. It runs after restored_experience so the recovered
+    # data DOM is already present, then restores the canonical card proportions,
+    # spacing and table density without changing calculations or data contracts.
+    source_fidelity = Path("assets/v38-source-fidelity.js")
+    source_fidelity_enabled = _inject_external_extension(out, source_fidelity)
+
     restored_data = _copy_restored_data(out)
 
     report = validate_production_html(out.read_text(encoding="utf-8"))
@@ -147,6 +154,7 @@ def main() -> int:
                 "options_chart_extension": options_chart_enabled,
                 "restored_chart_extension": restored_chart_enabled,
                 "restored_experience_extension": restored_experience_enabled,
+                "source_fidelity_extension": source_fidelity_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
