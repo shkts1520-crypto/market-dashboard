@@ -45,14 +45,24 @@ def _assert_status_notes_clean(section):
         assert "READY" not in text
 
 
+def _assert_repaired_card(section, title):
+    card = section.locator(".card").filter(has_text=title).first
+    assert card.count() == 1, title
+    assert card.get_attribute("data-v38-status") == "READY", title
+    assert "データ未取得" not in card.inner_text(), title
+    return card
+
+
 def _assert_live_binding(page, view):
     page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38RecoveryStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38PolishStatus === 'ready'")
     page.wait_for_function("document.body.dataset.v38FinalUiStatus === 'ready'")
+    page.wait_for_function("document.body.dataset.v38DataRepairStatus === 'ready'")
     page.wait_for_function("document.documentElement.dataset.v38NavReady === 'true'")
     page.wait_for_timeout(2100)
     page.wait_for_function("document.body.dataset.v38FinalUiStatus === 'ready'")
+    page.wait_for_function("document.body.dataset.v38DataRepairStatus === 'ready'")
 
     body_text = page.locator("body").inner_text()
     assert "MOCK DATA" not in body_text
@@ -76,6 +86,10 @@ def _assert_live_binding(page, view):
     assert daily_section.locator(".v38-mc57-trend").count() == 0
     assert daily_section.locator('.v38-bind-note[data-v38-status="READY"]').count() == 0
     _assert_status_notes_clean(daily_section)
+
+    mc57_card = _assert_repaired_card(daily_section, "MC57推移")
+    assert int(mc57_card.get_attribute("data-v38-history-points") or "0") >= 21
+    assert mc57_card.locator("svg.v38-live-spark").count() == 1
 
     for title in ("ブレッドス推移（50日線上の割合）", "ブレッドス推移（200日線上の割合）"):
         card = daily_section.locator(".card").filter(has_text=title).first
@@ -114,6 +128,8 @@ def _assert_live_binding(page, view):
         assert history.get("reconstructed_sessions", 0) > 0
     else:
         assert history.get("history_kind") in {None, "OBSERVED_ARCHIVE_ONLY"}
+    for title in ("RSマルチタイムフレーム比較", "Top10 IN / OUT履歴", "三窓一致リーダー"):
+        _assert_repaired_card(page.locator("#t-rs"), title)
     if rs["rows"]:
         first = rs["rows"][0]
         row = page.locator('[data-v38-rs-ticker="' + first["ticker"] + '"]').first
@@ -142,9 +158,12 @@ def _assert_live_binding(page, view):
     core12 = view.get("core12") or {}
     core_rows = core12.get("rows") or []
     if core12.get("status") == "READY" and core_rows:
+        page.locator('a.tabx[href="#t-port"]').click()
+        core_section = page.locator("#t-port")
+        for title in ("レジーム警戒灯", "流動性 / DDV20", "RSリーダー控え"):
+            _assert_repaired_card(core_section, title)
         ticker = str(core_rows[0].get("ticker") or core_rows[0].get("symbol") or "").upper()
         if ticker:
-            page.locator('a.tabx[href="#t-port"]').click()
             row = page.locator('#t-port .rsx-item[data-v38-ticker="' + ticker + '"]').first
             assert row.is_visible()
             assert ticker in row.inner_text()
@@ -162,7 +181,38 @@ def _assert_live_binding(page, view):
     positions = view.get("positions") or {}
     if positions.get("status") == "READY" and not positions.get("rows"):
         page.locator('a.tabx[href="#t-alloc"]').click()
-        assert "現在ポジションなし" in page.locator("#t-alloc").inner_text()
+        positions_section = page.locator("#t-alloc")
+        assert "現在ポジションなし" in positions_section.inner_text()
+        for title in ("現在の想定ポジション", "マーケット回復後のポジション入り銘柄", "エクイティカーブ"):
+            _assert_repaired_card(positions_section, title)
+
+    rotation = view.get("rotation") or {}
+    if rotation.get("status") == "READY" and rotation.get("fine_theme_rows"):
+        page.locator('a.tabx[href="#t-rotation"]').click()
+        theme_card = _assert_repaired_card(page.locator("#t-rotation"), "サブテーマ別RS")
+        assert int(theme_card.get_attribute("data-v38-theme-rows") or "0") > 0
+
+    weekly = view.get("weekly") or {}
+    if weekly.get("status") == "READY":
+        page.locator('a.tabx[href="#t-weekly"]').click()
+        weekly_section = page.locator("#t-weekly")
+        for title in ("今週の結論", "今週の変化", "週次騰落ボード", "自分 vs QQQ円建て"):
+            _assert_repaired_card(weekly_section, title)
+
+    options = view.get("options") or {}
+    if options.get("status") == "READY":
+        page.locator('a.tabx[href="#t-options"]').click()
+        options_section = page.locator("#t-options")
+        expected = {
+            "0–6 DTE Short Term": "0-6",
+            "7–21 DTE Swing": "7-21",
+            "22–45 DTE Medium Term": "22-45",
+            "0–45 DTE Multi-expiry": "0-45",
+        }
+        for title, bucket in expected.items():
+            card = _assert_repaired_card(options_section, title)
+            assert card.get_attribute("data-v38-option-bucket") == bucket
+            assert int(card.get_attribute("data-v38-option-rows") or "0") > 0
 
     diagnostics = daily.get("market_diagnostics") or {}
     if diagnostics.get("series"):
