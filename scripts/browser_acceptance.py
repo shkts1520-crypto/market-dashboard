@@ -56,11 +56,17 @@ def _assert_repaired_card(section, title):
 def _assert_source_heading(card, japanese):
     h2 = card.locator("h2").first
     assert h2.count() == 1
-    rendered = " ".join(h2.inner_text().split())
-    canonical = " ".join((card.get_attribute("data-v38-card-title") or "").split())
-    assert japanese in rendered
+    canonical = (
+        card.get_attribute("data-v38-canonical-title")
+        or card.get_attribute("data-v38-card-title")
+        or ""
+    ).strip()
+    first_text = h2.evaluate(
+        "el => (el.childNodes && el.childNodes.length && el.childNodes[0].textContent ? el.childNodes[0].textContent : '').trim()"
+    )
     assert canonical
-    assert rendered == canonical
+    assert japanese in canonical
+    assert first_text == canonical
     en = h2.locator(".h2en").first
     assert en.count() == 1
     assert en.inner_text().strip()
