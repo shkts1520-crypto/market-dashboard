@@ -14,8 +14,10 @@ def test_restored_experience_assets_and_build_wiring() -> None:
     assert "search_index.json" in build
     assert "vwap_restore.json" in build
 
+    # Canonical v5 visual keeps Japanese and English search labels as separate DOM text.
     for text in (
-        "銘柄検索 / Ticker Search",
+        "銘柄検索",
+        "Ticker Search",
         "大分類 — 期間ごとランキング",
         "順位フロー（大分類）",
         "小分類（サブテーマ）— 期間ごとランキング",
