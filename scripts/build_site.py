@@ -133,6 +133,13 @@ def main() -> int:
     source_fidelity_contract = Path("assets/v38-source-fidelity-contract.js")
     source_fidelity_contract_enabled = _inject_external_extension(out, source_fidelity_contract)
 
+    # Search covers the full stock universe while local restored candle history is
+    # deliberately limited to priority names. For names outside that local cache,
+    # use TradingView's live Advanced Chart rather than presenting a false
+    # "not acquired" state. This is display fallback only; no trading rules change.
+    data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")
+    data_completeness_fallback_enabled = _inject_external_extension(out, data_completeness_fallback)
+
     restored_data = _copy_restored_data(out)
 
     report = validate_production_html(out.read_text(encoding="utf-8"))
@@ -162,6 +169,7 @@ def main() -> int:
                 "restored_experience_extension": restored_experience_enabled,
                 "source_fidelity_extension": source_fidelity_enabled,
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
+                "data_completeness_fallback_extension": data_completeness_fallback_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
