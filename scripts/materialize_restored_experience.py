@@ -163,6 +163,7 @@ def search_rows(rs: dict[str, Any], rotation: dict[str, Any]) -> list[dict[str, 
             continue
         item = {
             "ticker": ticker,
+            "exchange": str(row.get("exchange") or "").strip().upper(),
             "name": str(row.get("name") or ""),
             "sector": str(row.get("sector") or ""),
             "industry": str(row.get("industry") or ""),
