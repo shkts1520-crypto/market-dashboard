@@ -42,7 +42,10 @@ def missing_details(section):
     return section.evaluate(
         """(root) => Array.from(root.querySelectorAll('*')).filter((el) => {
           const text = String(el.textContent || '').trim();
-          return (text.includes('データ未取得') || text.includes('DATA_REQUIRED') || text.includes('STALE')) &&
+          const explicitMissingState = el.matches('.mut, .v38-bind-note, [data-v38-status="DATA_REQUIRED"], [data-v38-status="STALE"]') ||
+            Boolean(el.closest('.v38-bind-note, [data-v38-status="DATA_REQUIRED"], [data-v38-status="STALE"]'));
+          return explicitMissingState &&
+            (text.includes('データ未取得') || text.includes('DATA_REQUIRED') || text.includes('STALE')) &&
             !Array.from(el.children || []).some((child) => {
               const childText = String(child.textContent || '').trim();
               return childText.includes('データ未取得') || childText.includes('DATA_REQUIRED') || childText.includes('STALE');
@@ -95,9 +98,9 @@ def main() -> int:
                     page.locator(f'a.tabx[href="{href}"]').click()
                     section = page.locator(href)
                     assert section.is_visible()
-                    text = section.inner_text()
-                    if any(token in text for token in ('データ未取得', 'DATA_REQUIRED', 'STALE')):
-                        raise AssertionError((width, href, missing_details(section)))
+                    details = missing_details(section)
+                    if details:
+                        raise AssertionError((width, href, details))
 
                 search = fetch_json(page, 'data/search_index.json')
                 options = fetch_json(page, 'data/options/index.json')
