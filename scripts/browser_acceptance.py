@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 
 WIDTHS = (375, 390, 430)
 TAB_LABELS = (
-    "Daily", "Positions", "Core 12", "Rotation", "RS",
+    "Daily", "Positions", "Core 12", "Setups", "Rotation", "Movers", "RS",
     "Weekly", "Options", "Publish", "Rules",
 )
 GENERIC_BINDINGS = (
@@ -238,6 +238,7 @@ def _assert_live_binding(page, view):
     if options.get("status") == "READY":
         page.locator('a.tabx[href="#t-options"]').click()
         options_section = page.locator("#t-options")
+        page.wait_for_function("document.querySelectorAll('#t-options .card h2').length >= 4")
         expected = {
             "0–6 DTE": "0-6",
             "7–21 DTE": "7-21",
@@ -293,15 +294,15 @@ def main() -> int:
                 page.goto(args.url, wait_until="networkidle")
 
                 tabs = page.locator("a.tabx")
-                assert tabs.count() == 9
-                assert [tabs.nth(i).inner_text().strip() for i in range(9)] == list(TAB_LABELS)
+                assert tabs.count() == 11
+                assert [tabs.nth(i).inner_text().strip() for i in range(11)] == list(TAB_LABELS)
 
                 view = _view_model(page)
                 _assert_live_binding(page, view)
 
                 sentinel = "v38-tab-no-reload-" + str(width)
                 page.evaluate("value => { window.__v38TabSentinel = value; }", sentinel)
-                for i in range(9):
+                for i in range(11):
                     tab = tabs.nth(i)
                     href = tab.get_attribute("href")
                     assert href and href.startswith("#")

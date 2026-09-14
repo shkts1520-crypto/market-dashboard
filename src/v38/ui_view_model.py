@@ -712,6 +712,27 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
 
     options = _section(root, name="options/index.json", session=session, title="Options")
 
+    vwap = _read(root / "history" / "vwap_restore.json")
+    vwap_rows = [dict(row) for row in ((vwap or {}).get("rows") or []) if isinstance(row, dict)]
+    setups = {
+        "status": READY if vwap_rows else DATA_REQUIRED,
+        "reason": "RECOVERED_VWAP_AND_RS_INPUTS" if vwap_rows else "SETUP_PRODUCER_DATA_REQUIRED",
+        "title": "Setups",
+        "rows": vwap_rows,
+        "source": "history/vwap_restore.json" if vwap_rows else None,
+    }
+
+    mover_source = [row for row in rs_rows if _finite(row.get("ret1")) is not None]
+    movers = {
+        "status": READY if mover_source else DATA_REQUIRED,
+        "reason": "CURRENT_SESSION_RS_RETURNS" if mover_source else "CURRENT_RETURN_ROWS_MISSING",
+        "title": "Movers",
+        "gainers": sorted(mover_source, key=lambda row: (-float(row["ret1"]), row["ticker"]))[:10],
+        "losers": sorted(mover_source, key=lambda row: (float(row["ret1"]), row["ticker"]))[:10],
+        "rows": mover_source,
+        "source": "rs.json:ret1",
+    }
+
     publish = _section(root, name="publish.json", session=session, title="Publish", rows_key="blockers")
     publish_obj = _read(root / "publish.json")
     if publish_obj:
@@ -767,7 +788,9 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
         },
         "positions": positions,
         "core12": core12,
+        "setups": setups,
         "rotation": rotation,
+        "movers": movers,
         "rs": {
             "status": rs_status,
             "reason": rs_reason,

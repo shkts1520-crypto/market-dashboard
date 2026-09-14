@@ -653,7 +653,8 @@
       try { options = await loadJson('data/options/index.json'); } catch (_) { options = null; }
       try { history = await loadJson('data/rs_history.json'); } catch (_) { history = null; }
       repairMc57(view);
-      repairOptions(options);
+      // Options owns its production DOM in v38-restored-experience.js. Keep the
+      // frozen Options cards intact instead of rebuilding them a second time.
       repairThemes(view);
       repairRs(view, history);
       repairCore(view);

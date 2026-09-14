@@ -39,7 +39,8 @@ def base_inputs(root):
             f3={"status": "OK", "value": 0.30, "severity": "NORMAL"},
         ),
     )
-    dump(root, "rs.json", meta(rows=[{"ticker": "AAA", "price": 100, "rs189": 99, "rs63": 98, "ddv20": 2e7}]))
+    dump(root, "rs.json", meta(rows=[{"ticker": "AAA", "price": 100, "rs189": 99, "rs63": 98, "ret1": 0.03, "ddv20": 2e7}]))
+    dump(root, "history/vwap_restore.json", meta(rows=[{"ticker": "AAA", "vwap63": {"value": 99}}]))
     dump(
         root,
         "market_inputs.json",
@@ -74,13 +75,15 @@ def test_all_non_daily_sections_are_exposed_from_authoritative_shards(tmp_path):
     dump(tmp_path, "rules.json", meta(status="READY", rules={"allocation": {"normal_tqqq_pct": 30}}))
 
     out = build_ui_view_model(tmp_path)
-    for key in ("positions", "core12", "rotation", "weekly", "options", "publish", "rules"):
+    for key in ("positions", "core12", "setups", "rotation", "movers", "weekly", "options", "publish", "rules"):
         assert key in out
         assert out[key]["status"] == READY
 
     assert out["positions"]["rows"][0]["ticker"] == "AAA"
     assert out["core12"]["rows"][0]["final_score"] == 97.0
     assert out["rotation"]["rows"][0]["theme"] == "AI"
+    assert out["setups"]["rows"][0]["ticker"] == "AAA"
+    assert out["movers"]["gainers"][0]["ticker"] == "AAA"
     assert out["weekly"]["state"] == "Green"
     assert out["options"]["rows"][0]["signal"] == "UP"
     assert out["publish"]["full_v38_ready"] is True

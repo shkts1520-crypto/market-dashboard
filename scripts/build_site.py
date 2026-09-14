@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -13,12 +14,30 @@ from v38.site_builder import CANONICAL_BLOB_SHA, CANONICAL_SIZE, build_site
 from v38.ui_contract import validate_production_html
 
 
+_RULES_SECTION = re.compile(r'(<section[^>]+id="t-rules"[^>]*>).*?(</section>)', re.DOTALL)
+
+
+def _restore_rules_0905(out: Path, fragment: Path) -> bool:
+    if not fragment.is_file():
+        return False
+    source = out.read_text(encoding="utf-8")
+    body = fragment.read_text(encoding="utf-8").strip()
+    restored, count = _RULES_SECTION.subn(lambda match: match.group(1) + body + match.group(2), source, count=1)
+    if count != 1:
+        raise RuntimeError("09/05 Rules section was not found in production shell")
+    out.write_text(restored, encoding="utf-8")
+    return True
+
+
 def _copy_asset(out: Path, asset: Path) -> bool:
     if not asset.is_file():
         return False
     asset_dir = out.parent / "assets"
     asset_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(asset, asset_dir / asset.name)
+    target = asset_dir / asset.name
+    if asset.resolve() == target.resolve():
+        return True
+    shutil.copy2(asset, target)
     return True
 
 
@@ -85,6 +104,9 @@ def main() -> int:
 
     restored_materialized = _materialize_restored_experience()
     out = build_site(args.canonical, args.output)
+    baseline_shell = Path("assets/v38-baseline-shell.js")
+    baseline_shell_enabled = _copy_asset(out, baseline_shell)
+    rules_0905_enabled = _restore_rules_0905(out, Path("assets/v38-rules-0905.html"))
 
     # Extensions load after the canonical v5 shell and only bind acquired data.
     # visual_fidelity runs after data_repair so it can restore the original MC57
@@ -164,6 +186,8 @@ def main() -> int:
                 "external_script_count": report["external_script_count"],
                 "canonical_dom_preserved": True,
                 "legacy_replacement_cards": False,
+                "baseline_0905_shell": baseline_shell_enabled,
+                "rules_0905_restored": rules_0905_enabled,
                 "observables_extension": observables_enabled,
                 "polish_extension": polish_enabled,
                 "recovery_extension": recovery_enabled,

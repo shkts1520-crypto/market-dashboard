@@ -144,10 +144,10 @@ function installStyle(){
   #t-options .v38-canonical-options .v38-empty{font-size:11px;color:#727569;padding:8px 0}
 
   /* VWAP uses the dashboard's native card/table vocabulary. */
-  #t-rs .v38-vwap-card .v38-vwap-ticker{border:0;background:transparent;padding:0;color:inherit;font:inherit;font-weight:800;cursor:pointer}
-  #t-rs .v38-vwap-card .v38-vwap-hit{color:#17685C;font-weight:800}
-  #t-rs .v38-vwap-card .v38-vwap-life{color:#675B86;font-weight:800}
-  #t-rs .v38-vwap-card .v38-vwap-note{font-size:9.5px;color:#727569;margin-top:6px;line-height:1.45}
+  #t-today .v38-vwap-card .v38-vwap-ticker{border:0;background:transparent;padding:0;color:inherit;font:inherit;font-weight:800;cursor:pointer}
+  #t-today .v38-vwap-card .v38-vwap-hit{color:#17685C;font-weight:800}
+  #t-today .v38-vwap-card .v38-vwap-life{color:#675B86;font-weight:800}
+  #t-today .v38-vwap-card .v38-vwap-note{font-size:9.5px;color:#727569;margin-top:6px;line-height:1.45}
 
   @media(max-width:760px){
     #t-rotation .v38-canonical-rotation>.card{padding:10px}
@@ -306,6 +306,8 @@ function renderMoneyFlow(panel,majors,data){
   const note=el(body,'div','flownote','');note.id='fnote';note.innerHTML='短期RS − 長期RSを表示。<b>Rotationは売買ゲートではなく、WHERE（資金の向き）の確認用。</b>';
 }
 function renderRotation(view,data){
+  /* 09/05 Rotation is the authority; bind its existing hosts elsewhere. */
+  return;
   const section=document.getElementById('t-rotation');if(!section)return;const majors=majorRows(view),fine=fineRows(data);if(!majors.some(r=>num(r.score[21])!==null))return;
   const root=document.createElement('div');root.className='v38-canonical-rotation';root.dataset.v38CanonicalVisual='rotation-v5';const card=el(root,'div','card',''),head=el(card,'div','hd','');el(head,'span','bar','');const h=el(head,'h1','','セクター・ローテーション');el(h,'span','en','Sector Rotation');el(head,'span','pg','2 / 詳細');el(head,'span','date num',view.session_date||'—');
   const top=majors.slice().sort((a,b)=>(a.rank[21]||99)-(b.rank[21]||99)).slice(0,3).map(r=>r.label),lag=majors.slice().sort((a,b)=>((a.score[21]||0)-(a.score[189]||0))-((b.score[21]||0)-(b.score[189]||0))).slice(0,2).map(r=>r.label),read=el(card,'div','read','');read.append('短期RSで ');el(read,'b','',top.join('・'));read.append(' が上位。');el(read,'span','dn',lag.join('・'));read.append(' は長期RSに対し短期が沈み後退。');

@@ -97,6 +97,9 @@ body[data-v38-production="live-binding"][data-v38-binding-status] .wrap{opacity:
 
 RUNTIME_SCRIPTS = (
     '<script '
+    'src="assets/v38-baseline-shell.js" '
+    'defer></script>\n'
+    '<script '
     'src="assets/v38-runtime.js" '
     'defer></script>\n'
     '<script '
@@ -239,6 +242,23 @@ def _mark_body_live(
     )
 
 
+def _restore_0905_slots(html: str) -> str:
+    """Restore the two baseline tabs/sections removed by the v5 migration."""
+    setups_tab = '<a class="tabx" href="#t-today">Setups</a>'
+    movers_tab = '<a class="tabx" href="#t-movers">Movers</a>'
+    rotation_tab = '<a class="tabx" href="#t-rotation">Rotation</a>'
+    rs_tab = '<a class="tabx" href="#t-rs">RS</a>'
+    if setups_tab not in html:
+        html = html.replace(rotation_tab, setups_tab + rotation_tab, 1)
+    if movers_tab not in html:
+        html = html.replace(rs_tab, movers_tab + rs_tab, 1)
+    if 'id="t-today"' not in html:
+        html = html.replace('<section id="t-rotation"', '<section id="t-today"></section><section id="t-rotation"', 1)
+    if 'id="t-movers"' not in html:
+        html = html.replace('<section id="t-rs"', '<section id="t-movers"></section><section id="t-rs"', 1)
+    return html
+
+
 def build_safe_shell(
     canonical_html: str,
 ) -> str:
@@ -261,6 +281,8 @@ def build_safe_shell(
     out = _mark_body_live(
         out
     )
+
+    out = _restore_0905_slots(out)
 
     if not _HEAD_END_RE.search(
         out
@@ -325,11 +347,11 @@ def build_safe_shell(
         report[
             "external_script_count"
         ]
-        != 2
+        != 3
     ):
         raise SiteBuildError(
             "production HTML must "
-            "contain exactly two "
+            "contain exactly three "
             "external scripts"
         )
 

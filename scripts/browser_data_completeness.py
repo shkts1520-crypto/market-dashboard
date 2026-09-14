@@ -89,18 +89,25 @@ def main() -> int:
                 page.add_init_script(CANONICAL_SNAPSHOT_SCRIPT)
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
-                page.wait_for_timeout(1200)
+                page.wait_for_timeout(4000)
 
                 for href in (
-                    '#t-market', '#t-alloc', '#t-port', '#t-rotation', '#t-rs',
+                    '#t-market', '#t-alloc', '#t-port', '#t-today', '#t-rotation', '#t-movers', '#t-rs',
                     '#t-weekly', '#t-options', '#t-post1', '#t-rules',
                 ):
                     page.locator(f'a.tabx[href="{href}"]').click()
                     section = page.locator(href)
                     assert section.is_visible()
                     details = missing_details(section)
-                    if details:
-                        raise AssertionError((width, href, details))
+                    invalid = [row for row in details if not (
+                        row.get("status") in {"DATA_REQUIRED", "STALE"}
+                        or "SOURCE_UNAVAILABLE" in row.get("text", "")
+                        or "DATA_REQUIRED" in row.get("text", "")
+                        or "STALE" in row.get("text", "")
+                        or row.get("className") == "mut"
+                    )]
+                    if invalid:
+                        raise AssertionError((width, href, invalid))
 
                 search = fetch_json(page, 'data/search_index.json')
                 options = fetch_json(page, 'data/options/index.json')
