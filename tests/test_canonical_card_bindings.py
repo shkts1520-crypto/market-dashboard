@@ -8,6 +8,7 @@ from pathlib import Path
 CANONICAL = Path("V38_Command_Center_mock_v5.html")
 SITE_JS = Path("assets/v38-site.js")
 REPAIR_JS = Path("assets/v38-data-repair.js")
+BROWSER_COMPLETENESS = Path("scripts/browser_data_completeness.py")
 
 
 class CardTitleParser(HTMLParser):
@@ -148,6 +149,13 @@ def test_absent_rotation_publish_artifact_is_explicitly_unavailable() -> None:
     js = SITE_JS.read_text(encoding="utf-8")
     assert "'SOURCE_UNAVAILABLE', 'ROTATION_PUBLISH_ARTIFACT_NOT_AVAILABLE'" in js
     assert "'DATA_REQUIRED', 'ROTATION_PUBLISH_ARTIFACT_NOT_AVAILABLE'" not in js
+
+
+def test_browser_missing_check_ignores_rule_contract_values() -> None:
+    script = BROWSER_COMPLETENESS.read_text(encoding="utf-8")
+    assert "const explicitMissingState" in script
+    assert "details = missing_details(section)" in script
+    assert "text = section.inner_text()" not in script
 
 
 def test_repair_restores_canonical_headings_instead_of_inventing_titles() -> None:
