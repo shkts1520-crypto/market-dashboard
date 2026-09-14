@@ -44,14 +44,67 @@
     });
   }
 
+  function refitRotation() {
+    var wrap = document.querySelector('#t-rotation .v38-source-rotation-wrap');
+    if (!wrap) return;
+    var frame = wrap.querySelector('.v38-source-rotation-frame');
+    var scaler = wrap.querySelector('.v38-source-scaler');
+    if (!frame || !scaler) return;
+    var rect = frame.getBoundingClientRect();
+    var w = rect.width || frame.clientWidth;
+    var h = rect.height || frame.clientHeight;
+    if (!w || !h) return;
+    var full = wrap.classList.contains('fs');
+    var portrait = full && h > w;
+    var scale = portrait ? Math.min(w / 1080, h / 1680) : Math.min(w / 1680, h / 1080);
+    scaler.style.transform = portrait ? 'rotate(90deg) scale(' + scale + ')' : 'scale(' + scale + ')';
+    wrap.dataset.v38VisibleFit = String(Math.round(scale * 100000) / 100000);
+  }
+
+  function scheduleRotationRefit() {
+    requestAnimationFrame(function () {
+      refitRotation();
+      requestAnimationFrame(refitRotation);
+    });
+    setTimeout(refitRotation, 40);
+    setTimeout(refitRotation, 160);
+  }
+
   var queued = false;
   function queue() {
     if (queued) return;
     queued = true;
-    setTimeout(function () { queued = false; restore(); }, 0);
+    setTimeout(function () {
+      queued = false;
+      restore();
+      var section = document.getElementById('t-rotation');
+      if (section && section.classList.contains('on')) scheduleRotationRefit();
+    }, 0);
+  }
+
+  function bindRotationVisibility() {
+    var section = document.getElementById('t-rotation');
+    if (!section || section.dataset.v38VisibleFitObserver === 'bound') return;
+    section.dataset.v38VisibleFitObserver = 'bound';
+    new MutationObserver(function () {
+      if (section.classList.contains('on')) scheduleRotationRefit();
+    }).observe(section, {attributes: true, attributeFilter: ['class']});
   }
 
   new MutationObserver(queue).observe(document.documentElement, {childList: true, subtree: true});
   document.addEventListener('v38:data-ready', queue);
-  [0, 150, 550, 1000, 1900, 3200, 4800].forEach(function (ms) { setTimeout(restore, ms); });
+  document.addEventListener('click', function (event) {
+    var tab = event.target && event.target.closest ? event.target.closest('a.tabx[href="#t-rotation"]') : null;
+    if (tab) scheduleRotationRefit();
+  });
+  window.addEventListener('resize', scheduleRotationRefit);
+  bindRotationVisibility();
+  [0, 150, 550, 1000, 1900, 3200, 4800].forEach(function (ms) {
+    setTimeout(function () {
+      bindRotationVisibility();
+      restore();
+      var section = document.getElementById('t-rotation');
+      if (section && section.classList.contains('on')) scheduleRotationRefit();
+    }, ms);
+  });
 })();
