@@ -753,7 +753,7 @@
     const list = append(wraps[0], 'div', 'rsc-list', '');
     (Array.isArray(data.rows) ? data.rows : []).slice(0, 40).forEach((row, index) => renderGenericRow(list, row, index));
     statusNote(wraps[0], data.status || 'DATA_REQUIRED', data.reason || 'CURRENT_SESSION', session);
-    if (wraps[1]) statusNote(wraps[1], 'DATA_REQUIRED', 'ROTATION_PUBLISH_ARTIFACT_NOT_AVAILABLE', session);
+    if (wraps[1]) statusNote(wraps[1], 'SOURCE_UNAVAILABLE', 'ROTATION_PUBLISH_ARTIFACT_NOT_AVAILABLE', session);
   }
 
   function renderRules(view) {

@@ -144,6 +144,12 @@ def test_weekly_missing_cards_have_explicit_authoritative_bindings() -> None:
     assert "SOURCE_UNAVAILABLE" in js
 
 
+def test_absent_rotation_publish_artifact_is_explicitly_unavailable() -> None:
+    js = SITE_JS.read_text(encoding="utf-8")
+    assert "'SOURCE_UNAVAILABLE', 'ROTATION_PUBLISH_ARTIFACT_NOT_AVAILABLE'" in js
+    assert "'DATA_REQUIRED', 'ROTATION_PUBLISH_ARTIFACT_NOT_AVAILABLE'" not in js
+
+
 def test_repair_restores_canonical_headings_instead_of_inventing_titles() -> None:
     js = REPAIR_JS.read_text(encoding="utf-8")
     assert "heading.cloneNode(true)" in js
