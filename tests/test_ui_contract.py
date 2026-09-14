@@ -69,7 +69,7 @@ def shell(
     )
 
 
-def test_exact_nine_tab_shell_passes():
+def test_exact_eleven_tab_shell_passes():
     out = validate_canonical_shell(
         shell()
     )
@@ -96,7 +96,7 @@ def test_tab_order_is_contract_not_set_membership():
         )
 
 
-def test_setups_and_movers_are_forbidden_in_nav():
+def test_undeclared_navigation_target_is_rejected():
     bad = shell(
         extra_nav=(
             '<a class="tabx" '
@@ -113,7 +113,7 @@ def test_setups_and_movers_are_forbidden_in_nav():
         )
 
 
-def test_all_nine_sections_are_required():
+def test_all_canonical_v5_sections_are_required():
     bad = shell().replace(
         (
             '<section '

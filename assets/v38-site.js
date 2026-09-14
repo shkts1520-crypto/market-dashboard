@@ -3,12 +3,11 @@
 
   const TAB_SELECTOR = 'nav a.tabx[href^="#"]';
   const SECTION_IDS = [
-    't-market', 't-alloc', 't-port', 't-rotation', 't-rs',
+    't-market', 't-alloc', 't-port', 't-today', 't-rotation', 't-movers', 't-rs',
     't-weekly', 't-options', 't-post1', 't-rules'
   ];
   const VIEW_BINDINGS = [
-    ['t-alloc', 'positions'], ['t-port', 'core12'],
-    ['t-options', 'options']
+    ['t-alloc', 'positions'], ['t-port', 'core12']
   ];
   const PREFERRED_CARD_TITLES = {
     positions: '保有ポジション',
@@ -813,8 +812,10 @@
     VIEW_BINDINGS.forEach((binding) => renderGenericSection(view, binding[0], binding[1]));
     renderRotation(view);
     renderWeekly(view);
-    renderPublish(view);
-    renderRules(view);
+    const publishSection = document.getElementById('t-post1');
+    const rulesSection = document.getElementById('t-rules');
+    if (publishSection) publishSection.dataset.v38Status = (view.publish || {}).status || 'DATA_REQUIRED';
+    if (rulesSection) rulesSection.dataset.v38Status = (view.rules || {}).status || 'DATA_REQUIRED';
     document.body.dataset.v38BindingStatus = 'ready';
   }
 

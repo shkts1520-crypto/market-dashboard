@@ -3,7 +3,7 @@
 
   const TAB_SELECTOR = 'nav a.tabx[href^="#"]';
   const SECTION_IDS = [
-    't-market', 't-alloc', 't-port', 't-rotation', 't-rs',
+    't-market', 't-alloc', 't-port', 't-today', 't-rotation', 't-movers', 't-rs',
     't-weekly', 't-options', 't-post1', 't-rules'
   ];
   let navReady = false;

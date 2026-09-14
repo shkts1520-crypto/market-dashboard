@@ -204,7 +204,7 @@ def test_builder_preserves_original_style_block_bytes():
     )
 
 
-def test_builder_keeps_exact_nine_tabs_and_sections():
+def test_builder_keeps_exact_eleven_tabs_and_sections():
     out = build_safe_shell(
         shell()
     )
@@ -240,7 +240,7 @@ def test_builder_preserves_canonical_dom_for_live_binding():
     assert 'v38-production-state' not in out
 
 
-def test_builder_injects_only_two_external_runtime_scripts():
+def test_builder_injects_three_external_runtime_scripts():
     out = build_safe_shell(
         shell()
     )
@@ -255,7 +255,12 @@ def test_builder_injects_only_two_external_runtime_scripts():
         report[
             "external_script_count"
         ]
-        == 2
+        == 3
+    )
+
+    assert (
+        'src="assets/v38-baseline-shell.js"'
+        in out
     )
 
     assert (

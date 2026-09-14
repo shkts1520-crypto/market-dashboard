@@ -57,6 +57,9 @@ jobs:
           python -m compileall -q src scripts
           node --check assets/v38-runtime.js
           node --check assets/v38-site.js
+          node --check assets/v38-baseline-shell.js
+          node --check assets/v38-data-repair.js
+          node --check assets/v38-restored-experience.js
           node --check assets/v38-observables.js
           node --check assets/v38-options-chart.js
           node --check assets/v38-data-completeness-fallback.js
@@ -274,7 +277,7 @@ jobs:
           if [ -f data/tqqq_panic.json ]; then test -s _site/data/tqqq_panic.json; fi
           test -s _site/assets/v38-observables.js
           grep -q 'data-v38-production="live-binding"' _site/index.html
-          for key in daily positions core12 rotation rs weekly options publish rules; do
+          for key in daily positions core12 setups rotation movers rs weekly options publish rules; do
             grep -q "\"${key}\"" _site/data/ui_view_model.json
           done
 
@@ -290,7 +293,7 @@ jobs:
           set -euo pipefail
           python -m playwright install --with-deps chromium
 
-      - name: Browser acceptance 375 390 430 all nine tabs
+      - name: Browser acceptance 375 390 430 all eleven tabs
         shell: bash
         run: |
           set -euo pipefail

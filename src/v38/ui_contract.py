@@ -8,7 +8,9 @@ EXPECTED_TABS = (
     ("Daily", "#t-market"),
     ("Positions", "#t-alloc"),
     ("Core 12", "#t-port"),
+    ("Setups", "#t-today"),
     ("Rotation", "#t-rotation"),
+    ("Movers", "#t-movers"),
     ("RS", "#t-rs"),
     ("Weekly", "#t-weekly"),
     ("Options", "#t-options"),
@@ -16,10 +18,12 @@ EXPECTED_TABS = (
     ("Rules", "#t-rules"),
 )
 
-FORBIDDEN_TABS = {
-    "Setups",
-    "Movers",
-}
+CANONICAL_V5_TABS = tuple(
+    tab for tab in EXPECTED_TABS
+    if tab[0] not in {"Setups", "Movers"}
+)
+
+FORBIDDEN_TABS: set[str] = set()
 
 REQUIRED_VISUAL_TOKENS = (
     ".card",
@@ -237,12 +241,24 @@ def validate_canonical_shell(
         html
     )
 
+    # The immutable v5 file predates the recovery of the two 09/05 tabs.
+    # Production restores their slots before the production contract is checked.
+    accepted_tabs = (list(CANONICAL_V5_TABS), list(EXPECTED_TABS))
+    report["tabs_exact"] = report["tabs"] in accepted_tabs
+    canonical_parser = _NavParser()
+    canonical_parser.feed(html)
+    required_tabs = EXPECTED_TABS if report["tabs"] == list(EXPECTED_TABS) else CANONICAL_V5_TABS
+    report["missing_sections"] = [
+        href[1:] for _, href in required_tabs
+        if href[1:] not in canonical_parser.section_ids
+    ]
+
     problems: list[str] = []
 
     if not report["tabs_exact"]:
         problems.append(
             "tabs must equal "
-            f"{list(EXPECTED_TABS)!r}; "
+            f"one of {accepted_tabs!r}; "
             f"got {report['tabs']!r}"
         )
 
@@ -387,11 +403,16 @@ def scan_production_forbidden_logic(
 def validate_production_html(
     html: str,
 ) -> dict[str, Any]:
-    report = (
-        validate_canonical_shell(
-            html
-        )
-    )
+    report = inspect_shell(html)
+    problems = []
+    if not report["tabs_exact"]:
+        problems.append(f"production tabs must equal {list(EXPECTED_TABS)!r}; got {report['tabs']!r}")
+    if report["missing_sections"]:
+        problems.append(f"missing tab sections: {report['missing_sections']}")
+    if report["missing_visual_tokens"]:
+        problems.append(f"missing visual tokens: {report['missing_visual_tokens']}")
+    if problems:
+        raise UIContractError("; ".join(problems))
 
     active = inspect_active_logic(
         html
