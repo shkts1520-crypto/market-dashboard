@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
+from v38.display_observation_append import append_current_from_rs
+from v38.display_observation_history import exact_old_top20
 from v38.display_observations_live import materialize_display_observations
 from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
@@ -65,10 +67,9 @@ def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_a
 def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path | None:
     """Rebuild the original two-year display window in production.
 
-    Pull-request verification never performs network acquisition. Main/scheduled/
-    manual runs fetch 3 years of stock OHLC so the two-year Breadth display has the
-    required 200-session indicator warm-up, and fetch 2 years for market ratios.
-    These histories remain display-only and never become trading gates.
+    Pull-request verification normally remains network-light. Main/scheduled/manual
+    runs refresh the full two-year display history. The separate exact observation
+    seed below runs only while its persistent seed is absent.
     """
     if not _is_production_context():
         return None
@@ -90,6 +91,35 @@ def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path
         if not output.is_file() or output.stat().st_size <= 0:
             raise SystemExit(f"two-year display reconstruction missing output: {output}")
     return outputs[0]
+
+
+def _ensure_observation_history(root: Path, *, session: str, generated_at: str) -> dict:
+    old_date, top20 = exact_old_top20(root, lag=42)
+    seeded = False
+    if len(top20) != 20:
+        command = [
+            sys.executable,
+            "scripts/seed_display_observation_history.py",
+            "--data-dir", str(root),
+            "--generated-at", generated_at,
+        ]
+        subprocess.run(command, check=True)
+        seeded = True
+        old_date, top20 = exact_old_top20(root, lag=42)
+    if len(top20) != 20:
+        raise SystemExit(f"exact lag42 RS63 Top20 is required, got {len(top20)}")
+    reversal_path, parabolic_path = append_current_from_rs(
+        root,
+        session=session,
+        generated_at=generated_at,
+    )
+    return {
+        "seeded": seeded,
+        "lag42_date": old_date,
+        "lag42_count": len(top20),
+        "reversal_history": reversal_path.as_posix() if reversal_path is not None else None,
+        "parabolic_history": parabolic_path.as_posix() if parabolic_path is not None else None,
+    }
 
 
 def _materialize_tqqq_if_ready(root: Path, *, session: str, generated_at: str) -> Path | None:
@@ -126,9 +156,6 @@ def main() -> int:
     if not isinstance(generated_at, str) or not generated_at:
         raise SystemExit("state.generated_at is required")
 
-    # Options acquisition may temporarily degrade because Yahoo rate-limits the
-    # whole target set. Preserve only a verified READY snapshot from the exact
-    # same session and exact target policy; otherwise remain fail-closed.
     options_resilience = recover_options_if_transient_failure(
         root,
         session_date=session,
@@ -142,9 +169,6 @@ def main() -> int:
     )
     ledger_arg = args.positions_ledger or (str(empty_ledger) if empty_ledger is not None else None)
 
-    # Reuse the same downloaded historical market data for Breadth, RS and F1/F2/F3.
-    # This happens before UI/publish materialization so reconstructed display values
-    # are actually visible in the same production run instead of one run later.
     reconstructed_history = _reconstruct_history_if_production(
         root,
         generated_at=generated_at,
@@ -155,8 +179,6 @@ def main() -> int:
         generated_at=generated_at,
     )
 
-    # TQQQ Panic is a persistent state machine. It consumes the canonical QQQ 4H
-    # input and current MC57 after both have been acquired for this session.
     tqqq_state = _materialize_tqqq_if_ready(
         root,
         session=session,
@@ -170,12 +192,8 @@ def main() -> int:
         theme_scores_path=args.theme_scores,
         positions_ledger_path=ledger_arg,
     )
-    # Publication readiness must fail visibly if the TQQQ panic state cannot be
-    # materialized. The state itself is not promoted into normal-stock hard gates.
     publish_extension = include_tqqq_panic_readiness(root, session_date=session)
 
-    # Refresh the current observed session after reconstruction. The exact current
-    # session remains authoritative and overrides display-only reconstructed values.
     history_snapshot, history_index = stage_session_snapshot(
         root,
         root / "history",
@@ -189,9 +207,11 @@ def main() -> int:
         generated_at=generated_at,
     )
 
-    # Recovered source cards are observations only. They are calculated after the
-    # current session and two-year display histories are ready, and fail closed if
-    # any of the five restored Daily cards cannot be populated with real data.
+    observation_history = _ensure_observation_history(
+        root,
+        session=session,
+        generated_at=generated_at,
+    )
     display_observations = materialize_display_observations(
         root,
         session_date=session,
@@ -214,6 +234,7 @@ def main() -> int:
                 "history_snapshot": history_snapshot.as_posix(),
                 "history_index": history_index.as_posix(),
                 "rs_history": rs_history.as_posix(),
+                "observation_history": observation_history,
                 "display_observations": display_observations.as_posix(),
                 "authority_manifest": manifest.as_posix(),
             },
