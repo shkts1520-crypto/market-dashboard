@@ -140,6 +140,13 @@ def main() -> int:
     data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")
     data_completeness_fallback_enabled = _inject_external_extension(out, data_completeness_fallback)
 
+    # Older canonical ribbon text can survive after the recovered regime-history
+    # card is already READY. Repair only that display label from the same current
+    # display-observations payload so browser completeness cannot report a stale
+    # DATA_REQUIRED string after the authoritative observation has been restored.
+    observation_ribbon_repair = Path("assets/v38-observation-ribbon-repair.js")
+    observation_ribbon_repair_enabled = _inject_external_extension(out, observation_ribbon_repair)
+
     restored_data = _copy_restored_data(out)
 
     report = validate_production_html(out.read_text(encoding="utf-8"))
@@ -170,6 +177,7 @@ def main() -> int:
                 "source_fidelity_extension": source_fidelity_enabled,
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
+                "observation_ribbon_repair_extension": observation_ribbon_repair_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
