@@ -2,18 +2,20 @@
   'use strict';
 
   const OPTIONS_URL = 'data/options/index.json';
+  const SEARCH_URL = 'data/search_index.json';
   const TV_WIDGET = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
   const NO_CONTRACT = 'NO_VALID_0_45_DTE_CONTRACTS';
-  let optionsPromise = null;
+  let metadataPromise = null;
   let scheduled = false;
 
-  function loadOptions() {
-    if (!optionsPromise) {
-      optionsPromise = fetch(OPTIONS_URL, {cache: 'no-store'})
-        .then((response) => response.ok ? response.json() : null)
-        .catch(() => null);
+  function loadMetadata() {
+    if (!metadataPromise) {
+      metadataPromise = Promise.all([
+        fetch(OPTIONS_URL, {cache: 'no-store'}).then((response) => response.ok ? response.json() : null).catch(() => null),
+        fetch(SEARCH_URL, {cache: 'no-store'}).then((response) => response.ok ? response.json() : null).catch(() => null)
+      ]).then(([options, search]) => ({options, search}));
     }
-    return optionsPromise;
+    return metadataPromise;
   }
 
   function tickerFromModal(modal) {
@@ -21,10 +23,18 @@
     return title ? String(title.textContent || '').trim().toUpperCase() : '';
   }
 
-  function installTradingView(host, ticker) {
-    if (!host || !ticker || host.dataset.v38ChartSource === 'tradingview-live') return;
+  function tradingViewSymbol(search, ticker) {
+    const rows = search && Array.isArray(search.rows) ? search.rows : [];
+    const row = rows.find((item) => item && String(item.ticker || '').trim().toUpperCase() === ticker);
+    const exchange = row ? String(row.exchange || '').trim().toUpperCase() : '';
+    return exchange ? exchange + ':' + ticker : ticker;
+  }
+
+  function installTradingView(host, symbol) {
+    if (!host || !symbol || host.dataset.v38ChartSource === 'tradingview-live') return;
     host.replaceChildren();
     host.dataset.v38ChartSource = 'tradingview-live';
+    host.dataset.v38TradingviewSymbol = symbol;
     const container = document.createElement('div');
     container.className = 'tradingview-widget-container v38-live-chart-fallback';
     container.style.height = '100%';
@@ -40,7 +50,7 @@
     script.async = true;
     script.textContent = JSON.stringify({
       autosize: true,
-      symbol: ticker,
+      symbol: symbol,
       interval: 'D',
       timezone: 'exchange',
       theme: 'light',
@@ -77,16 +87,19 @@
     const empty = Array.from(modal.querySelectorAll('.v38-rc-empty')).find((node) =>
       /ローソク足履歴は未取得/.test(String(node.textContent || ''))
     );
-    if (empty) {
-      const host = modal.querySelector('.v38-rc-chart,.v38-oc-chart');
-      installTradingView(host, ticker);
-      const status = modal.querySelector('.v38-rc-status,.v38-oc-status');
-      if (status) {
-        status.dataset.v38ChartFallback = 'tradingview-live';
-        status.textContent = 'TradingView 実チャート • ローカル優先履歴外はライブ表示へ自動切替';
+    loadMetadata().then(({options, search}) => {
+      if (!modal || modal.hidden || tickerFromModal(modal) !== ticker) return;
+      if (empty && document.documentElement.contains(empty)) {
+        const host = modal.querySelector('.v38-rc-chart,.v38-oc-chart');
+        installTradingView(host, tradingViewSymbol(search, ticker));
+        const status = modal.querySelector('.v38-rc-status,.v38-oc-status');
+        if (status) {
+          status.dataset.v38ChartFallback = 'tradingview-live';
+          status.textContent = 'TradingView 実チャート • ローカル優先履歴外はライブ表示へ自動切替';
+        }
       }
-    }
-    loadOptions().then((options) => markOptionSemantics(modal, options, ticker));
+      markOptionSemantics(modal, options, ticker);
+    });
   }
 
   function queue() {
