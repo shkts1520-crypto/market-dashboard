@@ -106,7 +106,7 @@ def test_repair_targets_are_named_canonical_cards() -> None:
             "マーケット回復後のポジション入り銘柄",
             "エクイティカーブ×21日EMA",
         ),
-        "t-port": ("レジーム警戒灯", "個別株スリーブ", "RSリーダー控え"),
+        "t-port": ("レジーム警戒灯", "新規参入（ポート候補36位圏）", "個別株スリーブ", "RSリーダー控え"),
         "t-rotation": ("サブテーマ別RS",),
         "t-rs": (
             "RS63 Top10", "RS126 Top10", "RS189 Top10", "RS189 継続性",

@@ -386,6 +386,7 @@
     table.appendChild(header);
     (Array.isArray(rows) ? rows : []).slice(0, limit || 12).forEach((row, index) => {
       const tr = document.createElement('tr');
+      tr.dataset.v38Ddv20 = finite(row.ddv20) === null ? '' : String(row.ddv20);
       const symbol = cleanTicker(row.ticker || row.symbol);
       if (symbol) tr.dataset.v38Ticker = symbol;
       const rank = document.createElement('td');
@@ -423,6 +424,24 @@
     if (!core || core.status !== 'READY') return;
     const rows = Array.isArray(core.rows) ? core.rows : [];
     const map = metricMap(view.daily || {});
+
+    const liquidity = document.querySelector('#t-port .card.liqstick');
+    if (liquidity) {
+      liquidity.dataset.v38Status = 'READY';
+      liquidity.dataset.v38BindingKey = 'core12-liquidity-filter';
+      const buttons = Array.from(liquidity.querySelectorAll('button'));
+      buttons.forEach((button) => {
+        button.onclick = () => {
+          const match = String(button.textContent || '').match(/\$([0-9]+)M/);
+          const threshold = match ? Number(match[1]) * 1000000 : 0;
+          buttons.forEach((item) => item.classList.toggle('active', item === button));
+          document.querySelectorAll('#t-port tr[data-v38-ddv20]').forEach((row) => {
+            const value = finite(row.dataset.v38Ddv20);
+            row.hidden = value === null || value < threshold;
+          });
+        };
+      });
+    }
 
     let card = cardByTitle('t-port', 'レジーム警戒灯');
     if (card) {
@@ -463,6 +482,26 @@
     if (card && rows.length > 12) {
       readyCard(card, 'core12-bench', '現行Core12 ranking 13–24位。採用ポジションではありません。');
       renderCoreTable(card, rows.slice(12, 24), 13, 12);
+    }
+
+    const entrants = core.new_entrants;
+    card = cardByTitle('t-port', '新規参入（ポート候補36位圏）');
+    if (card && entrants && entrants.status === 'READY') {
+      readyCard(card, 'core12-new-entrants', '20営業日前はRS189 36位圏外、現在30位以内へ入った銘柄。');
+      const meta = document.createElement('div');
+      meta.className = 'mut';
+      meta.textContent = String(entrants.baseline_session || '—') + ' → ' + String(entrants.current_session || '—');
+      card.appendChild(meta);
+      const chips = document.createElement('div');
+      chips.className = 'chips';
+      (Array.isArray(entrants.rows) ? entrants.rows : []).forEach((row) => {
+        const chip = tickerLink(row.ticker, 'chip hot');
+        chip.prepend(document.createTextNode(String(row.rank) + '位 '));
+        chip.dataset.v38Ddv20 = finite(row.ddv20) === null ? '' : String(row.ddv20);
+        chips.appendChild(chip);
+      });
+      if (!chips.children.length) chips.textContent = '該当なし';
+      card.appendChild(chips);
     }
   }
 

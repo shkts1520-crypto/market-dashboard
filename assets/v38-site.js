@@ -213,6 +213,7 @@
 
   function neutralizeCards(section, session, reason) {
     section.querySelectorAll('.card').forEach((card) => {
+      if (section.id === 't-port' && card.classList.contains('liqstick')) return;
       resetCard(
         card, originalTitle(card, 'V38 Data'), 'DATA_REQUIRED',
         reason || 'AUTHORITATIVE_CARD_INPUT_NOT_AVAILABLE', session
