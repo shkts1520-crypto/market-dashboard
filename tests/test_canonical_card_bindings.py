@@ -112,7 +112,10 @@ def test_repair_targets_are_named_canonical_cards() -> None:
             "RS63 Top10", "RS126 Top10", "RS189 Top10", "RS189 継続性",
             "RSマルチタイムフレーム比較", "三窓一致リーダー", "Top10 IN / OUT履歴",
         ),
-        "t-weekly": ("今週の結論", "今週の変化", "週次騰落ボード", "自分 vs QQQ円建て"),
+        "t-weekly": (
+            "今週の結論", "今週の変化", "地合いの帯", "週次騰落ボード",
+            "来週の経済指標", "自分 vs QQQ円建て",
+        ),
         "t-options": ("0–6 DTE", "7–21 DTE", "22–45 DTE", "0–45 DTE"),
     }
     errors: list[str] = []
@@ -130,6 +133,15 @@ def test_repair_never_targets_cards_by_position() -> None:
     assert not re.search(r"cardByTitle\([^\n]+,\s*['\"]['\"]\s*,", js)
     assert "v38CanonicalTitle" in js
     assert "v38BindingKey" in js
+
+
+def test_weekly_missing_cards_have_explicit_authoritative_bindings() -> None:
+    js = REPAIR_JS.read_text(encoding="utf-8")
+    assert "weekly-regime-history" in js
+    assert "daily.display_observations" in js
+    assert "weekly-economic-calendar-source" in js
+    assert "Yahoo価格APIは経済イベント日程を提供しません" in js
+    assert "SOURCE_UNAVAILABLE" in js
 
 
 def test_repair_restores_canonical_headings_instead_of_inventing_titles() -> None:
