@@ -9,6 +9,24 @@ from playwright.sync_api import sync_playwright
 WIDTHS = (375, 390, 430)
 
 
+CANONICAL_SNAPSHOT_SCRIPT = r"""
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = Array.from(document.querySelectorAll('section .card'));
+  window.__v38CanonicalCardSnapshot = cards.map((card, index) => {
+    const section = card.closest('section');
+    const heading = card.querySelector('h2,.hdr h2,.chd h2');
+    return {
+      index,
+      sectionId: section ? String(section.id || '') : '',
+      heading: heading ? String(heading.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 240) : '',
+      text: String(card.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 1200),
+      html: String(card.outerHTML || '').slice(0, 6000)
+    };
+  });
+}, {once: true});
+"""
+
+
 def fetch_json(page, path: str):
     return page.evaluate(
         """async (path) => {
@@ -32,13 +50,24 @@ def missing_details(section):
         }).slice(0, 30).map((el) => {
           const card = el.closest('.card');
           const heading = card && card.querySelector('h2,.hdr h2,.chd h2');
+          const allCards = Array.from(document.querySelectorAll('section .card'));
+          const cardIndex = card ? allCards.indexOf(card) : -1;
+          const source = Array.isArray(window.__v38CanonicalCardSnapshot)
+            ? window.__v38CanonicalCardSnapshot.find((row) => row && row.index === cardIndex)
+            : null;
           return {
             tag: el.tagName,
             className: String(el.className || ''),
             text: String(el.textContent || '').trim().slice(0, 300),
             status: String(el.dataset && el.dataset.v38Status || ''),
+            cardIndex,
+            cardClass: card ? String(card.className || '') : '',
+            cardId: card ? String(card.id || '') : '',
             cardTitle: heading ? String(heading.textContent || '').trim().slice(0, 160) : '',
-            cardBinding: card ? String(card.dataset.v38BindingKey || '') : ''
+            cardBinding: card ? String(card.dataset.v38BindingKey || '') : '',
+            rememberedTitle: card ? String(card.dataset.v38CardTitle || '') : '',
+            canonicalTitle: card ? String(card.dataset.v38CanonicalTitle || '') : '',
+            source: source || null
           };
         })"""
     )
@@ -54,6 +83,7 @@ def main() -> int:
         try:
             for width in WIDTHS:
                 page = browser.new_page(viewport={"width": width, "height": 900})
+                page.add_init_script(CANONICAL_SNAPSHOT_SCRIPT)
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
                 page.wait_for_timeout(1200)
