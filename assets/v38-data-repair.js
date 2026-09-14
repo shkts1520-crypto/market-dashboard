@@ -92,6 +92,21 @@
     return card;
   }
 
+  function unavailableCard(card, bindingKey, subtitle) {
+    if (!card) return null;
+    card.replaceChildren();
+    card.dataset.v38Status = 'SOURCE_UNAVAILABLE';
+    card.dataset.v38BindingKey = bindingKey;
+    appendCanonicalHeading(card);
+    if (subtitle) {
+      const sub = document.createElement('div');
+      sub.className = 'sub';
+      sub.textContent = subtitle;
+      card.appendChild(sub);
+    }
+    return card;
+  }
+
   function restoreCanonicalHeading(card) {
     const template = CARD_TEMPLATES.get(card);
     if (!template || !template.heading) return;
@@ -580,6 +595,37 @@
       readyCard(card, 'weekly-movers', '取得済みGICS11セクターETFの1週間騰落率。');
       sourceRows(card, movers, (row) => ({left: '1W ' + pct(row.change_1w), right: ''}), (row) => ({value: pct(row.change_1w), label: '1W'}), 11);
     }
+
+    const observations = daily.display_observations || {};
+    const regime = observations.regime_history || {};
+    const regimeRows = Array.isArray(regime.records) ? regime.records : [];
+    card = cardByTitle('t-weekly', '地合いの帯');
+    if (card && regime.status === 'READY' && regimeRows.length) {
+      readyCard(card, 'weekly-regime-history', '正本NQSAR観測履歴。価格から過去の色を推定しません。');
+      const shown = regimeRows.slice(-60);
+      const label = document.createElement('div');
+      label.className = 'riblab';
+      label.textContent = 'レジーム履歴 ' + String(shown[0].date || '—') + ' → ' + String(shown[shown.length - 1].date || '—') + '（正本 ' + String(regime.observation_count || regimeRows.length) + '件）';
+      card.appendChild(label);
+      const ribbon = document.createElement('div');
+      ribbon.className = 'ribbon';
+      shown.forEach((row) => {
+        const state = String(row.state || '').toLowerCase();
+        const chip = document.createElement('span');
+        chip.className = 'rb ' + ({blue: 'c-bl', green: 'c-gr', yellow: 'c-yl', red: 'c-rd'}[state] || 'c-yl');
+        chip.title = String(row.date || '') + ' ' + String(row.state || '');
+        ribbon.appendChild(chip);
+      });
+      card.appendChild(ribbon);
+    }
+
+    card = cardByTitle('t-weekly', '来週の経済指標');
+    if (card) {
+      unavailableCard(card, 'weekly-economic-calendar-source', 'Yahoo価格APIは経済イベント日程を提供しません。正本カレンダー未接続のため、日付や指標を推測表示しません。');
+      kv(card, '取得判定', 'SOURCE_UNAVAILABLE');
+      kv(card, '利用可能な正本', 'なし');
+    }
+
     const positions = view.positions || {};
     card = cardByTitle('t-weekly', '自分 vs QQQ円建て');
     if (card && positions.status === 'READY' && Array.isArray(positions.rows) && positions.rows.length === 0) {
