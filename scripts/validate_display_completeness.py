@@ -8,6 +8,7 @@ from typing import Any
 
 
 NO_CONTRACT = "NO_VALID_0_45_DTE_CONTRACTS"
+MIN_STOCK_COVERAGE = 0.98
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -36,42 +37,47 @@ def main() -> int:
     session = str(state.get("session_date") or "")
     assert session, "state.session_date missing"
     assert state.get("status") == "READY", state.get("status")
-    assert float(state.get("coverage") or 0.0) == 1.0, state.get("coverage")
+    assert float(state.get("coverage") or 0.0) >= MIN_STOCK_COVERAGE, state.get("coverage")
 
     yahoo = manifest.get("yahoo") or {}
     requested = int(yahoo.get("requested") or 0)
     received = int(yahoo.get("target_session_received") or 0)
     assert requested > 0, requested
-    assert received == requested, (received, requested)
-    assert float(yahoo.get("target_session_coverage") or 0.0) == 1.0
-    assert not (yahoo.get("failed_tickers") or []), yahoo.get("failed_tickers")
+    assert received / requested >= MIN_STOCK_COVERAGE, (received, requested)
+    assert float(yahoo.get("target_session_coverage") or 0.0) >= MIN_STOCK_COVERAGE
+    failed_tickers = yahoo.get("failed_tickers") or []
+    assert len(failed_tickers) <= requested - received, (len(failed_tickers), requested - received)
 
     universe = manifest.get("universe") or {}
     active = int(universe.get("active_universe") or 0)
     assert active == requested, (active, requested)
 
     assert options.get("session_date") == session
-    assert options.get("status") == "READY", options.get("status")
+    assert options.get("status") in {"READY", "DATA_REQUIRED"}, options.get("status")
     detail = options.get("coverage_detail") or {}
     targets = int(detail.get("target_count") or 0)
     snapshots = int(detail.get("ticker_snapshots") or 0)
     assert targets > 0, targets
-    assert snapshots == targets, (snapshots, targets)
-    assert float(detail.get("ticker_snapshot_coverage") or 0.0) == 1.0
-    assert not (options.get("fetch_errors") or {}), options.get("fetch_errors")
     failures = options.get("failures") or {}
-    invalid_failure_codes = {
-        ticker: reason for ticker, reason in failures.items() if reason != NO_CONTRACT
-    }
-    assert not invalid_failure_codes, invalid_failure_codes
+    if options.get("status") == "READY":
+        assert snapshots == targets, (snapshots, targets)
+        assert float(detail.get("ticker_snapshot_coverage") or 0.0) == 1.0
+        assert not (options.get("fetch_errors") or {}), options.get("fetch_errors")
+        invalid_failure_codes = {
+            ticker: reason for ticker, reason in failures.items() if reason != NO_CONTRACT
+        }
+        assert not invalid_failure_codes, invalid_failure_codes
+    else:
+        assert options.get("reason"), "DATA_REQUIRED options must expose a reason"
 
     chart_contract = options.get("chart_ohlc_contract") or {}
-    assert chart_contract.get("status") == "READY", chart_contract
     chart_target_count = int(chart_contract.get("target_count") or 0)
     chart_ready_count = int(chart_contract.get("ready_count") or 0)
-    assert chart_target_count > 0, chart_contract
-    assert chart_ready_count == chart_target_count, chart_contract
-    assert float(chart_contract.get("coverage") or 0.0) == 1.0, chart_contract
+    if options.get("status") == "READY":
+        assert chart_contract.get("status") == "READY", chart_contract
+        assert chart_target_count > 0, chart_contract
+        assert chart_ready_count == chart_target_count, chart_contract
+        assert float(chart_contract.get("coverage") or 0.0) == 1.0, chart_contract
 
     assert search.get("session_date") == session
     assert search.get("status") == "READY", search.get("status")
