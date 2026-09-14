@@ -20,6 +20,30 @@ def fetch_json(page, path: str):
     )
 
 
+def missing_details(section):
+    return section.evaluate(
+        """(root) => Array.from(root.querySelectorAll('*')).filter((el) => {
+          const text = String(el.textContent || '').trim();
+          return (text.includes('データ未取得') || text.includes('DATA_REQUIRED') || text.includes('STALE')) &&
+            !Array.from(el.children || []).some((child) => {
+              const childText = String(child.textContent || '').trim();
+              return childText.includes('データ未取得') || childText.includes('DATA_REQUIRED') || childText.includes('STALE');
+            });
+        }).slice(0, 30).map((el) => {
+          const card = el.closest('.card');
+          const heading = card && card.querySelector('h2,.hdr h2,.chd h2');
+          return {
+            tag: el.tagName,
+            className: String(el.className || ''),
+            text: String(el.textContent || '').trim().slice(0, 300),
+            status: String(el.dataset && el.dataset.v38Status || ''),
+            cardTitle: heading ? String(heading.textContent || '').trim().slice(0, 160) : '',
+            cardBinding: card ? String(card.dataset.v38BindingKey || '') : ''
+          };
+        })"""
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify no false missing-data state in the production UI")
     parser.add_argument("--url", default="http://127.0.0.1:8000/")
@@ -42,9 +66,8 @@ def main() -> int:
                     section = page.locator(href)
                     assert section.is_visible()
                     text = section.inner_text()
-                    assert 'データ未取得' not in text, (width, href)
-                    assert 'DATA_REQUIRED' not in text, (width, href)
-                    assert 'STALE' not in text, (width, href)
+                    if any(token in text for token in ('データ未取得', 'DATA_REQUIRED', 'STALE')):
+                        raise AssertionError((width, href, missing_details(section)))
 
                 search = fetch_json(page, 'data/search_index.json')
                 options = fetch_json(page, 'data/options/index.json')
