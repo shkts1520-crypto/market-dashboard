@@ -121,7 +121,10 @@ def main() -> int:
                 modal_text = modal.inner_text()
                 assert '未取得' not in modal_text, (width, uncached, modal_text)
                 assert 'TradingView 実チャート' in modal_text
-                assert modal.locator('script[src*="embed-widget-advanced-chart.js"]').count() == 1
+                chart_host = modal.locator('.v38-rc-chart')
+                assert chart_host.get_attribute('data-v38-chart-source') == 'tradingview-live'
+                assert chart_host.get_attribute('data-v38-tradingview-symbol')
+                assert chart_host.locator('.tradingview-widget-container.v38-live-chart-fallback').count() == 1
                 modal.locator('.v38-oc-close').click()
 
                 failures = options.get('failures') or {}
