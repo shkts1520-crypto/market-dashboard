@@ -35,6 +35,51 @@ def _finite(value: Any) -> float | None:
     return None
 
 
+def _rs189_new_entrants(root: Path, session: str, rs: dict[str, Any] | None) -> dict[str, Any]:
+    """Return exact 20-session RS189 entrants for the recovered display card."""
+    history = _read(root / "history" / "rs_history.json")
+    if history is None or history.get("status") != READY:
+        return {"status": DATA_REQUIRED, "reason": "RS_HISTORY_NOT_READY", "rows": []}
+    if history.get("session_date") != session:
+        return {"status": STALE, "reason": f"SESSION_MISMATCH:{history.get('session_date')}", "rows": []}
+    snapshots = [row for row in history.get("snapshots", []) if isinstance(row, dict)]
+    snapshots.sort(key=lambda row: str(row.get("date") or ""))
+    current_index = next((i for i in range(len(snapshots) - 1, -1, -1) if snapshots[i].get("date") == session), None)
+    if current_index is None or current_index < 20:
+        return {"status": DATA_REQUIRED, "reason": "EXACT_20_SESSION_BASELINE_MISSING", "rows": []}
+    current = snapshots[current_index]
+    prior = snapshots[current_index - 20]
+    current_rows = ((current.get("windows") or {}).get("189") or [])
+    prior_rows = ((prior.get("windows") or {}).get("189") or [])
+    if not isinstance(current_rows, list) or not isinstance(prior_rows, list):
+        return {"status": DATA_REQUIRED, "reason": "RS189_HISTORY_WINDOW_MISSING", "rows": []}
+    prior_rank = {
+        str(row.get("ticker") or ""): int(row["rank"])
+        for row in prior_rows if isinstance(row, dict) and str(row.get("ticker") or "") and _finite(row.get("rank")) is not None
+    }
+    current_rs = {
+        str(row.get("ticker") or ""): row
+        for row in ((rs or {}).get("rows") or []) if isinstance(row, dict)
+    }
+    rows = []
+    for row in current_rows:
+        if not isinstance(row, dict) or _finite(row.get("rank")) is None:
+            continue
+        ticker = str(row.get("ticker") or "")
+        rank = int(row["rank"])
+        old_rank = prior_rank.get(ticker)
+        if ticker and rank <= 30 and (old_rank is None or old_rank > 36):
+            source = current_rs.get(ticker) or {}
+            rows.append({"ticker": ticker, "rank": rank, "prior_rank": old_rank, "ddv20": _finite(source.get("ddv20"))})
+    return {
+        "status": READY,
+        "reason": "EXACT_RS189_20_SESSION_COMPARISON",
+        "current_session": session,
+        "baseline_session": prior.get("date"),
+        "rows": rows,
+    }
+
+
 def _status(obj: dict[str, Any] | None, session: str) -> tuple[str, str]:
     if obj is None:
         return DATA_REQUIRED, "FILE_MISSING_OR_INVALID"
@@ -607,6 +652,7 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
             core12["reason"] = str(core_obj.get("ranking_reason") or ranking_status)
         core12["market_mode"] = core_obj.get("market_mode")
         core12["max_new_total_slots"] = core_obj.get("max_new_total_slots")
+        core12["new_entrants"] = _rs189_new_entrants(root, session, rs)
 
     rotation = _section(root, name="rotation.json", session=session, title="Rotation")
     group_diagnostics: dict[str, list[dict[str, Any]]] = {}
