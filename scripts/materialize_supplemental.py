@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
+from v38.display_observations import materialize_display_observations
 from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
 from v38.options_resilience import recover_options_if_transient_failure
@@ -188,6 +189,15 @@ def main() -> int:
         generated_at=generated_at,
     )
 
+    # Recovered source cards are observations only. They are calculated after the
+    # current session and two-year display histories are ready, and fail closed if
+    # any of the five restored Daily cards cannot be populated with real data.
+    display_observations = materialize_display_observations(
+        root,
+        session_date=session,
+        generated_at=generated_at,
+    )
+
     manifest = sync_acquisition_manifest(root)
     print(
         json.dumps(
@@ -204,6 +214,7 @@ def main() -> int:
                 "history_snapshot": history_snapshot.as_posix(),
                 "history_index": history_index.as_posix(),
                 "rs_history": rs_history.as_posix(),
+                "display_observations": display_observations.as_posix(),
                 "authority_manifest": manifest.as_posix(),
             },
             sort_keys=True,
