@@ -6,6 +6,7 @@ import json
 import shutil
 from pathlib import Path
 
+from v38.display_observations import attach_display_observations
 from v38.mc57_ui import attach_mc57_ui_detail
 from v38.recovery_ui import attach_recovered_theme_ui
 from v38.two_year_ui import attach_two_year_display_history
@@ -24,6 +25,7 @@ def main() -> int:
     out = attach_recovered_theme_ui(out, a.data_dir)
     out = attach_reconstructed_stock_ui(out, a.data_dir)
     out = attach_two_year_display_history(out, a.data_dir)
+    out = attach_display_observations(out, a.data_dir)
 
     path = Path(a.output)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -41,6 +43,7 @@ def main() -> int:
     history_meta = out["daily"].get("historical_reconstruction") or {}
     f123_detail = out["daily"].get("f123_detail") or {}
     display_history = out["daily"].get("display_history") or {}
+    display_observations = out["daily"].get("display_observations") or {}
     print(
         json.dumps(
             {
@@ -54,6 +57,8 @@ def main() -> int:
                 "stock_history_sessions": history_meta.get("session_count", 0),
                 "display_history_points": display_history.get("history_points", 0),
                 "display_history_window": display_history.get("window_sessions", 0),
+                "display_observations_status": display_observations.get("status"),
+                "display_observations_coverage": display_observations.get("coverage"),
                 "f1_display_provenance": (f123_detail.get("f1") or {}).get("display_provenance"),
                 "f1_display_value": (f123_detail.get("f1") or {}).get("value"),
                 "mc57_history_status": out["daily"]["mc57_detail"]["status"],

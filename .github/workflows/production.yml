@@ -59,6 +59,7 @@ jobs:
           node --check assets/v38-site.js
           node --check assets/v38-observables.js
           node --check assets/v38-options-chart.js
+          node --check assets/v38-data-completeness-fallback.js
 
       - name: Revalidate retained session or select live acquisition
         id: session-mode
@@ -277,6 +278,12 @@ jobs:
             grep -q "\"${key}\"" _site/data/ui_view_model.json
           done
 
+      - name: Validate display data completeness
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/validate_display_completeness.py --data-dir data --site-dir _site
+
       - name: Install Chromium
         shell: bash
         run: |
@@ -292,6 +299,7 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 2
           python scripts/browser_acceptance.py --url http://127.0.0.1:8000/
+          python scripts/browser_data_completeness.py --url http://127.0.0.1:8000/
 
       - name: Commit scheduled or manually acquired data
         if: github.event_name != 'pull_request'

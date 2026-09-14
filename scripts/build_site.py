@@ -120,6 +120,33 @@ def main() -> int:
 
     restored_experience = Path("assets/v38-restored-experience.js")
     restored_experience_enabled = _inject_external_extension(out, restored_experience)
+
+    # Final visual-only layer. It runs after restored_experience so the recovered
+    # data DOM is already present, then restores the canonical card proportions,
+    # spacing and table density without changing calculations or data contracts.
+    source_fidelity = Path("assets/v38-source-fidelity.js")
+    source_fidelity_enabled = _inject_external_extension(out, source_fidelity)
+
+    # The source Rotation renderer carries a hidden compatibility card used by the
+    # existing acceptance contract. The visual wrapper must never make that data
+    # contract disappear, so restore it invisibly after source_fidelity runs.
+    source_fidelity_contract = Path("assets/v38-source-fidelity-contract.js")
+    source_fidelity_contract_enabled = _inject_external_extension(out, source_fidelity_contract)
+
+    # Search covers the full stock universe while local restored candle history is
+    # deliberately limited to priority names. For names outside that local cache,
+    # use TradingView's live Advanced Chart rather than presenting a false
+    # "not acquired" state. This is display fallback only; no trading rules change.
+    data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")
+    data_completeness_fallback_enabled = _inject_external_extension(out, data_completeness_fallback)
+
+    # Older canonical ribbon text can survive after the recovered regime-history
+    # card is already READY. Repair only that display label from the same current
+    # display-observations payload so browser completeness cannot report a stale
+    # DATA_REQUIRED string after the authoritative observation has been restored.
+    observation_ribbon_repair = Path("assets/v38-observation-ribbon-repair.js")
+    observation_ribbon_repair_enabled = _inject_external_extension(out, observation_ribbon_repair)
+
     restored_data = _copy_restored_data(out)
 
     report = validate_production_html(out.read_text(encoding="utf-8"))
@@ -147,6 +174,10 @@ def main() -> int:
                 "options_chart_extension": options_chart_enabled,
                 "restored_chart_extension": restored_chart_enabled,
                 "restored_experience_extension": restored_experience_enabled,
+                "source_fidelity_extension": source_fidelity_enabled,
+                "source_fidelity_contract_extension": source_fidelity_contract_enabled,
+                "data_completeness_fallback_extension": data_completeness_fallback_enabled,
+                "observation_ribbon_repair_extension": observation_ribbon_repair_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
