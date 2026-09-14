@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
-from v38.display_observations import materialize_display_observations
+from v38.display_observations_live import materialize_display_observations
 from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
 from v38.options_resilience import recover_options_if_transient_failure
