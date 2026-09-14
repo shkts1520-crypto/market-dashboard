@@ -1,0 +1,18 @@
+{
+  "calculation_version": "v38-display-observations-1.0.0",
+  "coverage": 1.0,
+  "generated_at": "2026-09-14T15:15:21Z",
+  "history_kind": "AUTHORITATIVE_OBSERVED_ONLY",
+  "records": [
+    {
+      "date": "2026-09-11",
+      "generated_at": "2026-09-12T07:49:49Z",
+      "source": "recovered-legacy-live-fallback:Yahoo NQ=F completed daily bars",
+      "state": "Yellow"
+    }
+  ],
+  "schema_version": "v38.nqsar_observed_history.1",
+  "session_date": "2026-09-11",
+  "source": "observed-authoritative-nqsar-only; no historical state inference",
+  "status": "READY"
+}
