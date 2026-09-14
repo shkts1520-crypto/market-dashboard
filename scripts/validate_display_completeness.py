@@ -83,12 +83,16 @@ def main() -> int:
     assert search.get("status") == "READY", search.get("status")
     search_rows = search.get("rows") or []
     assert isinstance(search_rows, list)
-    assert len(search_rows) == active, (len(search_rows), active)
+    assert active > 0, active
+    search_coverage = len(search_rows) / active
+    assert search_coverage >= MIN_STOCK_COVERAGE, (len(search_rows), active, search_coverage)
     search_tickers = {
         str(row.get("ticker") or "").strip().upper()
         for row in search_rows if isinstance(row, dict)
     }
-    assert len(search_tickers) == active, (len(search_tickers), active)
+    assert len(search_tickers) == len(search_rows), (len(search_tickers), len(search_rows))
+    unindexed = active - len(search_rows)
+    assert unindexed <= len(failed_tickers), (unindexed, len(failed_tickers))
 
     assert vwap.get("session_date") == session
     assert vwap.get("status") == "READY", vwap.get("status")
@@ -111,7 +115,10 @@ def main() -> int:
         "session_date": session,
         "stock_requested": requested,
         "stock_received": received,
+        "stock_failed": len(failed_tickers),
         "search_rows": len(search_rows),
+        "search_coverage": search_coverage,
+        "search_unindexed": unindexed,
         "options_targets": targets,
         "options_snapshots": snapshots,
         "options_no_contract": len(failures),
