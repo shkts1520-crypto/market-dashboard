@@ -87,6 +87,43 @@ def assert_truth_bound(section, href: str, width: int) -> None:
     assert not unbound, (width, href, 'cards without truth provenance', unbound)
 
 
+def assert_source_visuals(page, view: dict, width: int) -> None:
+    assert page.evaluate("document.body.dataset.v38SourceVisual") == 'ready', (width, 'source visual pass missing')
+
+    daily = view.get('daily') or {}
+    mc_detail = daily.get('mc57_detail') or {}
+    if mc_detail.get('status') == 'READY' and len(((mc_detail.get('series') or {}).get('mc57') or [])) >= 3:
+        assert page.locator('#t-market .v38-real-spark').count() >= 3, (
+            width, 'daily source-style real sparklines missing'
+        )
+
+    core = view.get('core12') or {}
+    if core.get('status') == 'READY' and core.get('rows'):
+        expected = min(24, len(core.get('rows') or []))
+        assert page.locator('#t-port .v38-core-row').count() == expected, (
+            width, 'core source-style ranked rows missing', expected,
+        )
+        assert page.locator('#t-port .v38-core-row[data-v38-ticker]').count() == expected
+
+    summaries = daily.get('market_summaries') or {}
+    if all(symbol in summaries for symbol in ('XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY')):
+        assert page.locator('#t-rotation .v38-sector-cell').count() == 11, (
+            width, 'rotation eleven-sector visual missing'
+        )
+
+    diagnostics = ((view.get('rotation') or {}).get('diagnostics') or {}).get('industry') or []
+    if diagnostics:
+        assert page.locator('#t-rotation .v38-group-row').count() > 0, (
+            width, 'rotation industry leader visual missing'
+        )
+
+    history = daily.get('history') or []
+    if len(history) >= 3:
+        assert page.locator('#t-weekly .v38-real-spark').count() >= 1, (
+            width, 'weekly real history sparkline missing'
+        )
+
+
 def assert_options_upward_rankings(page, options: dict, width: int) -> None:
     rankings = options.get('upward_rankings')
     if not isinstance(rankings, dict):
@@ -128,7 +165,8 @@ def main() -> int:
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
                 page.wait_for_function("document.body.dataset.v38TruthBinding === 'ready'")
-                page.wait_for_timeout(300)
+                page.wait_for_function("document.body.dataset.v38SourceVisual === 'ready'")
+                page.wait_for_timeout(150)
 
                 view = fetch_json(page, 'data/ui_view_model.json')
                 assert page.locator('#sarCol').inner_text().strip() == metric_display(view, 'nqsar')
@@ -155,6 +193,8 @@ def main() -> int:
                     )]
                     if invalid:
                         raise AssertionError((width, href, invalid))
+
+                assert_source_visuals(page, view, width)
 
                 page.locator('a.tabx[href="#t-market"]').click()
                 market_text = page.locator('#t-market').inner_text()
@@ -220,7 +260,7 @@ def main() -> int:
         finally:
             browser.close()
 
-    print('production truth browser acceptance: OK')
+    print('production truth + source visual browser acceptance: OK')
     return 0
 
 
