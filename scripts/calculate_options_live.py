@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import csv
 import json
 import math
+import os
+from collections import deque
 from pathlib import Path
 import sys
 
@@ -13,11 +16,13 @@ main = _resilient.main
 
 # Options acquisition is deliberately narrower than the upstream active stock
 # universe. The stock universe already enforces market cap >= $200M in
-# v38.live_acquisition; Options additionally require a current price >= $5.
-# This keeps the expensive chain scan focused on the investable price floor
-# without changing the stock universe, V38 eligibility/ranking, or UI logic.
+# v38.live_acquisition. For Options, use the union of the strongest 50 stocks by
+# 21/63/189-session return inside the same liquid price universe.
 OPTIONS_MIN_PRICE_USD = 5.0
+OPTIONS_MIN_DDV20_USD = 10_000_000.0
 UPSTREAM_MIN_MARKET_CAP_USD = 200_000_000.0
+RS_LEADER_PERIODS = (21, 63, 189)
+RS_LEADER_TOP_N = 50
 
 
 def _finite(value):
@@ -29,6 +34,7 @@ def _finite(value):
 
 
 def _investable_options_targets(rs: dict) -> list[str]:
+    """Legacy helper retained for compatibility with existing authority tests."""
     out: set[str] = set()
     rows = rs.get("rows") if isinstance(rs, dict) else None
     if not isinstance(rows, list):
@@ -43,15 +49,132 @@ def _investable_options_targets(rs: dict) -> list[str]:
     return sorted(out)
 
 
-# Keep the existing --all-universe execution path for compatibility, but define
-# its Options target set as every ticker in the upstream active universe that
-# satisfies the $5 price floor. There is still no Core12/RS rank pre-filter.
-_resilient._all_universe_targets = _investable_options_targets
+def _liquid_rs_rows(rs: dict) -> dict[str, dict]:
+    rows = rs.get("rows") if isinstance(rs, dict) else None
+    if not isinstance(rows, list):
+        return {}
+    eligible: dict[str, dict] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        ticker = str(row.get("ticker") or "").strip().upper()
+        price = _finite(row.get("price"))
+        ddv20 = _finite(row.get("ddv20"))
+        if (
+            ticker
+            and price is not None
+            and price >= OPTIONS_MIN_PRICE_USD
+            and ddv20 is not None
+            and ddv20 >= OPTIONS_MIN_DDV20_USD
+        ):
+            eligible[ticker] = row
+    return eligible
 
 
-# Keep the target contract truthful while retaining the legacy status/mode token
-# expected by the existing production workflow. Reject a stale same-session
-# preserved file if its target list is from the old unfiltered universe.
+def _runner_ohlcv_path() -> Path:
+    runner_temp = str(os.environ.get("RUNNER_TEMP") or "").strip()
+    if not runner_temp:
+        raise RuntimeError("RUNNER_TEMP is required to calculate exact RS21 Options targets")
+    path = Path(runner_temp) / "v38-live" / "ohlcv.csv"
+    if not path.is_file() or path.stat().st_size <= 0:
+        raise RuntimeError(f"current-session OHLCV is required for RS21 Options targets: {path}")
+    return path
+
+
+def _ret21_from_current_ohlcv(tickers: set[str]) -> dict[str, float]:
+    """Calculate exact 21-session returns from the already-acquired production OHLCV.
+
+    fetch_live_data.py writes each ticker's two-year rows in chronological order.
+    Keeping only the latest 22 closes per ticker is therefore sufficient and avoids
+    a second Yahoo download or an RS schema change.
+    """
+    if not tickers:
+        return {}
+    closes: dict[str, deque[tuple[str, float]]] = {
+        ticker: deque(maxlen=22) for ticker in tickers
+    }
+    with _runner_ohlcv_path().open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            ticker = str(row.get("ticker") or "").strip().upper()
+            if ticker not in closes:
+                continue
+            close = _finite(row.get("close"))
+            day = str(row.get("date") or "").strip()
+            if close is None or close <= 0 or not day:
+                continue
+            closes[ticker].append((day, close))
+
+    out: dict[str, float] = {}
+    for ticker, observations in closes.items():
+        if len(observations) < 22:
+            continue
+        ordered = sorted(observations, key=lambda item: item[0])
+        start = ordered[-22][1]
+        end = ordered[-1][1]
+        if start > 0:
+            value = end / start - 1.0
+            if math.isfinite(value):
+                out[ticker] = float(value)
+    return out
+
+
+def _rank_top(values: dict[str, float], limit: int = RS_LEADER_TOP_N) -> list[str]:
+    ranked = sorted(values.items(), key=lambda item: (-item[1], item[0]))
+    return [ticker for ticker, _ in ranked[:limit]]
+
+
+def _rs_leader_target_details(rs: dict) -> tuple[list[str], dict[str, list[str]]]:
+    eligible = _liquid_rs_rows(rs)
+    if not eligible:
+        return [], {str(period): [] for period in RS_LEADER_PERIODS}
+
+    ret21 = _ret21_from_current_ohlcv(set(eligible))
+    values_by_period: dict[str, dict[str, float]] = {
+        "21": ret21,
+        "63": {},
+        "189": {},
+    }
+    for ticker, row in eligible.items():
+        for period in (63, 189):
+            value = _finite(row.get(f"ret{period}"))
+            if value is not None:
+                values_by_period[str(period)][ticker] = value
+
+    leaders = {
+        period: _rank_top(values_by_period[period])
+        for period in ("21", "63", "189")
+    }
+    targets = sorted({ticker for period in leaders.values() for ticker in period})
+    if len(leaders["21"]) < RS_LEADER_TOP_N:
+        raise RuntimeError(
+            f"RS21 target universe incomplete: {len(leaders['21'])}/{RS_LEADER_TOP_N}"
+        )
+    if len(leaders["63"]) < RS_LEADER_TOP_N:
+        raise RuntimeError(
+            f"RS63 target universe incomplete: {len(leaders['63'])}/{RS_LEADER_TOP_N}"
+        )
+    if len(leaders["189"]) < RS_LEADER_TOP_N:
+        raise RuntimeError(
+            f"RS189 target universe incomplete: {len(leaders['189'])}/{RS_LEADER_TOP_N}"
+        )
+    return targets, leaders
+
+
+def _rs_leader_options_targets(rs: dict) -> list[str]:
+    targets, _ = _rs_leader_target_details(rs)
+    return targets
+
+
+# Keep the existing --all-universe execution path/token for compatibility, but
+# replace the expensive full-universe chain scan with the user-approved target:
+# RS21 Top50 U RS63 Top50 U RS189 Top50. No stock ranking or UI logic changes.
+_resilient._all_universe_targets = _rs_leader_options_targets
+
+
+# Keep the legacy status/mode token expected by the existing production workflow,
+# while making the actual scope explicit and verifiable. Reject a stale preserved
+# file if its target list does not exactly match the current RS leader union.
 _original_atomic_write_json = _resilient.atomic_write_json
 
 
@@ -67,7 +190,7 @@ def _write_investable_options_contract(path, payload):
             rs_path = path_obj.parent.parent / "rs.json"
             if rs_path.is_file():
                 rs = json.loads(rs_path.read_text(encoding="utf-8"))
-                expected = _investable_options_targets(rs)
+                expected, leaders = _rs_leader_target_details(rs)
                 actual = sorted({
                     str(ticker or "").strip().upper()
                     for ticker in (policy.get("targets") or [])
@@ -76,23 +199,33 @@ def _write_investable_options_contract(path, payload):
                 if actual != expected:
                     raise RuntimeError(
                         "refusing stale Options target contract: expected "
-                        f"{len(expected)} price>=$5 targets, got {len(actual)}"
+                        f"{len(expected)} RS21/63/189 leader-union targets, got {len(actual)}"
                     )
-            policy["scope"] = "INVESTABLE_PRICE_FILTERED"
+                policy["period_counts"] = {
+                    period: len(items) for period, items in leaders.items()
+                }
+            policy["scope"] = "RS_21_63_189_TOP50_UNION"
             policy["method"] = (
-                "Every current active-universe ticker with current price >= $5; "
-                "the upstream TradingView universe already enforces market cap >= $200M; "
-                "no Core12/RS pre-filter"
+                "Union of the top 50 stocks by 21-, 63-, and 189-completed-session "
+                "total return among current active-universe stocks with price >= $5 "
+                "and DDV20 >= $10M; 21-session return uses the same current-session "
+                "OHLCV already acquired by the production stock pipeline"
             )
+            policy["periods"] = list(RS_LEADER_PERIODS)
+            policy["top_n_per_period"] = RS_LEADER_TOP_N
             policy["min_price_usd"] = OPTIONS_MIN_PRICE_USD
+            policy["min_ddv20_usd"] = OPTIONS_MIN_DDV20_USD
             policy["upstream_min_market_cap_usd"] = UPSTREAM_MIN_MARKET_CAP_USD
             overlay = payload.get("chart_overlay_contract")
             if isinstance(overlay, dict):
-                overlay["target_priority"] = "FULL_INVESTABLE_UNIVERSE"
+                overlay["target_priority"] = "RS_21_63_189_TOP50_UNION"
             scan = payload.get("universe_scan")
             if isinstance(scan, dict):
-                scan["scope"] = "INVESTABLE_PRICE_FILTERED"
+                scan["scope"] = "RS_21_63_189_TOP50_UNION"
+                scan["periods"] = list(RS_LEADER_PERIODS)
+                scan["top_n_per_period"] = RS_LEADER_TOP_N
                 scan["min_price_usd"] = OPTIONS_MIN_PRICE_USD
+                scan["min_ddv20_usd"] = OPTIONS_MIN_DDV20_USD
                 scan["upstream_min_market_cap_usd"] = UPSTREAM_MIN_MARKET_CAP_USD
     return _original_atomic_write_json(path, payload)
 
@@ -112,8 +245,8 @@ _rate_from_yahoo_frame = _legacy._rate_from_yahoo_frame
 _previous_risk_free_rate = _legacy._previous_risk_free_rate
 _fred_risk_free_rate = _legacy._fred_risk_free_rate
 
-# The former 25% readiness floor belonged to the small priority universe. Full
-# investable-universe acquisition is READY only after the scan contract is >=98% resolved.
+# Preserve the existing >=98% READY contract. Narrowing the requested target set
+# must not lower the quality threshold or hide missing Option chains.
 _resilient.MIN_READY_TARGET_COVERAGE = _resilient.FULL_UNIVERSE_SCAN_READY_COVERAGE
 
 
@@ -171,9 +304,8 @@ _resilient._fetch_ticker_snapshot_once = _complete_transient_expiry_snapshot
 
 
 if __name__ == "__main__":
-    # Production scans the complete investable Options universe: upstream market
-    # cap >= $200M plus current price >= $5. Keep --target-limit accepted for
-    # compatibility and continue using the all-universe execution path.
+    # Retain --all-universe as the resilient execution-mode token, but the target
+    # resolver above now returns only the RS21/63/189 Top50 union.
     if "--all-universe" not in sys.argv:
         sys.argv.append("--all-universe")
     raise SystemExit(main())
