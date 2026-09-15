@@ -8,6 +8,7 @@
 
   const replacements = [
     ['回復時点の順位で再計算する前提のモック。', '回復時点の順位で再計算する前提。現行正本producer未復元。'],
+    ['全Active Universeを走査。Direction/Confidence予測ではなく、実測のWall / Gamma Flip / GEX配置で期間別に抽出。', 'RS21・63・189上位50の重複除外対象を走査。実測のWall / Gamma Flip / GEX配置で期間別に抽出。'],
     ['MOCK DATA', ''],
     ['Mock Data', ''],
     ['モックデータ', '旧表示値は使用しません'],
