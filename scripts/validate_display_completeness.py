@@ -101,14 +101,14 @@ def main() -> int:
     boot_ready = int(vwap.get("inception_bootstrap_ready") or 0)
     assert boot_ready == attempted, (boot_ready, attempted)
 
-    fallback_asset = site / "assets" / "v38-data-completeness-fallback.js"
+    fallback_asset = site / "assets" / "v38-tradingview-fallback.js"
     fallback = fallback_asset.read_text(encoding="utf-8")
     assert "embed-widget-advanced-chart.js" in fallback
     assert "tradingview-live" in fallback
     assert NO_CONTRACT in fallback
 
     index = (site / "index.html").read_text(encoding="utf-8")
-    assert "assets/v38-data-completeness-fallback.js" in index
+    assert "assets/v38-tradingview-fallback.js" in index
 
     print(json.dumps({
         "status": "READY",

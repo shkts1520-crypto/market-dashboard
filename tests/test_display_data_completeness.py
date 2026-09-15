@@ -25,12 +25,13 @@ def test_search_index_preserves_exchange_for_unambiguous_fallback_symbols():
     assert "exchange + ':' + ticker" in js
 
 
-def test_fallback_loads_after_restored_chart_without_fixed_canvas_source_layer():
+def test_destructive_fallback_is_retired_without_fixed_canvas_source_layer():
     script = BUILD.read_text(encoding="utf-8")
     restored = script.index('restored_chart = Path("assets/v38-restored-chart.js")')
     restored_experience = script.index('restored_experience = Path("assets/v38-restored-experience.js")')
-    fallback = script.index('data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")')
-    assert restored < restored_experience < fallback
+    assert restored < restored_experience
+    assert 'data_completeness_fallback_enabled = False' in script
+    assert '_inject_external_extension(out, data_completeness_fallback)' not in script
     assert 'source_fidelity_enabled = False' in script
     assert '_inject_external_extension(out, source_fidelity)' not in script
     assert '"data_completeness_fallback_extension": data_completeness_fallback_enabled' in script

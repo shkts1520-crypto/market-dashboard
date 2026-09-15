@@ -23,18 +23,18 @@ def test_bad_fixed_canvas_asset_remains_quarantined_not_deleted():
     assert "v38-source-rotation-frame" in js
 
 
-def test_restored_experience_is_the_visual_owner_for_added_surfaces():
+def test_restored_experience_only_owns_approved_added_surfaces():
     js = RESTORED_ASSET.read_text(encoding="utf-8")
     py = BUILD.read_text(encoding="utf-8")
     for token in (
-        "v38-canonical-rotation",
         "card rsx-card",
         "Ticker Search",
-        "63 / 252 / All-time VWAP",
+        "v38-vwap-live",
     ):
         assert token in js
     assert 'restored_experience = Path("assets/v38-restored-experience.js")' in py
     assert 'restored_experience_enabled = _inject_external_extension(out, restored_experience)' in py
+    assert "if(view&&searchData)renderRotation" not in js
 
 
 def test_runtime_never_reinjects_display_extensions():

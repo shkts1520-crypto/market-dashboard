@@ -40,7 +40,7 @@ def test_options_use_native_rsx_cards_without_direction_confidence():
 
 
 def test_vwap_scope_remains_63_252_all_time_only():
-    assert "63 / 252 / All-time VWAP" in JS
+    assert "v38-vwap-live" in JS
     assert "63-252-all-time" in JS
     assert "189 VWAP" not in JS
 

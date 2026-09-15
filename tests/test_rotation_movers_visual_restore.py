@@ -51,9 +51,8 @@ def test_rotation_movers_visual_layer_is_scoped_and_source_shaped():
         assert "getElementById('" + forbidden + "')" not in js
 
 
-def test_rotation_movers_visual_layer_loads_last():
+def test_rotation_movers_runtime_owner_layers_are_retired():
     py = BUILD.read_text(encoding="utf-8")
-    status = py.index('status_truth = Path("assets/v38-status-truth.js")')
-    visual = py.index('rotation_movers_visual = Path("assets/v38-rotation-movers-visual.js")')
-    assert status < visual
+    assert 'rotation_movers_visual_enabled = False' in py
+    assert 'rotation_movers_owner_enabled = False' in py
     assert '"rotation_movers_visual_extension": rotation_movers_visual_enabled' in py
