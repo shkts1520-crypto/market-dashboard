@@ -34,6 +34,11 @@
       const section = document.getElementById(id);
       if (section) scrubText(section);
     });
+    const upward = document.querySelector('#t-options .v38-options-upward-card');
+    if (upward) {
+      upward.dataset.v38TruthSource = 'data/options/index.json.upward_rankings';
+      upward.dataset.v38Status = 'READY';
+    }
     document.body.dataset.v38LegacyMockLabels = '0';
   }
 
