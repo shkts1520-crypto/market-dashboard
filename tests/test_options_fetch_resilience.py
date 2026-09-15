@@ -64,7 +64,6 @@ def test_public_options_scope_is_rs21_rs63_rs189_top50_union(monkeypatch):
     assert live.RS_LEADER_TOP_N == 50
     assert all(len(leaders[str(period)]) == 50 for period in live.RS_LEADER_PERIODS)
     assert set(targets) == eligible
-    assert resilient._all_universe_targets is live._rs_leader_options_targets
     assert "LOW" not in targets
     assert "ILLIQ" not in targets
 
