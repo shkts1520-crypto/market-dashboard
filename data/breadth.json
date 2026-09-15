@@ -1,24 +1,277 @@
 {
-  "breadth200": 59.79740424184869,
+  "breadth200": 58.722592945662534,
   "breadth200_status": "FULL",
-  "breadth50": 42.39065308568005,
+  "breadth50": 41.73466304019341,
   "calculation_version": "v38-stock-adapter-1.2.0",
-  "coverage": 1.0,
+  "coverage": 0.987603305785124,
   "coverage_detail": {
-    "active_universe": 3382,
-    "current_valid_ohlcv": 3382,
-    "min_sma200_count": 2030,
-    "valid_sma200_count": 3159,
-    "valid_sma50_count": 3338
+    "active_universe": 3388,
+    "current_valid_ohlcv": 3346,
+    "min_sma200_count": 2033,
+    "valid_sma200_count": 3147,
+    "valid_sma50_count": 3309
   },
-  "excluded": [],
-  "generated_at": "2026-09-14T15:15:21Z",
+  "excluded": [
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "AACO"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ACAA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ALDF"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "ARCI"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "BDCI"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CAQ"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CRAQ"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "CXII"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "EGHA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "FACT"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "FTRA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "GIX"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "GSRF"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "GUAC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HACQ"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HAVA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HCIC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HCMA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "HLXC"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "IPVV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "JENA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KBON"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KCHV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "KPET"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "LATA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "MGRT"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "OIM"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "OYSE"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "PCAP"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "QADR"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "RDAG"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "RNGT"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "RREV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SAMO"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SDHI"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SOCA"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "SVIV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "TVAI"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "TWLV"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "WLII"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "XSLL"
+    },
+    {
+      "reasons": [
+        "NO_COMPLETED_SESSION_BAR"
+      ],
+      "ticker": "XTER"
+    }
+  ],
+  "generated_at": "2026-09-14T23:45:32Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,
     "pit_universe_required": true
   },
   "schema_version": "v38.breadth.1",
-  "session_date": "2026-09-11",
-  "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated gap retry; verified corporate-action alias with exact Nasdaq/TradingView target-session fallback when required"
+  "session_date": "2026-09-14",
+  "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close"
 }
