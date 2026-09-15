@@ -151,6 +151,12 @@ def main() -> int:
     rotation_movers_visual = Path("assets/v38-rotation-movers-visual.js")
     rotation_movers_visual_enabled = _inject_external_extension(out, rotation_movers_visual)
 
+    # Legacy restored-experience intentionally re-renders Rotation several times
+    # after DOMContentLoaded. Keep the approved Rotation/Movers rendering stable
+    # through that legacy retry window without changing any other tab.
+    rotation_movers_owner = Path("assets/v38-rotation-movers-owner.js")
+    rotation_movers_owner_enabled = _inject_external_extension(out, rotation_movers_owner)
+
     restored_data = _copy_restored_data(out)
     report = validate_production_html(out.read_text(encoding="utf-8"))
 
@@ -185,6 +191,7 @@ def main() -> int:
                 "observation_ribbon_repair_extension": observation_ribbon_repair_enabled,
                 "status_truth_extension": status_truth_enabled,
                 "rotation_movers_visual_extension": rotation_movers_visual_enabled,
+                "rotation_movers_owner_extension": rotation_movers_owner_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
