@@ -11,9 +11,12 @@ main = _resilient.main
 
 # Keep the measured-rate contract visible at this public entrypoint for existing
 # static authority tests. FRED:DGS3MO remains the non-Yahoo measured fallback.
-# Published provenance fields retained by the resilient path.
+# Published provenance fields retained by the resilient path. A recent measured
+# rate may be reused with CACHED: provenance; there is no invented fixed fallback.
 RISK_FREE_SOURCE_FIELD = "risk_free_rate_source"
 RISK_FREE_OBSERVED_DATE_FIELD = "risk_free_rate_observed_date"
+RISK_FREE_MAX_AGE_DAYS = _legacy.RISK_FREE_MAX_AGE_DAYS
+CACHED_PROVENANCE_PREFIX = "CACHED:"
 _rate_from_yahoo_frame = _legacy._rate_from_yahoo_frame
 _previous_risk_free_rate = _legacy._previous_risk_free_rate
 _fred_risk_free_rate = _legacy._fred_risk_free_rate
