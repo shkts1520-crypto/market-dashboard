@@ -2,11 +2,18 @@
 from __future__ import annotations
 
 import argparse
+import re
 
 from playwright.sync_api import sync_playwright
 
 
 WIDTHS = (375, 390, 430)
+DYNAMIC_TABS = (
+    '#t-market', '#t-alloc', '#t-port', '#t-today', '#t-rotation', '#t-movers',
+    '#t-rs', '#t-weekly', '#t-options', '#t-post1',
+)
+ALL_TABS = DYNAMIC_TABS + ('#t-rules',)
+MOCK_TICKER = re.compile(r'\bM\d{3}\b')
 
 
 CANONICAL_SNAPSHOT_SCRIPT = r"""
@@ -38,6 +45,13 @@ def fetch_json(page, path: str):
     )
 
 
+def metric_display(view: dict, key: str) -> str:
+    for row in (view.get('daily') or {}).get('metrics') or []:
+        if row.get('key') == key:
+            return str(row.get('display') or '—')
+    return '—'
+
+
 def missing_details(section):
     return section.evaluate(
         """(root) => Array.from(root.querySelectorAll('*')).filter((el) => {
@@ -50,34 +64,31 @@ def missing_details(section):
               const childText = String(child.textContent || '').trim();
               return childText.includes('データ未取得') || childText.includes('DATA_REQUIRED') || childText.includes('STALE');
             });
-        }).slice(0, 30).map((el) => {
-          const card = el.closest('.card');
-          const heading = card && card.querySelector('h2,.hdr h2,.chd h2');
-          const allCards = Array.from(document.querySelectorAll('section .card'));
-          const cardIndex = card ? allCards.indexOf(card) : -1;
-          const source = Array.isArray(window.__v38CanonicalCardSnapshot)
-            ? window.__v38CanonicalCardSnapshot.find((row) => row && row.index === cardIndex)
-            : null;
-          return {
-            tag: el.tagName,
-            className: String(el.className || ''),
-            text: String(el.textContent || '').trim().slice(0, 300),
-            status: String(el.dataset && el.dataset.v38Status || ''),
-            cardIndex,
-            cardClass: card ? String(card.className || '') : '',
-            cardId: card ? String(card.id || '') : '',
-            cardTitle: heading ? String(heading.textContent || '').trim().slice(0, 160) : '',
-            cardBinding: card ? String(card.dataset.v38BindingKey || '') : '',
-            rememberedTitle: card ? String(card.dataset.v38CardTitle || '') : '',
-            canonicalTitle: card ? String(card.dataset.v38CanonicalTitle || '') : '',
-            source: source || null
-          };
-        })"""
+        }).slice(0, 30).map((el) => ({
+          tag: el.tagName,
+          className: String(el.className || ''),
+          text: String(el.textContent || '').trim().slice(0, 300),
+          status: String(el.dataset && el.dataset.v38Status || '')
+        }))"""
     )
 
 
+def assert_truth_bound(section, href: str, width: int) -> None:
+    if href == '#t-post1':
+        return
+    unbound = section.evaluate(
+        """(root) => Array.from(root.querySelectorAll(':scope > .card')).filter((card) => {
+          return !card.dataset.v38TruthSource;
+        }).map((card) => {
+          const h = card.querySelector('h2,.hdr h2,.chd h2');
+          return h ? h.textContent.trim() : card.className;
+        })"""
+    )
+    assert not unbound, (width, href, 'cards without truth provenance', unbound)
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify no false missing-data state in the production UI")
+    parser = argparse.ArgumentParser(description="Verify production UI contains authoritative data only")
     parser.add_argument("--url", default="http://127.0.0.1:8000/")
     args = parser.parse_args()
 
@@ -89,15 +100,23 @@ def main() -> int:
                 page.add_init_script(CANONICAL_SNAPSHOT_SCRIPT)
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
-                page.wait_for_timeout(4000)
+                page.wait_for_function("document.body.dataset.v38TruthBinding === 'ready'")
+                page.wait_for_timeout(300)
 
-                for href in (
-                    '#t-market', '#t-alloc', '#t-port', '#t-today', '#t-rotation', '#t-movers', '#t-rs',
-                    '#t-weekly', '#t-options', '#t-post1', '#t-rules',
-                ):
+                view = fetch_json(page, 'data/ui_view_model.json')
+                assert page.locator('#sarCol').inner_text().strip() == metric_display(view, 'nqsar')
+                assert metric_display(view, 'market_mode') in page.locator('#sarPill').inner_text()
+
+                for href in ALL_TABS:
                     page.locator(f'a.tabx[href="{href}"]').click()
                     section = page.locator(href)
                     assert section.is_visible()
+                    text = section.inner_text()
+                    if href in DYNAMIC_TABS:
+                        assert 'MOCK DATA' not in text.upper(), (width, href, 'MOCK DATA visible')
+                        assert 'モック' not in text, (width, href, 'mock label visible')
+                        assert not MOCK_TICKER.search(text), (width, href, 'mock ticker visible', MOCK_TICKER.search(text).group(0))
+                        assert_truth_bound(section, href, width)
                     details = missing_details(section)
                     invalid = [row for row in details if not (
                         row.get("status") in {"DATA_REQUIRED", "STALE"}
@@ -108,6 +127,24 @@ def main() -> int:
                     )]
                     if invalid:
                         raise AssertionError((width, href, invalid))
+
+                page.locator('a.tabx[href="#t-market"]').click()
+                market_text = page.locator('#t-market').inner_text()
+                assert metric_display(view, 'mc57') in market_text, (width, 'authoritative MC57 missing')
+                assert metric_display(view, 'nqsar') in market_text, (width, 'authoritative NQSAR missing')
+
+                positions = view.get('positions') or {}
+                if positions.get('status') == 'READY' and not (positions.get('rows') or []):
+                    pos_text = page.locator('#t-alloc').inner_text()
+                    assert '現在の保有' in pos_text and 'なし' in pos_text, (width, pos_text[:800])
+
+                weekly = view.get('weekly') or {}
+                if weekly.get('state'):
+                    assert str(weekly['state']) in page.locator('#t-weekly').inner_text()
+
+                options_text = page.locator('#t-options').inner_text()
+                assert 'Confidence' not in options_text
+                assert '上方向' not in options_text and '下方向' not in options_text
 
                 search = fetch_json(page, 'data/search_index.json')
                 options = fetch_json(page, 'data/options/index.json')
@@ -154,7 +191,7 @@ def main() -> int:
         finally:
             browser.close()
 
-    print('display completeness browser acceptance: OK')
+    print('production truth browser acceptance: OK')
     return 0
 
 
