@@ -14,6 +14,12 @@ DYNAMIC_TABS = (
 )
 ALL_TABS = DYNAMIC_TABS + ('#t-rules',)
 MOCK_TICKER = re.compile(r'\bM\d{3}\b')
+FORBIDDEN_PUBLIC_TEXT = (
+    'SOURCE_UNAVAILABLE',
+    '正本publish shard',
+    'full_v38_ready:',
+    'blockers:',
+)
 
 
 CANONICAL_SNAPSHOT_SCRIPT = r"""
@@ -114,6 +120,43 @@ def assert_options_upward_rankings(page, options: dict, width: int) -> None:
             assert locator.count() >= 1, (width, bucket, ticker, 'ranked ticker not rendered')
 
 
+def assert_public_render_contract(page, width: int) -> None:
+    body_text = page.locator('body').inner_text()
+    for token in FORBIDDEN_PUBLIC_TEXT:
+        assert token not in body_text, (width, 'forbidden public/internal text', token)
+
+    exact_placeholders = page.evaluate(
+        """() => Array.from(document.querySelectorAll('body *')).filter((el) => {
+          if (el.children.length) return false;
+          const text = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+          if (text !== '実データ' && text !== '正本の実データ') return false;
+          const style = getComputedStyle(el);
+          const rect = el.getBoundingClientRect();
+          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+        }).map((el) => ({tag: el.tagName, className: String(el.className || ''), text: el.textContent.trim()}))"""
+    )
+    assert not exact_placeholders, (width, 'public placeholder labels exposed', exact_placeholders)
+
+    page.locator('a.tabx[href="#t-market"]').click()
+    for key in ('mc57', 'breadth50', 'breadth200'):
+        card = page.locator(f'#t-market [data-v38-live-series="{key}"]')
+        assert card.count() == 1 and card.is_visible(), (width, key, 'required live trend card missing')
+        spark = card.locator(f'svg[data-v38-live-spark="{key}"]')
+        assert spark.count() == 1 and spark.is_visible(), (width, key, 'required live trend spark missing')
+        points = spark.locator('polyline').get_attribute('points') or ''
+        assert len(points.split()) >= 2, (width, key, 'live trend has fewer than two points')
+        assert card.get_attribute('data-v38-status') == 'READY', (width, key, card.get_attribute('data-v38-status'))
+
+    page.locator('a.tabx[href="#t-post1"]').click()
+    publish = page.locator('#t-post1')
+    assert publish.get_attribute('data-v38-publish-cards') == 'ready', (width, 'publish render contract not ready')
+    frames = publish.locator('iframe.postframe')
+    assert frames.count() >= 2, (width, 'Publish real cards missing', frames.count())
+    for index in range(2):
+        srcdoc = frames.nth(index).get_attribute('srcdoc') or ''
+        assert len(srcdoc.strip()) > 100, (width, index, 'Publish iframe srcdoc empty')
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify production UI contains authoritative data only")
     parser.add_argument("--url", default="http://127.0.0.1:8000/")
@@ -128,11 +171,13 @@ def main() -> int:
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
                 page.wait_for_function("document.body.dataset.v38TruthBinding === 'ready'")
+                page.wait_for_function("document.body.dataset.v38PublicRenderContract === 'ready'")
                 page.wait_for_timeout(300)
 
                 view = fetch_json(page, 'data/ui_view_model.json')
                 assert page.locator('#sarCol').inner_text().strip() == metric_display(view, 'nqsar')
                 assert metric_display(view, 'market_mode') in page.locator('#sarPill').inner_text()
+                assert_public_render_contract(page, width)
 
                 for href in ALL_TABS:
                     page.locator(f'a.tabx[href="{href}"]').click()
@@ -148,7 +193,6 @@ def main() -> int:
                     details = missing_details(section)
                     invalid = [row for row in details if not (
                         row.get("status") in {"DATA_REQUIRED", "STALE"}
-                        or "SOURCE_UNAVAILABLE" in row.get("text", "")
                         or "DATA_REQUIRED" in row.get("text", "")
                         or "STALE" in row.get("text", "")
                         or row.get("className") == "mut"
