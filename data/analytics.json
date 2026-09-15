@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-recovered-live-inputs-1.0.1",
   "coverage": 1.0,
-  "generated_at": "2026-09-15T02:06:38Z",
+  "generated_at": "2026-09-15T06:05:24Z",
   "industry": [
     {
       "group": "Gas Distributors",
@@ -11,9 +11,22 @@
         "CPK"
       ],
       "member_count": 18,
-      "ret20_avg": 2.032050894162535,
-      "ret63_avg": 1.1029849822903943,
+      "ret20_avg": 2.273734323781321,
+      "ret63_avg": 1.3675307962361305,
       "rs63_avg": 41.339576276814775,
+      "trade_input": false
+    },
+    {
+      "group": "Electrical Products",
+      "leaders": [
+        "CHPT",
+        "ATKR",
+        "AYI"
+      ],
+      "member_count": 44,
+      "ret20_avg": 0.1513582560466814,
+      "ret63_avg": 0.04142717608029549,
+      "rs63_avg": 23.2202076553541,
       "trade_input": false
     },
     {
@@ -38,8 +51,34 @@
       ],
       "member_count": 37,
       "ret20_avg": 0.10364798650094668,
-      "ret63_avg": 0.17603579612217155,
+      "ret63_avg": 0.1760357937716377,
       "rs63_avg": 76.78458222391278,
+      "trade_input": false
+    },
+    {
+      "group": "Miscellaneous Commercial Services",
+      "leaders": [
+        "PAY",
+        "CBZ",
+        "WEX"
+      ],
+      "member_count": 89,
+      "ret20_avg": 0.0940711393977483,
+      "ret63_avg": 0.18647088929238687,
+      "rs63_avg": 60.398817825596055,
+      "trade_input": false
+    },
+    {
+      "group": "Pharmaceuticals: Major",
+      "leaders": [
+        "AMLX",
+        "ARCT",
+        "OMER"
+      ],
+      "member_count": 166,
+      "ret20_avg": 0.09377957863122542,
+      "ret63_avg": 0.18479159845746157,
+      "rs63_avg": 67.97719542929848,
       "trade_input": false
     },
     {
@@ -69,19 +108,6 @@
       "trade_input": false
     },
     {
-      "group": "Electrical Products",
-      "leaders": [
-        "CHPT",
-        "ATKR",
-        "AYI"
-      ],
-      "member_count": 44,
-      "ret20_avg": 0.0680249212693793,
-      "ret63_avg": -0.027992219799839412,
-      "rs63_avg": 23.2202076553541,
-      "trade_input": false
-    },
-    {
       "group": "Integrated Oil",
       "leaders": [
         "CRGY",
@@ -105,19 +131,6 @@
       "ret20_avg": 0.05666067099986362,
       "ret63_avg": 0.03245675003397156,
       "rs63_avg": 53.382147838214784,
-      "trade_input": false
-    },
-    {
-      "group": "Pharmaceuticals: Major",
-      "leaders": [
-        "AMLX",
-        "ARCT",
-        "OMER"
-      ],
-      "member_count": 166,
-      "ret20_avg": 0.053682602756767825,
-      "ret63_avg": 0.187100866948245,
-      "rs63_avg": 67.97719542929848,
       "trade_input": false
     },
     {
@@ -173,6 +186,19 @@
       "trade_input": false
     },
     {
+      "group": "Packaged Software",
+      "leaders": [
+        "LIFE",
+        "NIQ",
+        "TEAM"
+      ],
+      "member_count": 213,
+      "ret20_avg": 0.02429630622591547,
+      "ret63_avg": 0.20370166888627908,
+      "rs63_avg": 70.3249592476858,
+      "trade_input": false
+    },
+    {
       "group": "Trucks/Construction/Farm Machinery",
       "leaders": [
         "BNC",
@@ -183,19 +209,6 @@
       "ret20_avg": 0.022707836790356126,
       "ret63_avg": 0.10187095509415191,
       "rs63_avg": 50.494343716101035,
-      "trade_input": false
-    },
-    {
-      "group": "Miscellaneous Commercial Services",
-      "leaders": [
-        "PAY",
-        "CBZ",
-        "WEX"
-      ],
-      "member_count": 89,
-      "ret20_avg": 0.02140866330324588,
-      "ret63_avg": 0.11436045162844863,
-      "rs63_avg": 60.398817825596055,
       "trade_input": false
     },
     {
@@ -245,22 +258,9 @@
         "FWDI"
       ],
       "member_count": 213,
-      "ret20_avg": 0.016777855285007675,
-      "ret63_avg": 0.020398637540792384,
+      "ret20_avg": 0.01678431072111309,
+      "ret63_avg": 0.020403264528031095,
       "rs63_avg": 78.99116689911668,
-      "trade_input": false
-    },
-    {
-      "group": "Packaged Software",
-      "leaders": [
-        "LIFE",
-        "NIQ",
-        "TEAM"
-      ],
-      "member_count": 213,
-      "ret20_avg": 0.012966696194811446,
-      "ret63_avg": 0.20562912080678103,
-      "rs63_avg": 70.3249592476858,
       "trade_input": false
     },
     {
@@ -610,7 +610,7 @@
       ],
       "member_count": 36,
       "ret20_avg": -0.01774927562955824,
-      "ret63_avg": 0.01360579397627612,
+      "ret63_avg": 0.013605791331352972,
       "rs63_avg": 56.49697814969782,
       "trade_input": false
     },
@@ -688,7 +688,7 @@
       ],
       "member_count": 11,
       "ret20_avg": -0.025416250151782647,
-      "ret63_avg": 0.01805746682061574,
+      "ret63_avg": 0.01805747338462986,
       "rs63_avg": 59.983728498372855,
       "trade_input": false
     },
@@ -818,7 +818,7 @@
       ],
       "member_count": 157,
       "ret20_avg": -0.04463800059569242,
-      "ret63_avg": -0.04680381837563874,
+      "ret63_avg": -0.04680381921436042,
       "rs63_avg": 39.37786411635785,
       "trade_input": false
     },
@@ -843,8 +843,8 @@
         "NAVI"
       ],
       "member_count": 62,
-      "ret20_avg": -0.047896986502479935,
-      "ret63_avg": -0.0009115034138862531,
+      "ret20_avg": -0.047888889413443526,
+      "ret63_avg": -0.000903358541035762,
       "rs63_avg": 51.93410339853854,
       "trade_input": false
     },
@@ -1091,7 +1091,7 @@
       ],
       "member_count": 24,
       "ret20_avg": -0.07308112310514876,
-      "ret63_avg": -0.05613665001124171,
+      "ret63_avg": -0.056136647172505764,
       "rs63_avg": 38.12696936825249,
       "trade_input": false
     },
@@ -1520,7 +1520,7 @@
       ],
       "member_count": 20,
       "ret20_avg": -0.15208883306587145,
-      "ret63_avg": -0.21987155905843028,
+      "ret63_avg": -0.21987155737619565,
       "rs63_avg": 12.859135285913528,
       "trade_input": false
     },
@@ -1575,9 +1575,22 @@
         "AWK"
       ],
       "member_count": 77,
-      "ret20_avg": 0.43129711278687766,
-      "ret63_avg": 0.22371947809543521,
+      "ret20_avg": 0.48779453789256794,
+      "ret63_avg": 0.28556135668015276,
       "rs63_avg": 37.74378672519835,
+      "trade_input": false
+    },
+    {
+      "group": "Commercial Services",
+      "leaders": [
+        "PAY",
+        "MAN",
+        "SBET"
+      ],
+      "member_count": 124,
+      "ret20_avg": 0.06705954439617413,
+      "ret63_avg": 0.17075945355381494,
+      "rs63_avg": 61.268461896076914,
       "trade_input": false
     },
     {
@@ -1594,6 +1607,19 @@
       "trade_input": false
     },
     {
+      "group": "Health Technology",
+      "leaders": [
+        "FTH",
+        "MRNA",
+        "TXG"
+      ],
+      "member_count": 451,
+      "ret20_avg": 0.030019522447807232,
+      "ret63_avg": 0.19378036516967395,
+      "rs63_avg": 68.59714218046894,
+      "trade_input": false
+    },
+    {
       "group": "Health Services",
       "leaders": [
         "AVAH",
@@ -1607,32 +1633,6 @@
       "trade_input": false
     },
     {
-      "group": "Health Technology",
-      "leaders": [
-        "FTH",
-        "MRNA",
-        "TXG"
-      ],
-      "member_count": 451,
-      "ret20_avg": 0.015260990307762973,
-      "ret63_avg": 0.1946215240543258,
-      "rs63_avg": 68.59714218046894,
-      "trade_input": false
-    },
-    {
-      "group": "Commercial Services",
-      "leaders": [
-        "PAY",
-        "MAN",
-        "SBET"
-      ],
-      "member_count": 124,
-      "ret20_avg": 0.014906638167055427,
-      "ret63_avg": 0.11900276845631076,
-      "rs63_avg": 61.268461896076914,
-      "trade_input": false
-    },
-    {
       "group": "Technology Services",
       "leaders": [
         "LIFE",
@@ -1640,8 +1640,8 @@
         "TEAM"
       ],
       "member_count": 347,
-      "ret20_avg": 0.00817283341452896,
-      "ret63_avg": 0.15582604677258066,
+      "ret20_avg": 0.015114675398904844,
+      "ret63_avg": 0.15464123073909566,
       "rs63_avg": 65.42135930893434,
       "trade_input": false
     },
@@ -1654,7 +1654,7 @@
       ],
       "member_count": 88,
       "ret20_avg": 0.002517224214196838,
-      "ret63_avg": 0.034042901769595145,
+      "ret63_avg": 0.0340429007813025,
       "rs63_avg": 50.3533240353324,
       "trade_input": false
     },
@@ -1680,7 +1680,7 @@
       ],
       "member_count": 36,
       "ret20_avg": -0.01774927562955824,
-      "ret63_avg": 0.01360579397627612,
+      "ret63_avg": 0.013605791331352972,
       "rs63_avg": 56.49697814969782,
       "trade_input": false
     },
@@ -1692,8 +1692,8 @@
         "BWIN"
       ],
       "member_count": 904,
-      "ret20_avg": -0.019578955706681084,
-      "ret63_avg": 0.030112973443943425,
+      "ret20_avg": -0.019576928331905174,
+      "ret63_avg": 0.030114509335874323,
       "rs63_avg": 52.45685876166763,
       "trade_input": false
     },
@@ -1711,6 +1711,19 @@
       "trade_input": false
     },
     {
+      "group": "Producer Manufacturing",
+      "leaders": [
+        "BNC",
+        "HNI",
+        "MLKN"
+      ],
+      "member_count": 210,
+      "ret20_avg": -0.03658251885032793,
+      "ret63_avg": -0.042975820809097676,
+      "rs63_avg": 32.01344823445741,
+      "trade_input": false
+    },
+    {
       "group": "Retail Trade",
       "leaders": [
         "ANF",
@@ -1721,19 +1734,6 @@
       "ret20_avg": -0.0486089464068885,
       "ret63_avg": -0.028216518845675758,
       "rs63_avg": 45.115541335083535,
-      "trade_input": false
-    },
-    {
-      "group": "Producer Manufacturing",
-      "leaders": [
-        "BNC",
-        "HNI",
-        "MLKN"
-      ],
-      "member_count": 210,
-      "ret20_avg": -0.054042836613191245,
-      "ret63_avg": -0.057396275025744056,
-      "rs63_avg": 32.01344823445741,
       "trade_input": false
     },
     {
@@ -1784,7 +1784,7 @@
       ],
       "member_count": 98,
       "ret20_avg": -0.06667106616010264,
-      "ret63_avg": -0.056770448218552406,
+      "ret63_avg": -0.05677044751618474,
       "rs63_avg": 40.20479752697326,
       "trade_input": false
     },
@@ -1823,7 +1823,7 @@
       ],
       "member_count": 227,
       "ret20_avg": -0.14522638624721576,
-      "ret63_avg": -0.1484218674286603,
+      "ret63_avg": -0.14842186727978995,
       "rs63_avg": 25.450101998562122,
       "trade_input": false
     }

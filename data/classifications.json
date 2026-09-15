@@ -6,7 +6,7 @@
     "revenue_ttm_available": 3224,
     "rs_rows": 3388
   },
-  "generated_at": "2026-09-15T02:06:38Z",
+  "generated_at": "2026-09-15T06:05:24Z",
   "rows": [
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -9075,7 +9075,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Real Estate Investment Trusts",
-      "market_cap": 130732125394.19675,
+      "market_cap": 131036302894.19675,
       "revenue_ttm": 9189768000.0,
       "structural_clinical_biotech": false,
       "ticker": "PLD"
@@ -12435,7 +12435,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Insurance Brokers/Services",
-      "market_cap": 63545561027.696785,
+      "market_cap": 66085560891.319176,
       "revenue_ttm": 17576000000.0,
       "structural_clinical_biotech": false,
       "ticker": "AON"
@@ -18659,7 +18659,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Packaged Software",
-      "market_cap": 26075753504.864582,
+      "market_cap": 26291020468.265408,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "BSP"
@@ -20995,7 +20995,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Packaged Software",
-      "market_cap": 313725647.0810811,
+      "market_cap": 313036147.3513514,
       "revenue_ttm": 154288000.0,
       "structural_clinical_biotech": false,
       "ticker": "GLOO"
@@ -23563,7 +23563,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Pharmaceuticals: Major",
-      "market_cap": 262247794.0,
+      "market_cap": 263441717.99999997,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
       "ticker": "NRSN"
@@ -23683,7 +23683,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Packaged Software",
-      "market_cap": 245435518.0,
+      "market_cap": 245306707.0,
       "revenue_ttm": 94678116.0,
       "structural_clinical_biotech": false,
       "ticker": "NXXT"

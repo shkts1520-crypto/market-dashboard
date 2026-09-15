@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-display-observation-history-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-15T02:06:38Z",
+  "generated_at": "2026-09-15T06:05:24Z",
   "pool_contract": "maxabs200<=1.50, close>=5, ddv20>=10M; historical pool",
   "schema_version": "v38.reversal_rs63_history.1",
   "series": [

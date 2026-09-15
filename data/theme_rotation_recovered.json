@@ -2,7 +2,7 @@
   "calculation_version": "v38-recovered-theme-1.1.0",
   "coverage": 1.0,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-15T02:06:38Z",
+  "generated_at": "2026-09-15T06:05:24Z",
   "rows": [
     {
       "leaders": [
@@ -306,7 +306,7 @@
       "major_theme": "10. エネルギー（化石燃料）",
       "member_count": 5,
       "raw_strength": 78.56609711991769,
-      "ret1_median": -0.033544286491970055,
+      "ret1_median": -0.01507961908219091,
       "ret20_median": 0.00971868645448315,
       "rs189_median": 82.79467680608364,
       "rs63_median": 74.33751743375174,
