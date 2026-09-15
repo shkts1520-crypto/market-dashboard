@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import sys
+
 import calculate_options_live_legacy as _legacy
 from calculate_options_resilient import main
 
@@ -23,4 +25,9 @@ def _risk_free_rate(yf, *, session_date: str, previous: dict):
 
 
 if __name__ == "__main__":
+    # Production no longer pre-filters Options to Core12/RS leaders. Keep the
+    # legacy --target-limit argument accepted for compatibility, but default the
+    # public entrypoint to the complete active stock universe.
+    if "--all-universe" not in sys.argv:
+        sys.argv.append("--all-universe")
     raise SystemExit(main())
