@@ -44,30 +44,13 @@
     return response.json();
   }
 
-  function appendExtension(src, name) {
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = false;
-    script.dataset.v38Extension = name;
-    document.head.appendChild(script);
-  }
-
-  function loadDisplayExtensions() {
-    appendExtension('assets/v38-observables.js', 'observables');
-    appendExtension('assets/v38-polish.js', 'polish');
-    appendExtension('assets/v38-final-ui.js', 'final-ui');
-  }
-
+  // Display extensions are injected exactly once by scripts/build_site.py.
+  // Do not dynamically append observables/polish/final-ui here: doing so runs
+  // DOM-rewriting renderers twice and can reorder or replace canonical content.
   global.V38Runtime = Object.freeze({
     missing,
     display,
     assessShard,
     loadJson
   });
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadDisplayExtensions, {once: true});
-  } else {
-    loadDisplayExtensions();
-  }
 })(window);
