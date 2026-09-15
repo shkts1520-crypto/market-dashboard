@@ -21,7 +21,7 @@ from v38.recovered_live_inputs import (
     write_json,
 )
 from v38.recovered_theme import write_theme_outputs
-from v38.stock_gap_repair import repair_failed_live_tickers
+from v38.stock_gap_repair_exact import repair_failed_live_tickers
 
 AUTHORITATIVE_INPUT_KINDS = {"state", "EXP_STATE_ID"}
 
@@ -60,6 +60,27 @@ def _resolve_theme_map(configured: str, root: Path) -> tuple[Path, bool]:
     return temp_path, True
 
 
+def _resolve_theme_overrides(configured: str, supplemental: str, root: Path) -> tuple[Path, bool]:
+    """Merge researched overrides for newly listed symbols without changing old rows."""
+    base_path = Path(configured)
+    supplement_path = Path(supplemental)
+    if not supplement_path.is_file():
+        return base_path, False
+    base = _load(base_path)
+    extra = _load(supplement_path)
+    base_overrides = base.get("overrides") if isinstance(base.get("overrides"), dict) else {}
+    extra_overrides = extra.get("overrides") if isinstance(extra.get("overrides"), dict) else {}
+    merged = dict(base_overrides)
+    merged.update(extra_overrides)
+    payload = dict(base)
+    payload["overrides"] = merged
+    payload["researched_at"] = str(extra.get("researched_at") or base.get("researched_at") or "")
+    payload["source_kind"] = str(extra.get("source_kind") or base.get("source_kind") or "")
+    temp_path = root / ".theme_manual_overrides_recovered.json"
+    temp_path.write_text(json.dumps(payload, ensure_ascii=False, sort_keys=True), encoding="utf-8")
+    return temp_path, True
+
+
 def _live_work_dir() -> Path | None:
     explicit = os.environ.get("V38_LIVE_WORK_DIR")
     if explicit:
@@ -79,6 +100,7 @@ def main() -> int:
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--theme-map", default="config/theme_s2t.json.gz.b64")
     parser.add_argument("--theme-overrides", default="config/theme_manual_overrides.json")
+    parser.add_argument("--theme-overrides-supplemental", default="config/theme_manual_overrides_supplemental.json")
     parser.add_argument("--no-fundamentals", action="store_true")
     parser.add_argument("--no-intraday", action="store_true")
     args = parser.parse_args()
@@ -150,6 +172,11 @@ def main() -> int:
     write_json(root / "classifications.json", classifications)
 
     theme_map_path, cleanup_theme_map = _resolve_theme_map(args.theme_map, root)
+    theme_overrides_path, cleanup_theme_overrides = _resolve_theme_overrides(
+        args.theme_overrides,
+        args.theme_overrides_supplemental,
+        root,
+    )
     try:
         membership_path, recovered_rotation_path, _neutral_theme_scores_path = write_theme_outputs(
             root,
@@ -157,11 +184,13 @@ def main() -> int:
             session_date=session,
             generated_at=generated_at,
             theme_map_path=theme_map_path,
-            theme_overrides_path=args.theme_overrides,
+            theme_overrides_path=theme_overrides_path,
         )
     finally:
         if cleanup_theme_map:
             theme_map_path.unlink(missing_ok=True)
+        if cleanup_theme_overrides:
+            theme_overrides_path.unlink(missing_ok=True)
 
     theme_membership = _load(membership_path)
     theme_scores_path = write_strict_loo_peer_theme_scores(

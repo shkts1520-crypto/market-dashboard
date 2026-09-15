@@ -60,12 +60,7 @@ def _is_production_context() -> bool:
 
 
 def _materialize_restored_experience() -> bool:
-    """Generate the recovered pre-v5 search/VWAP/chart payloads in production only.
-
-    Pull-request and local verification stay network-free. Production already has
-    current-session RS/Rotation/Options shards at this point, so this step only
-    restores display data and never changes the adopted trading gates.
-    """
+    """Generate recovered search/VWAP/chart payloads in production only."""
     script = Path("scripts/materialize_restored_experience.py")
     if not _is_production_context() or not script.is_file():
         return False
@@ -95,25 +90,21 @@ def _copy_restored_data(out: Path) -> dict[str, bool]:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(
-        description="Build live-bound V38 production UI from canonical v5"
-    )
+    p = argparse.ArgumentParser(description="Build live-bound V38 production UI from canonical v5")
     p.add_argument("--canonical", default="V38_Command_Center_mock_v5.html")
     p.add_argument("--output", default="index.html")
     args = p.parse_args()
 
     restored_materialized = _materialize_restored_experience()
     out = build_site(args.canonical, args.output)
+
     baseline_shell = Path("assets/v38-baseline-shell.js")
     baseline_shell_enabled = _copy_asset(out, baseline_shell)
     rules_0905_enabled = _restore_rules_0905(out, Path("assets/v38-rules-0905.html"))
 
-    # Extensions load after the canonical v5 shell and only bind acquired data.
-    # visual_fidelity runs after data_repair so it can restore the original MC57
-    # temperature bands, robust display-only diagnostics and VIX fear-cycle card.
-    # detail_restore restores the original VIX sequence-condition panel. The
-    # historical-experience extensions then replace only the user-approved
-    # Rotation / Options / search / VWAP surfaces with the recovered pre-v5 form.
+    # The canonical v5 HTML/CSS is the visual authority. Extensions below may
+    # bind live values or add user-approved post-09/05 features, but they must not
+    # rebuild the page geometry. Each extension is injected exactly once here.
     observables = Path("assets/v38-observables.js")
     observables_enabled = _inject_external_extension(out, observables)
     polish = Path("assets/v38-polish.js")
@@ -129,9 +120,7 @@ def main() -> int:
     detail_restore = Path("assets/v38-detail-restore.js")
     detail_restore_enabled = _inject_external_extension(out, detail_restore)
 
-    # Keep the old chart asset available in the repository but do not bind it when
-    # the recovered chart exists. The recovered chart owns the same modal id and
-    # adds 63/252/All-time VWAP without Direction/Confidence guesses.
+    # Recovered in-page chart is the only chart-modal implementation when present.
     restored_chart = Path("assets/v38-restored-chart.js")
     restored_chart_enabled = _inject_external_extension(out, restored_chart)
     if restored_chart_enabled:
@@ -140,37 +129,29 @@ def main() -> int:
         options_chart = Path("assets/v38-options-chart.js")
         options_chart_enabled = _inject_external_extension(out, options_chart)
 
+    # Restores approved Rotation / Options / Search / VWAP surfaces using the
+    # canonical component vocabulary and responsive layout.
     restored_experience = Path("assets/v38-restored-experience.js")
     restored_experience_enabled = _inject_external_extension(out, restored_experience)
 
-    # Final visual-only layer. It runs after restored_experience so the recovered
-    # data DOM is already present, then restores the canonical card proportions,
-    # spacing and table density without changing calculations or data contracts.
-    source_fidelity = Path("assets/v38-source-fidelity.js")
-    source_fidelity_enabled = _inject_external_extension(out, source_fidelity)
+    # DO NOT bind v38-source-fidelity.js or its compatibility contract here.
+    # That layer rebuilds Rotation as a fixed 1680x1080 canvas and uses broad
+    # !important overrides, defeating the canonical responsive visual source.
+    source_fidelity_enabled = False
+    source_fidelity_contract_enabled = False
 
-    # The source Rotation renderer carries a hidden compatibility card used by the
-    # existing acceptance contract. The visual wrapper must never make that data
-    # contract disappear, so restore it invisibly after source_fidelity runs.
-    source_fidelity_contract = Path("assets/v38-source-fidelity-contract.js")
-    source_fidelity_contract_enabled = _inject_external_extension(out, source_fidelity_contract)
-
-    # Search covers the full stock universe while local restored candle history is
-    # deliberately limited to priority names. For names outside that local cache,
-    # use TradingView's live Advanced Chart rather than presenting a false
-    # "not acquired" state. This is display fallback only; no trading rules change.
     data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")
     data_completeness_fallback_enabled = _inject_external_extension(out, data_completeness_fallback)
 
-    # Older canonical ribbon text can survive after the recovered regime-history
-    # card is already READY. Repair only that display label from the same current
-    # display-observations payload so browser completeness cannot report a stale
-    # DATA_REQUIRED string after the authoritative observation has been restored.
     observation_ribbon_repair = Path("assets/v38-observation-ribbon-repair.js")
     observation_ribbon_repair_enabled = _inject_external_extension(out, observation_ribbon_repair)
 
-    restored_data = _copy_restored_data(out)
+    # Runs last and only removes stale scaffold states when the authoritative
+    # section is already READY. True DATA_REQUIRED / STALE states remain visible.
+    status_truth = Path("assets/v38-status-truth.js")
+    status_truth_enabled = _inject_external_extension(out, status_truth)
 
+    restored_data = _copy_restored_data(out)
     report = validate_production_html(out.read_text(encoding="utf-8"))
 
     print(
@@ -202,6 +183,7 @@ def main() -> int:
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
                 "observation_ribbon_repair_extension": observation_ribbon_repair_enabled,
+                "status_truth_extension": status_truth_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },

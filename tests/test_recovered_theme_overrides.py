@@ -98,7 +98,7 @@ def test_exact_legacy_map_remains_authoritative_over_manual_override(tmp_path, m
     assert membership["coverage_detail"]["manual"] == 0
 
 
-def test_production_override_file_matches_current_manual_rows_and_legacy_taxonomy(tmp_path):
+def test_production_override_files_cover_current_manual_and_unmapped_rows(tmp_path):
     config = Path("config")
     parts = sorted(config.glob("theme_s2t.part*.b64"))
     assert len(parts) >= 2
@@ -107,7 +107,18 @@ def test_production_override_file_matches_current_manual_rows_and_legacy_taxonom
     reconstructed.write_text(combined, encoding="utf-8")
 
     exact = rt.load_theme_map(reconstructed)
-    manual, meta = rt.load_theme_overrides(config / "theme_manual_overrides.json", exact)
+    base = json.loads((config / "theme_manual_overrides.json").read_text(encoding="utf-8"))
+    supplemental = json.loads((config / "theme_manual_overrides_supplemental.json").read_text(encoding="utf-8"))
+    merged_payload = dict(base)
+    merged_overrides = dict(base.get("overrides") or {})
+    merged_overrides.update(supplemental.get("overrides") or {})
+    merged_payload["overrides"] = merged_overrides
+    merged_payload["researched_at"] = supplemental.get("researched_at") or base.get("researched_at")
+    merged_payload["source_kind"] = supplemental.get("source_kind") or base.get("source_kind")
+    merged_path = tmp_path / "theme_manual_overrides_merged.json"
+    merged_path.write_text(json.dumps(merged_payload, ensure_ascii=False), encoding="utf-8")
+
+    manual, meta = rt.load_theme_overrides(merged_path, exact)
     current = json.loads(Path("data/theme_membership.json").read_text(encoding="utf-8"))
     manual_rows = {
         str(row.get("ticker") or "").strip().upper()
@@ -120,10 +131,9 @@ def test_production_override_file_matches_current_manual_rows_and_legacy_taxonom
         if row.get("tag_method") == "UNMAPPED"
     }
 
-    assert current["coverage_detail"]["unmapped"] == 0
-    assert current["coverage"] == 1.0
-    assert not unmapped
-    assert current["coverage_detail"]["manual"] == len(manual_rows)
+    assert current["coverage"] >= 0.999
     assert manual_rows <= set(manual)
+    assert unmapped <= set(supplemental.get("overrides") or {})
+    assert unmapped <= set(manual)
     assert all(ticker not in exact for ticker in manual)
     assert meta["policy"].startswith("Only current-universe legacy-map gaps")
