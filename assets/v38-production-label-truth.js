@@ -1,230 +1,44 @@
 (function(){
-  'use strict';
-
-  const SECTION_IDS = [
-    't-market', 't-alloc', 't-port', 't-today', 't-rotation',
-    't-movers', 't-rs', 't-weekly', 't-options', 't-post1'
-  ];
-  const TREND_SPECS = [
-    {key:'mc57', title:'MC57推移', source:'data/ui_view_model.json.daily.mc57_detail.series.mc57'},
-    {key:'breadth50', title:'ブレッドス推移（50', source:'data/ui_view_model.json.daily.history.breadth50'},
-    {key:'breadth200', title:'ブレッドス推移（200', source:'data/ui_view_model.json.daily.history.breadth200'}
-  ];
-  const snapshots = {trend:{}, publish:[]};
-
-  const replacements = [
-    ['回復時点の順位で再計算する前提のモック。', '回復時点の順位で再計算する前提。現行正本producer未復元。'],
-    ['全Active Universeを走査。Direction/Confidence予測ではなく、実測のWall / Gamma Flip / GEX配置で期間別に抽出。', 'RS21・63・189上位50の重複除外対象を走査。実測のWall / Gamma Flip / GEX配置で期間別に抽出。'],
-    ['SOURCE_UNAVAILABLE', 'DATA_REQUIRED'],
-    ['MOCK DATA', ''],
-    ['Mock Data', ''],
-    ['モックデータ', '旧表示値は使用しません'],
-    ['モック', '旧表示値']
-  ];
-
-  function title(card) {
-    const h = card && card.querySelector('h2,.hdr h2,.chd h2');
-    return h ? String(h.textContent || '').replace(/\s+/g, ' ').trim() : '';
-  }
-
-  function marketCards() {
-    const section = document.getElementById('t-market');
-    return section ? Array.from(section.querySelectorAll(':scope > .card')) : [];
-  }
-
-  function findTrendCard(spec) {
-    return marketCards().find((card) => title(card).includes(spec.title)) || null;
-  }
-
-  function captureLiveBoundOriginals() {
-    if (document.body?.dataset?.v38BindingStatus !== 'ready') return;
-    TREND_SPECS.forEach((spec) => {
-      if (snapshots.trend[spec.key]) return;
-      const card = findTrendCard(spec);
-      if (card) snapshots.trend[spec.key] = card.cloneNode(true);
-    });
-    if (!snapshots.publish.length) {
-      const wraps = Array.from(document.querySelectorAll('#t-post1 .postwrap'));
-      if (wraps.length >= 2 && wraps.every((wrap) => wrap.querySelector('iframe.postframe'))) {
-        snapshots.publish = wraps.map((wrap) => wrap.cloneNode(true));
-      }
-    }
-  }
-
-  function scrubText(root) {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach((textNode) => {
-      let text = String(textNode.nodeValue || '');
-      let next = text;
-      replacements.forEach(([from, to]) => {
-        next = next.split(from).join(to);
-      });
-      if (next !== text) textNode.nodeValue = next;
-    });
-  }
-
-  function removeInternalPublicLabels(root) {
-    const leaves = Array.from(root.querySelectorAll('*')).filter((el) => el.children.length === 0);
-    leaves.forEach((el) => {
-      const text = String(el.textContent || '').replace(/\s+/g, ' ').trim();
-      if (!text) return;
-      if (text === '実データ' || text === '正本の実データ' || text === '正本publish shard') {
-        el.remove();
-        return;
-      }
-      if (/^full_v38_ready:\s*(?:true|false)\s*\/\s*blockers:\s*\d+$/i.test(text)) {
-        el.remove();
-        return;
-      }
-      if (text === '正本データ') el.textContent = 'LIVE DATA';
-    });
-  }
-
-  function valuesFor(vm, key) {
-    const daily = (vm && vm.daily) || {};
-    if (key === 'mc57') {
-      const detail = daily.mc57_detail || {};
-      const series = (detail.series && detail.series.mc57) || detail.history || [];
-      return series.map((row) => Number(row && row.value)).filter(Number.isFinite);
-    }
-    const field = key === 'breadth50' ? 'breadth50' : 'breadth200';
-    return (daily.history || []).map((row) => Number(row && row[field])).filter(Number.isFinite);
-  }
-
-  function renderLiveSpark(card, values, spec) {
-    if (!card) return false;
-    const clean = values.filter(Number.isFinite).slice(-504);
-    if (clean.length < 2) {
-      card.dataset.v38LiveSeries = 'DATA_REQUIRED';
-      card.dataset.v38Status = 'DATA_REQUIRED';
-      const missing = document.createElement('div');
-      missing.className = 'mut v38-live-series-missing';
-      missing.dataset.v38Status = 'DATA_REQUIRED';
-      missing.textContent = 'DATA_REQUIRED · 推移データ不足';
-      card.appendChild(missing);
-      return false;
-    }
-
-    let svg = card.querySelector('svg');
-    if (!svg) {
-      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.classList.add('v38-live-spark');
-      svg.style.width = '100%';
-      svg.style.height = '64px';
-      svg.style.display = 'block';
-      card.appendChild(svg);
-    }
-    svg.replaceChildren();
-    svg.setAttribute('viewBox', '0 0 100 28');
-    svg.setAttribute('preserveAspectRatio', 'none');
-    svg.dataset.v38LiveSpark = spec.key;
-    svg.setAttribute('aria-label', `${spec.title} 504-session live history`);
-
-    const min = Math.min(...clean);
-    const max = Math.max(...clean);
-    const span = max - min || 1;
-    const points = clean.map((value, index) => {
-      const x = clean.length === 1 ? 0 : (index / (clean.length - 1)) * 100;
-      const y = 26 - ((value - min) / span) * 24;
-      return `${x.toFixed(3)},${y.toFixed(3)}`;
-    }).join(' ');
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    line.setAttribute('points', points);
-    line.setAttribute('fill', 'none');
-    line.setAttribute('stroke', 'currentColor');
-    line.setAttribute('stroke-width', '1.7');
-    line.setAttribute('vector-effect', 'non-scaling-stroke');
-    svg.appendChild(line);
-
-    card.dataset.v38LiveSeries = spec.key;
-    card.dataset.v38TruthSource = spec.source;
-    card.dataset.v38Status = 'READY';
-    return true;
-  }
-
-  function restoreTrends(vm) {
-    TREND_SPECS.forEach((spec) => {
-      const snap = snapshots.trend[spec.key];
-      const current = findTrendCard(spec);
-      if (!snap || !current) return;
-      const restored = snap.cloneNode(true);
-      current.replaceWith(restored);
-      renderLiveSpark(restored, valuesFor(vm, spec.key), spec);
-    });
-  }
-
-  function restorePublish() {
-    if (snapshots.publish.length < 2) return;
-    const current = Array.from(document.querySelectorAll('#t-post1 .postwrap'));
-    if (current.length < 2) return;
-    snapshots.publish.forEach((snap, index) => {
-      if (!current[index]) return;
-      const restored = snap.cloneNode(true);
-      restored.dataset.v38TruthSource = 'canonical-publish-card';
-      restored.dataset.v38Status = 'READY';
-      restored.dataset.v38PublishCard = String(index + 1);
-      current[index].replaceWith(restored);
-    });
-    const section = document.getElementById('t-post1');
-    if (section) {
-      section.dataset.v38TruthSource = 'canonical-publish-cards';
-      section.dataset.v38Status = 'READY';
-      section.dataset.v38PublishCards = 'ready';
-    }
-  }
-
-  function markSections(root) {
-    SECTION_IDS.forEach((id) => {
-      const section = root.getElementById(id);
-      if (!section) return;
-      if (!section.dataset.v38TruthSource) section.dataset.v38TruthSource = `data/ui_view_model.json#${id}`;
-      if (!section.dataset.v38Status) section.dataset.v38Status = 'READY';
-    });
-  }
-
-  function preserveOptionsUpward(root) {
-    const upward = root.querySelector('#t-options .v38-options-upward-card');
-    if (!upward) return;
-    upward.dataset.v38TruthSource = 'data/options/index.json.upward_rankings';
-    upward.dataset.v38Status = 'READY';
-  }
-
-  function finalize(vm) {
-    restoreTrends(vm || window.V38UiViewModel || {});
-    restorePublish();
-    SECTION_IDS.forEach((id) => {
-      const section = document.getElementById(id);
-      if (!section) return;
-      scrubText(section);
-      removeInternalPublicLabels(section);
-    });
-    markSections(document);
-    preserveOptionsUpward(document);
-    document.body.dataset.v38LegacyMockLabels = '0';
-    document.body.dataset.v38PublicRenderContract = 'ready';
-  }
-
-  function reconcile(vm) {
-    let attempts = 0;
-    const poll = () => {
-      if (document.body?.dataset?.v38TruthBinding === 'ready') {
-        finalize(vm);
-        window.setTimeout(() => finalize(vm), 120);
-        return;
-      }
-      attempts += 1;
-      if (attempts < 80) window.setTimeout(poll, 50);
-    };
-    poll();
-  }
-
-  function start(event) {
-    captureLiveBoundOriginals();
-    reconcile((event && event.detail) || window.V38UiViewModel || {});
-  }
-
-  document.addEventListener('v38:view-ready', start, {once: true});
-  if (window.V38UiViewModel) start({detail: window.V38UiViewModel});
+'use strict';
+const IDS=['t-market','t-alloc','t-port','t-today','t-rotation','t-movers','t-rs','t-weekly','t-options','t-post1'];
+const VIEW={ 't-market':'daily','t-alloc':'positions','t-port':'core12','t-today':'setups','t-rotation':'rotation','t-movers':'movers','t-rs':'rs','t-weekly':'weekly','t-options':'options','t-post1':'publish'};
+const SECTORS=['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY'];
+const n=v=>v===null||v===undefined||v===''?null:(Number.isFinite(Number(v))?Number(v):null);
+const f=(v,d=1)=>n(v)===null?'—':Number(v).toFixed(d);
+const pct=(v,d=1)=>n(v)===null?'—':`${Number(v)>0?'+':''}${(Number(v)*100).toFixed(d)}%`;
+const pval=(v,d=1)=>n(v)===null?'—':`${Number(v).toFixed(d)}%`;
+function metrics(d){return Object.fromEntries((((d||{}).metrics)||[]).filter(x=>x&&x.key).map(x=>[x.key,x]));}
+function md(m,k){return m[k]&&m[k].status==='READY'?String(m[k].display||'—'):'—';}
+function summary(d,s){return ((d||{}).market_summaries||{})[s]||{};}
+function series(d,s){const x=((d||{}).market_series||{})[s];return Array.isArray(x)?x:[];}
+function title(c){if(!c)return'';if(c.dataset&&c.dataset.v38CardTitle)return String(c.dataset.v38CardTitle).replace(/\s+/g,' ').trim();const h=c.querySelector('h2,.hdr h2,.chd h2');return h?String(h.textContent||'').replace(/\s+/g,' ').trim():'';}
+function cards(id){const s=document.getElementById(id);return s?Array.from(s.querySelectorAll(':scope > .card')):[];}
+function card(id,q){return cards(id).find(c=>title(c).includes(q))||null;}
+function el(tag,cls,text){const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=String(text);return x;}
+function mark(x,src,status='READY'){if(!x)return;x.dataset.v38TruthSource=src;x.dataset.v38Status=status;}
+function clear(c,h,sub){if(!c)return;c.replaceChildren();c.appendChild(el('h2','',h));if(sub)c.appendChild(el('div','sub',sub));}
+function rows(c,h,data,src,opt={}){if(!c)return false;clear(c,h,opt.sub);const box=el('div','v38-final-list');(data||[]).forEach(r=>{const line=el('div','v38-final-row');line.append(el('span','',r[0]),el('b','',r[1]===null||r[1]===undefined||r[1]===''?'—':r[1]));box.appendChild(line);});if(!data||!data.length)box.appendChild(el('div','mut',opt.empty||'該当なし'));c.appendChild(box);mark(c,src,opt.status||'READY');return true;}
+function style(){if(document.getElementById('v38-authoritative-final-style'))return;const s=el('style');s.id='v38-authoritative-final-style';s.textContent='.v38-final-list{display:flex;flex-direction:column;gap:4px;margin-top:6px}.v38-final-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:5px 0;border-bottom:1px solid #d5d1c655;font-size:11px}.v38-final-row:last-child{border-bottom:0}.v38-final-row b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}.v38-final-rank{display:grid;grid-template-columns:30px 64px minmax(0,1fr);gap:6px;padding:6px 0;border-bottom:1px solid #d5d1c655;font-size:10px}.v38-final-rank b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}.v38-final-spark{width:100%;height:72px;display:block;margin-top:8px}.v38-publish-frame{display:block;width:100%;min-height:510px;border:0;background:#e9e7df;border-radius:12px}';document.head.appendChild(s);}
+function spark(c,vals,key){const a=(vals||[]).map(Number).filter(Number.isFinite).slice(-504);if(a.length<2)return false;const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('v38-final-spark');svg.dataset.v38LiveSpark=key;svg.setAttribute('viewBox','0 0 100 28');svg.setAttribute('preserveAspectRatio','none');const lo=Math.min(...a),hi=Math.max(...a),span=hi-lo||1;const pts=a.map((v,i)=>`${(i/Math.max(1,a.length-1)*100).toFixed(3)},${(26-(v-lo)/span*24).toFixed(3)}`).join(' ');const line=document.createElementNS(svg.namespaceURI,'polyline');line.setAttribute('points',pts);line.setAttribute('fill','none');line.setAttribute('stroke','currentColor');line.setAttribute('stroke-width','1.7');line.setAttribute('vector-effect','non-scaling-stroke');svg.appendChild(line);c.appendChild(svg);return true;}
+function trend(c,h,current,vals,key,src){if(!c)return;clear(c,h);const box=el('div','v38-final-list');[['Current',current],['History sessions',String(vals.length)]].forEach(r=>{const x=el('div','v38-final-row');x.append(el('span','',r[0]),el('b','',r[1]));box.appendChild(x);});c.appendChild(box);const ok=spark(c,vals,key);c.dataset.v38LiveSeries=ok?key:'DATA_REQUIRED';mark(c,src,ok?'READY':'DATA_REQUIRED');if(!ok)c.appendChild(el('div','mut','DATA_REQUIRED · 推移データ不足'));}
+function ratio(a,b){const m=new Map();(b||[]).forEach(r=>{const v=n(r&&r.close);if(r&&r.date&&v!==null)m.set(r.date,v);});return(a||[]).map(r=>{const l=n(r&&r.close),rr=r&&m.get(r.date);return l!==null&&n(rr)!==null&&rr!==0?{date:r.date,value:l/rr}:null;}).filter(Boolean);}
+function derived(c,h,data,current,src){if(!c||data.length<2)return;clear(c,h);const box=el('div','v38-final-list');const rr=el('div','v38-final-row');rr.append(el('span','','Current'),el('b','',current));box.appendChild(rr);c.appendChild(box);const ok=spark(c,data.map(x=>x.value),h);mark(c,src,ok?'READY':'DATA_REQUIRED');}
+function banner(vm){const d=(vm||{}).daily||{},m=metrics(d),s=document.getElementById('t-market');if(!s)return;const b=s.querySelector(':scope > .banner');if(b){b.replaceChildren(el('div','lab','マーケットステータス（MC57）'),el('div','val',md(m,'mc57')),el('div','st','最新正本値'));const aux=el('div','aux');const a=el('div','v38-final-row');a.append(el('span','','50MA Breadth'),el('b','',md(m,'breadth50')));const z=el('div','v38-final-row');z.append(el('span','','F2'),el('b','',md(m,'f2')));aux.append(a,z);b.appendChild(aux);mark(b,'data/ui_view_model.json.daily.metrics',m.mc57&&m.mc57.status==='READY'?'READY':'DATA_REQUIRED');}s.querySelectorAll(':scope > .ribwrap').forEach(r=>{r.replaceChildren(el('div','riblab','レジーム履歴　DATA_REQUIRED（同一定義の正本履歴未取得）'));mark(r,'none:regime-history','DATA_REQUIRED');});}
+function trends(vm){const d=(vm||{}).daily||{},m=metrics(d),hist=Array.isArray(d.history)?d.history:[],detail=d.mc57_detail||{},mc=((detail.series||{}).mc57)||detail.history||[];trend(card('t-market','MC57推移'),'MC57推移 Market Status History',md(m,'mc57'),mc.map(r=>n(r&&(r.value!==undefined?r.value:r.mc57))).filter(v=>v!==null),'mc57','data/ui_view_model.json.daily.mc57_detail.series.mc57');trend(card('t-market','ブレッドス推移（50'),'ブレッドス推移（50日線上の割合）',md(m,'breadth50'),hist.map(r=>n(r&&r.breadth50)).filter(v=>v!==null),'breadth50','data/ui_view_model.json.daily.history.breadth50');trend(card('t-market','ブレッドス推移（200'),'ブレッドス推移（200日線上の割合）',md(m,'breadth200'),hist.map(r=>n(r&&r.breadth200)).filter(v=>v!==null),'breadth200','data/ui_view_model.json.daily.history.breadth200');}
+function daily(vm){const d=(vm||{}).daily||{},hist=Array.isArray(d.history)?d.history:[],prev=hist.length>1?hist.at(-2):null,cur=hist.at(-1)||null;if(prev&&cur){const out=[];[['50MA Breadth','breadth50',1],['200MA Breadth','breadth200',1],['F1','f1',100],['F2','f2',100],['F3','f3',100]].forEach(([lab,k,scale])=>{const a=n(cur[k]),b=n(prev[k]);out.push([lab,a===null?'—':`${(a*scale).toFixed(1)}%${b===null?'':` / 前回比 ${((a-b)*scale)>=0?'+':''}${((a-b)*scale).toFixed(1)}pt`}`]);});rows(card('t-market','前回からの変化'),'前回からの変化 Change Log',out,'data/ui_view_model.json.daily.history');}
+const ld=d.leader_diagnostics||{};if(n(ld.advancing_1d_pct)!==null||ld.triple_rs85_count!==undefined)rows(card('t-market','リーダーの強さ'),'リーダーの強さ Leader Temperature',[['RS63/126/189 全て85以上',ld.triple_rs85_count??'—'],['52週高値まで5%以内',ld.near_52w_high_count??'—'],['当日上昇銘柄比率',n(ld.advancing_1d_pct)===null?'—':pval(ld.advancing_1d_pct)]],'data/ui_view_model.json.daily.leader_diagnostics');const top=Array.isArray(ld.top_ret20)?ld.top_ret20:[];if(top.length)rows(card('t-market','先導株モメンタム'),'先導株モメンタム・ラン Leader Momentum',top.slice(0,10).map((r,i)=>[`${i+1}. ${r.ticker||'—'}`,`${pct(r.ret20)} / RS63 ${f(r.rs63)} / RS189 ${f(r.rs189)}`]),'data/ui_view_model.json.daily.leader_diagnostics.top_ret20');
+const sums=d.market_summaries||{},has=ss=>ss.every(s=>n((sums[s]||{}).close)!==null);if(has(['HYG','IEF','^TNX','^FVX']))rows(card('t-market','信用と金利'),'信用と金利 Credit & Rates',[['HYG',f(sums.HYG.close,2)],['IEF',f(sums.IEF.close,2)],['米10年金利',f(sums['^TNX'].close,2)+'%'],['米5年金利',f(sums['^FVX'].close,2)+'%']],'data/ui_view_model.json.daily.market_summaries');const cr=ratio(series(d,'HYG'),series(d,'IEF'));if(cr.length>1)derived(card('t-market','クレジット推移'),'クレジット推移（HYG / IEF）',cr,f(cr.at(-1).value,3),'data/ui_view_model.json.daily.market_series:HYG/IEF');const ro=ratio(series(d,'XLY'),series(d,'XLP'));if(ro.length>1)derived(card('t-market','攻守ローテーション'),'攻守ローテーション（XLY / XLP）',ro,f(ro.at(-1).value,3),'data/ui_view_model.json.daily.market_series:XLY/XLP');const vx=series(d,'^VIX').map(r=>({date:r.date,value:n(r.close)})).filter(r=>r.value!==null);if(vx.length>1)derived(card('t-market','VIX反転シーケンス'),'VIX反転シーケンス VIX Fear Cycle',vx,f(vx.at(-1).value,2),'data/ui_view_model.json.daily.market_series.^VIX');const term=ratio(series(d,'^VIX'),series(d,'^VIX3M'));if(term.length>1)derived(card('t-market','VIX期間構造'),'VIX期間構造（1M / 3M）',term,f(term.at(-1).value,3),'data/ui_view_model.json.daily.market_series:^VIX/^VIX3M');const vix=n((sums['^VIX']||{}).close),vxn=n((sums['^VXN']||{}).close);if(vix!==null||vxn!==null)rows(card('t-market','オプション想定変動幅'),'オプション想定変動幅 Expected Move',[['SPY 約1カ月',vix===null?'—':`±${(vix/Math.sqrt(12)).toFixed(1)}%`],['QQQ 約1カ月',vxn===null?'—':`±${(vxn/Math.sqrt(12)).toFixed(1)}%`]],'data/ui_view_model.json.daily.market_summaries:VIX/VXN',{sub:'年率IV÷√12の表示用目安'});
+const dg=d.market_diagnostics||{},dr=Array.isArray(dg.series)?dg.series:[];if(dg.status==='READY'&&dr.length>1){[['売買代金 参加度','売買代金 参加度 Volume Participation','volume_participation'],['集積／分散','集積／分散 Accumulation / Distribution','up_down_dollar_ratio'],['騰落ライン（マクレラン','騰落ライン（マクレラン）','mcclellan']].forEach(([needle,h,k])=>{const a=dr.map(r=>({date:r.date,value:n(r[k])})).filter(r=>r.value!==null);if(a.length>1)derived(card('t-market',needle),h,a,f(a.at(-1).value,k==='mcclellan'?1:2),`data/ui_view_model.json.daily.market_diagnostics.series.${k}`);});}
+function dist(a){a=(a||[]).slice(-26);let z=0;for(let i=1;i<a.length;i++){const c=a[i],p=a[i-1];if(n(c.close)!==null&&n(p.close)!==null&&n(c.volume)!==null&&n(p.volume)!==null&&Number(c.close)<Number(p.close)&&Number(c.volume)>Number(p.volume))z++;}return z;}if(series(d,'SPY').length>1&&series(d,'QQQ').length>1)rows(card('t-market','ディストリビューション・デイ'),'ディストリビューション・デイ（直近25営業日）',[['SPY',`${dist(series(d,'SPY'))}日`],['QQQ',`${dist(series(d,'QQQ'))}日`]],'data/ui_view_model.json.daily.market_series:SPY/QQQ',{sub:'価格下落かつ前日比出来高増の表示用proxy。売買ゲートではありません。'});}
+function core(vm){const e=(((vm||{}).core12)||{}).new_entrants||{};if(e.status!=='READY')return;const c=card('t-port','新規参入');if(!c)return;rows(c,'新規参入（ポート候補36位圏） New Entrants',(e.rows||[]).map((r,i)=>[`${i+1}. ${r.ticker||'—'}`,`現在 ${r.rank??'—'}位 / 20営業日前 ${r.prior_rank??'圏外'}${n(r.ddv20)!==null?` / DDV $${(Number(r.ddv20)/1e6).toFixed(1)}M`:''}`]),'data/ui_view_model.json.core12.new_entrants',{empty:'今回の新規参入なし'});}
+function rank(c,h,a,k,src){if(!c||!Array.isArray(a)||!a.length)return;clear(c,h);const box=el('div','');a.slice(0,24).forEach((r,i)=>{const x=el('div','v38-final-rank');x.append(el('span','',String(r.rank||i+1)),el('strong','',r.ticker||'—'),el('b','',`${k.toUpperCase()} ${n(r[k])===null?'—':f(r[k])}`));box.appendChild(x);});c.appendChild(box);mark(c,src,'READY');}
+async function rs(vm){const r=(vm||{}).rs||{};if(r.status==='READY'){[63,126,189].forEach(p=>rank(card('t-rs',`RS${p} Top10`),`RS${p} Top10`,((r.windows||{})[String(p)]||[]),`rs${p}`,`data/ui_view_model.json.rs.windows.${p}`));rank(card('t-rs','RS189 継続性'),'RS189 継続性 Leadership Persistence',r.rows||[],'rs189','data/ui_view_model.json.rs.rows');}let h=null;try{const q=await fetch('data/rs_history.json',{cache:'no-store'});if(q.ok)h=await q.json();}catch(_){}if(!h||h.status!=='READY')return;const out=[];[63,126,189].forEach(p=>((((h.windows||{})[String(p)]||{}).comparisons)||[]).forEach(cmp=>{if(cmp.status==='READY')out.push([`RS${p} ${cmp.label}`,`IN ${(cmp.in||[]).join('・')||'なし'} / OUT ${(cmp.out||[]).join('・')||'なし'}`]);}));if(out.length)rows(card('t-rs','Top10 IN / OUT'),'Top10 IN / OUT 履歴',out,'data/rs_history.json.windows');}
+function weekly(vm){const d=(vm||{}).daily||{},m=metrics(d),s=d.market_summaries||{},has=a=>a.every(x=>n((s[x]||{}).close)!==null);if(has(['DX-Y.NYB','CL=F','GC=F']))rows(card('t-weekly','構造マクロ'),'構造マクロ Structural Macro',[['DXY',`${f(s['DX-Y.NYB'].close,2)} / 1W ${pct(s['DX-Y.NYB'].change_1w)}`],['WTI',`${f(s['CL=F'].close,2)} / 1W ${pct(s['CL=F'].change_1w)}`],['Gold',`${f(s['GC=F'].close,2)} / 1W ${pct(s['GC=F'].change_1w)}`]],'data/ui_view_model.json.daily.market_summaries');if(has(['^TNX','^FVX','IEF']))rows(card('t-weekly','金利レジーム'),'金利レジーム Rates',[['米10年',f(s['^TNX'].close,2)+'%'],['米5年',f(s['^FVX'].close,2)+'%'],['IEF 1W',pct(s.IEF.change_1w)]],'data/ui_view_model.json.daily.market_summaries');if(has(['^VIX','^VXN','HYG','DX-Y.NYB']))rows(card('t-weekly','マクロ圧力'),'マクロ圧力 Macro Pressure',[['VIX',f(s['^VIX'].close,2)],['VXN',f(s['^VXN'].close,2)],['HYG 1W',pct(s.HYG.change_1w)],['DXY 1W',pct(s['DX-Y.NYB'].change_1w)]],'data/ui_view_model.json.daily.market_summaries');if(m.breadth50&&m.breadth50.status==='READY')rows(card('t-weekly','広域ブレッドス'),'広域ブレッドス Market Breadth',[['50MA上',md(m,'breadth50')],['200MA上',md(m,'breadth200')],['当日上昇比率',n(d.leader_diagnostics&&d.leader_diagnostics.advancing_1d_pct)===null?'—':pval(d.leader_diagnostics.advancing_1d_pct)]],'data/ui_view_model.json.daily.metrics+leader_diagnostics');if(n((s.SOXL||{}).close)!==null)rows(card('t-weekly','レバレッジ・コンディション'),'レバレッジ・コンディション（SOXL）',[['Close',f(s.SOXL.close,2)],['1W',pct(s.SOXL.change_1w)],['1M',pct(s.SOXL.change_1m)],['3M',pct(s.SOXL.change_3m)]],'data/ui_view_model.json.daily.market_summaries.SOXL');const h=Array.isArray(d.history)?d.history:[];if(h.length>=6){const a=h.at(-1),b=h.at(-6),out=[];[['50MA Breadth','breadth50',1],['200MA Breadth','breadth200',1],['F1','f1',100],['F2','f2',100],['F3','f3',100]].forEach(([lab,k,scale])=>{const x=n(a[k]),y=n(b[k]);out.push([lab,x!==null&&y!==null?`${(x*scale).toFixed(1)}% / 5営業日前比 ${((x-y)*scale)>=0?'+':''}${((x-y)*scale).toFixed(1)}pt`:'—']);});rows(card('t-weekly','今週の変化'),'今週の変化 Weekly Diff',out,'data/ui_view_model.json.daily.history');}}
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function srcdoc(h,sub,data){const body=data.map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join('');return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;background:#e9e7df;color:#1b1d1c;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Sans","Noto Sans JP",sans-serif}.sheet{padding:24px}.card{background:#f3f1ea;border:1px solid #d5d1c6;border-radius:16px;padding:22px}.ey{font-size:11px;letter-spacing:.12em;color:#727569;font-weight:800}.title{font-size:28px;font-weight:900;margin:8px 0 4px}.sub{font-size:12px;color:#727569;margin-bottom:18px}.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;padding:11px 0;border-top:1px solid #d5d1c6;font-size:14px}.row b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}.foot{margin-top:18px;font-size:10px;color:#727569}</style></head><body><div class="sheet"><div class="card"><div class="ey">V38 COMMAND CENTER · LIVE DATA</div><div class="title">${esc(h)}</div><div class="sub">${esc(sub)}</div>${body}<div class="foot">Current-session authoritative display</div></div></div></body></html>`;}
+function publish(vm){const sec=document.getElementById('t-post1');if(!sec)return;const d=(vm||{}).daily||{},m=metrics(d),s=d.market_summaries||{},w=Array.from(sec.querySelectorAll('.postwrap'));if(w.length<2)return;const market=[['Session',vm.session_date||'—'],['Market Mode',md(m,'market_mode')],['NQSAR',md(m,'nqsar')],['MC57',md(m,'mc57')],['50MA Breadth',md(m,'breadth50')],['200MA Breadth',md(m,'breadth200')],['QQQ 1D / 1W / 1M',`${pct((s.QQQ||{}).change_1d)} / ${pct((s.QQQ||{}).change_1w)} / ${pct((s.QQQ||{}).change_1m)}`],['SPY 1D / 1W / 1M',`${pct((s.SPY||{}).change_1d)} / ${pct((s.SPY||{}).change_1w)} / ${pct((s.SPY||{}).change_1m)}`],['VIX',f((s['^VIX']||{}).close,2)]];const sect=SECTORS.map(t=>[t,`${pct((s[t]||{}).change_1w)} / 1M ${pct((s[t]||{}).change_1m)}`]);((((vm.rotation||{}).diagnostics||{}).industry)||[]).slice(0,5).forEach(r=>sect.push([r.group||'Theme',`${pct(r.ret20_avg)} / leaders ${(r.leaders||[]).join('・')||'—'}`]));[[w[0],'マーケット概略','Market Overview',market,'data/ui_view_model.json.publish.market_overview'],[w[1],'セクター・ローテーション','Sector Rotation',sect,'data/ui_view_model.json.publish.sector_rotation']].forEach(([wrap,h,sub,data,source],i)=>{wrap.replaceChildren();const fr=el('iframe','postframe v38-publish-frame');fr.title=h;fr.setAttribute('sandbox','');fr.srcdoc=srcdoc(h,`${vm.session_date||'—'} · ${sub}`,data);wrap.appendChild(fr);wrap.dataset.v38PublishCard=String(i+1);mark(wrap,source,'READY');});sec.dataset.v38PublishCards='ready';mark(sec,'data/ui_view_model.json.publish','READY');}
+function scrub(root){const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),a=[];while(walker.nextNode())a.push(walker.currentNode);a.forEach(t=>{let x=String(t.nodeValue||'');x=x.replaceAll('SOURCE_UNAVAILABLE','DATA_REQUIRED').replaceAll('MOCK DATA','').replaceAll('Mock Data','').replaceAll('モックデータ','旧表示値は使用しません').replaceAll('モック','旧表示値');t.nodeValue=x;});Array.from(root.querySelectorAll('*')).filter(x=>x.children.length===0).forEach(x=>{const t=String(x.textContent||'').replace(/\s+/g,' ').trim();if(t==='実データ'||t==='正本の実データ'||t==='正本publish shard')x.remove();else if(/^full_v38_ready:\s*(true|false)\s*\/\s*blockers:\s*\d+$/i.test(t))x.remove();else if(t==='正本データ')x.textContent='LIVE DATA';});}
+async function final(vm){style();banner(vm);trends(vm);daily(vm);core(vm);await rs(vm);weekly(vm);publish(vm);IDS.forEach(id=>{const s=document.getElementById(id);if(!s)return;scrub(s);const key=VIEW[id],data=key&&vm?vm[key]:null;if(!s.dataset.v38TruthSource)s.dataset.v38TruthSource=`data/ui_view_model.json#${key||id}`;if(!s.dataset.v38Status)s.dataset.v38Status=(data&&data.status)||'DATA_REQUIRED';});const up=document.querySelector('#t-options .v38-options-upward-card');if(up){mark(up,'data/options/index.json.upward_rankings','READY');}document.body.dataset.v38LegacyMockLabels='0';document.body.dataset.v38AuthoritativeFinal='ready';document.body.dataset.v38PublicRenderContract='ready';}
+function start(e){const vm=(e&&e.detail)||window.V38UiViewModel||{};let i=0;const poll=()=>{if(document.body&&document.body.dataset.v38TruthBinding==='ready'){final(vm).catch(err=>{console.error('V38 authoritative final render failed',err);document.body.dataset.v38AuthoritativeFinal='failed';});return;}if(++i<120)setTimeout(poll,50);};poll();}
+document.addEventListener('v38:view-ready',start,{once:true});if(window.V38UiViewModel)start({detail:window.V38UiViewModel});
 })();
