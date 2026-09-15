@@ -21,7 +21,7 @@ from v38.recovered_live_inputs import (
     write_json,
 )
 from v38.recovered_theme import write_theme_outputs
-from v38.stock_gap_repair import repair_failed_live_tickers
+from v38.stock_gap_repair_exact import repair_failed_live_tickers
 
 AUTHORITATIVE_INPUT_KINDS = {"state", "EXP_STATE_ID"}
 
