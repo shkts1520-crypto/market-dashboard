@@ -103,6 +103,7 @@ def main() -> int:
                 page.on("pageerror", lambda exc: errors.append(str(exc)))
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
+                page.wait_for_function("document.body.dataset.v38PublicRenderContract === 'ready'")
                 tabs = page.locator("a.tabx")
                 assert tabs.count() == 11
                 assert [tabs.nth(i).inner_text().strip() for i in range(11)] == list(TAB_LABELS)
