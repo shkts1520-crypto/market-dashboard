@@ -111,11 +111,12 @@ def main() -> int:
                     page.locator(f'a.tabx[href="{href}"]').click()
                     section = page.locator(href)
                     assert section.is_visible()
-                    text = section.inner_text()
+                    visible_text = section.inner_text()
                     if href in DYNAMIC_TABS:
-                        assert 'MOCK DATA' not in text.upper(), (width, href, 'MOCK DATA visible')
-                        assert 'モック' not in text, (width, href, 'mock label visible')
-                        assert not MOCK_TICKER.search(text), (width, href, 'mock ticker visible', MOCK_TICKER.search(text).group(0))
+                        assert 'MOCK DATA' not in visible_text.upper(), (width, href, 'MOCK DATA visible')
+                        assert 'モック' not in visible_text, (width, href, 'mock label visible')
+                        mock_match = MOCK_TICKER.search(visible_text)
+                        assert not mock_match, (width, href, 'mock ticker visible', mock_match.group(0) if mock_match else None)
                         assert_truth_bound(section, href, width)
                     details = missing_details(section)
                     invalid = [row for row in details if not (
