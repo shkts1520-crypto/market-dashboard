@@ -1,0 +1,23 @@
+{
+  "overrides": {
+    "HUBC": [
+      "AIサイバーセキュリティ（プラットフォーム）",
+      0.95,
+      "HUB Cyber Security provides confidential-computing, secured-data-fabric, cybersecurity and compliance infrastructure."
+    ],
+    "OPTT": [
+      "防衛（ドローン/C4ISR）",
+      0.92,
+      "Ocean Power Technologies is a maritime-domain-awareness company with autonomous unmanned surface vehicles and command-and-control systems."
+    ],
+    "USDE": [
+      "ブロックチェーン技術",
+      0.98,
+      "StablecoinX operates Ethereum validator and cross-chain verifier infrastructure and develops middleware for Ethena digital-dollar integration."
+    ]
+  },
+  "policy": "Supplemental researched overrides for current-universe legacy-map gaps only; values must use existing fine-theme IDs.",
+  "researched_at": "2026-09-15",
+  "schema_version": "v38.theme_manual_overrides.supplemental.1",
+  "source_kind": "SEC/Nasdaq/issuer cross-check"
+}
