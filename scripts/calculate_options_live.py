@@ -6,6 +6,8 @@ from calculate_options_resilient import main
 
 # Keep the measured-rate contract visible at this public entrypoint for existing
 # static authority tests. FRED:DGS3MO remains the non-Yahoo measured fallback.
+# Published provenance field retained by the resilient path: risk_free_rate_source.
+RISK_FREE_SOURCE_FIELD = "risk_free_rate_source"
 _rate_from_yahoo_frame = _legacy._rate_from_yahoo_frame
 _previous_risk_free_rate = _legacy._previous_risk_free_rate
 _fred_risk_free_rate = _legacy._fred_risk_free_rate
