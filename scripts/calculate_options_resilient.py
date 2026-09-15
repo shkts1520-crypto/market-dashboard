@@ -20,13 +20,14 @@ from v38.options_engine import (
     frame_to_contracts,
 )
 
-CALCULATION_VERSION = "v38-options-live-1.1.0"
-TICKER_SPACING_SECONDS = 0.80
-EXPIRY_SPACING_SECONDS = 0.15
-BATCH_SIZE = 8
+CALCULATION_VERSION = "v38-options-live-1.2.0"
+TICKER_SPACING_SECONDS = 0.55
+EXPIRY_SPACING_SECONDS = 0.12
+BATCH_SIZE = 10
 BATCH_PAUSE_SECONDS = 3.0
-RETRY_ROUND_COOLDOWNS = (20.0, 60.0)
+RETRY_ROUND_COOLDOWNS = (25.0, 75.0)
 GLOBAL_TRANSIENT_FAILURE_STREAK = 5
+FULL_UNIVERSE_SCAN_READY_COVERAGE = 0.98
 TRANSIENT_MARKERS = (
     "too many requests",
     "rate limit",
@@ -57,6 +58,26 @@ def _finite(value):
 def _is_transient_option_error(value) -> bool:
     text = str(value or "").lower()
     return any(marker in text for marker in TRANSIENT_MARKERS)
+
+
+def _all_universe_targets(rs: dict) -> list[str]:
+    """Return every current active-universe ticker that has a finite positive spot.
+
+    Options discovery is deliberately downstream of the stock universe. No RS/Core12
+    pre-filter is applied in full-universe mode.
+    """
+    out: list[str] = []
+    rows = rs.get("rows") if isinstance(rs, dict) else None
+    if not isinstance(rows, list):
+        return out
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        ticker = str(row.get("ticker") or "").strip().upper()
+        price = _finite(row.get("price"))
+        if ticker and price is not None and price > 0 and ticker not in out:
+            out.append(ticker)
+    return sorted(out)
 
 
 def _same_session_previous_state(previous: dict, *, session: str, targets: list[str]) -> tuple[set[str], set[str]]:
@@ -205,18 +226,101 @@ def _merge_same_session_rows(
             failures[ticker] = "NO_VALID_0_45_DTE_CONTRACTS"
     out["failures"] = failures
     out["rows"] = current_buckets.get("0-45", [])
-
-    successes = len({
-        str(row.get("ticker") or "").strip().upper()
-        for row in out.get("rows", [])
-        if isinstance(row, dict)
-    })
-    coverage = successes / len(targets) if targets else 0.0
-    out["coverage"] = coverage
-    ready = successes >= MIN_READY_TICKERS and coverage >= MIN_READY_TARGET_COVERAGE
-    out["status"] = "READY" if ready else "DATA_REQUIRED"
-    out["reason"] = None if ready else "OPTION_CHAIN_COVERAGE_BELOW_MINIMUM"
     return sorted(reused)
+
+
+def _upward_structure(row: dict) -> dict:
+    spot = _finite(row.get("spot"))
+    flip = _finite(row.get("gamma_flip"))
+    call_wall = _finite(row.get("call_wall"))
+    put_wall = _finite(row.get("put_wall"))
+    profile = row.get("strike_profile") if isinstance(row.get("strike_profile"), list) else []
+
+    call_gex = 0.0
+    put_gex_abs = 0.0
+    for level in profile:
+        if not isinstance(level, dict):
+            continue
+        call_value = _finite(level.get("call"))
+        put_value = _finite(level.get("put"))
+        if call_value is not None and call_value > 0:
+            call_gex += call_value
+        if put_value is not None and put_value < 0:
+            put_gex_abs += abs(put_value)
+
+    ratio = call_gex / put_gex_abs if put_gex_abs > 0 else (float("inf") if call_gex > 0 else None)
+    checks = {
+        "spot_above_gamma_flip": None if spot is None or flip is None else spot > flip,
+        "call_wall_above_spot": None if spot is None or call_wall is None else call_wall > spot,
+        "put_wall_below_spot": None if spot is None or put_wall is None else put_wall < spot,
+        "call_gex_dominant": None if call_gex <= 0 and put_gex_abs <= 0 else call_gex > put_gex_abs,
+    }
+    observed = [value for value in checks.values() if value is not None]
+    positive = sum(1 for value in observed if value)
+    normalized = positive / len(observed) if observed else 0.0
+    flip_check = checks["spot_above_gamma_flip"]
+    upward = len(observed) >= 3 and positive >= 3 and flip_check is not False
+
+    return {
+        "upward_structure": upward,
+        "upward_structure_score": positive,
+        "upward_structure_observed": len(observed),
+        "upward_structure_ratio": normalized,
+        "upward_structure_checks": checks,
+        "call_gex_total": call_gex,
+        "put_gex_abs_total": put_gex_abs,
+        "call_put_gex_ratio": ratio,
+    }
+
+
+def _materialize_upward_rankings(out: dict) -> None:
+    rankings: dict[str, list[dict]] = {}
+    buckets = out.get("buckets") if isinstance(out.get("buckets"), dict) else {}
+    for bucket in ("0-6", "7-21", "22-45", "0-45"):
+        rows = buckets.get(bucket) if isinstance(buckets.get(bucket), list) else []
+        selected: list[dict] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            metrics = _upward_structure(row)
+            row.update(metrics)
+            if metrics["upward_structure"]:
+                selected.append({
+                    "ticker": row.get("ticker"),
+                    "bucket": bucket,
+                    "spot": row.get("spot"),
+                    "gamma_flip": row.get("gamma_flip"),
+                    "call_wall": row.get("call_wall"),
+                    "put_wall": row.get("put_wall"),
+                    "net_gex": row.get("net_gex"),
+                    "total_open_interest": row.get("total_open_interest"),
+                    "quality": row.get("quality"),
+                    **metrics,
+                })
+        selected.sort(key=lambda row: (
+            -int(row.get("upward_structure_score") or 0),
+            -float(row.get("upward_structure_ratio") or 0.0),
+            -float(row.get("call_put_gex_ratio") or 0.0),
+            -float(row.get("total_open_interest") or 0.0),
+            str(row.get("ticker") or ""),
+        ))
+        for rank, row in enumerate(selected, start=1):
+            row["upward_rank"] = rank
+        rankings[bucket] = selected
+
+    out["upward_rankings"] = rankings
+    out["upward_ranking_contract"] = {
+        "role": "DISPLAY_ONLY_NOT_A_TRADING_GATE",
+        "definition": "Observed positioning geometry only; not a forecast or legacy Direction/Confidence replacement.",
+        "checks": [
+            "Spot > Gamma Flip when Gamma Flip is available",
+            "Call Wall > Spot",
+            "Put Wall < Spot",
+            "aggregate Call GEX > absolute Put GEX",
+        ],
+        "qualification": "At least 3 observed checks and at least 3 positive checks; an observed Spot<=Gamma Flip disqualifies.",
+        "ordering": "positive check count, observed-check ratio, Call/Put GEX ratio, total OI, ticker",
+    }
 
 
 def _fetch_with_rounds(
@@ -298,6 +402,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Calculate resilient live V38 option positioning from Yahoo chains")
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--target-limit", type=int, default=legacy.DEFAULT_TARGET_LIMIT)
+    parser.add_argument("--all-universe", action="store_true")
     parser.add_argument("--generated-at")
     args = parser.parse_args()
 
@@ -318,8 +423,11 @@ def main() -> int:
         raise SystemExit("rs.json is not current session")
 
     generated_at = args.generated_at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    effective_limit = max(int(args.target_limit), legacy.CHART_TARGET_FLOOR)
-    targets = legacy._chart_targets(rs, core12, requested_limit=effective_limit)
+    if args.all_universe:
+        targets = _all_universe_targets(rs)
+    else:
+        effective_limit = max(int(args.target_limit), legacy.CHART_TARGET_FLOOR)
+        targets = legacy._chart_targets(rs, core12, requested_limit=effective_limit)
     if not targets:
         raise SystemExit("no option targets resolved")
     spots = legacy._spot_map(rs)
@@ -400,10 +508,37 @@ def main() -> int:
     out["risk_free_rate_source"] = rate_source
     out["risk_free_rate_observed_date"] = rate_observed_date
     out["fetch_errors"] = fetch_errors
+
+    failures = out.get("failures") if isinstance(out.get("failures"), dict) else {}
+    no_contract_now = {
+        str(ticker).strip().upper()
+        for ticker, reason in failures.items()
+        if str(reason) == "NO_VALID_0_45_DTE_CONTRACTS"
+    }
+    published_tickers = {
+        str(row.get("ticker") or "").strip().upper()
+        for row in out.get("rows", [])
+        if isinstance(row, dict)
+    }
+    resolved_tickers = published_tickers | no_contract_now
+    universe_resolution_coverage = len(resolved_tickers) / len(targets) if targets else 0.0
+    positioning_coverage = len(published_tickers) / len(targets) if targets else 0.0
+
+    if args.all_universe:
+        out["coverage"] = universe_resolution_coverage
+        ready = len(published_tickers) >= MIN_READY_TICKERS and universe_resolution_coverage >= MIN_READY_TARGET_COVERAGE
+        out["status"] = "READY" if ready else "DATA_REQUIRED"
+        out["reason"] = None if ready else "OPTION_UNIVERSE_RESOLUTION_BELOW_MINIMUM"
+        out["target_policy"] = {
+            "status": "FULL_ACTIVE_UNIVERSE",
+            "method": "Every current RS active-universe ticker with finite positive spot; no Core12/RS pre-filter",
+            "limit": len(targets),
+            "targets": targets,
+        }
     out["chart_overlay_contract"] = {
-        "requested_cli_limit": int(args.target_limit),
-        "effective_target_floor": legacy.CHART_TARGET_FLOOR,
-        "target_priority": "Core12, RS63 Top10, RS126 Top10, RS189 Top24, then deterministic standard targets",
+        "requested_cli_limit": None if args.all_universe else int(args.target_limit),
+        "all_universe": bool(args.all_universe),
+        "target_priority": "FULL_ACTIVE_UNIVERSE" if args.all_universe else "Core12, RS63 Top10, RS126 Top10, RS189 Top24, then deterministic standard targets",
         "chart_bucket_default": "0-45",
     }
     out["resilience"] = {
@@ -420,21 +555,34 @@ def main() -> int:
         "batch_pause_seconds": BATCH_PAUSE_SECONDS,
         "note": "Only same-session measured option rows are reused; prior-session rows are never promoted as current data.",
     }
+    out["universe_scan"] = {
+        "mode": "FULL_ACTIVE_UNIVERSE" if args.all_universe else "PRIORITY_UNIVERSE",
+        "target_count": len(targets),
+        "resolved_count": len(resolved_tickers),
+        "positioning_count": len(published_tickers),
+        "no_valid_0_45_dte_count": len(no_contract_now),
+        "transient_error_count": len(transient_errors),
+        "permanent_error_count": len(permanent_errors),
+        "resolution_coverage": universe_resolution_coverage,
+        "positioning_coverage": positioning_coverage,
+        "status": "READY" if universe_resolution_coverage >= FULL_UNIVERSE_SCAN_READY_COVERAGE else "PARTIAL",
+        "ready_threshold": FULL_UNIVERSE_SCAN_READY_COVERAGE,
+    }
     out["coverage_detail"] = {
         "target_count": len(targets),
         "fresh_ticker_snapshots": len(snapshots),
         "same_session_reused_tickers": len(reused_tickers),
         "known_no_contract": len(known_no_contract),
-        "published_tickers": len({
-            str(row.get("ticker") or "").strip().upper()
-            for row in out.get("rows", [])
-            if isinstance(row, dict)
-        }),
+        "resolved_tickers": len(resolved_tickers),
+        "published_tickers": len(published_tickers),
+        "universe_resolution_coverage": universe_resolution_coverage,
+        "positioning_coverage": positioning_coverage,
         "bucket_row_counts": {
             key: len(rows) for key, rows in (out.get("buckets") or {}).items()
             if isinstance(rows, list)
         },
     }
+    _materialize_upward_rankings(out)
 
     path = atomic_write_json(root / "options" / "index.json", out)
     print(json.dumps({
@@ -446,10 +594,13 @@ def main() -> int:
         "fresh_snapshots": len(snapshots),
         "reused_same_session": len(reused_tickers),
         "known_no_contract": len(known_no_contract),
+        "resolved_tickers": len(resolved_tickers),
+        "universe_resolution_coverage": universe_resolution_coverage,
+        "positioning_tickers": len(published_tickers),
         "transient_errors": len(transient_errors),
         "permanent_errors": len(permanent_errors),
         "global_circuit_breaks": global_breaks,
-        "rows_0_45": len((out.get("buckets") or {}).get("0-45", [])),
+        "upward_counts": {key: len(value) for key, value in out.get("upward_rankings", {}).items()},
         "risk_free_rate": rate,
         "risk_free_rate_source": rate_source,
         "risk_free_rate_observed_date": rate_observed_date,
