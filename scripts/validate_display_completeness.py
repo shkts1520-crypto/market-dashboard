@@ -3,12 +3,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 from typing import Any
 
 
 NO_CONTRACT = "NO_VALID_0_45_DTE_CONTRACTS"
 MIN_STOCK_COVERAGE = 0.98
+OPTION_MIN_PRICE_USD = 5.0
+REQUESTED_MIN_MARKET_CAP_USD = 1_000_000.0
 FULL_UNIVERSE_BUCKETS = {"0-6", "7-21", "22-45", "0-45"}
 
 
@@ -27,6 +30,30 @@ def _clean_symbols(values: Any) -> list[str]:
     return [str(value or "").strip().upper() for value in values if str(value or "").strip()]
 
 
+def _finite(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _price_filtered_symbols(rows: Any, *, floor: float = OPTION_MIN_PRICE_USD) -> list[str]:
+    if not isinstance(rows, list):
+        return []
+    out: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        ticker = str(row.get("ticker") or "").strip().upper()
+        price = _finite(row.get("price"))
+        if ticker and price is not None and price >= floor:
+            out.add(ticker)
+    return sorted(out)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Fail publication when display data is genuinely missing")
     parser.add_argument("--data-dir", default="data")
@@ -37,6 +64,7 @@ def main() -> int:
     site = Path(args.site_dir)
     state = load(root / "state.json")
     manifest = load(root / "acquisition_manifest.json")
+    rs = load(root / "rs.json")
     options = load(root / "options" / "index.json")
     search = load(root / "history" / "search_index.json")
     vwap = load(root / "history" / "vwap_restore.json")
@@ -77,16 +105,34 @@ def main() -> int:
         scan = options.get("universe_scan") or {}
         overlay = options.get("chart_overlay_contract") or {}
 
+        # Full Options coverage now means all tickers in the investable Options
+        # subset, not every upstream active ticker. The upstream TradingView
+        # universe already has market cap >= $200M, which is stricter than the
+        # requested >=$1M floor; Options additionally require current price >=$5.
+        assert target_policy.get("scope") == "INVESTABLE_PRICE_FILTERED", target_policy
+        assert float(target_policy.get("min_price_usd") or 0.0) == OPTION_MIN_PRICE_USD, target_policy
+        upstream_mcap = float(target_policy.get("upstream_min_market_cap_usd") or 0.0)
+        assert upstream_mcap >= REQUESTED_MIN_MARKET_CAP_USD, target_policy
+        expected_policy_targets = _price_filtered_symbols(rs.get("rows"))
+
         assert overlay.get("all_universe") is True, overlay
-        assert targets == active, (targets, active)
+        assert 0 < targets <= active, (targets, active)
         assert len(policy_targets) == targets, (len(policy_targets), targets)
         assert len(set(policy_targets)) == targets, "duplicate full-universe option targets"
+        assert policy_targets == expected_policy_targets, (
+            len(policy_targets), len(expected_policy_targets),
+            sorted(set(policy_targets) - set(expected_policy_targets))[:20],
+            sorted(set(expected_policy_targets) - set(policy_targets))[:20],
+        )
         assert 0 <= published <= resolved <= targets, (published, resolved, targets)
         assert resolved == published + no_contract, (resolved, published, no_contract)
         expected_coverage = resolved / targets
         assert abs(resolution_coverage - expected_coverage) < 1e-12, (resolution_coverage, expected_coverage)
 
         assert scan.get("mode") == "FULL_ACTIVE_UNIVERSE", scan
+        assert scan.get("scope") == "INVESTABLE_PRICE_FILTERED", scan
+        assert float(scan.get("min_price_usd") or 0.0) == OPTION_MIN_PRICE_USD, scan
+        assert float(scan.get("upstream_min_market_cap_usd") or 0.0) >= REQUESTED_MIN_MARKET_CAP_USD, scan
         assert int(scan.get("target_count") or 0) == targets, scan
         assert int(scan.get("resolved_count") or 0) == resolved, scan
         assert int(scan.get("positioning_count") or 0) == published, scan
@@ -158,9 +204,10 @@ def main() -> int:
     assert unindexed <= len(failed_tickers), (unindexed, len(failed_tickers))
 
     if full_universe:
-        assert set(policy_targets) == search_tickers, (
-            len(set(policy_targets) - search_tickers),
-            len(search_tickers - set(policy_targets)),
+        search_eligible = set(_price_filtered_symbols(search_rows))
+        assert set(policy_targets) == search_eligible, (
+            len(set(policy_targets) - search_eligible),
+            len(search_eligible - set(policy_targets)),
         )
 
     assert vwap.get("session_date") == session
@@ -189,6 +236,9 @@ def main() -> int:
         "search_coverage": search_coverage,
         "search_unindexed": unindexed,
         "options_target_policy": target_policy.get("status"),
+        "options_scope": target_policy.get("scope"),
+        "options_min_price_usd": target_policy.get("min_price_usd"),
+        "options_upstream_min_market_cap_usd": target_policy.get("upstream_min_market_cap_usd"),
         "options_targets": targets,
         "options_resolved": resolved,
         "options_positioning": published,

@@ -7,6 +7,7 @@ SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
+import calculate_options_live as live
 import calculate_options_resilient as resilient
 
 
@@ -27,6 +28,23 @@ def test_full_universe_targets_do_not_apply_rs_or_core_filter():
         ]
     }
     assert resilient._all_universe_targets(rs) == ["AAA", "ZZZ"]
+
+
+def test_public_options_scope_enforces_five_dollar_floor_without_rs_filter():
+    rs = {
+        "rows": [
+            {"ticker": "LOW", "price": 4.99, "rs189": 100},
+            {"ticker": "EDGE", "price": 5.00, "rs189": 1},
+            {"ticker": "HIGH", "price": 25.0, "rs189": 2},
+            {"ticker": "MISS", "price": None, "rs189": 100},
+        ]
+    }
+    assert live.OPTIONS_MIN_PRICE_USD == 5.0
+    assert live.UPSTREAM_MIN_MARKET_CAP_USD >= 1_000_000.0
+    assert live._investable_options_targets(rs) == ["EDGE", "HIGH"]
+    # Importing the public production entrypoint patches the resilient all-universe
+    # target resolver used by production.
+    assert resilient._all_universe_targets(rs) == ["EDGE", "HIGH"]
 
 
 def test_same_session_cache_reuses_measured_rows_and_known_no_contract_only():
