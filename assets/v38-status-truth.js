@@ -3,6 +3,20 @@
 
   const BASELINE_REASON = 'BASELINE_CARD_SOURCE_UNAVAILABLE';
   const ROTATION_REASON = 'ROTATION_INDEX_BREADTH_SOURCE_UNAVAILABLE';
+  const GENERIC_REASON = 'AUTHORITATIVE_CARD_INPUT_NOT_AVAILABLE';
+  const SECTION_STATUS = {
+    't-market': 'daily',
+    't-alloc': 'positions',
+    't-port': 'core12',
+    't-today': 'setups',
+    't-rotation': 'rotation',
+    't-movers': 'movers',
+    't-rs': 'rs',
+    't-weekly': 'weekly',
+    't-options': 'options',
+    't-post1': 'publish',
+    't-rules': 'rules'
+  };
 
   function titleOf(card) {
     return String(card && (card.dataset.v38CardTitle || (card.querySelector('h2') || {}).textContent) || '').trim();
@@ -58,11 +72,10 @@
       if (!host || host.dataset.v38Reason !== BASELINE_REASON) return;
       const title = titleOf(card);
       if (title.indexOf('リーダー監視') >= 0 && fillLeaderWatch(card, rows)) return;
-      if (title.indexOf('Multi VWAP') >= 0) return; // owned by restored-experience
-      // This card is only a restoration scaffold. Hiding it is more truthful than
-      // presenting SOURCE_UNAVAILABLE when the Setups shard itself is READY.
+      if (title.indexOf('Multi VWAP') >= 0) return;
       card.hidden = true;
       card.dataset.v38PlaceholderSuppressed = 'true';
+      card.dataset.v38SuppressedReason = 'UNBOUND_BASELINE_SCAFFOLD';
     });
   }
 
@@ -75,7 +88,29 @@
       if (card) {
         card.hidden = true;
         card.dataset.v38PlaceholderSuppressed = 'true';
+        card.dataset.v38SuppressedReason = 'UNBOUND_ROTATION_SCAFFOLD';
       }
+    });
+  }
+
+  function sectionReady(view, section) {
+    const key = SECTION_STATUS[section.id];
+    const payload = key && view && view[key];
+    return Boolean(payload && payload.status === 'READY');
+  }
+
+  function suppressGenericReadyScaffolds(view) {
+    Object.keys(SECTION_STATUS).forEach(function (id) {
+      const section = document.getElementById(id);
+      if (!section || !sectionReady(view, section)) return;
+      section.querySelectorAll('.card[data-v38-status="DATA_REQUIRED"]').forEach(function (card) {
+        const note = card.querySelector('.v38-bind-note[data-v38-status="DATA_REQUIRED"]');
+        const text = String(note && note.textContent || '');
+        if (!text.includes(GENERIC_REASON)) return;
+        card.hidden = true;
+        card.dataset.v38PlaceholderSuppressed = 'true';
+        card.dataset.v38SuppressedReason = 'GENERIC_RENDER_SCAFFOLD';
+      });
     });
   }
 
@@ -94,6 +129,7 @@
       if (/ROTATION_PUBLISH_ARTIFACT_NOT_AVAILABLE|SOURCE_UNAVAILABLE|データ未取得/.test(text)) {
         wrap.hidden = true;
         wrap.dataset.v38PlaceholderSuppressed = 'true';
+        wrap.dataset.v38SuppressedReason = 'UNBOUND_PUBLISH_SCAFFOLD';
       }
     });
   }
@@ -108,6 +144,7 @@
     }
     suppressUnboundBaselineCards(view);
     suppressFalseRotationPlaceholder(view);
+    suppressGenericReadyScaffolds(view);
     cleanPublish(view);
     removeStaleReadyNotes();
     document.body.dataset.v38StatusTruth = 'applied';
