@@ -161,13 +161,14 @@ def main() -> int:
     tradingview_fallback = Path("assets/v38-tradingview-fallback.js")
     tradingview_fallback_enabled = _inject_external_extension(out, tradingview_fallback)
 
-    # Final one-shot truth pass. This strips any visible baseline/mock value that
-    # was not replaced by a current authoritative shard. Unsupported semantics are
-    # SOURCE_UNAVAILABLE, never silently inherited from the mock HTML.
+    # Truth pass removes inherited baseline values first. Source-real visualizer
+    # runs after it and rebuilds rich charts/tables only from authoritative data.
     production_truth = Path("assets/v38-production-truth.js")
     production_truth_enabled = _inject_external_extension(out, production_truth)
     production_label_truth = Path("assets/v38-production-label-truth.js")
     production_label_truth_enabled = _inject_external_extension(out, production_label_truth)
+    source_real_visual = Path("assets/v38-source-real-visual.js")
+    source_real_visual_enabled = _inject_external_extension(out, source_real_visual)
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -212,6 +213,7 @@ def main() -> int:
                 "tradingview_fallback_extension": tradingview_fallback_enabled,
                 "production_truth_extension": production_truth_enabled,
                 "production_label_truth_extension": production_label_truth_enabled,
+                "source_real_visual_extension": source_real_visual_enabled,
                 "source_fidelity_extension": source_fidelity_enabled,
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
