@@ -3,6 +3,7 @@
   const TV_WIDGET = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
   const NO_CONTRACT = 'NO_VALID_0_45_DTE_CONTRACTS';
   let metadata;
+  let fallbackObserver = null;
 
   function load() {
     if (!metadata) metadata = Promise.all([
@@ -23,8 +24,14 @@
     return exchange ? `${exchange}:${value}` : value;
   }
 
+  function stopObserver() {
+    if (fallbackObserver) fallbackObserver.disconnect();
+    fallbackObserver = null;
+  }
+
   function install(host, value) {
     if (!host || host.dataset.v38ChartSource === 'tradingview-live') return;
+    stopObserver();
     host.replaceChildren();
     host.dataset.v38ChartSource = 'tradingview-live';
     host.dataset.v38TradingviewSymbol = value;
@@ -62,11 +69,27 @@
     });
   }
 
-  document.addEventListener('click', () => setTimeout(apply, 0), true);
+  function watchForMissingLocalHistory() {
+    const modal = document.getElementById('v38-options-chart-modal');
+    if (!modal) return;
+    stopObserver();
+    fallbackObserver = new MutationObserver(() => {
+      if (modal.hidden) return;
+      const empty = Array.from(modal.querySelectorAll('.v38-rc-empty')).some((node) => /ローソク足履歴は未取得/.test(node.textContent));
+      if (empty) apply();
+    });
+    fallbackObserver.observe(modal, {childList:true, subtree:true});
+  }
+
+  document.addEventListener('click', () => setTimeout(() => {
+    watchForMissingLocalHistory();
+    apply();
+  }, 0), true);
   if (window.V38OpenTickerChart) {
     const openTickerChart = window.V38OpenTickerChart;
     window.V38OpenTickerChart = function () {
       const result = openTickerChart.apply(this, arguments);
+      watchForMissingLocalHistory();
       setTimeout(apply, 0);
       return result;
     };
