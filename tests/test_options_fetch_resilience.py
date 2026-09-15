@@ -17,6 +17,18 @@ def test_transient_option_error_detection_is_specific():
     assert not resilient._is_transient_option_error("NO_VALID_0_45_DTE_CONTRACTS")
 
 
+def test_full_universe_targets_do_not_apply_rs_or_core_filter():
+    rs = {
+        "rows": [
+            {"ticker": "ZZZ", "price": 10.0, "rs189": 1},
+            {"ticker": "AAA", "price": 20.0, "rs189": 99},
+            {"ticker": "BAD", "price": None, "rs189": 100},
+            {"ticker": "AAA", "price": 20.0, "rs189": 99},
+        ]
+    }
+    assert resilient._all_universe_targets(rs) == ["AAA", "ZZZ"]
+
+
 def test_same_session_cache_reuses_measured_rows_and_known_no_contract_only():
     previous = {
         "session_date": "2026-09-14",
@@ -80,6 +92,59 @@ def test_merge_same_session_rows_preserves_real_rows_without_promoting_no_contra
     assert [row["ticker"] for row in out["rows"]] == ["AAA", "BBB"]
     assert out["failures"] == {"CCC": "NO_VALID_0_45_DTE_CONTRACTS"}
     assert out["rows"][0]["resilience_provenance"]["mode"] == "PRESERVED_LAST_GOOD_SAME_SESSION_TICKER"
+
+
+def test_upward_structure_uses_observed_geometry_not_direction_field():
+    row = {
+        "ticker": "AAA",
+        "spot": 105.0,
+        "gamma_flip": 100.0,
+        "call_wall": 115.0,
+        "put_wall": 95.0,
+        "direction": None,
+        "confidence": None,
+        "strike_profile": [
+            {"strike": 100.0, "call": 200.0, "put": -50.0, "net": 150.0},
+            {"strike": 110.0, "call": 100.0, "put": -25.0, "net": 75.0},
+        ],
+    }
+    metrics = resilient._upward_structure(row)
+    assert metrics["upward_structure"] is True
+    assert metrics["upward_structure_score"] == 4
+    assert metrics["call_put_gex_ratio"] == 4.0
+    assert row["direction"] is None
+    assert row["confidence"] is None
+
+
+def test_upward_rankings_are_materialized_for_each_dte_bucket():
+    bullish = {
+        "ticker": "AAA",
+        "spot": 105.0,
+        "gamma_flip": 100.0,
+        "call_wall": 115.0,
+        "put_wall": 95.0,
+        "net_gex": 100.0,
+        "total_open_interest": 1000.0,
+        "quality": "GOOD",
+        "strike_profile": [{"strike": 100.0, "call": 200.0, "put": -50.0, "net": 150.0}],
+    }
+    bearish = {
+        "ticker": "BBB",
+        "spot": 95.0,
+        "gamma_flip": 100.0,
+        "call_wall": 90.0,
+        "put_wall": 100.0,
+        "net_gex": -100.0,
+        "total_open_interest": 1000.0,
+        "quality": "GOOD",
+        "strike_profile": [{"strike": 100.0, "call": 20.0, "put": -200.0, "net": -180.0}],
+    }
+    out = {"buckets": {key: [dict(bullish), dict(bearish)] for key in ("0-6", "7-21", "22-45", "0-45")}}
+    resilient._materialize_upward_rankings(out)
+    assert set(out["upward_rankings"]) == {"0-6", "7-21", "22-45", "0-45"}
+    for rows in out["upward_rankings"].values():
+        assert [row["ticker"] for row in rows] == ["AAA"]
+        assert rows[0]["upward_rank"] == 1
 
 
 def test_global_transient_circuit_breaker_avoids_hammering(monkeypatch):
