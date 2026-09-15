@@ -11,7 +11,11 @@ from typing import Any
 NO_CONTRACT = "NO_VALID_0_45_DTE_CONTRACTS"
 MIN_STOCK_COVERAGE = 0.98
 OPTION_MIN_PRICE_USD = 5.0
+OPTION_MIN_DDV20_USD = 10_000_000.0
 REQUESTED_MIN_MARKET_CAP_USD = 1_000_000.0
+RS_LEADER_SCOPE = "RS_21_63_189_TOP50_UNION"
+RS_LEADER_PERIODS = [21, 63, 189]
+RS_LEADER_TOP_N = 50
 FULL_UNIVERSE_BUCKETS = {"0-6", "7-21", "22-45", "0-45"}
 
 
@@ -40,18 +44,30 @@ def _finite(value: Any) -> float | None:
     return number if math.isfinite(number) else None
 
 
-def _price_filtered_symbols(rows: Any, *, floor: float = OPTION_MIN_PRICE_USD) -> list[str]:
+def _liquid_symbols(
+    rows: Any,
+    *,
+    price_floor: float = OPTION_MIN_PRICE_USD,
+    ddv20_floor: float = OPTION_MIN_DDV20_USD,
+) -> set[str]:
     if not isinstance(rows, list):
-        return []
+        return set()
     out: set[str] = set()
     for row in rows:
         if not isinstance(row, dict):
             continue
         ticker = str(row.get("ticker") or "").strip().upper()
         price = _finite(row.get("price"))
-        if ticker and price is not None and price >= floor:
+        ddv20 = _finite(row.get("ddv20"))
+        if (
+            ticker
+            and price is not None
+            and price >= price_floor
+            and ddv20 is not None
+            and ddv20 >= ddv20_floor
+        ):
             out.add(ticker)
-    return sorted(out)
+    return out
 
 
 def main() -> int:
@@ -94,9 +110,12 @@ def main() -> int:
     assert targets > 0, targets
     failures = options.get("failures") or {}
     target_policy = options.get("target_policy") or {}
-    full_universe = target_policy.get("status") == "FULL_ACTIVE_UNIVERSE"
+    scoped_resilient_mode = (
+        target_policy.get("status") == "FULL_ACTIVE_UNIVERSE"
+        and target_policy.get("scope") == RS_LEADER_SCOPE
+    )
 
-    if full_universe:
+    if scoped_resilient_mode:
         policy_targets = _clean_symbols(target_policy.get("targets"))
         published = int(detail.get("published_tickers") or 0)
         resolved = int(detail.get("resolved_tickers") or 0)
@@ -105,33 +124,38 @@ def main() -> int:
         scan = options.get("universe_scan") or {}
         overlay = options.get("chart_overlay_contract") or {}
 
-        # Full Options coverage now means all tickers in the investable Options
-        # subset, not every upstream active ticker. The upstream TradingView
-        # universe already has market cap >= $200M, which is stricter than the
-        # requested >=$1M floor; Options additionally require current price >=$5.
-        assert target_policy.get("scope") == "INVESTABLE_PRICE_FILTERED", target_policy
+        # --all-universe remains only the resilient execution-mode token. The
+        # actual acquisition contract is the user-approved RS21/63/189 Top50 union.
+        assert target_policy.get("scope") == RS_LEADER_SCOPE, target_policy
+        assert target_policy.get("periods") == RS_LEADER_PERIODS, target_policy
+        assert int(target_policy.get("top_n_per_period") or 0) == RS_LEADER_TOP_N, target_policy
+        period_counts = target_policy.get("period_counts") or {}
+        assert all(int(period_counts.get(str(period)) or 0) == RS_LEADER_TOP_N for period in RS_LEADER_PERIODS), period_counts
         assert float(target_policy.get("min_price_usd") or 0.0) == OPTION_MIN_PRICE_USD, target_policy
+        assert float(target_policy.get("min_ddv20_usd") or 0.0) == OPTION_MIN_DDV20_USD, target_policy
         upstream_mcap = float(target_policy.get("upstream_min_market_cap_usd") or 0.0)
         assert upstream_mcap >= REQUESTED_MIN_MARKET_CAP_USD, target_policy
-        expected_policy_targets = _price_filtered_symbols(rs.get("rows"))
 
-        assert overlay.get("all_universe") is True, overlay
-        assert 0 < targets <= active, (targets, active)
+        assert overlay.get("all_universe") is True, overlay  # legacy resilient CLI mode token
+        assert overlay.get("target_priority") == RS_LEADER_SCOPE, overlay
+        assert 0 < targets <= RS_LEADER_TOP_N * len(RS_LEADER_PERIODS), targets
+        assert targets <= active, (targets, active)
         assert len(policy_targets) == targets, (len(policy_targets), targets)
-        assert len(set(policy_targets)) == targets, "duplicate full-universe option targets"
-        assert policy_targets == expected_policy_targets, (
-            len(policy_targets), len(expected_policy_targets),
-            sorted(set(policy_targets) - set(expected_policy_targets))[:20],
-            sorted(set(expected_policy_targets) - set(policy_targets))[:20],
-        )
+        assert len(set(policy_targets)) == targets, "duplicate RS leader option targets"
+        eligible = _liquid_symbols(rs.get("rows"))
+        assert set(policy_targets).issubset(eligible), sorted(set(policy_targets) - eligible)[:20]
+
         assert 0 <= published <= resolved <= targets, (published, resolved, targets)
         assert resolved == published + no_contract, (resolved, published, no_contract)
         expected_coverage = resolved / targets
         assert abs(resolution_coverage - expected_coverage) < 1e-12, (resolution_coverage, expected_coverage)
 
-        assert scan.get("mode") == "FULL_ACTIVE_UNIVERSE", scan
-        assert scan.get("scope") == "INVESTABLE_PRICE_FILTERED", scan
+        assert scan.get("mode") == "FULL_ACTIVE_UNIVERSE", scan  # legacy resilient CLI mode token
+        assert scan.get("scope") == RS_LEADER_SCOPE, scan
+        assert scan.get("periods") == RS_LEADER_PERIODS, scan
+        assert int(scan.get("top_n_per_period") or 0) == RS_LEADER_TOP_N, scan
         assert float(scan.get("min_price_usd") or 0.0) == OPTION_MIN_PRICE_USD, scan
+        assert float(scan.get("min_ddv20_usd") or 0.0) == OPTION_MIN_DDV20_USD, scan
         assert float(scan.get("upstream_min_market_cap_usd") or 0.0) >= REQUESTED_MIN_MARKET_CAP_USD, scan
         assert int(scan.get("target_count") or 0) == targets, scan
         assert int(scan.get("resolved_count") or 0) == resolved, scan
@@ -203,12 +227,12 @@ def main() -> int:
     unindexed = active - len(search_rows)
     assert unindexed <= len(failed_tickers), (unindexed, len(failed_tickers))
 
-    if full_universe:
-        search_eligible = set(_price_filtered_symbols(search_rows))
-        assert set(policy_targets) == search_eligible, (
-            len(set(policy_targets) - search_eligible),
-            len(search_eligible - set(policy_targets)),
-        )
+    if scoped_resilient_mode:
+        search_symbols = {
+            str(row.get("ticker") or "").strip().upper()
+            for row in search_rows if isinstance(row, dict)
+        }
+        assert set(policy_targets).issubset(search_symbols), sorted(set(policy_targets) - search_symbols)[:20]
 
     assert vwap.get("session_date") == session
     assert vwap.get("status") == "READY", vwap.get("status")
@@ -238,6 +262,7 @@ def main() -> int:
         "options_target_policy": target_policy.get("status"),
         "options_scope": target_policy.get("scope"),
         "options_min_price_usd": target_policy.get("min_price_usd"),
+        "options_min_ddv20_usd": target_policy.get("min_ddv20_usd"),
         "options_upstream_min_market_cap_usd": target_policy.get("upstream_min_market_cap_usd"),
         "options_targets": targets,
         "options_resolved": resolved,
