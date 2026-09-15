@@ -12,7 +12,7 @@ function md(m,k){return m[k]&&m[k].status==='READY'?String(m[k].display||'—'):
 function summary(d,s){return ((d||{}).market_summaries||{})[s]||{};}
 function series(d,s){const x=((d||{}).market_series||{})[s];return Array.isArray(x)?x:[];}
 function title(c){if(!c)return'';if(c.dataset&&c.dataset.v38CardTitle)return String(c.dataset.v38CardTitle).replace(/\s+/g,' ').trim();const h=c.querySelector('h2,.hdr h2,.chd h2');return h?String(h.textContent||'').replace(/\s+/g,' ').trim():'';}
-function cards(id){const s=document.getElementById(id);return s?Array.from(s.querySelectorAll(':scope > .card')):[];}
+function cards(id){const s=document.getElementById(id);return s?Array.from(s.querySelectorAll('.card')):[];}
 function card(id,q){return cards(id).find(c=>title(c).includes(q))||null;}
 function el(tag,cls,text){const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=String(text);return x;}
 function mark(x,src,status='READY'){if(!x)return;x.dataset.v38TruthSource=src;x.dataset.v38Status=status;}
