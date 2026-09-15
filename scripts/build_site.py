@@ -146,6 +146,11 @@ def main() -> int:
     observation_ribbon_repair = Path("assets/v38-observation-ribbon-repair.js")
     observation_ribbon_repair_enabled = _inject_external_extension(out, observation_ribbon_repair)
 
+    # Runs last and only removes stale scaffold states when the authoritative
+    # section is already READY. True DATA_REQUIRED / STALE states remain visible.
+    status_truth = Path("assets/v38-status-truth.js")
+    status_truth_enabled = _inject_external_extension(out, status_truth)
+
     restored_data = _copy_restored_data(out)
     report = validate_production_html(out.read_text(encoding="utf-8"))
 
@@ -178,6 +183,7 @@ def main() -> int:
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
                 "observation_ribbon_repair_extension": observation_ribbon_repair_enabled,
+                "status_truth_extension": status_truth_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
