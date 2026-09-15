@@ -807,15 +807,19 @@
 
   function renderLiveView(view) {
     renderHeader(view);
-    renderDaily(view);
-    renderRs(view);
-    VIEW_BINDINGS.forEach((binding) => renderGenericSection(view, binding[0], binding[1]));
-    renderRotation(view);
-    renderWeekly(view);
-    const publishSection = document.getElementById('t-post1');
-    const rulesSection = document.getElementById('t-rules');
-    if (publishSection) publishSection.dataset.v38Status = (view.publish || {}).status || 'DATA_REQUIRED';
-    if (rulesSection) rulesSection.dataset.v38Status = (view.rules || {}).status || 'DATA_REQUIRED';
+    const bindings = [
+      ['t-market', 'daily'], ['t-pos', 'positions'], ['t-core', 'core12'],
+      ['t-today', 'setups'], ['t-rotation', 'rotation'], ['t-movers', 'movers'],
+      ['t-rs', 'rs'], ['t-weekly', 'weekly'], ['t-options', 'options'],
+      ['t-post1', 'publish'], ['t-rules', 'rules']
+    ];
+    bindings.forEach(([sectionId, key]) => {
+      const section = document.getElementById(sectionId);
+      const data = view && view[key];
+      if (section) section.dataset.v38Status = (data && data.status) || 'SOURCE_UNAVAILABLE';
+    });
+    window.V38UiViewModel = view;
+    document.dispatchEvent(new CustomEvent('v38:view-ready', {detail: view}));
     document.body.dataset.v38BindingStatus = 'ready';
   }
 
@@ -823,14 +827,9 @@
     SECTION_IDS.forEach((id) => {
       const section = document.getElementById(id);
       if (!section) return;
-      section.dataset.v38Status = 'DATA_REQUIRED';
-      neutralizeCards(section, '—', detail);
-      section.querySelectorAll('.postwrap').forEach((wrap) => {
-        wrap.replaceChildren();
-        statusNote(wrap, 'DATA_REQUIRED', detail, '—');
-      });
+      section.dataset.v38Status = 'SOURCE_UNAVAILABLE';
+      section.dataset.v38Reason = detail;
     });
-    renderHeader({daily: {metrics: [], status: 'DATA_REQUIRED'}, session_date: '—'});
     document.body.dataset.v38BindingStatus = 'failed';
   }
 

@@ -23,10 +23,8 @@ def test_status_truth_keeps_true_missing_states_visible():
     assert "closest('.card')" in js
 
 
-def test_status_truth_is_bound_last_by_builder():
+def test_status_truth_repair_loop_is_retired_by_builder():
     py = BUILD.read_text(encoding="utf-8")
-    status = py.index('status_truth = Path("assets/v38-status-truth.js")')
-    restored = py.index('restored_experience = Path("assets/v38-restored-experience.js")')
-    fallback = py.index('data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")')
-    assert restored < fallback < status
+    assert 'status_truth_enabled = False' in py
+    assert '_inject_external_extension(out, status_truth)' not in py
     assert '"status_truth_extension": status_truth_enabled' in py

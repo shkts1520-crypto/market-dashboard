@@ -60,6 +60,8 @@ jobs:
           node --check assets/v38-baseline-shell.js
           node --check assets/v38-data-repair.js
           node --check assets/v38-restored-experience.js
+          node --check assets/v38-live-binder.js
+          node --check assets/v38-tradingview-fallback.js
           node --check assets/v38-observables.js
           node --check assets/v38-options-chart.js
           node --check assets/v38-data-completeness-fallback.js
@@ -254,7 +256,6 @@ jobs:
 
           cp assets/v38-runtime.js _site/assets/v38-runtime.js
           cp assets/v38-site.js _site/assets/v38-site.js
-          cp assets/v38-observables.js _site/assets/v38-observables.js
           cp data/options/index.json _site/data/options/index.json
           if [ -f data/tqqq_panic.json ]; then cp data/tqqq_panic.json _site/data/tqqq_panic.json; fi
 
@@ -275,7 +276,6 @@ jobs:
           test -s _site/data/ui_view_model.json
           test -s _site/data/options/index.json
           if [ -f data/tqqq_panic.json ]; then test -s _site/data/tqqq_panic.json; fi
-          test -s _site/assets/v38-observables.js
           grep -q 'data-v38-production="live-binding"' _site/index.html
           for key in daily positions core12 setups rotation movers rs weekly options publish rules; do
             grep -q "\"${key}\"" _site/data/ui_view_model.json
@@ -301,8 +301,16 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 2
-          python scripts/browser_acceptance.py --url http://127.0.0.1:8000/
+          python scripts/browser_acceptance.py --url http://127.0.0.1:8000/ --screenshot-dir visual-acceptance
           python scripts/browser_data_completeness.py --url http://127.0.0.1:8000/
+
+      - name: Upload mobile visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v38-mobile-visual-acceptance
+          path: visual-acceptance
+          if-no-files-found: warn
 
       - name: Commit scheduled or manually acquired data
         if: github.event_name != 'pull_request'

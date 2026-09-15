@@ -207,8 +207,9 @@ function matchSearch(q){
     .slice(0,12).map(x=>x.r);
 }
 function renderSearch(data){
-  if(document.getElementById('v38-universe-search'))return;
   SEARCH_ROWS=Array.isArray(data&&data.rows)?data.rows:[];
+  if(document.getElementById('tksearch'))return;
+  if(document.getElementById('v38-universe-search'))return;
   const nav=document.querySelector('nav');
   if(!nav)return;
   const card=el(null,'div','card','');
@@ -328,14 +329,14 @@ function renderOptions(options){
 
 function vwapSignalText(x){if(!x)return'—';const flags=[];if(x.break)flags.push('上抜け');if(x.touch)flags.push('タッチ維持');if(x.near)flags.push('近接');return flags.length?flags.join(' / '):'—';}
 function renderVwap(vwap){
-  const section=document.getElementById('t-rs');if(!section||!vwap||!Array.isArray(vwap.rows))return;let card=section.querySelector('.v38-vwap-card');if(!card){card=document.createElement('div');card.className='card v38-vwap-card';section.appendChild(card);}card.replaceChildren();const hdr=el(card,'div','hdr',''),h=el(hdr,'h2','','Multi VWAPセットアップ');el(h,'span','h2en','63 / 252 / All-time VWAP');el(card,'div','sub','63/252は押し・再加速と深い押しの位置確認。All-timeは取得済み上場来履歴。売買ゲートやRS加点には使わない。');const wrap=el(card,'div','','');wrap.style.overflow='auto';const table=el(wrap,'table','tbl',''),thead=el(table,'thead','',''),trh=el(thead,'tr','','');['銘柄','63 VWAP','判定','252 VWAP','判定','All-time VWAP','All-time差'].forEach(x=>el(trh,'th','',x));const tbody=el(table,'tbody','',''),rows=vwap.rows.filter(x=>(x.vwap63&&(x.vwap63.break||x.vwap63.touch||x.vwap63.near))||(x.vwap252&&(x.vwap252.break||x.vwap252.touch||x.vwap252.near))).slice(0,30);
-  rows.forEach(x=>{const tr=el(tbody,'tr','',''),td=el(tr,'td','', ''),b=el(td,'button','v38-vwap-ticker',x.ticker||'—');b.type='button';b.onclick=()=>openTicker(x.ticker);el(tr,'td','',price(x.vwap63&&x.vwap63.value));el(tr,'td','v38-vwap-hit',vwapSignalText(x.vwap63));el(tr,'td','',price(x.vwap252&&x.vwap252.value));el(tr,'td','v38-vwap-hit',vwapSignalText(x.vwap252));el(tr,'td','v38-vwap-life',x.vwap_life&&x.vwap_life.valid?price(x.vwap_life.value):'対象外');el(tr,'td','v38-vwap-life',x.vwap_life&&x.vwap_life.valid&&num(x.vwap_life.dist)!==null?pct(x.vwap_life.dist):'対象外');});el(card,'div','v38-vwap-note','63日＝通常の押し/再加速、252日＝深い押し・反転候補。上場来履歴未完成は対象外表示。');card.dataset.v38VwapRestore='63-252-all-time';card.dataset.v38CanonicalVisual='vwap-card';
+  const section=document.getElementById('t-today');if(!section||!vwap||!Array.isArray(vwap.rows))return;const card=Array.from(section.querySelectorAll('.card')).find(x=>/Multi VWAP/.test(x.textContent||''));if(!card)return;let wrap=card.querySelector('.v38-vwap-live');if(!wrap){wrap=el(card,'div','v38-vwap-live','');wrap.style.overflow='auto';const table=el(wrap,'table','tbl',''),thead=el(table,'thead','',''),trh=el(thead,'tr','','');['銘柄','63 VWAP','判定','252 VWAP','判定','All-time VWAP','All-time差'].forEach(x=>el(trh,'th','',x));el(table,'tbody','','');}const tbody=wrap.querySelector('tbody');tbody.replaceChildren();const rows=vwap.rows.filter(x=>(x.vwap63&&(x.vwap63.break||x.vwap63.touch||x.vwap63.near))||(x.vwap252&&(x.vwap252.break||x.vwap252.touch||x.vwap252.near))).slice(0,30);
+  rows.forEach(x=>{const tr=el(tbody,'tr','',''),td=el(tr,'td','', ''),b=el(td,'button','v38-vwap-ticker',x.ticker||'—');b.type='button';b.onclick=()=>openTicker(x.ticker);el(tr,'td','',price(x.vwap63&&x.vwap63.value));el(tr,'td','v38-vwap-hit',vwapSignalText(x.vwap63));el(tr,'td','',price(x.vwap252&&x.vwap252.value));el(tr,'td','v38-vwap-hit',vwapSignalText(x.vwap252));el(tr,'td','v38-vwap-life',x.vwap_life&&x.vwap_life.valid?price(x.vwap_life.value):'対象外');el(tr,'td','v38-vwap-life',x.vwap_life&&x.vwap_life.valid&&num(x.vwap_life.dist)!==null?pct(x.vwap_life.dist):'対象外');});card.dataset.v38VwapRestore='63-252-all-time';
 }
 
 async function apply(){
   if(BUSY)return;BUSY=true;
-  try{installStyle();const[view,searchData,vwap,options]=await Promise.all([load('data/ui_view_model.json'),load('data/search_index.json'),load('data/vwap_restore.json'),load('data/options/index.json')]);if(searchData)renderSearch(searchData);if(view&&searchData)renderRotation(view,searchData);if(options)renderOptions(options);if(vwap)renderVwap(vwap);followTab();document.body.dataset.v38RestoredExperience='canonical-v5-ready';}finally{BUSY=false;}
+  try{installStyle();const[searchData,vwap,options]=await Promise.all([load('data/search_index.json'),load('data/vwap_restore.json'),load('data/options/index.json')]);if(searchData)renderSearch(searchData);if(options)renderOptions(options);if(vwap)renderVwap(vwap);followTab();document.body.dataset.v38RestoredExperience='canonical-v5-ready';}finally{BUSY=false;}
 }
-function start(){installStyle();bindTabs();apply();[700,1500,2600,4300].forEach(t=>setTimeout(apply,t));document.addEventListener('v38:data-ready',apply);}
+function start(){installStyle();apply();}
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',start,{once:true}):start();
 })();

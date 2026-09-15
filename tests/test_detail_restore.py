@@ -21,10 +21,8 @@ def test_detail_restore_has_vix_five_condition_panel_and_rotation_sections():
     assert "Core 12のEligibility/Rankingには使用しません" in js
 
 
-def test_detail_restore_loads_after_visual_fidelity_before_options_chart():
+def test_detail_restore_is_retired_from_production():
     build = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
-    visual = build.index('Path("assets/v38-visual-fidelity.js")')
-    detail = build.index('Path("assets/v38-detail-restore.js")')
-    options = build.index('Path("assets/v38-options-chart.js")')
-    assert visual < detail < options
+    assert 'detail_restore_enabled = False' in build
+    assert '_inject_external_extension(out, detail_restore)' not in build
     assert '"detail_restore_extension": detail_restore_enabled' in build

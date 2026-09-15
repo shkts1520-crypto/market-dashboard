@@ -17,6 +17,28 @@ from v38.ui_contract import validate_production_html
 _RULES_SECTION = re.compile(r'(<section[^>]+id="t-rules"[^>]*>).*?(</section>)', re.DOTALL)
 
 
+def _restore_section_0905(out: Path, section_id: str, fragment: Path) -> bool:
+    """Restore source DOM at build time; runtime code may only bind its slots."""
+    if not fragment.is_file():
+        return False
+    source = out.read_text(encoding="utf-8")
+    body = fragment.read_text(encoding="utf-8").strip()
+    # Canonical output must not retain the old inline handlers. Approved
+    # interactions are attached by the external binder.
+    body = re.sub(r'\s+on[a-z]+="[^"]*"', "", body, flags=re.IGNORECASE)
+    section = re.compile(
+        rf'(<section[^>]+id="{re.escape(section_id)}"[^>]*>).*?(</section>)',
+        re.DOTALL,
+    )
+    restored, count = section.subn(
+        lambda match: match.group(1) + body + match.group(2), source, count=1
+    )
+    if count != 1:
+        raise RuntimeError(f"09/05 {section_id} section was not found in production shell")
+    out.write_text(restored, encoding="utf-8")
+    return True
+
+
 def _restore_rules_0905(out: Path, fragment: Path) -> bool:
     if not fragment.is_file():
         return False
@@ -50,6 +72,17 @@ def _inject_external_extension(out: Path, asset: Path) -> bool:
         if "</body>" not in html:
             raise RuntimeError("production body end tag is missing")
         html = html.replace("</body>", marker + "\n</body>", 1)
+        out.write_text(html, encoding="utf-8")
+    return True
+
+
+def _inject_stylesheet(out: Path, asset: Path) -> bool:
+    if not _copy_asset(out, asset):
+        return False
+    html = out.read_text(encoding="utf-8")
+    marker = f'<link rel="stylesheet" href="assets/{asset.name}">'
+    if marker not in html:
+        html = html.replace("</head>", marker + "\n</head>", 1)
         out.write_text(html, encoding="utf-8")
     return True
 
@@ -100,27 +133,27 @@ def main() -> int:
 
     baseline_shell = Path("assets/v38-baseline-shell.js")
     baseline_shell_enabled = _copy_asset(out, baseline_shell)
+    source_mobile_enabled = _inject_stylesheet(out, Path("assets/v38-source-mobile.css"))
+    setups_0905_enabled = _restore_section_0905(
+        out, "t-today", Path("assets/baseline-0905/setups.html")
+    )
+    movers_0905_enabled = _restore_section_0905(
+        out, "t-movers", Path("assets/baseline-0905/movers.html")
+    )
     rules_0905_enabled = _restore_rules_0905(out, Path("assets/v38-rules-0905.html"))
 
     # The canonical v5 HTML/CSS is the visual authority. Extensions below may
     # bind live values or add user-approved post-09/05 features, but they must not
     # rebuild the page geometry. Each extension is injected exactly once here.
-    observables = Path("assets/v38-observables.js")
-    observables_enabled = _inject_external_extension(out, observables)
-    polish = Path("assets/v38-polish.js")
-    polish_enabled = _inject_external_extension(out, polish)
-    recovery = Path("assets/v38-recovery.js")
-    recovery_enabled = _inject_external_extension(out, recovery)
-    final_ui = Path("assets/v38-final-ui.js")
-    final_ui_enabled = _inject_external_extension(out, final_ui)
-    data_repair = Path("assets/v38-data-repair.js")
-    data_repair_enabled = _inject_external_extension(out, data_repair)
-    visual_fidelity = Path("assets/v38-visual-fidelity.js")
-    visual_fidelity_enabled = _inject_external_extension(out, visual_fidelity)
-    detail_restore = Path("assets/v38-detail-restore.js")
-    detail_restore_enabled = _inject_external_extension(out, detail_restore)
+    # Retired restoration layers. Their old responsibilities were destructive
+    # post-load DOM rewrites and are intentionally not shipped.
+    observables_enabled = polish_enabled = recovery_enabled = False
+    final_ui_enabled = data_repair_enabled = visual_fidelity_enabled = False
+    detail_restore_enabled = False
 
     # Recovered in-page chart is the only chart-modal implementation when present.
+    live_binder = Path("assets/v38-live-binder.js")
+    live_binder_enabled = _inject_external_extension(out, live_binder)
     restored_chart = Path("assets/v38-restored-chart.js")
     restored_chart_enabled = _inject_external_extension(out, restored_chart)
     if restored_chart_enabled:
@@ -131,31 +164,18 @@ def main() -> int:
 
     restored_experience = Path("assets/v38-restored-experience.js")
     restored_experience_enabled = _inject_external_extension(out, restored_experience)
+    tradingview_fallback = Path("assets/v38-tradingview-fallback.js")
+    tradingview_fallback_enabled = _inject_external_extension(out, tradingview_fallback)
 
     # Fixed 1680x1080 rewrite remains quarantined.
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
 
-    data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")
-    data_completeness_fallback_enabled = _inject_external_extension(out, data_completeness_fallback)
-
-    observation_ribbon_repair = Path("assets/v38-observation-ribbon-repair.js")
-    observation_ribbon_repair_enabled = _inject_external_extension(out, observation_ribbon_repair)
-
-    status_truth = Path("assets/v38-status-truth.js")
-    status_truth_enabled = _inject_external_extension(out, status_truth)
-
-    # Final, tightly scoped visual owner for only Rotation and Movers. It captures
-    # the canonical Rotation DOM before generic binders can neutralize it, restores
-    # that shell after live binding, and renders Movers with the source mv-* structure.
-    rotation_movers_visual = Path("assets/v38-rotation-movers-visual.js")
-    rotation_movers_visual_enabled = _inject_external_extension(out, rotation_movers_visual)
-
-    # Legacy restored-experience intentionally re-renders Rotation several times
-    # after DOMContentLoaded. Keep the approved Rotation/Movers rendering stable
-    # through that legacy retry window without changing any other tab.
-    rotation_movers_owner = Path("assets/v38-rotation-movers-owner.js")
-    rotation_movers_owner_enabled = _inject_external_extension(out, rotation_movers_owner)
+    data_completeness_fallback_enabled = False
+    observation_ribbon_repair_enabled = False
+    status_truth_enabled = False
+    rotation_movers_visual_enabled = False
+    rotation_movers_owner_enabled = False
 
     restored_data = _copy_restored_data(out)
     report = validate_production_html(out.read_text(encoding="utf-8"))
@@ -174,6 +194,9 @@ def main() -> int:
                 "canonical_dom_preserved": True,
                 "legacy_replacement_cards": False,
                 "baseline_0905_shell": baseline_shell_enabled,
+                "source_mobile_styles": source_mobile_enabled,
+                "setups_0905_restored": setups_0905_enabled,
+                "movers_0905_restored": movers_0905_enabled,
                 "rules_0905_restored": rules_0905_enabled,
                 "observables_extension": observables_enabled,
                 "polish_extension": polish_enabled,
@@ -182,9 +205,11 @@ def main() -> int:
                 "data_repair_extension": data_repair_enabled,
                 "visual_fidelity_extension": visual_fidelity_enabled,
                 "detail_restore_extension": detail_restore_enabled,
+                "live_binder_extension": live_binder_enabled,
                 "options_chart_extension": options_chart_enabled,
                 "restored_chart_extension": restored_chart_enabled,
                 "restored_experience_extension": restored_experience_enabled,
+                "tradingview_fallback_extension": tradingview_fallback_enabled,
                 "source_fidelity_extension": source_fidelity_enabled,
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,

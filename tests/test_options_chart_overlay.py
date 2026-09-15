@@ -42,15 +42,11 @@ def test_options_rate_calculation_has_measured_non_yahoo_fallback():
     assert "fixed fallback" in script
 
 
-def test_build_site_loads_visual_fidelity_after_data_repair_and_options_last():
+def test_build_site_retires_dom_reconstruction_layers():
     script = Path("scripts/build_site.py").read_text(encoding="utf-8")
-    assert 'Path("assets/v38-final-ui.js")' in script
-    assert 'Path("assets/v38-data-repair.js")' in script
-    assert 'Path("assets/v38-visual-fidelity.js")' in script
-    assert 'Path("assets/v38-options-chart.js")' in script
-    assert script.index('Path("assets/v38-final-ui.js")') < script.index('Path("assets/v38-data-repair.js")')
-    assert script.index('Path("assets/v38-data-repair.js")') < script.index('Path("assets/v38-visual-fidelity.js")')
-    assert script.index('Path("assets/v38-visual-fidelity.js")') < script.index('Path("assets/v38-options-chart.js")')
+    for name in ('final_ui', 'data_repair', 'visual_fidelity'):
+        assert name + "_enabled" in script
+    assert "final_ui_enabled = data_repair_enabled = visual_fidelity_enabled = False" in script
 
 
 def test_visual_fidelity_restores_mc57_bands_robust_diagnostics_and_vix_sequence():

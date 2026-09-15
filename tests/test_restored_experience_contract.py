@@ -14,19 +14,16 @@ def test_restored_experience_assets_and_build_wiring() -> None:
     assert "search_index.json" in build
     assert "vwap_restore.json" in build
 
-    # Canonical v5 visual keeps Japanese and English search labels as separate DOM text.
+    # Only approved post-baseline surfaces are rendered here. Rotation/Setups
+    # structure comes from the build-time source DOM.
     for text in (
         "銘柄検索",
         "Ticker Search",
-        "大分類 — 期間ごとランキング",
-        "順位フロー（大分類）",
-        "小分類（サブテーマ）— 期間ごとランキング",
-        "資金の流れ",
         "Options Intelligence",
-        "Multi VWAPセットアップ",
-        "63 / 252 / All-time VWAP",
+        "v38-vwap-live",
     ):
         assert text in experience
+    assert "if(view&&searchData)renderRotation" not in experience
 
     assert "VWAP63" in chart
     assert "VWAP252" in chart
