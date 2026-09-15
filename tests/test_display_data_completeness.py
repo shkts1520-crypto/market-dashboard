@@ -25,18 +25,21 @@ def test_search_index_preserves_exchange_for_unambiguous_fallback_symbols():
     assert "exchange + ':' + ticker" in js
 
 
-def test_fallback_loads_after_restored_chart_and_source_layers():
+def test_fallback_loads_after_restored_chart_without_fixed_canvas_source_layer():
     script = BUILD.read_text(encoding="utf-8")
     restored = script.index('restored_chart = Path("assets/v38-restored-chart.js")')
-    source = script.index('source_fidelity = Path("assets/v38-source-fidelity.js")')
+    restored_experience = script.index('restored_experience = Path("assets/v38-restored-experience.js")')
     fallback = script.index('data_completeness_fallback = Path("assets/v38-data-completeness-fallback.js")')
-    assert restored < source < fallback
+    assert restored < restored_experience < fallback
+    assert 'source_fidelity_enabled = False' in script
+    assert '_inject_external_extension(out, source_fidelity)' not in script
     assert '"data_completeness_fallback_extension": data_completeness_fallback_enabled' in script
 
 
-def test_validator_requires_full_stock_options_chart_and_vwap_completeness():
+def test_validator_requires_stock_contract_options_chart_and_vwap_completeness():
     script = VALIDATOR.read_text(encoding="utf-8")
     for token in (
+        'MIN_STOCK_COVERAGE',
         'target_session_coverage',
         'failed_tickers',
         'ticker_snapshot_coverage',
@@ -46,7 +49,6 @@ def test_validator_requires_full_stock_options_chart_and_vwap_completeness():
         'search_uncached_chart_policy',
     ):
         assert token in script
-    assert '== 1.0' in script
     assert 'NO_VALID_0_45_DTE_CONTRACTS' in script
 
 
