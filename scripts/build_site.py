@@ -23,8 +23,6 @@ def _restore_section_0905(out: Path, section_id: str, fragment: Path) -> bool:
         return False
     source = out.read_text(encoding="utf-8")
     body = fragment.read_text(encoding="utf-8").strip()
-    # Canonical output must not retain the old inline handlers. Approved
-    # interactions are attached by the external binder.
     body = re.sub(r'\s+on[a-z]+="[^"]*"', "", body, flags=re.IGNORECASE)
     section = re.compile(
         rf'(<section[^>]+id="{re.escape(section_id)}"[^>]*>).*?(</section>)',
@@ -142,16 +140,12 @@ def main() -> int:
     )
     rules_0905_enabled = _restore_rules_0905(out, Path("assets/v38-rules-0905.html"))
 
-    # The canonical v5 HTML/CSS is the visual authority. Extensions below may
-    # bind live values or add user-approved post-09/05 features, but they must not
-    # rebuild the page geometry. Each extension is injected exactly once here.
-    # Retired restoration layers. Their old responsibilities were destructive
-    # post-load DOM rewrites and are intentionally not shipped.
+    # Canonical/source DOM remains the visual authority. Runtime extensions may
+    # bind current data but must not replace it with synthetic or legacy values.
     observables_enabled = polish_enabled = recovery_enabled = False
     final_ui_enabled = data_repair_enabled = visual_fidelity_enabled = False
     detail_restore_enabled = False
 
-    # Recovered in-page chart is the only chart-modal implementation when present.
     live_binder = Path("assets/v38-live-binder.js")
     live_binder_enabled = _inject_external_extension(out, live_binder)
     restored_chart = Path("assets/v38-restored-chart.js")
@@ -167,10 +161,14 @@ def main() -> int:
     tradingview_fallback = Path("assets/v38-tradingview-fallback.js")
     tradingview_fallback_enabled = _inject_external_extension(out, tradingview_fallback)
 
-    # Fixed 1680x1080 rewrite remains quarantined.
+    # Final one-shot truth pass. This strips any visible baseline/mock value that
+    # was not replaced by a current authoritative shard. Unsupported semantics are
+    # SOURCE_UNAVAILABLE, never silently inherited from the mock HTML.
+    production_truth = Path("assets/v38-production-truth.js")
+    production_truth_enabled = _inject_external_extension(out, production_truth)
+
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
-
     data_completeness_fallback_enabled = False
     observation_ribbon_repair_enabled = False
     status_truth_enabled = False
@@ -210,6 +208,7 @@ def main() -> int:
                 "restored_chart_extension": restored_chart_enabled,
                 "restored_experience_extension": restored_experience_enabled,
                 "tradingview_fallback_extension": tradingview_fallback_enabled,
+                "production_truth_extension": production_truth_enabled,
                 "source_fidelity_extension": source_fidelity_enabled,
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
