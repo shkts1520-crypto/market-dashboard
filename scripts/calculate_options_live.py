@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import math
 import sys
 
 import calculate_options_live_legacy as _legacy
-from calculate_options_resilient import main
+import calculate_options_resilient as _resilient
+
+main = _resilient.main
 
 # Keep the measured-rate contract visible at this public entrypoint for existing
 # static authority tests. FRED:DGS3MO remains the non-Yahoo measured fallback.
@@ -23,6 +26,20 @@ def _risk_free_rate(yf, *, session_date: str, previous: dict):
         return _legacy._risk_free_rate(yf, session_date=session_date, previous=previous)
     finally:
         _legacy._fred_risk_free_rate = original_fred
+
+
+# atomic_write_json intentionally rejects NaN/Infinity. If a chain contains Call
+# GEX but zero measurable Put GEX, the ratio is undefined rather than infinite.
+_original_upward_structure = _resilient._upward_structure
+
+def _json_safe_upward_structure(row: dict) -> dict:
+    result = _original_upward_structure(row)
+    ratio = result.get("call_put_gex_ratio")
+    if isinstance(ratio, (int, float)) and not math.isfinite(float(ratio)):
+        result["call_put_gex_ratio"] = None
+    return result
+
+_resilient._upward_structure = _json_safe_upward_structure
 
 
 if __name__ == "__main__":
