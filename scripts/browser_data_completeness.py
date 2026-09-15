@@ -87,6 +87,33 @@ def assert_truth_bound(section, href: str, width: int) -> None:
     assert not unbound, (width, href, 'cards without truth provenance', unbound)
 
 
+def assert_options_upward_rankings(page, options: dict, width: int) -> None:
+    rankings = options.get('upward_rankings')
+    if not isinstance(rankings, dict):
+        return
+    expected_buckets = ('0-6', '7-21', '22-45', '0-45')
+    assert set(expected_buckets).issubset(rankings), (width, 'missing option DTE rankings', rankings.keys())
+    page.locator('a.tabx[href="#t-options"]').click()
+    card = page.locator('#t-options .v38-options-upward-card')
+    assert card.count() == 1 and card.is_visible(), (width, 'upward options card missing')
+    assert card.get_attribute('data-v38-truth-source') == 'data/options/index.json.upward_rankings'
+
+    scan = options.get('universe_scan') or {}
+    target_count = scan.get('target_count')
+    if target_count is not None:
+        assert f'Universe {target_count}' in card.inner_text(), (width, target_count, card.inner_text()[:800])
+
+    card_text = card.inner_text()
+    for bucket in expected_buckets:
+        rows = rankings.get(bucket) or []
+        assert f'{bucket} DTE' in card_text, (width, bucket, 'bucket heading missing')
+        if rows:
+            ticker = str(rows[0].get('ticker') or '').upper()
+            assert ticker, (width, bucket, 'empty ranked ticker')
+            locator = card.locator(f'[data-v38-ticker="{ticker}"]')
+            assert locator.count() >= 1, (width, bucket, ticker, 'ranked ticker not rendered')
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify production UI contains authoritative data only")
     parser.add_argument("--url", default="http://127.0.0.1:8000/")
@@ -150,6 +177,7 @@ def main() -> int:
                 search = fetch_json(page, 'data/search_index.json')
                 options = fetch_json(page, 'data/options/index.json')
                 vwap = fetch_json(page, 'data/vwap_restore.json')
+                assert_options_upward_rankings(page, options, width)
                 local = set((options.get('chart_ohlc') or {}).keys()) | set((vwap.get('chart_ohlc') or {}).keys())
                 uncached = next(
                     str(row.get('ticker') or '').upper()
