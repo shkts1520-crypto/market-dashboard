@@ -1,8 +1,8 @@
 {
   "calculation_version": "v38-history-archive-1.1.0",
-  "coverage": 0.987603305785124,
+  "coverage": 1.0,
   "first_session": "2026-09-10",
-  "generated_at": "2026-09-14T23:45:32Z",
+  "generated_at": "2026-09-15T02:06:38Z",
   "latest_session": "2026-09-14",
   "rows": [
     {
@@ -22,10 +22,10 @@
       "session_date": "2026-09-11"
     },
     {
-      "coverage": 0.987603305785124,
-      "generated_at": "2026-09-14T23:45:32Z",
+      "coverage": 1.0,
+      "generated_at": "2026-09-15T02:06:38Z",
       "path": "sessions/2026-09-14.json",
-      "ready_authority_count": 0,
+      "ready_authority_count": 6,
       "rs_top_count": 100,
       "session_date": "2026-09-14"
     }

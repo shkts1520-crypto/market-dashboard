@@ -2,11 +2,11 @@
   "calculation_version": "v38-recovered-live-inputs-1.0.1",
   "coverage": 1.0,
   "coverage_detail": {
-    "classified_rows": 3346,
-    "revenue_ttm_available": 3200,
-    "rs_rows": 3346
+    "classified_rows": 3388,
+    "revenue_ttm_available": 3224,
+    "rs_rows": 3388
   },
-  "generated_at": "2026-09-14T23:45:32Z",
+  "generated_at": "2026-09-15T02:06:38Z",
   "rows": [
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -3338,6 +3338,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Air Freight/Couriers",
+      "market_cap": 73976077326.2949,
+      "revenue_ttm": 94720000000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "FDX"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Real Estate Investment Trusts",
       "market_cap": 3654560281.612862,
       "revenue_ttm": 1440608000.0,
@@ -3367,14 +3375,6 @@
       "revenue_ttm": 3124200000.0,
       "structural_clinical_biotech": false,
       "ticker": "CRS"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Air Freight/Couriers",
-      "market_cap": 73976077326.2949,
-      "revenue_ttm": 94720000000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "FDX"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -3714,19 +3714,19 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Auto Parts: OEM",
-      "market_cap": 3259573488.426641,
-      "revenue_ttm": 7662000000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "DAN"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Specialty Stores",
       "market_cap": 5208021825.289619,
       "revenue_ttm": 5691025000.0,
       "structural_clinical_biotech": false,
       "ticker": "PSMT"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Auto Parts: OEM",
+      "market_cap": 3259573488.426641,
+      "revenue_ttm": 7662000000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "DAN"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -4178,6 +4178,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Electronic Production Equipment",
+      "market_cap": 91392345484.55054,
+      "revenue_ttm": 11479600000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "VRT"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Semiconductors",
       "market_cap": 2710413654.023527,
       "revenue_ttm": 449370000.0,
@@ -4191,14 +4199,6 @@
       "revenue_ttm": 7160000000.0,
       "structural_clinical_biotech": false,
       "ticker": "PENN"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Electronic Production Equipment",
-      "market_cap": 91392345484.55054,
-      "revenue_ttm": 11479600000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "VRT"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -4370,6 +4370,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Real Estate Investment Trusts",
+      "market_cap": 14391958964.658619,
+      "revenue_ttm": 2949806000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "DOC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Pharmaceuticals: Major",
       "market_cap": 130938004578.80577,
       "revenue_ttm": 49195000000.0,
@@ -4434,14 +4442,6 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Real Estate Investment Trusts",
-      "market_cap": 14391958964.658619,
-      "revenue_ttm": 2949806000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "DOC"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
       "market_cap": 1736514055.605896,
       "revenue_ttm": 637867000.0,
@@ -4495,6 +4495,14 @@
       "revenue_ttm": 1092894000.0,
       "structural_clinical_biotech": false,
       "ticker": "XHR"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Real Estate Investment Trusts",
+      "market_cap": 6371579602.718266,
+      "revenue_ttm": 1012222000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "MAC"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -4671,14 +4679,6 @@
       "revenue_ttm": 104999000.0,
       "structural_clinical_biotech": false,
       "ticker": "KYMR"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Real Estate Investment Trusts",
-      "market_cap": 6371579602.718266,
-      "revenue_ttm": 1012222000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "MAC"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -6130,6 +6130,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Managed Health Care",
+      "market_cap": 344272500867.2283,
+      "revenue_ttm": 450129000000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "UNH"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Real Estate Investment Trusts",
       "market_cap": 15210112084.740541,
       "revenue_ttm": 2326226000.0,
@@ -6271,14 +6279,6 @@
       "revenue_ttm": 527601000.0,
       "structural_clinical_biotech": false,
       "ticker": "BWMN"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Managed Health Care",
-      "market_cap": 344272500867.2283,
-      "revenue_ttm": 450129000000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "UNH"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -8722,6 +8722,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Major Banks",
+      "market_cap": 4767072607.873342,
+      "revenue_ttm": 867269000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "FFIN"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Real Estate Investment Trusts",
       "market_cap": 16295295456.480032,
       "revenue_ttm": 2870872000.0,
@@ -8967,14 +8975,6 @@
       "revenue_ttm": 5122300000.0,
       "structural_clinical_biotech": false,
       "ticker": "MCHP"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Major Banks",
-      "market_cap": 4767072607.873342,
-      "revenue_ttm": 867269000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "FFIN"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -9666,6 +9666,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Gas Distributors",
+      "market_cap": 3115759464.9611,
+      "revenue_ttm": 993800000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "CPK"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Electrical Products",
       "market_cap": 1285821579.2603774,
       "revenue_ttm": 1712950.00000918,
@@ -9831,14 +9839,6 @@
       "revenue_ttm": 1373929000.0,
       "structural_clinical_biotech": false,
       "ticker": "CAVA"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Gas Distributors",
-      "market_cap": 3115759464.9611,
-      "revenue_ttm": 993800000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "CPK"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -11058,19 +11058,19 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Engineering & Construction",
-      "market_cap": 3289713600.715221,
-      "revenue_ttm": 632460000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "EXPO"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Homebuilding",
       "market_cap": 1730141958.9692764,
       "revenue_ttm": 3869059000.0,
       "structural_clinical_biotech": false,
       "ticker": "CCS"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Engineering & Construction",
+      "market_cap": 3289713600.715221,
+      "revenue_ttm": 632460000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "EXPO"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -11503,6 +11503,14 @@
       "revenue_ttm": 4154000000.0,
       "structural_clinical_biotech": false,
       "ticker": "ULCC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 3237855203.379985,
+      "revenue_ttm": 741809000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "GBDC"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -12055,14 +12063,6 @@
       "revenue_ttm": 5850094000.0,
       "structural_clinical_biotech": false,
       "ticker": "RITM"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Financial Conglomerates",
-      "market_cap": 3237855203.379985,
-      "revenue_ttm": 741809000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "GBDC"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -14050,6 +14050,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Construction Materials",
+      "market_cap": 5603461193.440903,
+      "revenue_ttm": 2324934000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "EXP"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Banks/Brokers",
       "market_cap": 9432153520.178688,
       "revenue_ttm": 1245575000.00369,
@@ -14071,14 +14079,6 @@
       "revenue_ttm": 1188438000.0,
       "structural_clinical_biotech": false,
       "ticker": "ORA"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Construction Materials",
-      "market_cap": 5603461193.440903,
-      "revenue_ttm": 2324934000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "EXP"
     },
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -17234,6 +17234,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 313303050.333,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "AACO"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Real Estate Investment Trusts",
       "market_cap": 1328787167.8102324,
       "revenue_ttm": 439739000.0,
@@ -17279,6 +17287,14 @@
       "revenue_ttm": 267283948.0,
       "structural_clinical_biotech": false,
       "ticker": "ABX"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 356111433.99999994,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "ACAA"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -17569,6 +17585,14 @@
       "ticker": "ALCO"
     },
     {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 323174071.00000006,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "ALDF"
+    },
+    {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
       "industry": "Biotechnology",
       "market_cap": 246761807.86448595,
@@ -17831,6 +17855,14 @@
       "revenue_ttm": 54087000.0,
       "structural_clinical_biotech": false,
       "ticker": "AQST"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 356146201.99703413,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "ARCI"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -18298,6 +18330,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 353026122.3279173,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "BDCI"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Real Estate Investment Trusts",
       "market_cap": 513256051.8139536,
       "revenue_ttm": 498291000.0,
@@ -18759,6 +18799,14 @@
       "revenue_ttm": 3858981000.0,
       "structural_clinical_biotech": false,
       "ticker": "CAPL"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 312556528.83192015,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "CAQ"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -19394,6 +19442,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 325476106.50264806,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "CRAQ"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Wholesale Distributors",
       "market_cap": 1183360936.4056942,
       "revenue_ttm": 689790000.0,
@@ -19599,6 +19655,14 @@
       "revenue_ttm": 127610966.001533,
       "structural_clinical_biotech": false,
       "ticker": "CWCO"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 450065000.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "CXII"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -19938,6 +20002,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 213036001.99462575,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "EGHA"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Packaged Software",
       "market_cap": 266483504.51902172,
       "revenue_ttm": 744561000.0,
@@ -20231,6 +20303,14 @@
       "revenue_ttm": 0.0,
       "structural_clinical_biotech": false,
       "ticker": "FAC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 260723598.99999997,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "FACT"
     },
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -20594,6 +20674,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 227700000.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "FTRA"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Integrated Oil",
       "market_cap": 329860822.1253589,
       "revenue_ttm": null,
@@ -20882,6 +20970,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 366929975.00000006,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "GIX"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Trusts/Mutual Funds",
       "market_cap": 439887044.3146817,
       "revenue_ttm": 92382000.0,
@@ -21035,6 +21131,14 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
+      "market_cap": 300818262.0029297,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "GSRF"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
       "market_cap": 234342900.0,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
@@ -21082,6 +21186,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 390330125.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "GUAC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Water Utilities",
       "market_cap": 250231601.97588974,
       "revenue_ttm": 60113000.0,
@@ -21098,11 +21210,27 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 376740000.9995042,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "HACQ"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
       "market_cap": 950258623.7578615,
       "revenue_ttm": 450869000.0,
       "structural_clinical_biotech": false,
       "ticker": "HAFC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 211277467.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "HAVA"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -21154,11 +21282,27 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 354780010.281859,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "HCIC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Miscellaneous Commercial Services",
       "market_cap": 285846742.4153005,
       "revenue_ttm": 286987000.0,
       "structural_clinical_biotech": false,
       "ticker": "HCKT"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 261096000.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "HCMA"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -21191,6 +21335,14 @@
       "revenue_ttm": 613146000.0,
       "structural_clinical_biotech": false,
       "ticker": "HLLY"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 238247985.9675174,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "HLXC"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -21659,6 +21811,14 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
+      "market_cap": 203343600.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "IPVV"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
       "market_cap": 314569946.14153504,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
@@ -21802,6 +21962,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 303658006.034549,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "JENA"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Apparel/Footwear Retail",
       "market_cap": 353292963.1320598,
       "revenue_ttm": 588194000.0,
@@ -21863,6 +22031,22 @@
       "revenue_ttm": 221201000.0,
       "structural_clinical_biotech": false,
       "ticker": "KBDC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 444551511.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "KBON"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 357989655.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "KCHV"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -22018,6 +22202,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 289270311.9164179,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "KPET"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Miscellaneous Commercial Services",
       "market_cap": 808450040.2173914,
       "revenue_ttm": 301711000.0,
@@ -22159,6 +22351,14 @@
       "revenue_ttm": 88483000.0,
       "structural_clinical_biotech": false,
       "ticker": "LAND"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 234370003.99021047,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "LATA"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -22695,6 +22895,14 @@
       "revenue_ttm": 500012000.0,
       "structural_clinical_biotech": false,
       "ticker": "MGPI"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Information Technology Services",
+      "market_cap": 1655843792.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "MGRT"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -23611,6 +23819,14 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
+      "market_cap": 366072886.99999994,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "OIM"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
       "market_cap": 685603530.0703517,
       "revenue_ttm": 5831650.0,
       "structural_clinical_biotech": false,
@@ -23834,6 +24050,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 352029913.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "OYSE"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Medical Specialties",
       "market_cap": 419621496.923077,
       "revenue_ttm": 159271000.0,
@@ -23943,6 +24167,14 @@
       "revenue_ttm": 231244000.0,
       "structural_clinical_biotech": false,
       "ticker": "PBYI"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 328521602.99855417,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "PCAP"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -24395,6 +24627,14 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
+      "market_cap": 249499993.03489533,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "QADR"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
       "market_cap": 300394586.01194024,
       "revenue_ttm": null,
       "structural_clinical_biotech": false,
@@ -24527,6 +24767,14 @@
       "revenue_ttm": 333619000.0,
       "structural_clinical_biotech": false,
       "ticker": "RCMT"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 391125015.9923334,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "RDAG"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -24722,6 +24970,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 318592214.9779087,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "RNGT"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Miscellaneous Commercial Services",
       "market_cap": 565863420.2330508,
       "revenue_ttm": 1216842.51193301,
@@ -24759,6 +25015,14 @@
       "revenue_ttm": 175332000.0,
       "structural_clinical_biotech": false,
       "ticker": "RRBI"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 330333335.9959697,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "RREV"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -24879,6 +25143,14 @@
       "revenue_ttm": 413935000.0,
       "structural_clinical_biotech": false,
       "ticker": "SAFE"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 226090000.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "SAMO"
     },
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -25007,6 +25279,14 @@
       "revenue_ttm": 1001940000.0,
       "structural_clinical_biotech": false,
       "ticker": "SDHC"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 366844127.99999994,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "SDHI"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -25330,6 +25610,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 242590263.99999997,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "SOCA"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Packaged Software",
       "market_cap": 669104737.707751,
       "revenue_ttm": 86167000.0005627,
@@ -25591,6 +25879,14 @@
       "revenue_ttm": 72485000.0,
       "structural_clinical_biotech": false,
       "ticker": "SVCO"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 312186669.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "SVIV"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -26098,6 +26394,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 282836645.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "TVAI"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Insurance Brokers/Services",
       "market_cap": 1520476993.8242786,
       "revenue_ttm": 293223000.0,
@@ -26119,6 +26423,14 @@
       "revenue_ttm": 381270000.0,
       "structural_clinical_biotech": false,
       "ticker": "TWIN"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 236015626.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "TWLV"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -26546,6 +26858,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 206627087.99999997,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "WLII"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Chemicals: Specialty",
       "market_cap": 757081520.7657994,
       "revenue_ttm": 1234722000.0,
@@ -26687,6 +27007,22 @@
       "revenue_ttm": 7757000000.0,
       "structural_clinical_biotech": false,
       "ticker": "XRX"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 276800410.0,
+      "revenue_ttm": 0.0,
+      "structural_clinical_biotech": false,
+      "ticker": "XSLL"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Financial Conglomerates",
+      "market_cap": 205261000.0,
+      "revenue_ttm": null,
+      "structural_clinical_biotech": false,
+      "ticker": "XTER"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
