@@ -111,7 +111,7 @@ def main() -> int:
                     page.locator(f'a.tabx[href="{href}"]').click()
                     section = page.locator(href)
                     assert section.is_visible()
-                    visible_text = section.inner_text()
+                    visible_text = section.evaluate("root => String(root.innerText || '')")
                     if href in DYNAMIC_TABS:
                         assert 'MOCK DATA' not in visible_text.upper(), (width, href, 'MOCK DATA visible')
                         assert 'モック' not in visible_text, (width, href, 'mock label visible')
