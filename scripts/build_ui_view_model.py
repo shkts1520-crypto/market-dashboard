@@ -8,6 +8,7 @@ from pathlib import Path
 
 from v38.display_observations import attach_display_observations
 from v38.mc57_ui import attach_mc57_ui_detail
+from v38.movers_ui import attach_movers_ui
 from v38.recovery_ui import attach_recovered_theme_ui
 from v38.two_year_ui import attach_two_year_display_history
 from v38.ui_polish import attach_reconstructed_stock_ui
@@ -21,6 +22,7 @@ def main() -> int:
     a = p.parse_args()
 
     out = build_ui_view_model(a.data_dir)
+    out = attach_movers_ui(out, a.data_dir)
     out = attach_mc57_ui_detail(out, a.data_dir)
     out = attach_recovered_theme_ui(out, a.data_dir)
     out = attach_reconstructed_stock_ui(out, a.data_dir)
@@ -44,6 +46,7 @@ def main() -> int:
     f123_detail = out["daily"].get("f123_detail") or {}
     display_history = out["daily"].get("display_history") or {}
     display_observations = out["daily"].get("display_observations") or {}
+    movers = out.get("movers") or {}
     print(
         json.dumps(
             {
@@ -66,6 +69,8 @@ def main() -> int:
                 "fine_theme_status": out["rotation"].get("fine_theme_status"),
                 "fine_theme_count": out["rotation"].get("fine_theme_count", 0),
                 "fine_theme_coverage": out["rotation"].get("fine_theme_coverage"),
+                "movers_status": movers.get("status"),
+                "movers_universe_count": movers.get("universe_count", 0),
             },
             sort_keys=True,
         )

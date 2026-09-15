@@ -129,14 +129,10 @@ def main() -> int:
         options_chart = Path("assets/v38-options-chart.js")
         options_chart_enabled = _inject_external_extension(out, options_chart)
 
-    # Restores approved Rotation / Options / Search / VWAP surfaces using the
-    # canonical component vocabulary and responsive layout.
     restored_experience = Path("assets/v38-restored-experience.js")
     restored_experience_enabled = _inject_external_extension(out, restored_experience)
 
-    # DO NOT bind v38-source-fidelity.js or its compatibility contract here.
-    # That layer rebuilds Rotation as a fixed 1680x1080 canvas and uses broad
-    # !important overrides, defeating the canonical responsive visual source.
+    # Fixed 1680x1080 rewrite remains quarantined.
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
 
@@ -146,10 +142,20 @@ def main() -> int:
     observation_ribbon_repair = Path("assets/v38-observation-ribbon-repair.js")
     observation_ribbon_repair_enabled = _inject_external_extension(out, observation_ribbon_repair)
 
-    # Runs last and only removes stale scaffold states when the authoritative
-    # section is already READY. True DATA_REQUIRED / STALE states remain visible.
     status_truth = Path("assets/v38-status-truth.js")
     status_truth_enabled = _inject_external_extension(out, status_truth)
+
+    # Final, tightly scoped visual owner for only Rotation and Movers. It captures
+    # the canonical Rotation DOM before generic binders can neutralize it, restores
+    # that shell after live binding, and renders Movers with the source mv-* structure.
+    rotation_movers_visual = Path("assets/v38-rotation-movers-visual.js")
+    rotation_movers_visual_enabled = _inject_external_extension(out, rotation_movers_visual)
+
+    # Legacy restored-experience intentionally re-renders Rotation several times
+    # after DOMContentLoaded. Keep the approved Rotation/Movers rendering stable
+    # through that legacy retry window without changing any other tab.
+    rotation_movers_owner = Path("assets/v38-rotation-movers-owner.js")
+    rotation_movers_owner_enabled = _inject_external_extension(out, rotation_movers_owner)
 
     restored_data = _copy_restored_data(out)
     report = validate_production_html(out.read_text(encoding="utf-8"))
@@ -184,6 +190,8 @@ def main() -> int:
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
                 "observation_ribbon_repair_extension": observation_ribbon_repair_enabled,
                 "status_truth_extension": status_truth_enabled,
+                "rotation_movers_visual_extension": rotation_movers_visual_enabled,
+                "rotation_movers_owner_extension": rotation_movers_owner_enabled,
                 "restored_materialized": restored_materialized,
                 "restored_data": restored_data,
             },
