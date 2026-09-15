@@ -21,6 +21,10 @@ _rate_from_yahoo_frame = _legacy._rate_from_yahoo_frame
 _previous_risk_free_rate = _legacy._previous_risk_free_rate
 _fred_risk_free_rate = _legacy._fred_risk_free_rate
 
+# The former 25% readiness floor belonged to the small priority universe. Full
+# active-universe acquisition is READY only after the scan contract is >=98% resolved.
+_resilient.MIN_READY_TARGET_COVERAGE = _resilient.FULL_UNIVERSE_SCAN_READY_COVERAGE
+
 
 def _risk_free_rate(yf, *, session_date: str, previous: dict):
     original_fred = _legacy._fred_risk_free_rate
