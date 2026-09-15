@@ -37,12 +37,7 @@ def _is_production_context() -> bool:
 
 
 def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_at: str) -> Path | None:
-    """Turn the user's explicit EMPTY portfolio setting into a current-session ledger.
-
-    This avoids misreporting an intentional zero-position portfolio as missing data.
-    Switching config/portfolio_state.json away from EMPTY immediately stops this
-    behavior and restores the explicit ledger requirement.
-    """
+    """Turn the user's explicit EMPTY portfolio setting into a current-session ledger."""
     config = _load(Path("config/portfolio_state.json"))
     if str(config.get("mode") or "").upper() != "EMPTY":
         return None
@@ -64,32 +59,44 @@ def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_a
     return path
 
 
-def _reconstruct_history_if_production(root: Path, *, generated_at: str) -> Path | None:
-    """Rebuild the original two-year display window in production.
+def _refresh_history_if_production(root: Path, *, session: str, generated_at: str) -> Path | None:
+    """Persist two-year display history and append/merge only the current session.
 
-    Pull-request verification normally remains network-light. Main/scheduled/manual
-    runs refresh the full two-year display history. The separate exact observation
-    seed below runs only while its persistent seed is absent.
+    Existing history is authoritative display history and is not downloaded again.
+    A full reconstruction remains available only as a bootstrap/recovery fallback
+    when one of the retained history files is missing or empty.
     """
     if not _is_production_context():
         return None
-
-    command = [
-        sys.executable,
-        "scripts/reconstruct_display_history_2y.py",
-        "--data-dir", str(root),
-        "--generated-at", generated_at,
-    ]
-    subprocess.run(command, check=True)
 
     outputs = (
         root / "history" / "reconstructed_stock_metrics.json",
         root / "history" / "market_diagnostics_2y.json",
         root / "history" / "market_series_2y.json",
     )
+    retained_ready = all(path.is_file() and path.stat().st_size > 0 for path in outputs)
+    script = (
+        "scripts/update_display_history_incremental.py"
+        if retained_ready
+        else "scripts/reconstruct_display_history_2y.py"
+    )
+    command = [
+        sys.executable,
+        script,
+        "--data-dir", str(root),
+        "--generated-at", generated_at,
+    ]
+    subprocess.run(command, check=True)
+
     for output in outputs:
         if not output.is_file() or output.stat().st_size <= 0:
-            raise SystemExit(f"two-year display reconstruction missing output: {output}")
+            raise SystemExit(f"two-year display history missing output: {output}")
+        obj = _load(output)
+        if obj.get("session_date") != session:
+            raise SystemExit(
+                f"two-year display history session mismatch: {output} "
+                f"{obj.get('session_date')} != {session}"
+            )
     return outputs[0]
 
 
@@ -169,8 +176,9 @@ def main() -> int:
     )
     ledger_arg = args.positions_ledger or (str(empty_ledger) if empty_ledger is not None else None)
 
-    reconstructed_history = _reconstruct_history_if_production(
+    reconstructed_history = _refresh_history_if_production(
         root,
+        session=session,
         generated_at=generated_at,
     )
     f123_completion = complete_f123_file(
@@ -228,6 +236,7 @@ def main() -> int:
                 "positions_ledger": empty_ledger.as_posix() if empty_ledger is not None else ledger_arg,
                 "outputs": [p.as_posix() for p in outputs],
                 "historical_reconstruction": reconstructed_history.as_posix() if reconstructed_history is not None else None,
+                "history_update_mode": "PERSISTED_HISTORY_PLUS_CURRENT_SESSION" if reconstructed_history is not None else None,
                 "f123_display_completion": f123_completion.as_posix() if f123_completion is not None else None,
                 "tqqq_panic_state": tqqq_state.as_posix() if tqqq_state is not None else None,
                 "publish_extension": publish_extension.as_posix(),
