@@ -2,7 +2,7 @@
   "calculation_version": "v38-history-archive-1.1.0",
   "coverage": 1.0,
   "first_session": "2026-09-10",
-  "generated_at": "2026-09-15T06:05:24Z",
+  "generated_at": "2026-09-15T08:12:34Z",
   "latest_session": "2026-09-14",
   "rows": [
     {
@@ -23,7 +23,7 @@
     },
     {
       "coverage": 1.0,
-      "generated_at": "2026-09-15T06:05:24Z",
+      "generated_at": "2026-09-15T08:12:34Z",
       "path": "sessions/2026-09-14.json",
       "ready_authority_count": 6,
       "rs_top_count": 100,

@@ -6,7 +6,7 @@
     "revenue_ttm_available": 3224,
     "rs_rows": 3388
   },
-  "generated_at": "2026-09-15T06:05:24Z",
+  "generated_at": "2026-09-15T08:12:34Z",
   "rows": [
     {
       "classification_reason": "INDUSTRY_AND_MCAP_AND_REVENUE_TTM",
@@ -3315,7 +3315,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Household/Personal Care",
-      "market_cap": 3588488686.2132845,
+      "market_cap": 3562868061.947594,
       "revenue_ttm": 1501676000.0,
       "structural_clinical_biotech": false,
       "ticker": "IPAR"
@@ -5411,7 +5411,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Biotechnology",
-      "market_cap": 181541824530.49136,
+      "market_cap": 180525061357.79138,
       "revenue_ttm": 30544000000.0,
       "structural_clinical_biotech": false,
       "ticker": "GILD"
@@ -5571,7 +5571,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Major Banks",
-      "market_cap": 3359945431.9210863,
+      "market_cap": 3328874968.7871923,
       "revenue_ttm": 616663000.0,
       "structural_clinical_biotech": false,
       "ticker": "SFNC"
@@ -6539,7 +6539,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Trusts/Mutual Funds",
-      "market_cap": 1539172937.238528,
+      "market_cap": 1523022774.824605,
       "revenue_ttm": 229504000.0,
       "structural_clinical_biotech": false,
       "ticker": "CSWC"
@@ -7291,7 +7291,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Real Estate Investment Trusts",
-      "market_cap": 5419650861.0,
+      "market_cap": 5403424361.416168,
       "revenue_ttm": 756386000.0,
       "structural_clinical_biotech": false,
       "ticker": "PECO"
@@ -8947,7 +8947,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
-      "market_cap": 3326831352.384932,
+      "market_cap": 3308435020.6924663,
       "revenue_ttm": 1032868999.9999999,
       "structural_clinical_biotech": false,
       "ticker": "SBCF"
@@ -9179,7 +9179,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Managers",
-      "market_cap": 22568816243.67861,
+      "market_cap": 22291505647.11167,
       "revenue_ttm": 7592000000.0,
       "structural_clinical_biotech": false,
       "ticker": "TROW"
@@ -10195,7 +10195,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Electric Utilities",
-      "market_cap": 46322882534.5653,
+      "market_cap": 45952786689.072716,
       "revenue_ttm": 14608000000.0,
       "structural_clinical_biotech": false,
       "ticker": "XEL"
@@ -10235,7 +10235,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Financial Conglomerates",
-      "market_cap": 14216853020.790276,
+      "market_cap": 13872202038.468086,
       "revenue_ttm": 3286000000.0,
       "structural_clinical_biotech": false,
       "ticker": "ARCC"
@@ -13155,7 +13155,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Data Processing Services",
-      "market_cap": 24343080208.30715,
+      "market_cap": 24278002198.87469,
       "revenue_ttm": 3136000000.0,
       "structural_clinical_biotech": false,
       "ticker": "VRSK"
@@ -14595,7 +14595,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Restaurants",
-      "market_cap": 10711908223.542778,
+      "market_cap": 10646069210.154106,
       "revenue_ttm": 5027815000.0,
       "structural_clinical_biotech": false,
       "ticker": "DPZ"
@@ -14947,7 +14947,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Cable/Satellite TV",
-      "market_cap": 12195552238.590565,
+      "market_cap": 12139454942.184906,
       "revenue_ttm": 29110000000.0,
       "structural_clinical_biotech": false,
       "ticker": "PSKY"
@@ -17252,7 +17252,7 @@
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Other Metals/Minerals",
       "market_cap": 321938019.3522267,
-      "revenue_ttm": 16284496.000000602,
+      "revenue_ttm": 21741726.000000402,
       "structural_clinical_biotech": false,
       "ticker": "ABAT"
     },
@@ -19067,7 +19067,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
-      "market_cap": 309918656.167579,
+      "market_cap": 308357844.5532632,
       "revenue_ttm": 195137000.0,
       "structural_clinical_biotech": false,
       "ticker": "CFFI"
@@ -19371,7 +19371,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
-      "market_cap": 510730985.9353892,
+      "market_cap": 506393885.32276076,
       "revenue_ttm": 239939000.0,
       "structural_clinical_biotech": false,
       "ticker": "COFS"
@@ -20411,7 +20411,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Trusts/Mutual Funds",
-      "market_cap": 740489645.149208,
+      "market_cap": 721512463.0592744,
       "revenue_ttm": 162264000.0,
       "structural_clinical_biotech": false,
       "ticker": "FDUS"
@@ -21676,7 +21676,7 @@
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Marine Shipping",
       "market_cap": 271447639.3177893,
-      "revenue_ttm": 241350722.001094,
+      "revenue_ttm": 241350722.00171602,
       "structural_clinical_biotech": false,
       "ticker": "IMPP"
     },
@@ -23763,7 +23763,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Trusts/Mutual Funds",
-      "market_cap": 1119567036.0418313,
+      "market_cap": 1090498812.4467247,
       "revenue_ttm": 237362000.0,
       "structural_clinical_biotech": false,
       "ticker": "OCSL"
