@@ -166,6 +166,8 @@ def main() -> int:
     # SOURCE_UNAVAILABLE, never silently inherited from the mock HTML.
     production_truth = Path("assets/v38-production-truth.js")
     production_truth_enabled = _inject_external_extension(out, production_truth)
+    production_label_truth = Path("assets/v38-production-label-truth.js")
+    production_label_truth_enabled = _inject_external_extension(out, production_label_truth)
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -209,6 +211,7 @@ def main() -> int:
                 "restored_experience_extension": restored_experience_enabled,
                 "tradingview_fallback_extension": tradingview_fallback_enabled,
                 "production_truth_extension": production_truth_enabled,
+                "production_label_truth_extension": production_label_truth_enabled,
                 "source_fidelity_extension": source_fidelity_enabled,
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
