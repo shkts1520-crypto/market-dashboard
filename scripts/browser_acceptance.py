@@ -121,7 +121,12 @@ def main() -> int:
                     assert section.is_visible()
                     assert page.locator("section.on").count() == 1
                     assert page.evaluate("window.__v38Sentinel") == sentinel
-                    assert section.locator(".card:visible,.postwrap:visible").count() > 0
+                    if section_id == "t-post1":
+                        assert section.get_attribute("data-v38-publish-cards") == "ready"
+                        frames = section.locator("iframe.postframe:visible")
+                        assert frames.count() >= 2
+                    else:
+                        assert section.locator(".card:visible,.postwrap:visible").count() > 0
                     _assert_ready_has_no_false_missing(section, view.get(VIEW_KEYS[section_id]) or {})
                     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 2"), section_id
                     if screenshot_dir:
