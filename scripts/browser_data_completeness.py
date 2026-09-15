@@ -58,6 +58,35 @@ def metric_display(view: dict, key: str) -> str:
     return '—'
 
 
+def market_summary(view: dict, symbol: str) -> dict:
+    return ((view.get('daily') or {}).get('market_summaries') or {}).get(symbol) or {}
+
+
+def has_close(view: dict, symbols: tuple[str, ...]) -> bool:
+    for symbol in symbols:
+        value = market_summary(view, symbol).get('close')
+        if not isinstance(value, (int, float)):
+            return False
+    return True
+
+
+def card_by_original_title(page, section: str, needle: str):
+    return page.locator(f'{section} .card[data-v38-card-title*="{needle}"]').first
+
+
+def assert_ready_card(page, section: str, needle: str, width: int, source_reason: str) -> None:
+    card = card_by_original_title(page, section, needle)
+    assert card.count() == 1, (width, section, needle, 'expected authoritative card missing', source_reason)
+    assert card.get_attribute('data-v38-status') == 'READY', (
+        width, section, needle, 'source is available but card is not READY', source_reason,
+        card.get_attribute('data-v38-status'), card.inner_text()[:500],
+    )
+    text = card.inner_text()
+    assert 'DATA_REQUIRED' not in text and 'STALE' not in text, (
+        width, section, needle, 'false missing visible', source_reason, text[:500],
+    )
+
+
 def missing_details(section):
     return section.evaluate(
         """(root) => Array.from(root.querySelectorAll('*')).filter((el) => {
@@ -120,7 +149,61 @@ def assert_options_upward_rankings(page, options: dict, width: int) -> None:
             assert locator.count() >= 1, (width, bucket, ticker, 'ranked ticker not rendered')
 
 
-def assert_public_render_contract(page, width: int) -> None:
+def assert_no_canonical_truth_sources(page, width: int) -> None:
+    bad = page.evaluate(
+        """() => Array.from(document.querySelectorAll('[data-v38-truth-source]'))
+          .filter((el) => String(el.dataset.v38TruthSource || '').toLowerCase().startsWith('canonical'))
+          .map((el) => ({tag: el.tagName, source: el.dataset.v38TruthSource, text: String(el.textContent || '').trim().slice(0, 180)}))"""
+    )
+    assert not bad, (width, 'canonical/fixed content used as production truth', bad)
+
+
+def assert_false_missing_contract(page, view: dict, width: int) -> None:
+    daily = view.get('daily') or {}
+    history = daily.get('history') or []
+    if len(history) >= 2:
+        assert_ready_card(page, '#t-market', '前回からの変化', width, 'daily.history has previous/current sessions')
+
+    core = view.get('core12') or {}
+    entrants = core.get('new_entrants') or {}
+    if entrants.get('status') == 'READY':
+        assert_ready_card(page, '#t-port', '新規参入', width, 'core12.new_entrants READY')
+
+    rs = view.get('rs') or {}
+    if rs.get('status') == 'READY':
+        for period in (63, 126, 189):
+            if (rs.get('windows') or {}).get(str(period)):
+                assert_ready_card(page, '#t-rs', f'RS{period} Top10', width, f'rs.windows.{period} populated')
+        if rs.get('rows'):
+            assert_ready_card(page, '#t-rs', 'RS189 継続性', width, 'rs.rows populated')
+
+    rs_history = fetch_json(page, 'data/rs_history.json')
+    comparisons_ready = any(
+        cmp.get('status') == 'READY'
+        for window in (rs_history.get('windows') or {}).values()
+        for cmp in (window.get('comparisons') or [])
+        if isinstance(cmp, dict)
+    )
+    if rs_history.get('status') == 'READY' and comparisons_ready:
+        assert_ready_card(page, '#t-rs', 'Top10 IN / OUT', width, 'rs_history comparison READY')
+
+    weekly_specs = (
+        ('構造マクロ', ('DX-Y.NYB', 'CL=F', 'GC=F')),
+        ('金利レジーム', ('^TNX', '^FVX', 'IEF')),
+        ('マクロ圧力', ('^VIX', '^VXN', 'HYG', 'DX-Y.NYB')),
+        ('レバレッジ・コンディション', ('SOXL',)),
+    )
+    for needle, symbols in weekly_specs:
+        if has_close(view, symbols):
+            assert_ready_card(page, '#t-weekly', needle, width, f'market_summaries available for {symbols}')
+    metrics = {row.get('key'): row for row in daily.get('metrics') or [] if isinstance(row, dict)}
+    if (metrics.get('breadth50') or {}).get('status') == 'READY' and (metrics.get('breadth200') or {}).get('status') == 'READY':
+        assert_ready_card(page, '#t-weekly', '広域ブレッドス', width, 'breadth50/breadth200 READY')
+    if len(history) >= 6:
+        assert_ready_card(page, '#t-weekly', '今週の変化', width, 'daily.history has six sessions')
+
+
+def assert_public_render_contract(page, view: dict, width: int) -> None:
     body_text = page.locator('body').inner_text()
     for token in FORBIDDEN_PUBLIC_TEXT:
         assert token not in body_text, (width, 'forbidden public/internal text', token)
@@ -136,6 +219,7 @@ def assert_public_render_contract(page, width: int) -> None:
         }).map((el) => ({tag: el.tagName, className: String(el.className || ''), text: el.textContent.trim()}))"""
     )
     assert not exact_placeholders, (width, 'public placeholder labels exposed', exact_placeholders)
+    assert_no_canonical_truth_sources(page, width)
 
     page.locator('a.tabx[href="#t-market"]').click()
     for key in ('mc57', 'breadth50', 'breadth200'):
@@ -147,14 +231,37 @@ def assert_public_render_contract(page, width: int) -> None:
         assert len(points.split()) >= 2, (width, key, 'live trend has fewer than two points')
         assert card.get_attribute('data-v38-status') == 'READY', (width, key, card.get_attribute('data-v38-status'))
 
+    banner = page.locator('#t-market > .banner')
+    if banner.count():
+        assert metric_display(view, 'mc57') in banner.inner_text(), (width, 'MC57 banner is not current authoritative value', banner.inner_text())
+    ribbons = page.locator('#t-market > .ribwrap')
+    if ribbons.count():
+        for i in range(ribbons.count()):
+            text = ribbons.nth(i).inner_text()
+            assert 'DATA_REQUIRED' in text, (width, 'unverified fixed regime history survived', text)
+
+    assert_false_missing_contract(page, view, width)
+
     page.locator('a.tabx[href="#t-post1"]').click()
     publish = page.locator('#t-post1')
     assert publish.get_attribute('data-v38-publish-cards') == 'ready', (width, 'publish render contract not ready')
+    assert (publish.get_attribute('data-v38-truth-source') or '').startswith('data/ui_view_model.json'), (
+        width, 'Publish truth source is not live view model', publish.get_attribute('data-v38-truth-source'))
     frames = publish.locator('iframe.postframe')
     assert frames.count() >= 2, (width, 'Publish real cards missing', frames.count())
+    srcdocs = []
     for index in range(2):
         srcdoc = frames.nth(index).get_attribute('srcdoc') or ''
+        srcdocs.append(srcdoc)
         assert len(srcdoc.strip()) > 100, (width, index, 'Publish iframe srcdoc empty')
+        assert 'SOURCE_UNAVAILABLE' not in srcdoc and 'MOCK DATA' not in srcdoc and 'canonical-publish' not in srcdoc.lower(), (
+            width, index, 'Publish contains fixed/mock/internal content')
+    first = srcdocs[0]
+    assert str(view.get('session_date') or '') in first, (width, 'Publish session not current')
+    assert metric_display(view, 'mc57') in first, (width, 'Publish MC57 not current')
+    assert metric_display(view, 'market_mode') in first, (width, 'Publish market mode not current')
+    assert metric_display(view, 'nqsar') in first, (width, 'Publish NQSAR not current')
+    assert 'XLB' in srcdocs[1] and str(view.get('session_date') or '') in srcdocs[1], (width, 'Publish sector card not live/current')
 
 
 def main() -> int:
@@ -171,13 +278,14 @@ def main() -> int:
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
                 page.wait_for_function("document.body.dataset.v38TruthBinding === 'ready'")
+                page.wait_for_function("document.body.dataset.v38AuthoritativeFinal === 'ready'")
                 page.wait_for_function("document.body.dataset.v38PublicRenderContract === 'ready'")
                 page.wait_for_timeout(300)
 
                 view = fetch_json(page, 'data/ui_view_model.json')
                 assert page.locator('#sarCol').inner_text().strip() == metric_display(view, 'nqsar')
                 assert metric_display(view, 'market_mode') in page.locator('#sarPill').inner_text()
-                assert_public_render_contract(page, width)
+                assert_public_render_contract(page, view, width)
 
                 for href in ALL_TABS:
                     page.locator(f'a.tabx[href="{href}"]').click()
