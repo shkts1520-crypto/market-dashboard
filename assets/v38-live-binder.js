@@ -18,6 +18,12 @@
     if (node && value !== undefined && value !== null) node.textContent = String(value);
   }
 
+  function finite(value) {
+    if (value === null || value === undefined || value === '') return null;
+    const number = Number(value);
+    return Number.isFinite(number) ? number : null;
+  }
+
   function metricMap(daily) {
     return Object.fromEntries((daily.metrics || []).map((row) => [row.key, row]));
   }
@@ -114,12 +120,143 @@
     card.dataset.v38Status = 'READY';
   }
 
+  function injectOptionsUpwardStyle() {
+    if (document.getElementById('v38-options-upward-style')) return;
+    const style = document.createElement('style');
+    style.id = 'v38-options-upward-style';
+    style.textContent = `
+      .v38-options-upward-card .sub{margin-bottom:8px}
+      .v38-opt-scan{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:10px;margin:4px 0 9px;color:#625b53}
+      .v38-opt-period{border-top:1px solid rgba(74,63,47,.14);padding:8px 0 2px}
+      .v38-opt-period:first-of-type{border-top:0}
+      .v38-opt-period summary{cursor:pointer;font-weight:900;font-size:12px;display:flex;justify-content:space-between;gap:8px}
+      .v38-opt-list{display:flex;flex-direction:column;margin-top:6px}
+      .v38-opt-row{display:grid;grid-template-columns:34px 64px minmax(0,1fr) auto;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid rgba(74,63,47,.08);font-size:10px}
+      .v38-opt-row:last-child{border-bottom:0}
+      .v38-opt-rank{font-variant-numeric:tabular-nums;color:#7a7268}
+      .v38-opt-ticker{font-weight:950;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+      .v38-opt-why{min-width:0;color:#5f5951;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .v38-opt-score{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900;white-space:nowrap}
+      @media(max-width:430px){.v38-opt-row{grid-template-columns:28px 54px minmax(0,1fr) auto;gap:4px;font-size:9px}.v38-opt-why{white-space:normal;line-height:1.25}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function optionNumber(value, digits) {
+    const number = finite(value);
+    return number === null ? '—' : number.toFixed(digits == null ? 2 : digits);
+  }
+
+  function optionRatio(value) {
+    const number = finite(value);
+    if (number === null) return '—';
+    if (!Number.isFinite(number)) return '∞';
+    return number.toFixed(2) + 'x';
+  }
+
+  function upwardReason(row) {
+    const checks = row.upward_structure_checks || {};
+    const parts = [];
+    if (checks.spot_above_gamma_flip === true) parts.push('Spot>Flip');
+    if (checks.call_wall_above_spot === true) parts.push('CallWall>Spot');
+    if (checks.put_wall_below_spot === true) parts.push('PutWall<Spot');
+    if (checks.call_gex_dominant === true) parts.push('CallGEX優勢');
+    return parts.join('・') || '—';
+  }
+
+  async function bindOptionsUpward() {
+    const section = document.getElementById('t-options');
+    if (!section) return;
+    let options = null;
+    try {
+      const response = await fetch('data/options/index.json', {cache: 'no-store'});
+      if (response.ok) options = await response.json();
+    } catch (_) {}
+    if (!options || !options.upward_rankings) return;
+
+    injectOptionsUpwardStyle();
+    let card = section.querySelector('.v38-options-upward-card');
+    if (!card) {
+      card = document.createElement('div');
+      card.className = 'card v38-options-upward-card';
+      const firstCard = section.querySelector(':scope > .card');
+      if (firstCard) section.insertBefore(card, firstCard);
+      else section.appendChild(card);
+    }
+    card.replaceChildren();
+    const heading = document.createElement('h2');
+    heading.textContent = '上向きOptions配置';
+    const sub = document.createElement('div');
+    sub.className = 'sub';
+    sub.textContent = '全Active Universeを走査。Direction/Confidence予測ではなく、実測のWall / Gamma Flip / GEX配置で期間別に抽出。';
+    card.append(heading, sub);
+
+    const scan = options.universe_scan || {};
+    const scanLine = document.createElement('div');
+    scanLine.className = 'v38-opt-scan';
+    const targetCount = scan.target_count == null ? '—' : scan.target_count;
+    const resolved = scan.resolved_count == null ? '—' : scan.resolved_count;
+    const coverage = finite(scan.resolution_coverage);
+    const positioning = scan.positioning_count == null ? '—' : scan.positioning_count;
+    scanLine.textContent = `Universe ${targetCount} / 解決 ${resolved}${coverage === null ? '' : ` (${(coverage * 100).toFixed(1)}%)`} / Options配置 ${positioning} / Scan ${scan.status || '—'}`;
+    card.appendChild(scanLine);
+
+    const order = ['0-6', '7-21', '22-45', '0-45'];
+    order.forEach((bucket, bucketIndex) => {
+      const rows = Array.isArray(options.upward_rankings[bucket]) ? options.upward_rankings[bucket] : [];
+      const details = document.createElement('details');
+      details.className = 'v38-opt-period';
+      details.open = bucketIndex === 0 || bucket === '0-45';
+      const summary = document.createElement('summary');
+      const label = document.createElement('span');
+      label.textContent = `${bucket} DTE`;
+      const count = document.createElement('span');
+      count.textContent = `${rows.length}銘柄`;
+      summary.append(label, count);
+      details.appendChild(summary);
+      const list = document.createElement('div');
+      list.className = 'v38-opt-list';
+      rows.forEach((row, index) => {
+        const line = document.createElement('div');
+        line.className = 'v38-opt-row';
+        const rank = document.createElement('span');
+        rank.className = 'v38-opt-rank';
+        rank.textContent = String(row.upward_rank || index + 1);
+        const ticker = document.createElement('span');
+        ticker.className = 'v38-opt-ticker';
+        ticker.dataset.v38Ticker = row.ticker || '';
+        ticker.textContent = row.ticker || '—';
+        const why = document.createElement('span');
+        why.className = 'v38-opt-why';
+        why.textContent = `${upwardReason(row)} / Spot ${optionNumber(row.spot)} / Flip ${optionNumber(row.gamma_flip)} / CW ${optionNumber(row.call_wall)} / PW ${optionNumber(row.put_wall)}`;
+        const score = document.createElement('span');
+        score.className = 'v38-opt-score';
+        score.textContent = `${row.upward_structure_score || 0}/${row.upward_structure_observed || 0} · GEX ${optionRatio(row.call_put_gex_ratio)}`;
+        line.append(rank, ticker, why, score);
+        list.appendChild(line);
+      });
+      if (!rows.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = '該当なし';
+        list.appendChild(empty);
+      }
+      details.appendChild(list);
+      card.appendChild(details);
+    });
+    card.dataset.v38TruthSource = 'data/options/index.json.upward_rankings';
+    card.dataset.v38Status = 'READY';
+    card.dataset.v38Rows = String(Object.values(options.upward_rankings).reduce((sum, rows) => sum + (Array.isArray(rows) ? rows.length : 0), 0));
+    section.dataset.v38Status = options.status || 'READY';
+  }
+
   function bind(view) {
     if (!view) return;
     bindDaily(view);
     bindRs(view);
     bindMovers(view);
     bindPositions(view);
+    bindOptionsUpward();
     document.body.dataset.v38LiveBinder = 'ready';
   }
 

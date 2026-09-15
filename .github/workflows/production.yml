@@ -22,7 +22,7 @@ concurrency:
 jobs:
   verify-build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 70
+    timeout-minutes: 180
     env:
       TZ: Asia/Tokyo
 
@@ -113,7 +113,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          PYTHONPATH=src python scripts/calculate_options_live.py --data-dir data --target-limit 24
+          PYTHONPATH=src python scripts/calculate_options_live.py --data-dir data --all-universe
 
       - name: Materialize current supplemental shards
         shell: bash
@@ -180,6 +180,8 @@ jobs:
           options = json.loads((root / 'options' / 'index.json').read_text(encoding='utf-8'))
           assert options.get('session_date') == session
           assert options.get('status') in {'READY', 'DATA_REQUIRED'}
+          assert options.get('target_policy', {}).get('status') == 'FULL_ACTIVE_UNIVERSE'
+          assert options.get('chart_overlay_contract', {}).get('all_universe') is True
           if options.get('status') == 'READY':
               assert float(options.get('coverage') or 0.0) >= 0.25
               assert len(options.get('rows') or []) >= 3
@@ -196,6 +198,8 @@ jobs:
               'options_status': options.get('status'),
               'options_coverage': options.get('coverage'),
               'options_rows': len(options.get('rows') or []),
+              'options_universe_scan': options.get('universe_scan'),
+              'options_upward_counts': {key: len(value) for key, value in (options.get('upward_rankings') or {}).items()},
           }, sort_keys=True))
           PY
 
