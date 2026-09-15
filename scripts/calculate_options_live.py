@@ -45,6 +45,32 @@ def _json_safe_upward_structure(row: dict) -> dict:
 _resilient._upward_structure = _json_safe_upward_structure
 
 
+# A ticker is not considered complete if some 0-45DTE expiries failed only due
+# to a transient Yahoo/network condition. Put the whole ticker back through the
+# normal retry/cooldown path instead of freezing an incomplete same-session row.
+_original_fetch_ticker_snapshot_once = _resilient._fetch_ticker_snapshot_once
+
+def _complete_transient_expiry_snapshot(yf, ticker: str, *, spot: float, session_date: str) -> dict:
+    result = _original_fetch_ticker_snapshot_once(
+        yf,
+        ticker,
+        spot=spot,
+        session_date=session_date,
+    )
+    transient_warnings = [
+        warning for warning in (result.get("fetch_warnings") or [])
+        if _resilient._is_transient_option_error(warning)
+    ]
+    if transient_warnings:
+        raise RuntimeError(
+            f"{ticker}: transient partial-expiry option fetch: "
+            + "; ".join(transient_warnings)[:500]
+        )
+    return result
+
+_resilient._fetch_ticker_snapshot_once = _complete_transient_expiry_snapshot
+
+
 if __name__ == "__main__":
     # Production no longer pre-filters Options to Core12/RS leaders. Keep the
     # legacy --target-limit argument accepted for compatibility, but default the
