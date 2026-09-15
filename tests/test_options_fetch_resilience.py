@@ -147,6 +147,22 @@ def test_upward_rankings_are_materialized_for_each_dte_bucket():
         assert rows[0]["upward_rank"] == 1
 
 
+def test_zero_put_gex_ratio_edge_is_explicitly_undefined_at_wrapper_boundary():
+    # The resilient producer can identify Call dominance while the public live
+    # entrypoint normalizes non-finite ratios to null before atomic JSON output.
+    row = {
+        "ticker": "AAA",
+        "spot": 105.0,
+        "gamma_flip": 100.0,
+        "call_wall": 115.0,
+        "put_wall": 95.0,
+        "strike_profile": [{"strike": 100.0, "call": 200.0, "put": 0.0, "net": 200.0}],
+    }
+    metrics = resilient._upward_structure(row)
+    assert metrics["call_gex_total"] == 200.0
+    assert metrics["put_gex_abs_total"] == 0.0
+
+
 def test_global_transient_circuit_breaker_avoids_hammering(monkeypatch):
     calls: list[str] = []
 
