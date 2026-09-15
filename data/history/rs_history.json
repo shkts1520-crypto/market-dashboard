@@ -2,7 +2,7 @@
   "calculation_version": "v38-rs-history-1.1.0",
   "coverage": 1.0,
   "first_observed_session": "2025-06-05",
-  "generated_at": "2026-09-15T08:12:34Z",
+  "generated_at": "2026-09-15T15:16:39Z",
   "history_kind": "CURRENT_UNIVERSE_RECONSTRUCTED",
   "history_policy": "Historical RS ranks are recomputed from downloaded split-adjusted Yahoo OHLC using the current universe; exact PIT membership is unavailable for reconstructed dates. Exact observed sessions override reconstructed windows.",
   "latest_observed_session": "2026-09-14",

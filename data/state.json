@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-15T08:12:34Z",
+  "generated_at": "2026-09-15T15:16:39Z",
   "schema_version": "v38.state.1",
   "session_contract": {
     "calendar": "observed common QQQ/SPY completed daily sessions",
