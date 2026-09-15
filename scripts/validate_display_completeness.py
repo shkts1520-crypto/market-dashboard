@@ -9,6 +9,7 @@ from typing import Any
 
 NO_CONTRACT = "NO_VALID_0_45_DTE_CONTRACTS"
 MIN_STOCK_COVERAGE = 0.98
+FULL_UNIVERSE_BUCKETS = {"0-6", "7-21", "22-45", "0-45"}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -18,6 +19,12 @@ def load(path: Path) -> dict[str, Any]:
     if not isinstance(obj, dict):
         raise AssertionError(f"expected object: {path}")
     return obj
+
+
+def _clean_symbols(values: Any) -> list[str]:
+    if not isinstance(values, list):
+        return []
+    return [str(value or "").strip().upper() for value in values if str(value or "").strip()]
 
 
 def main() -> int:
@@ -56,19 +63,75 @@ def main() -> int:
     assert options.get("status") in {"READY", "DATA_REQUIRED"}, options.get("status")
     detail = options.get("coverage_detail") or {}
     targets = int(detail.get("target_count") or 0)
-    snapshots = int(detail.get("ticker_snapshots") or 0)
     assert targets > 0, targets
     failures = options.get("failures") or {}
-    if options.get("status") == "READY":
-        assert snapshots == targets, (snapshots, targets)
-        assert float(detail.get("ticker_snapshot_coverage") or 0.0) == 1.0
-        assert not (options.get("fetch_errors") or {}), options.get("fetch_errors")
-        invalid_failure_codes = {
-            ticker: reason for ticker, reason in failures.items() if reason != NO_CONTRACT
+    target_policy = options.get("target_policy") or {}
+    full_universe = target_policy.get("status") == "FULL_ACTIVE_UNIVERSE"
+
+    if full_universe:
+        policy_targets = _clean_symbols(target_policy.get("targets"))
+        published = int(detail.get("published_tickers") or 0)
+        resolved = int(detail.get("resolved_tickers") or 0)
+        resolution_coverage = float(detail.get("universe_resolution_coverage") or 0.0)
+        no_contract = sum(1 for reason in failures.values() if reason == NO_CONTRACT)
+        scan = options.get("universe_scan") or {}
+        overlay = options.get("chart_overlay_contract") or {}
+
+        assert overlay.get("all_universe") is True, overlay
+        assert targets == active, (targets, active)
+        assert len(policy_targets) == targets, (len(policy_targets), targets)
+        assert len(set(policy_targets)) == targets, "duplicate full-universe option targets"
+        assert 0 <= published <= resolved <= targets, (published, resolved, targets)
+        assert resolved == published + no_contract, (resolved, published, no_contract)
+        expected_coverage = resolved / targets
+        assert abs(resolution_coverage - expected_coverage) < 1e-12, (resolution_coverage, expected_coverage)
+
+        assert scan.get("mode") == "FULL_ACTIVE_UNIVERSE", scan
+        assert int(scan.get("target_count") or 0) == targets, scan
+        assert int(scan.get("resolved_count") or 0) == resolved, scan
+        assert int(scan.get("positioning_count") or 0) == published, scan
+        assert int(scan.get("no_valid_0_45_dte_count") or 0) == no_contract, scan
+        assert abs(float(scan.get("resolution_coverage") or 0.0) - resolution_coverage) < 1e-12, scan
+
+        rankings = options.get("upward_rankings") or {}
+        assert isinstance(rankings, dict), type(rankings).__name__
+        assert FULL_UNIVERSE_BUCKETS.issubset(rankings), sorted(rankings)
+        published_symbols = {
+            str(row.get("ticker") or "").strip().upper()
+            for row in (options.get("rows") or []) if isinstance(row, dict)
         }
-        assert not invalid_failure_codes, invalid_failure_codes
+        assert len(published_symbols) == published, (len(published_symbols), published)
+        for bucket in FULL_UNIVERSE_BUCKETS:
+            bucket_rows = rankings.get(bucket)
+            assert isinstance(bucket_rows, list), (bucket, type(bucket_rows).__name__)
+            ranked_symbols = _clean_symbols([
+                row.get("ticker") for row in bucket_rows if isinstance(row, dict)
+            ])
+            assert len(ranked_symbols) == len(set(ranked_symbols)), (bucket, "duplicate ranking tickers")
+            assert set(ranked_symbols).issubset(published_symbols), (bucket, sorted(set(ranked_symbols) - published_symbols)[:20])
+
+        if options.get("status") == "READY":
+            ready_threshold = float(scan.get("ready_threshold") or 0.98)
+            assert scan.get("status") == "READY", scan
+            assert resolution_coverage >= ready_threshold, (resolution_coverage, ready_threshold)
+        else:
+            assert options.get("reason"), "DATA_REQUIRED options must expose a reason"
     else:
-        assert options.get("reason"), "DATA_REQUIRED options must expose a reason"
+        snapshots = int(detail.get("ticker_snapshots") or 0)
+        if options.get("status") == "READY":
+            assert snapshots == targets, (snapshots, targets)
+            assert float(detail.get("ticker_snapshot_coverage") or 0.0) == 1.0
+            assert not (options.get("fetch_errors") or {}), options.get("fetch_errors")
+            invalid_failure_codes = {
+                ticker: reason for ticker, reason in failures.items() if reason != NO_CONTRACT
+            }
+            assert not invalid_failure_codes, invalid_failure_codes
+        else:
+            assert options.get("reason"), "DATA_REQUIRED options must expose a reason"
+        published = snapshots
+        resolved = snapshots
+        resolution_coverage = float(detail.get("ticker_snapshot_coverage") or 0.0)
+        no_contract = sum(1 for reason in failures.values() if reason == NO_CONTRACT)
 
     chart_contract = options.get("chart_ohlc_contract") or {}
     chart_target_count = int(chart_contract.get("target_count") or 0)
@@ -93,6 +156,12 @@ def main() -> int:
     assert len(search_tickers) == len(search_rows), (len(search_tickers), len(search_rows))
     unindexed = active - len(search_rows)
     assert unindexed <= len(failed_tickers), (unindexed, len(failed_tickers))
+
+    if full_universe:
+        assert set(policy_targets) == search_tickers, (
+            len(set(policy_targets) - search_tickers),
+            len(search_tickers - set(policy_targets)),
+        )
 
     assert vwap.get("session_date") == session
     assert vwap.get("status") == "READY", vwap.get("status")
@@ -119,9 +188,12 @@ def main() -> int:
         "search_rows": len(search_rows),
         "search_coverage": search_coverage,
         "search_unindexed": unindexed,
+        "options_target_policy": target_policy.get("status"),
         "options_targets": targets,
-        "options_snapshots": snapshots,
-        "options_no_contract": len(failures),
+        "options_resolved": resolved,
+        "options_positioning": published,
+        "options_resolution_coverage": resolution_coverage,
+        "options_no_contract": no_contract,
         "options_fetch_errors": len(options.get("fetch_errors") or {}),
         "priority_chart_targets": chart_target_count,
         "priority_chart_ready": chart_ready_count,
