@@ -38,14 +38,15 @@ def test_destructive_display_patch_layers_are_retired():
         assert flag in script
 
 
-def test_validator_requires_stock_contract_options_chart_and_vwap_completeness():
+def test_validator_checks_consistency_without_duplicate_stock_threshold():
     script = VALIDATOR.read_text(encoding="utf-8")
     for token in (
-        'MIN_STOCK_COVERAGE', 'target_session_coverage', 'failed_tickers',
+        'target_session_received', 'target_session_coverage', 'failed_tickers',
         'ticker_snapshot_coverage', 'fetch_errors', 'chart_ohlc_contract',
-        'inception_pending', 'search_uncached_chart_policy',
+        'inception_pending', 'search_uncached_chart_policy', 'search_coverage',
     ):
         assert token in script
+    assert 'MIN_STOCK_COVERAGE' not in script
     assert 'NO_VALID_0_45_DTE_CONTRACTS' in script
 
 
