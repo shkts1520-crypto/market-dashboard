@@ -152,11 +152,29 @@ def assert_rotation(page, width: int) -> None:
     assert flow_card.get_attribute('data-v38-truth-source'), (width, 'money-flow truth source missing')
     assert flow_card.locator('svg.v38-rrg-svg').count() == 1, (width, 'source-format RRG missing')
     assert flow_card.locator('.v38-rrg-quadrant').count() == 4, (width, 'RRG quadrants missing')
+    qnodes = flow_card.locator('.v38-rrg-quadrant')
+    quadrants = {str(qnodes.nth(i).text_content() or '').strip() for i in range(qnodes.count())}
+    assert quadrants == {'主導', '改善', '弱化', '停滞'}, (width, 'RRG must be Japanese-first', quadrants)
+    assert flow_card.locator('.v38-rrg-qrow').count() == 4, (width, 'Japanese quadrant chip rows missing')
     heat = page.locator('#t-rotation .v38-sector-cell')
     assert heat.count() == 11, (width, 'rotation heatmap must contain 11 GICS sectors', heat.count())
-    assert page.locator('#t-rotation .v38-heat-controls button').count() == 3, (width, 'rotation 1D/1W/1M heatmap controls missing')
+    assert heat.nth(0).locator('b').inner_text() == '素材', (width, 'heatmap sector name must be Japanese-first')
+    controls = page.locator('#t-rotation .v38-heat-controls button')
+    assert controls.count() == 3, (width, 'rotation 日/週/月 heatmap controls missing')
+    assert controls.all_inner_texts() == ['日', '週', '月'], (width, 'rotation heatmap controls must be Japanese', controls.all_inner_texts())
     breadth = page.locator('#t-rotation .card[data-v38-generated="breadth-quality"]')
     assert breadth.count() == 1 and breadth.get_attribute('data-v38-status') == 'READY', (width, 'breadth-quality diagnosis missing')
+    breadth_text = breadth.inner_text()
+    for required in ('テクノロジー', '通信', '一般消費財', '生活必需品', 'エネルギー', '金融', 'ヘルスケア', '資本財', '素材', '公益'):
+        assert required in breadth_text, (width, 'Japanese GICS breadth row missing', required)
+    rotation_text = page.locator('#t-rotation').inner_text()
+    for banned in ('Energy Minerals', 'Health Services', 'Technology Services', 'Commercial Services', 'Consumer Services', 'Distribution Services'):
+        assert banned not in rotation_text, (width, 'English sector label leaked into Rotation UI', banned)
+    headers = page.locator('#t-rotation .v38-source-table th').all_inner_texts()
+    for banned in ('Group', 'Breadth50', 'Members', 'Ticker', 'Theme', '1D', '1W', '1M'):
+        assert banned not in headers, (width, 'Rotation table header regressed to English-first', banned, headers)
+    for required in ('セクター', '1カ月', '50日線上', '銘柄数', '銘柄', '業種', 'テーマRS', '業種RS63', '順位', '日', '週', '月', 'サブテーマ', '主導株'):
+        assert required in headers, (width, 'Japanese Rotation table header missing', required, headers)
 
 
 def assert_rs(page, width: int) -> None:
