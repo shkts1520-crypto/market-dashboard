@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from pathlib import Path
 
 import yfinance as yf
@@ -11,6 +12,7 @@ from v38.mc57_history import HISTORY_CONTRACT_VERSION, enrich_mc57_history
 from v38.mc57_live import (
     CALCULATION_VERSION,
     FIXED_57_ETFS,
+    MC57LiveError,
     build_mc57_object,
     download_fixed57_adjusted_closes,
     load_verified_reference,
@@ -71,7 +73,26 @@ def main() -> int:
             }, sort_keys=True))
             return 0
 
-    closes, fetch_stats = download_fixed57_adjusted_closes(yf, target_session=session)
+    closes = None
+    fetch_stats = None
+    attempts = 3
+    for attempt in range(1, attempts + 1):
+        try:
+            closes, fetch_stats = download_fixed57_adjusted_closes(
+                yf,
+                target_session=session,
+            )
+            break
+        except MC57LiveError:
+            if attempt >= attempts:
+                raise
+            time.sleep(30 * attempt)
+
+    assert closes is not None and fetch_stats is not None
+    fetch_stats = dict(fetch_stats)
+    fetch_stats["acquisition_attempts"] = attempt
+    fetch_stats["retry_policy"] = "same fixed57 Yahoo contract; 30s then 60s backoff"
+
     obj = build_mc57_object(
         closes=closes,
         target_session=session,
@@ -90,6 +111,7 @@ def main() -> int:
         "coverage": obj["coverage"],
         "current_close_count": obj["coverage_detail"]["current_close_count"],
         "history_sessions": obj.get("history_window_sessions"),
+        "acquisition_attempts": attempt,
     }, sort_keys=True))
     return 0
 
