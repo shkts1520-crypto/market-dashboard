@@ -157,6 +157,7 @@ def main() -> int:
     source_fidelity_css_enabled = False
     py_source_css_enabled = _inject_stylesheet(out, Path("assets/v38-py-source-authority.css"))
     py_source_guard_enabled = _inject_stylesheet(out, Path("assets/v38-py-source-guard.css"))
+    py_source_finalizer_css_enabled = _inject_stylesheet(out, Path("assets/v38-py-source-finalizer.css"))
 
     # These recovered fragments remain only as data-binding DOM slots. Their visual authority
     # is removed by v38-py-source-authority.js/css after the live binder has populated them.
@@ -180,12 +181,13 @@ def main() -> int:
     public_labels_enabled = _inject_external_extension(out, Path("assets/v38-public-labels.js"))
     # The previous visual-polish layer is disabled: it must not redesign the py-source UI.
     visual_polish_enabled = False
-    # Must be last among the broad non-options layers: current data binders populate slots first;
-    # source-py authority owns final DOM/order/style.
+    # Broad source-py structure is applied first. The finalizer below waits for the canonical
+    # binder to finish and then owns the specialized source cards so async binders cannot overwrite them.
     py_source_authority_enabled = _inject_external_extension(out, Path("assets/v38-py-source-authority.js"))
-    # Positions needs a narrow mapping because the source-py card names belong to rejected legacy
-    # allocation/rebalance logic. Keep the source hierarchy, but bind only current V38 live cards.
+    # Positions keeps the source hierarchy while binding only current V38 live cards.
     py_source_positions_enabled = _inject_external_extension(out, Path("assets/v38-py-source-positions.js"))
+    # Must be last: wait for canonical binder completion, then finalize Regime/VIX/FTD/Rules.
+    py_source_finalizer_enabled = _inject_external_extension(out, Path("assets/v38-py-source-finalizer.js"))
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -218,8 +220,10 @@ def main() -> int:
         "source_fidelity_css": source_fidelity_css_enabled,
         "py_source_css": py_source_css_enabled,
         "py_source_guard": py_source_guard_enabled,
+        "py_source_finalizer_css": py_source_finalizer_css_enabled,
         "py_source_authority": py_source_authority_enabled,
         "py_source_positions": py_source_positions_enabled,
+        "py_source_finalizer": py_source_finalizer_enabled,
         "py_source_display_materialized": py_source_display_materialized,
         "setups_0905_restored_as_slots": setups_0905_enabled,
         "movers_0905_restored_as_slots": movers_0905_enabled,
