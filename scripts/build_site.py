@@ -154,7 +154,7 @@ def main() -> int:
     options_chart_enabled = False if restored_chart_enabled else _inject_external_extension(out, Path("assets/v38-options-chart.js"))
     tradingview_fallback_enabled = _inject_external_extension(out, Path("assets/v38-tradingview-fallback.js"))
     public_labels_enabled = _inject_external_extension(out, Path("assets/v38-public-labels.js"))
-    source_fidelity_enabled = _inject_external_extension(out, Path("assets/v38-source-fidelity.js"))
+    source_fidelity_enabled = False
     visual_polish_enabled = _inject_external_extension(out, Path("assets/v38-visual-polish.js"))
 
     source_fidelity_contract_enabled = False
