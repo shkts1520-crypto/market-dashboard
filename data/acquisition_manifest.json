@@ -35,7 +35,7 @@
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 1.0,
   "gap_repair_version": "v38-stock-gap-repair-exact-1.0.0",
-  "generated_at": "2026-09-16T05:41:10Z",
+  "generated_at": "2026-09-16T08:05:46Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
   "options_status": "READY",
@@ -53,7 +53,7 @@
   "session_selection": {
     "benchmark_observed_session": "2026-09-15",
     "non_regression_applied": false,
-    "previous_published_session": "2026-09-14",
+    "previous_published_session": "2026-09-15",
     "selected_session": "2026-09-15",
     "selected_session_still_requires_normal_coverage_guards": true
   },

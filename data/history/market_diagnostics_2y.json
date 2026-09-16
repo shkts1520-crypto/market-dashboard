@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-display-history-retained-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-16T05:41:10Z",
+  "generated_at": "2026-09-16T08:05:46Z",
   "retention_mode": "PERSISTED_MERGE_BY_DATE",
   "schema_version": "v38.display_diagnostics_2y.1",
   "series": [
@@ -4164,190 +4164,190 @@
       "volume_participation": 0.9517011505038496
     },
     {
-      "ad_line": 2955.0,
+      "ad_line": 2954.0,
       "advances": 1957,
       "advancing_pct": 60.45721346926166,
       "date": "2026-03-17",
       "declines": 1173,
-      "mcclellan": -62.44702736721753,
+      "mcclellan": -62.42225461377727,
       "observed": 3237,
-      "up_down_dollar_ratio": 1.5460228101017834,
+      "up_down_dollar_ratio": 1.5460228201451391,
       "volume_participation": 0.9102371944401844
     },
     {
-      "ad_line": 934.0,
+      "ad_line": 933.0,
       "advances": 556,
       "advancing_pct": 17.17109326744904,
       "date": "2026-03-18",
       "declines": 2577,
-      "mcclellan": -152.698792217597,
+      "mcclellan": -152.6775982240962,
       "observed": 3238,
-      "up_down_dollar_ratio": 0.3771619746878158,
+      "up_down_dollar_ratio": 0.3771619751135974,
       "volume_participation": 0.9410003083659167
     },
     {
-      "ad_line": 1215.0,
+      "ad_line": 1214.0,
       "advances": 1692,
       "advancing_pct": 52.22222222222222,
       "date": "2026-03-19",
       "declines": 1411,
-      "mcclellan": -114.0005572035835,
+      "mcclellan": -113.9825290197983,
       "observed": 3240,
-      "up_down_dollar_ratio": 0.7860398195865275,
+      "up_down_dollar_ratio": 0.7860398197727744,
       "volume_participation": 0.979905018204602
     },
     {
-      "ad_line": -716.0,
+      "ad_line": -717.0,
       "advances": 607,
       "advancing_pct": 18.711467324291,
       "date": "2026-03-20",
       "declines": 2538,
-      "mcclellan": -190.94356348058406,
+      "mcclellan": -190.92833220502465,
       "observed": 3244,
-      "up_down_dollar_ratio": 0.1990476990822132,
+      "up_down_dollar_ratio": 0.19904769965910257,
       "volume_participation": 1.8638420778190583
     },
     {
-      "ad_line": 1289.0,
+      "ad_line": 1288.0,
       "advances": 2581,
       "advancing_pct": 79.51324707332101,
       "date": "2026-03-23",
       "declines": 576,
-      "mcclellan": -58.97511603001658,
+      "mcclellan": -58.96235226736806,
       "observed": 3246,
-      "up_down_dollar_ratio": 3.7580584745624006,
+      "up_down_dollar_ratio": 3.7580584769430407,
       "volume_participation": 1.0295783889364167
     },
     {
-      "ad_line": 1384.0,
+      "ad_line": 1383.0,
       "advances": 1613,
       "advancing_pct": 49.69192852741836,
       "date": "2026-03-24",
       "declines": 1518,
-      "mcclellan": -41.3472178796313,
+      "mcclellan": -41.33662765933485,
       "observed": 3246,
-      "up_down_dollar_ratio": 0.9545387610515909,
+      "up_down_dollar_ratio": 0.9545387636855936,
       "volume_participation": 0.9545064600865607
     },
     {
-      "ad_line": 2349.0,
+      "ad_line": 2348.0,
       "advances": 2051,
       "advancing_pct": 63.185459026494144,
       "date": "2026-03-25",
       "declines": 1086,
-      "mcclellan": 17.43137112834627,
+      "mcclellan": 17.44005001883022,
       "observed": 3246,
-      "up_down_dollar_ratio": 2.024158055082286,
+      "up_down_dollar_ratio": 2.024158063840713,
       "volume_participation": 0.9029770558266098
     },
     {
-      "ad_line": 1598.0,
+      "ad_line": 1597.0,
       "advances": 1190,
       "advancing_pct": 36.660505237215034,
       "date": "2026-03-26",
       "declines": 1941,
-      "mcclellan": -18.20009212547464,
+      "mcclellan": -18.193090816432772,
       "observed": 3246,
-      "up_down_dollar_ratio": 0.3257155039653752,
+      "up_down_dollar_ratio": 0.3257155031453361,
       "volume_participation": 0.8897928470115202
     },
     {
-      "ad_line": -473.0,
+      "ad_line": -474.0,
       "advances": 534,
       "advancing_pct": 16.43582640812558,
       "date": "2026-03-27",
       "declines": 2605,
-      "mcclellan": -114.57399274686412,
+      "mcclellan": -114.56846077650044,
       "observed": 3249,
-      "up_down_dollar_ratio": 0.29570445271030354,
+      "up_down_dollar_ratio": 0.2957044482165956,
       "volume_participation": 0.914470226029992
     },
     {
-      "ad_line": -472.0,
+      "ad_line": -473.0,
       "advances": 1571,
       "advancing_pct": 48.32359274069517,
       "date": "2026-03-30",
       "declines": 1570,
-      "mcclellan": -92.80080781441782,
+      "mcclellan": -92.79655978847586,
       "observed": 3251,
-      "up_down_dollar_ratio": 0.6257360475803685,
+      "up_down_dollar_ratio": 0.6257360455865476,
       "volume_participation": 0.9764488490029999
     },
     {
-      "ad_line": 1679.0,
+      "ad_line": 1678.0,
       "advances": 2654,
       "advancing_pct": 81.63641956321132,
       "date": "2026-03-31",
       "declines": 503,
-      "mcclellan": 33.779269341895855,
+      "mcclellan": 33.78239835522754,
       "observed": 3251,
-      "up_down_dollar_ratio": 7.279243345080853,
+      "up_down_dollar_ratio": 7.279243386398348,
       "volume_participation": 1.106429097628006
     },
     {
-      "ad_line": 2486.0,
+      "ad_line": 2485.0,
       "advances": 1974,
       "advancing_pct": 60.68244697202582,
       "date": "2026-04-01",
       "declines": 1167,
-      "mcclellan": 74.63633896383456,
+      "mcclellan": 74.63849557631784,
       "observed": 3253,
-      "up_down_dollar_ratio": 2.1670549923179645,
+      "up_down_dollar_ratio": 2.1670550002661217,
       "volume_participation": 0.9573474723644111
     },
     {
-      "ad_line": 3247.0,
+      "ad_line": 3246.0,
       "advances": 1954,
       "advancing_pct": 60.03072196620584,
       "date": "2026-04-02",
       "declines": 1193,
-      "mcclellan": 106.895951795773,
+      "mcclellan": 106.89726622246846,
       "observed": 3255,
-      "up_down_dollar_ratio": 1.432439140155181,
+      "up_down_dollar_ratio": 1.4324391370537692,
       "volume_participation": 0.8413809198107172
     },
     {
-      "ad_line": 4110.0,
+      "ad_line": 4109.0,
       "advances": 1995,
       "advancing_pct": 61.21509665541577,
       "date": "2026-04-06",
       "declines": 1132,
-      "mcclellan": 139.0434410081015,
+      "mcclellan": 139.04402879381487,
       "observed": 3259,
-      "up_down_dollar_ratio": 1.6115693862159983,
+      "up_down_dollar_ratio": 1.6115693863041205,
       "volume_participation": 0.7200507833483316
     },
     {
-      "ad_line": 3922.0,
+      "ad_line": 3921.0,
       "advances": 1468,
       "advancing_pct": 45.04449217551396,
       "date": "2026-04-07",
       "declines": 1656,
-      "mcclellan": 113.28432707960184,
+      "mcclellan": 113.28429064834702,
       "observed": 3259,
-      "up_down_dollar_ratio": 0.8895158778016691,
+      "up_down_dollar_ratio": 0.8895158749822923,
       "volume_participation": 0.8216552294203239
     },
     {
-      "ad_line": 5873.0,
+      "ad_line": 5872.0,
       "advances": 2556,
       "advancing_pct": 78.40490797546012,
       "date": "2026-04-08",
       "declines": 605,
-      "mcclellan": 197.64386303533666,
+      "mcclellan": 197.64329308073025,
       "observed": 3260,
-      "up_down_dollar_ratio": 4.107636635462856,
+      "up_down_dollar_ratio": 4.107636607397196,
       "volume_participation": 1.0525696463420107
     },
     {
       "ad_line": 6565.0,
-      "advances": 1914,
-      "advancing_pct": 58.71165644171779,
+      "advances": 1915,
+      "advancing_pct": 58.74233128834356,
       "date": "2026-04-09",
       "declines": 1222,
-      "mcclellan": 205.8330469623132,
+      "mcclellan": 205.88202369501428,
       "observed": 3260,
-      "up_down_dollar_ratio": 1.6694895316208491,
+      "up_down_dollar_ratio": 1.669555230237034,
       "volume_participation": 0.8962913379320137
     },
     {
@@ -4356,9 +4356,9 @@
       "advancing_pct": 34.590616375344986,
       "date": "2026-04-10",
       "declines": 2016,
-      "mcclellan": 132.80563398506663,
+      "mcclellan": 132.84672825175204,
       "observed": 3261,
-      "up_down_dollar_ratio": 0.9006988430861044,
+      "up_down_dollar_ratio": 0.9006988424540796,
       "volume_participation": 0.8293256748269144
     },
     {
@@ -4367,9 +4367,9 @@
       "advancing_pct": 72.52376571603803,
       "date": "2026-04-13",
       "declines": 783,
-      "mcclellan": 193.20316771959546,
+      "mcclellan": 193.2373170065041,
       "observed": 3261,
-      "up_down_dollar_ratio": 4.40364511676109,
+      "up_down_dollar_ratio": 4.403645122562008,
       "volume_participation": 0.8849782337204927
     },
     {
@@ -4378,9 +4378,9 @@
       "advancing_pct": 60.49647563591787,
       "date": "2026-04-14",
       "declines": 1162,
-      "mcclellan": 205.37704322401962,
+      "mcclellan": 205.4050838067846,
       "observed": 3263,
-      "up_down_dollar_ratio": 2.18427896166807,
+      "up_down_dollar_ratio": 2.1842789580461504,
       "volume_participation": 0.9581168285560814
     },
     {
@@ -4389,9 +4389,9 @@
       "advancing_pct": 52.849264705882355,
       "date": "2026-04-15",
       "declines": 1427,
-      "mcclellan": 189.05882156418218,
+      "mcclellan": 189.0814990019905,
       "observed": 3264,
-      "up_down_dollar_ratio": 1.5689604589863484,
+      "up_down_dollar_ratio": 1.568960467042975,
       "volume_participation": 1.0002687660175187
     },
     {
@@ -4400,9 +4400,9 @@
       "advancing_pct": 50.58175137783221,
       "date": "2026-04-16",
       "declines": 1507,
-      "mcclellan": 166.5114479372003,
+      "mcclellan": 166.52942649888158,
       "observed": 3266,
-      "up_down_dollar_ratio": 1.5045620214271898,
+      "up_down_dollar_ratio": 1.504562021020676,
       "volume_participation": 0.9741738082615236
     },
     {
@@ -4411,9 +4411,9 @@
       "advancing_pct": 79.01498929336188,
       "date": "2026-04-17",
       "declines": 585,
-      "mcclellan": 239.05088624644486,
+      "mcclellan": 239.06475737622895,
       "observed": 3269,
-      "up_down_dollar_ratio": 3.9675760176134185,
+      "up_down_dollar_ratio": 3.9675760203347052,
       "volume_participation": 1.1428701141187747
     },
     {
@@ -4422,9 +4422,9 @@
       "advancing_pct": 54.47875267502293,
       "date": "2026-04-20",
       "declines": 1376,
-      "mcclellan": 220.27685156961667,
+      "mcclellan": 220.28714148947984,
       "observed": 3271,
-      "up_down_dollar_ratio": 1.099234288829549,
+      "up_down_dollar_ratio": 1.099234290787729,
       "volume_participation": 0.8998833230040432
     },
     {
@@ -4433,9 +4433,9 @@
       "advancing_pct": 28.169874732661167,
       "date": "2026-04-21",
       "declines": 2247,
-      "mcclellan": 116.57366766308047,
+      "mcclellan": 116.580844198862,
       "observed": 3273,
-      "up_down_dollar_ratio": 0.6557871747049808,
+      "up_down_dollar_ratio": 0.6557871739706724,
       "volume_participation": 0.9815279553012659
     },
     {
@@ -4444,9 +4444,9 @@
       "advancing_pct": 53.404580152671755,
       "date": "2026-04-22",
       "declines": 1402,
-      "mcclellan": 110.9245770846766,
+      "mcclellan": 110.92905579438943,
       "observed": 3275,
-      "up_down_dollar_ratio": 2.2488553945640675,
+      "up_down_dollar_ratio": 2.248855385875967,
       "volume_participation": 0.9455975034254627
     },
     {
@@ -4455,9 +4455,9 @@
       "advancing_pct": 42.21611721611722,
       "date": "2026-04-23",
       "declines": 1793,
-      "mcclellan": 67.68998175471796,
+      "mcclellan": 67.69213142959347,
       "observed": 3276,
-      "up_down_dollar_ratio": 0.6477459636544765,
+      "up_down_dollar_ratio": 0.6477459624724619,
       "volume_participation": 0.9918641613345183
     },
     {
@@ -4466,9 +4466,9 @@
       "advancing_pct": 50.320415013732074,
       "date": "2026-04-24",
       "declines": 1493,
-      "mcclellan": 58.68595283882971,
+      "mcclellan": 58.68610044054492,
       "observed": 3277,
-      "up_down_dollar_ratio": 1.547261545472302,
+      "up_down_dollar_ratio": 1.547261541016585,
       "volume_participation": 0.9288708444698779
     },
     {
@@ -4477,9 +4477,9 @@
       "advancing_pct": 51.785169362221545,
       "date": "2026-04-27",
       "declines": 1452,
-      "mcclellan": 55.144078351551116,
+      "mcclellan": 55.142513442705706,
       "observed": 3277,
-      "up_down_dollar_ratio": 1.1468511863217012,
+      "up_down_dollar_ratio": 1.1468511855668533,
       "volume_participation": 0.9436943712053409
     },
     {
@@ -4488,9 +4488,9 @@
       "advancing_pct": 45.0717119316448,
       "date": "2026-04-28",
       "declines": 1669,
-      "mcclellan": 29.990055273170157,
+      "mcclellan": 29.987033992339605,
       "observed": 3277,
-      "up_down_dollar_ratio": 0.4102525470067033,
+      "up_down_dollar_ratio": 0.41025254743236195,
       "volume_participation": 0.9017792717058031
     },
     {
@@ -4499,9 +4499,9 @@
       "advancing_pct": 25.77005184507472,
       "date": "2026-04-29",
       "declines": 2351,
-      "mcclellan": -57.36658473521142,
+      "mcclellan": -57.370836107685065,
       "observed": 3279,
-      "up_down_dollar_ratio": 0.8251383157025929,
+      "up_down_dollar_ratio": 0.825138315005598,
       "volume_participation": 0.9688657073181374
     },
     {
@@ -4510,9 +4510,9 @@
       "advancing_pct": 72.7826882048156,
       "date": "2026-04-30",
       "declines": 768,
-      "mcclellan": 24.530320981298388,
+      "mcclellan": 24.52503913733227,
       "observed": 3281,
-      "up_down_dollar_ratio": 1.9024088738227465,
+      "up_down_dollar_ratio": 1.9024088744686587,
       "volume_participation": 1.0968677517153242
     },
     {
@@ -4521,9 +4521,9 @@
       "advancing_pct": 53.15260432531221,
       "date": "2026-05-01",
       "declines": 1409,
-      "mcclellan": 30.22952376400775,
+      "mcclellan": 30.223387276135412,
       "observed": 3283,
-      "up_down_dollar_ratio": 1.4449052488674843,
+      "up_down_dollar_ratio": 1.4449052520166255,
       "volume_participation": 0.9312321895566248
     },
     {
@@ -4532,9 +4532,9 @@
       "advancing_pct": 34.17605848309473,
       "date": "2026-05-04",
       "declines": 2047,
-      "mcclellan": -28.098805475595753,
+      "mcclellan": -28.105642001568583,
       "observed": 3283,
-      "up_down_dollar_ratio": 1.04563313153109,
+      "up_down_dollar_ratio": 1.0456331298777122,
       "volume_participation": 0.9672025954618657
     },
     {
@@ -4543,9 +4543,9 @@
       "advancing_pct": 65.68209500609014,
       "date": "2026-05-05",
       "declines": 1004,
-      "mcclellan": 26.07096705192123,
+      "mcclellan": 26.063566176002382,
       "observed": 3284,
-      "up_down_dollar_ratio": 1.9890879906081822,
+      "up_down_dollar_ratio": 1.9890879866810818,
       "volume_participation": 1.0206167698648758
     },
     {
@@ -4554,9 +4554,9 @@
       "advancing_pct": 61.47990255785627,
       "date": "2026-05-06",
       "declines": 1156,
-      "mcclellan": 57.755767727688664,
+      "mcclellan": 57.747921336945524,
       "observed": 3284,
-      "up_down_dollar_ratio": 2.617184089818872,
+      "up_down_dollar_ratio": 2.617184096689685,
       "volume_participation": 1.2278880254485787
     },
     {
@@ -4565,9 +4565,9 @@
       "advancing_pct": 39.013998782714545,
       "date": "2026-05-07",
       "declines": 1892,
-      "mcclellan": 10.907493466831369,
+      "mcclellan": 10.899305392867177,
       "observed": 3286,
-      "up_down_dollar_ratio": 0.6257949174099096,
+      "up_down_dollar_ratio": 0.6257949174606152,
       "volume_participation": 1.219503929249622
     },
     {
@@ -4576,9 +4576,9 @@
       "advancing_pct": 50.71450288841593,
       "date": "2026-05-08",
       "declines": 1493,
-      "mcclellan": 10.047681506464215,
+      "mcclellan": 10.039242233715868,
       "observed": 3289,
-      "up_down_dollar_ratio": 1.8697613093710472,
+      "up_down_dollar_ratio": 1.869761308980396,
       "volume_participation": 1.108298106339571
     },
     {
@@ -4587,9 +4587,9 @@
       "advancing_pct": 34.77203647416413,
       "date": "2026-05-11",
       "declines": 2048,
-      "mcclellan": -44.687696127182036,
+      "mcclellan": -44.69630797852709,
       "observed": 3290,
-      "up_down_dollar_ratio": 1.432540332850782,
+      "up_down_dollar_ratio": 1.4325403357709374,
       "volume_participation": 1.1618322915388832
     },
     {
@@ -4598,9 +4598,9 @@
       "advancing_pct": 37.4468085106383,
       "date": "2026-05-12",
       "declines": 1929,
-      "mcclellan": -80.91300552331366,
+      "mcclellan": -80.92172187010219,
       "observed": 3290,
-      "up_down_dollar_ratio": 0.586664042108044,
+      "up_down_dollar_ratio": 0.5866640413040435,
       "volume_participation": 1.110793787273429
     },
     {
@@ -4609,9 +4609,9 @@
       "advancing_pct": 36.360874848116644,
       "date": "2026-05-13",
       "declines": 1971,
-      "mcclellan": -115.33108002938964,
+      "mcclellan": -115.33984213804838,
       "observed": 3292,
-      "up_down_dollar_ratio": 1.2559730157632942,
+      "up_down_dollar_ratio": 1.2559730160606182,
       "volume_participation": 1.1104297516417487
     },
     {
@@ -4620,9 +4620,9 @@
       "advancing_pct": 58.616504854368934,
       "date": "2026-05-14",
       "declines": 1237,
-      "mcclellan": -70.73187833193765,
+      "mcclellan": -70.74063575645214,
       "observed": 3296,
-      "up_down_dollar_ratio": 1.5304860169104049,
+      "up_down_dollar_ratio": 1.5304860166163385,
       "volume_participation": 1.0676567751183557
     },
     {
@@ -4631,9 +4631,9 @@
       "advancing_pct": 23.027912621359224,
       "date": "2026-05-15",
       "declines": 2428,
-      "mcclellan": -150.4459014889565,
+      "mcclellan": -150.4546111214051,
       "observed": 3296,
-      "up_down_dollar_ratio": 0.40289525366391893,
+      "up_down_dollar_ratio": 0.4028952535981291,
       "volume_participation": 1.0588455628677194
     },
     {
@@ -4642,9 +4642,9 @@
       "advancing_pct": 59.38732180770398,
       "date": "2026-05-18",
       "declines": 1228,
-      "mcclellan": -97.89916178076285,
+      "mcclellan": -97.90778700283286,
       "observed": 3297,
-      "up_down_dollar_ratio": 0.7337788694355073,
+      "up_down_dollar_ratio": 0.7337788689170901,
       "volume_participation": 1.0210869761113668
     },
     {
@@ -4653,9 +4653,9 @@
       "advancing_pct": 31.0888686684865,
       "date": "2026-05-19",
       "declines": 2138,
-      "mcclellan": -144.63220352135346,
+      "mcclellan": -144.64071344643943,
       "observed": 3297,
-      "up_down_dollar_ratio": 0.6389165662211193,
+      "up_down_dollar_ratio": 0.6389165658870667,
       "volume_participation": 0.986031557871136
     },
     {
@@ -4664,9 +4664,9 @@
       "advancing_pct": 75.84848484848484,
       "date": "2026-05-20",
       "declines": 699,
-      "mcclellan": -38.01579319195168,
+      "mcclellan": -38.024161988490846,
       "observed": 3300,
-      "up_down_dollar_ratio": 3.7142688551759924,
+      "up_down_dollar_ratio": 3.7142688562540305,
       "volume_participation": 0.9814992970750034
     },
     {
@@ -4675,9 +4675,9 @@
       "advancing_pct": 58.7700696758558,
       "date": "2026-05-21",
       "declines": 1241,
-      "mcclellan": -1.9186833943533799,
+      "mcclellan": -1.92688968200234,
       "observed": 3301,
-      "up_down_dollar_ratio": 1.6255694822249396,
+      "up_down_dollar_ratio": 1.6255694828766605,
       "volume_participation": 0.9997787563498719
     },
     {
@@ -4686,9 +4686,9 @@
       "advancing_pct": 55.74068464101787,
       "date": "2026-05-22",
       "declines": 1324,
-      "mcclellan": 19.80393889956494,
+      "mcclellan": 19.795912588455337,
       "observed": 3301,
-      "up_down_dollar_ratio": 1.483252151462789,
+      "up_down_dollar_ratio": 1.4832521525661322,
       "volume_participation": 0.9375875348633149
     },
     {
@@ -4697,9 +4697,9 @@
       "advancing_pct": 62.931556632344034,
       "date": "2026-05-26",
       "declines": 1116,
-      "mcclellan": 60.577761266367276,
+      "mcclellan": 60.56992896675439,
       "observed": 3302,
-      "up_down_dollar_ratio": 1.6166064871735175,
+      "up_down_dollar_ratio": 1.6166064874426498,
       "volume_participation": 1.067664827100081
     },
     {
@@ -4708,9 +4708,9 @@
       "advancing_pct": 47.76029055690073,
       "date": "2026-05-27",
       "declines": 1602,
-      "mcclellan": 45.836490583651425,
+      "mcclellan": 45.828863325366314,
       "observed": 3304,
-      "up_down_dollar_ratio": 1.1097569779909064,
+      "up_down_dollar_ratio": 1.1097569787467185,
       "volume_participation": 1.0427871799098032
     },
     {
@@ -4719,9 +4719,9 @@
       "advancing_pct": 55.02117362371446,
       "date": "2026-05-28",
       "declines": 1375,
-      "mcclellan": 56.403521697011115,
+      "mcclellan": 56.39610788535268,
       "observed": 3306,
-      "up_down_dollar_ratio": 1.7130644830147386,
+      "up_down_dollar_ratio": 1.7130644809586055,
       "volume_participation": 1.0743087059100374
     },
     {
@@ -4730,9 +4730,9 @@
       "advancing_pct": 40.320629159104655,
       "date": "2026-05-29",
       "declines": 1868,
-      "mcclellan": 16.206315690448633,
+      "mcclellan": 16.19912144471425,
       "observed": 3306,
-      "up_down_dollar_ratio": 0.9341246442605695,
+      "up_down_dollar_ratio": 0.9341246452562083,
       "volume_participation": 1.4799863258348924
     },
     {
@@ -4741,9 +4741,9 @@
       "advancing_pct": 43.496672716273444,
       "date": "2026-06-01",
       "declines": 1774,
-      "mcclellan": -8.293327023614566,
+      "mcclellan": -8.300297569255179,
       "observed": 3306,
-      "up_down_dollar_ratio": 1.347695845966798,
+      "up_down_dollar_ratio": 1.3476958451414383,
       "volume_participation": 1.1963130031968805
     },
     {
@@ -4752,9 +4752,9 @@
       "advancing_pct": 48.91107078039927,
       "date": "2026-06-02",
       "declines": 1564,
-      "mcclellan": -9.74905490902053,
+      "mcclellan": -9.755799338352773,
       "observed": 3306,
-      "up_down_dollar_ratio": 1.1552695544493907,
+      "up_down_dollar_ratio": 1.155269553831952,
       "volume_participation": 1.1114801818151605
     },
     {
@@ -4763,9 +4763,9 @@
       "advancing_pct": 27.547626247354096,
       "date": "2026-06-03",
       "declines": 2281,
-      "mcclellan": -82.09495697649751,
+      "mcclellan": -82.10147435423944,
       "observed": 3307,
-      "up_down_dollar_ratio": 0.6884860645537516,
+      "up_down_dollar_ratio": 0.6884860646636938,
       "volume_participation": 1.0856791031443842
     },
     {
@@ -4774,9 +4774,9 @@
       "advancing_pct": 69.87915407854985,
       "date": "2026-06-04",
       "declines": 854,
-      "mcclellan": -2.090228459307852,
+      "mcclellan": -2.096519121051358,
       "observed": 3310,
-      "up_down_dollar_ratio": 1.3705923339421093,
+      "up_down_dollar_ratio": 1.3705923331001124,
       "volume_participation": 1.014733907476592
     },
     {
@@ -4785,9 +4785,9 @@
       "advancing_pct": 32.92056780428874,
       "date": "2026-06-05",
       "declines": 2088,
-      "mcclellan": -56.525734434814154,
+      "mcclellan": -56.53179980107028,
       "observed": 3311,
-      "up_down_dollar_ratio": 0.22419486653342022,
+      "up_down_dollar_ratio": 0.22419486636307528,
       "volume_participation": 1.095462801108652
     },
     {
@@ -4796,9 +4796,9 @@
       "advancing_pct": 49.38122547539994,
       "date": "2026-06-08",
       "declines": 1556,
-      "mcclellan": -48.88546337169797,
+      "mcclellan": -48.89130578348111,
       "observed": 3313,
-      "up_down_dollar_ratio": 1.5535332146852605,
+      "up_down_dollar_ratio": 1.5535332160771258,
       "volume_participation": 0.9286194944116519
     },
     {
@@ -4807,9 +4807,9 @@
       "advancing_pct": 64.27278213639107,
       "date": "2026-06-09",
       "declines": 1056,
-      "mcclellan": 7.591395704124849,
+      "mcclellan": 7.585773130475033,
       "observed": 3314,
-      "up_down_dollar_ratio": 0.6312493795682871,
+      "up_down_dollar_ratio": 0.6312493792022935,
       "volume_participation": 1.127849087360691
     },
     {
@@ -4818,9 +4818,9 @@
       "advancing_pct": 40.62123039806996,
       "date": "2026-06-10",
       "declines": 1854,
-      "mcclellan": -23.208846764567262,
+      "mcclellan": -23.21425326374483,
       "observed": 3316,
-      "up_down_dollar_ratio": 0.3050139956203977,
+      "up_down_dollar_ratio": 0.3050139956377256,
       "volume_participation": 0.9952330436219585
     },
     {
@@ -4829,9 +4829,9 @@
       "advancing_pct": 68.7971058185107,
       "date": "2026-06-11",
       "declines": 905,
-      "mcclellan": 44.77299015852384,
+      "mcclellan": 44.76779543551589,
       "observed": 3317,
-      "up_down_dollar_ratio": 3.69760777493109,
+      "up_down_dollar_ratio": 3.69760777294018,
       "volume_participation": 1.0556694617012656
     },
     {
@@ -4840,9 +4840,9 @@
       "advancing_pct": 65.31042796865582,
       "date": "2026-06-12",
       "declines": 1023,
-      "mcclellan": 91.0235957769741,
+      "mcclellan": 91.01860809620621,
       "observed": 3318,
-      "up_down_dollar_ratio": 1.8198942390933615,
+      "up_down_dollar_ratio": 1.8198942394944022,
       "volume_participation": 0.9894501296473349
     },
     {
@@ -4851,9 +4851,9 @@
       "advancing_pct": 45.79692678517626,
       "date": "2026-06-15",
       "declines": 1676,
-      "mcclellan": 65.11274560186425,
+      "mcclellan": 65.10795988061545,
       "observed": 3319,
-      "up_down_dollar_ratio": 3.499053632923826,
+      "up_down_dollar_ratio": 3.499053632660914,
       "volume_participation": 1.0801366879466483
     },
     {
@@ -4862,9 +4862,9 @@
       "advancing_pct": 45.405242542934616,
       "date": "2026-06-16",
       "declines": 1673,
-      "mcclellan": 42.13340497413597,
+      "mcclellan": 42.128815856882284,
       "observed": 3319,
-      "up_down_dollar_ratio": 0.6637710161401286,
+      "up_down_dollar_ratio": 0.6637710161186455,
       "volume_participation": 1.0155400098228047
     },
     {
@@ -4873,9 +4873,9 @@
       "advancing_pct": 28.66606443842216,
       "date": "2026-06-17",
       "declines": 2257,
-      "mcclellan": -34.67459828744239,
+      "mcclellan": -34.678996362693994,
       "observed": 3321,
-      "up_down_dollar_ratio": 0.5215912339728087,
+      "up_down_dollar_ratio": 0.521591233944073,
       "volume_participation": 1.098707222451592
     },
     {
@@ -4884,9 +4884,9 @@
       "advancing_pct": 65.36380036079375,
       "date": "2026-06-18",
       "declines": 1025,
-      "mcclellan": 22.527931915345334,
+      "mcclellan": 22.523719171381742,
       "observed": 3326,
-      "up_down_dollar_ratio": 2.098198235201405,
+      "up_down_dollar_ratio": 2.0981982353104676,
       "volume_participation": 1.8007390196012976
     },
     {
@@ -4895,9 +4895,9 @@
       "advancing_pct": 45.4954954954955,
       "date": "2026-06-22",
       "declines": 1711,
-      "mcclellan": 4.0734555791521245,
+      "mcclellan": 4.0694223571595955,
       "observed": 3330,
-      "up_down_dollar_ratio": 1.0699780770754699,
+      "up_down_dollar_ratio": 1.0699780770696221,
       "volume_participation": 1.0924394756664755
     },
     {
@@ -4906,9 +4906,9 @@
       "advancing_pct": 55.83908736115281,
       "date": "2026-06-23",
       "declines": 1364,
-      "mcclellan": 22.87451103381116,
+      "mcclellan": 22.87065146921387,
       "observed": 3331,
-      "up_down_dollar_ratio": 0.5479219587863348,
+      "up_down_dollar_ratio": 0.5479219587293094,
       "volume_participation": 1.0481793933579175
     },
     {
@@ -4917,9 +4917,9 @@
       "advancing_pct": 58.27078955268688,
       "date": "2026-06-24",
       "declines": 1274,
-      "mcclellan": 47.3850408923756,
+      "mcclellan": 47.38134910267422,
       "observed": 3331,
-      "up_down_dollar_ratio": 0.6553705690691842,
+      "up_down_dollar_ratio": 0.6553705690036112,
       "volume_participation": 1.1403493207622397
     },
     {
@@ -4928,9 +4928,9 @@
       "advancing_pct": 53.63145258103241,
       "date": "2026-06-25",
       "declines": 1414,
-      "mcclellan": 53.404618716986306,
+      "mcclellan": 53.40108883376942,
       "observed": 3332,
-      "up_down_dollar_ratio": 1.3353293774812545,
+      "up_down_dollar_ratio": 1.3353293775208956,
       "volume_participation": 1.060538868051992
     },
     {
@@ -4939,9 +4939,9 @@
       "advancing_pct": 71.06446776611695,
       "date": "2026-06-26",
       "declines": 851,
-      "mcclellan": 115.58433466344354,
+      "mcclellan": 115.58096085968697,
       "observed": 3335,
-      "up_down_dollar_ratio": 1.0590530690961417,
+      "up_down_dollar_ratio": 1.0590530691124351,
       "volume_participation": 2.034669581025049
     },
     {
@@ -4950,9 +4950,9 @@
       "advancing_pct": 48.245877061469265,
       "date": "2026-06-29",
       "declines": 1611,
-      "mcclellan": 92.12007012434728,
+      "mcclellan": 92.11684663754806,
       "observed": 3335,
-      "up_down_dollar_ratio": 1.9790058945691467,
+      "up_down_dollar_ratio": 1.9790058943867874,
       "volume_participation": 1.1228299008986555
     },
     {
@@ -4961,9 +4961,9 @@
       "advancing_pct": 48.215892053973015,
       "date": "2026-06-30",
       "declines": 1617,
-      "mcclellan": 71.24752359279822,
+      "mcclellan": 71.24444474443155,
       "observed": 3335,
-      "up_down_dollar_ratio": 1.8147943006103342,
+      "up_down_dollar_ratio": 1.8147943006512461,
       "volume_participation": 1.1207171030588068
     },
     {
@@ -4972,9 +4972,9 @@
       "advancing_pct": 55.495657382449835,
       "date": "2026-07-01",
       "declines": 1407,
-      "mcclellan": 75.79525869035973,
+      "mcclellan": 75.79231890209479,
       "observed": 3339,
-      "up_down_dollar_ratio": 0.8102072680102472,
+      "up_down_dollar_ratio": 0.8102072680110973,
       "volume_participation": 1.1006891825647551
     },
     {
@@ -4983,9 +4983,9 @@
       "advancing_pct": 52.97815025441484,
       "date": "2026-07-02",
       "declines": 1472,
-      "mcclellan": 71.90459590532308,
+      "mcclellan": 71.9017897123864,
       "observed": 3341,
-      "up_down_dollar_ratio": 0.7594905723371537,
+      "up_down_dollar_ratio": 0.7594905723350529,
       "volume_participation": 1.041648319290008
     },
     {
@@ -4994,9 +4994,9 @@
       "advancing_pct": 49.760765550239235,
       "date": "2026-07-06",
       "declines": 1579,
-      "mcclellan": 57.56855624459013,
+      "mcclellan": 57.565878306623745,
       "observed": 3344,
-      "up_down_dollar_ratio": 1.5390600848957368,
+      "up_down_dollar_ratio": 1.5390600848496265,
       "volume_participation": 0.9567514284783035
     },
     {
@@ -5005,9 +5005,9 @@
       "advancing_pct": 40.311004784689,
       "date": "2026-07-07",
       "declines": 1893,
-      "mcclellan": 13.523399553440498,
+      "mcclellan": 13.520844663163587,
       "observed": 3344,
-      "up_down_dollar_ratio": 0.5761915297157961,
+      "up_down_dollar_ratio": 0.5761915296817469,
       "volume_participation": 0.9647538207728735
     },
     {
@@ -5016,9 +5016,9 @@
       "advancing_pct": 28.708133971291865,
       "date": "2026-07-08",
       "declines": 2291,
-      "mcclellan": -63.502826415259634,
+      "mcclellan": -63.50526332531068,
       "observed": 3344,
-      "up_down_dollar_ratio": 0.7831777204415932,
+      "up_down_dollar_ratio": 0.7831777204660374,
       "volume_participation": 0.954108774833435
     },
     {
@@ -5027,9 +5027,9 @@
       "advancing_pct": 64.89234449760765,
       "date": "2026-07-09",
       "declines": 1062,
-      "mcclellan": -7.092735486421958,
+      "mcclellan": -7.0950593388296,
       "observed": 3344,
-      "up_down_dollar_ratio": 2.733683545971912,
+      "up_down_dollar_ratio": 2.7336835459325872,
       "volume_participation": 0.8752147451226551
     },
     {
@@ -5038,9 +5038,9 @@
       "advancing_pct": 51.495215311004785,
       "date": "2026-07-10",
       "declines": 1496,
-      "mcclellan": -2.9266440648336527,
+      "mcclellan": -2.9288596336941453,
       "observed": 3344,
-      "up_down_dollar_ratio": 1.2528887239429312,
+      "up_down_dollar_ratio": 1.2528887239088027,
       "volume_participation": 0.7619483407528073
     },
     {
@@ -5049,9 +5049,9 @@
       "advancing_pct": 45.277943813508664,
       "date": "2026-07-13",
       "declines": 1702,
-      "mcclellan": -20.00000267905149,
+      "mcclellan": -20.002114587634892,
       "observed": 3346,
-      "up_down_dollar_ratio": 0.5307334268193777,
+      "up_down_dollar_ratio": 0.5307334268176663,
       "volume_participation": 0.8896247039875708
     },
     {
@@ -5060,9 +5060,9 @@
       "advancing_pct": 48.80454273759713,
       "date": "2026-07-14",
       "declines": 1586,
-      "mcclellan": -22.797724280812474,
+      "mcclellan": -22.799737000316014,
       "observed": 3346,
-      "up_down_dollar_ratio": 1.4473283080781125,
+      "up_down_dollar_ratio": 1.447328308066025,
       "volume_participation": 0.8963463192518574
     },
     {
@@ -5071,9 +5071,9 @@
       "advancing_pct": 56.15660490137478,
       "date": "2026-07-15",
       "declines": 1344,
-      "mcclellan": -0.6757876289140654,
+      "mcclellan": -0.6777054781568097,
       "observed": 3346,
-      "up_down_dollar_ratio": 0.8402080221060566,
+      "up_down_dollar_ratio": 0.8402080220783975,
       "volume_participation": 0.9545845852868432
     },
     {
@@ -5082,9 +5082,9 @@
       "advancing_pct": 56.780167264038234,
       "date": "2026-07-16",
       "declines": 1326,
-      "mcclellan": 20.241847146603675,
+      "mcclellan": 20.24002000068009,
       "observed": 3348,
-      "up_down_dollar_ratio": 0.7051286979952857,
+      "up_down_dollar_ratio": 0.7051286979681654,
       "volume_participation": 1.0090072945685022
     },
     {
@@ -5093,9 +5093,9 @@
       "advancing_pct": 32.44776119402985,
       "date": "2026-07-17",
       "declines": 2130,
-      "mcclellan": -42.874784356061696,
+      "mcclellan": -42.87652481491776,
       "observed": 3350,
-      "up_down_dollar_ratio": 0.39797722417782366,
+      "up_down_dollar_ratio": 0.39797722417774023,
       "volume_participation": 1.0154639302558608
     },
     {
@@ -5104,9 +5104,9 @@
       "advancing_pct": 30.70725156669651,
       "date": "2026-07-20",
       "declines": 2175,
-      "mcclellan": -101.77513036906026,
+      "mcclellan": -101.77678800817932,
       "observed": 3351,
-      "up_down_dollar_ratio": 0.9959581708580093,
+      "up_down_dollar_ratio": 0.9959581709069656,
       "volume_participation": 0.9321997783626574
     },
     {
@@ -5115,9 +5115,9 @@
       "advancing_pct": 59.2062071023575,
       "date": "2026-07-21",
       "declines": 1230,
-      "mcclellan": -56.62605055832874,
+      "mcclellan": -56.62762909837707,
       "observed": 3351,
-      "up_down_dollar_ratio": 2.125242852864116,
+      "up_down_dollar_ratio": 2.1252428528660294,
       "volume_participation": 0.9630675997164119
     },
     {
@@ -5126,9 +5126,9 @@
       "advancing_pct": 36.168307967770815,
       "date": "2026-07-22",
       "declines": 1992,
-      "mcclellan": -94.44045706736165,
+      "mcclellan": -94.44196008500425,
       "observed": 3351,
-      "up_down_dollar_ratio": 0.7843805405753407,
+      "up_down_dollar_ratio": 0.7843805405773823,
       "volume_participation": 0.9003930889044326
     },
     {
@@ -5137,7 +5137,7 @@
       "advancing_pct": 33.24380781856162,
       "date": "2026-07-23",
       "declines": 2099,
-      "mcclellan": -136.549572347248,
+      "mcclellan": -136.5510032781455,
       "observed": 3351,
       "up_down_dollar_ratio": 0.6472994018852306,
       "volume_participation": 0.9717321160013853
@@ -5148,9 +5148,9 @@
       "advancing_pct": 56.878543718293045,
       "date": "2026-07-24",
       "declines": 1310,
-      "mcclellan": -92.82011804981454,
+      "mcclellan": -92.82148019189049,
       "observed": 3351,
-      "up_down_dollar_ratio": 0.7392822004773437,
+      "up_down_dollar_ratio": 0.7392822004712045,
       "volume_participation": 0.8845916095864118
     },
     {
@@ -5159,9 +5159,9 @@
       "advancing_pct": 63.82598331346841,
       "date": "2026-07-27",
       "declines": 1082,
-      "mcclellan": -31.767334035259886,
+      "mcclellan": -31.768630552183033,
       "observed": 3356,
-      "up_down_dollar_ratio": 0.9872534699092134,
+      "up_down_dollar_ratio": 0.9872534699056829,
       "volume_participation": 0.9345919735035838
     },
     {
@@ -5170,9 +5170,9 @@
       "advancing_pct": 60.56002383080131,
       "date": "2026-07-28",
       "declines": 1189,
-      "mcclellan": 9.791632967360641,
+      "mcclellan": 9.790399042527767,
       "observed": 3357,
-      "up_down_dollar_ratio": 1.0230768764834166,
+      "up_down_dollar_ratio": 1.0230768764915494,
       "volume_participation": 1.0510938396192617
     },
     {
@@ -5181,9 +5181,9 @@
       "advancing_pct": 29.839189994044073,
       "date": "2026-07-29",
       "declines": 2220,
-      "mcclellan": -57.824408410235606,
+      "mcclellan": -57.82558264920715,
       "observed": 3358,
-      "up_down_dollar_ratio": 0.3108320903144169,
+      "up_down_dollar_ratio": 0.3108320903108959,
       "volume_participation": 1.085845347717509
     },
     {
@@ -5192,9 +5192,9 @@
       "advancing_pct": 48.929208804283164,
       "date": "2026-07-30",
       "declines": 1570,
-      "mcclellan": -50.69700174602922,
+      "mcclellan": -50.69811908239446,
       "observed": 3362,
-      "up_down_dollar_ratio": 1.869445985775337,
+      "up_down_dollar_ratio": 1.8694459857650991,
       "volume_participation": 1.0426804936659622
     },
     {
@@ -5203,9 +5203,9 @@
       "advancing_pct": 42.092746730083235,
       "date": "2026-07-31",
       "declines": 1802,
-      "mcclellan": -67.39958403940263,
+      "mcclellan": -67.40064713735764,
       "observed": 3364,
-      "up_down_dollar_ratio": 0.9736424943719181,
+      "up_down_dollar_ratio": 0.9736424943671718,
       "volume_participation": 0.98952769349971
     },
     {
@@ -5214,9 +5214,9 @@
       "advancing_pct": 72.09509658246657,
       "date": "2026-08-03",
       "declines": 805,
-      "mcclellan": 19.00670601996015,
+      "mcclellan": 19.005694611335628,
       "observed": 3365,
-      "up_down_dollar_ratio": 3.346153084499555,
+      "up_down_dollar_ratio": 3.3461530844977174,
       "volume_participation": 0.9811335321886033
     },
     {
@@ -5225,9 +5225,9 @@
       "advancing_pct": 71.24183006535948,
       "date": "2026-08-04",
       "declines": 832,
-      "mcclellan": 90.03905049061552,
+      "mcclellan": 90.03808833341171,
       "observed": 3366,
-      "up_down_dollar_ratio": 4.362989958771494,
+      "up_down_dollar_ratio": 4.36298995915844,
       "volume_participation": 1.1201619525434923
     },
     {
@@ -5236,9 +5236,9 @@
       "advancing_pct": 38.47980997624703,
       "date": "2026-08-05",
       "declines": 1931,
-      "mcclellan": 40.27150976057277,
+      "mcclellan": 40.2705945241197,
       "observed": 3368,
-      "up_down_dollar_ratio": 0.8386098970663648,
+      "up_down_dollar_ratio": 0.838609897066211,
       "volume_participation": 1.0349948026371485
     },
     {
@@ -5247,9 +5247,9 @@
       "advancing_pct": 39.86346096764618,
       "date": "2026-08-06",
       "declines": 1875,
-      "mcclellan": 2.6689048875833663,
+      "mcclellan": 2.668034344554414,
       "observed": 3369,
-      "up_down_dollar_ratio": 0.6813945083146037,
+      "up_down_dollar_ratio": 0.6813945083420632,
       "volume_participation": 1.0533285510145225
     },
     {
@@ -5258,9 +5258,9 @@
       "advancing_pct": 60.30851379412637,
       "date": "2026-08-07",
       "declines": 1187,
-      "mcclellan": 39.40533319673952,
+      "mcclellan": 39.40450521930333,
       "observed": 3371,
-      "up_down_dollar_ratio": 2.0839569329712333,
+      "up_down_dollar_ratio": 2.083956933000313,
       "volume_participation": 1.0038235902312929
     },
     {
@@ -5269,9 +5269,9 @@
       "advancing_pct": 35.81381559442632,
       "date": "2026-08-10",
       "declines": 2028,
-      "mcclellan": -12.682047264915695,
+      "mcclellan": -12.682834708882865,
       "observed": 3373,
-      "up_down_dollar_ratio": 1.0230734405626394,
+      "up_down_dollar_ratio": 1.0230734405635145,
       "volume_participation": 0.9432443581120967
     },
     {
@@ -5280,9 +5280,9 @@
       "advancing_pct": 55.26237770530685,
       "date": "2026-08-11",
       "declines": 1353,
-      "mcclellan": 9.396652676693705,
+      "mcclellan": 9.395903826062352,
       "observed": 3373,
-      "up_down_dollar_ratio": 1.2423935705590154,
+      "up_down_dollar_ratio": 1.242393570549725,
       "volume_participation": 0.907821192448357
     },
     {
@@ -5291,9 +5291,9 @@
       "advancing_pct": 54.534676941315944,
       "date": "2026-08-12",
       "declines": 1376,
-      "mcclellan": 25.87695786338628,
+      "mcclellan": 25.87624575431022,
       "observed": 3374,
-      "up_down_dollar_ratio": 1.8056020297658781,
+      "up_down_dollar_ratio": 1.80560202975612,
       "volume_participation": 0.9253238379711908
     },
     {
@@ -5302,7 +5302,7 @@
       "advancing_pct": 57.955555555555556,
       "date": "2026-08-13",
       "declines": 1262,
-      "mcclellan": 51.3382340086915,
+      "mcclellan": 51.3375568741906,
       "observed": 3375,
       "up_down_dollar_ratio": 2.121117838852049,
       "volume_participation": 0.9452546668533875
@@ -5313,9 +5313,9 @@
       "advancing_pct": 51.747630331753555,
       "date": "2026-08-14",
       "declines": 1465,
-      "mcclellan": 52.25093394288399,
+      "mcclellan": 52.25029009731739,
       "observed": 3376,
-      "up_down_dollar_ratio": 1.1246477247385303,
+      "up_down_dollar_ratio": 1.124647724737817,
       "volume_participation": 0.7900808959236492
     },
     {
@@ -5324,9 +5324,9 @@
       "advancing_pct": 32.11959739490823,
       "date": "2026-08-17",
       "declines": 2161,
-      "mcclellan": -15.12996228309585,
+      "mcclellan": -15.13057444739583,
       "observed": 3378,
-      "up_down_dollar_ratio": 0.7448595040842289,
+      "up_down_dollar_ratio": 0.744859504085217,
       "volume_participation": 0.858124412128733
     },
     {
@@ -5335,7 +5335,7 @@
       "advancing_pct": 37.09295441089402,
       "date": "2026-08-18",
       "declines": 1958,
-      "mcclellan": -54.114978744893136,
+      "mcclellan": -54.11556076088864,
       "observed": 3378,
       "up_down_dollar_ratio": 0.43310563520127676,
       "volume_participation": 0.867435203579546
@@ -5346,7 +5346,7 @@
       "advancing_pct": 56.022491861497485,
       "date": "2026-08-19",
       "declines": 1352,
-      "mcclellan": -24.87659292600535,
+      "mcclellan": -24.877146255120564,
       "observed": 3379,
       "up_down_dollar_ratio": 1.07589820594755,
       "volume_participation": 0.9856244851866723
@@ -5357,7 +5357,7 @@
       "advancing_pct": 31.75495708789583,
       "date": "2026-08-20",
       "declines": 2167,
-      "mcclellan": -81.50339008622628,
+      "mcclellan": -81.50391612141325,
       "observed": 3379,
       "up_down_dollar_ratio": 0.5124191187889983,
       "volume_participation": 0.886075825670522
@@ -5368,7 +5368,7 @@
       "advancing_pct": 63.07692307692308,
       "date": "2026-08-21",
       "declines": 1102,
-      "mcclellan": -23.31178470778402,
+      "mcclellan": -23.31228477648643,
       "observed": 3380,
       "up_down_dollar_ratio": 1.6045622550104708,
       "volume_participation": 0.8858513385499447
@@ -5379,7 +5379,7 @@
       "advancing_pct": 43.41910677314404,
       "date": "2026-08-24",
       "declines": 1764,
-      "mcclellan": -39.74140318567697,
+      "mcclellan": -39.74187855269156,
       "observed": 3381,
       "up_down_dollar_ratio": 0.6316057718200947,
       "volume_participation": 0.8221254078742216
@@ -5390,7 +5390,7 @@
       "advancing_pct": 50.99083111505472,
       "date": "2026-08-25",
       "declines": 1527,
-      "mcclellan": -28.940019968347073,
+      "mcclellan": -28.94047183858349,
       "observed": 3381,
       "up_down_dollar_ratio": 1.4676339259874767,
       "volume_participation": 0.7944226955164556
@@ -5401,7 +5401,7 @@
       "advancing_pct": 43.744454303460515,
       "date": "2026-08-26",
       "declines": 1757,
-      "mcclellan": -43.310137217688265,
+      "mcclellan": -43.31056673882817,
       "observed": 3381,
       "up_down_dollar_ratio": 1.083204782311405,
       "volume_participation": 0.7652530923943358
@@ -5412,7 +5412,7 @@
       "advancing_pct": 44.36890334023057,
       "date": "2026-08-27",
       "declines": 1739,
-      "mcclellan": -53.38003677978655,
+      "mcclellan": -53.38044504484324,
       "observed": 3383,
       "up_down_dollar_ratio": 1.1766265196591699,
       "volume_participation": 0.848963309100179
@@ -5423,7 +5423,7 @@
       "advancing_pct": 37.067691398167305,
       "date": "2026-08-28",
       "declines": 1978,
-      "mcclellan": -86.02290072148165,
+      "mcclellan": -86.02328877126192,
       "observed": 3383,
       "up_down_dollar_ratio": 0.6613876309377245,
       "volume_participation": 0.8119184053723713
@@ -5434,7 +5434,7 @@
       "advancing_pct": 32.5354609929078,
       "date": "2026-08-31",
       "declines": 2148,
-      "mcclellan": -129.65243488802355,
+      "mcclellan": -129.65280371349354,
       "observed": 3384,
       "up_down_dollar_ratio": 0.8673029832324081,
       "volume_participation": 0.9837972622724196
@@ -5445,7 +5445,7 @@
       "advancing_pct": 28.368794326241133,
       "date": "2026-09-01",
       "declines": 2291,
-      "mcclellan": -180.50742442597675,
+      "mcclellan": -180.50777497053411,
       "observed": 3384,
       "up_down_dollar_ratio": 0.3510612724054542,
       "volume_participation": 0.9079448243641496
@@ -5456,7 +5456,7 @@
       "advancing_pct": 66.903073286052,
       "date": "2026-09-02",
       "declines": 979,
-      "mcclellan": -92.28590335879686,
+      "mcclellan": -92.2862365204512,
       "observed": 3384,
       "up_down_dollar_ratio": 1.7220382765081705,
       "volume_participation": 0.8856113116948914
@@ -5467,7 +5467,7 @@
       "advancing_pct": 58.99556868537666,
       "date": "2026-09-03",
       "declines": 1220,
-      "mcclellan": -41.795073329564076,
+      "mcclellan": -41.79538996302801,
       "observed": 3385,
       "up_down_dollar_ratio": 2.899976320308928,
       "volume_participation": 0.9072879612687125
@@ -5478,7 +5478,7 @@
       "advancing_pct": 52.82127031019203,
       "date": "2026-09-04",
       "declines": 1437,
-      "mcclellan": -19.716438287922216,
+      "mcclellan": -19.716739206616044,
       "observed": 3385,
       "up_down_dollar_ratio": 1.1534404360752335,
       "volume_participation": 0.8033421363606618
@@ -5489,7 +5489,7 @@
       "advancing_pct": 30.80330773774365,
       "date": "2026-09-08",
       "declines": 2208,
-      "mcclellan": -76.54062313587882,
+      "mcclellan": -76.54090911385073,
       "observed": 3386,
       "up_down_dollar_ratio": 0.7116790475842947,
       "volume_participation": 0.9641024959242708
@@ -5500,7 +5500,7 @@
       "advancing_pct": 21.00443131462334,
       "date": "2026-09-09",
       "declines": 2517,
-      "mcclellan": -156.79259806520233,
+      "mcclellan": -156.79286983896716,
       "observed": 3385,
       "up_down_dollar_ratio": 0.48178863762116964,
       "volume_participation": 0.9083238775229773
@@ -5511,7 +5511,7 @@
       "advancing_pct": 31.916149985237674,
       "date": "2026-09-10",
       "declines": 2151,
-      "mcclellan": -187.8240736394479,
+      "mcclellan": -187.82433190974686,
       "observed": 3387,
       "up_down_dollar_ratio": 0.40937955702133627,
       "volume_participation": 0.8952543919737146
@@ -5522,7 +5522,7 @@
       "advancing_pct": 59.04930617065249,
       "date": "2026-09-11",
       "declines": 1212,
-      "mcclellan": -120.51686488723067,
+      "mcclellan": -120.51711032071478,
       "observed": 3387,
       "up_down_dollar_ratio": 1.9198704217508025,
       "volume_participation": 0.8551253258440751
@@ -5533,7 +5533,7 @@
       "advancing_pct": 49.73435655253837,
       "date": "2026-09-14",
       "declines": 1546,
-      "mcclellan": -94.81661707964875,
+      "mcclellan": -94.81685031048876,
       "observed": 3388,
       "up_down_dollar_ratio": 0.7431614216089626,
       "volume_participation": 0.9178215342537878
@@ -5544,7 +5544,7 @@
       "advancing_pct": 34.002361275088546,
       "date": "2026-09-15",
       "declines": 2082,
-      "mcclellan": -125.81882211876794,
+      "mcclellan": -125.81904375019303,
       "observed": 3388,
       "up_down_dollar_ratio": 0.5919341873749207,
       "volume_participation": 0.9304844961271895
