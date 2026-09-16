@@ -43,6 +43,21 @@ def base_inputs(root):
     dump(root, "history/vwap_restore.json", meta(rows=[{"ticker": "AAA", "vwap63": {"value": 99}}]))
     dump(
         root,
+        "history/setup_restore.json",
+        meta(
+            status="READY",
+            rows=[{"ticker": "AAA", "rs189": 99, "ddv20": 2e7}],
+            prebreakout=[],
+            confluence=[],
+            pocket_pivots=[],
+            todays_setups=[],
+            vcp=[],
+            ema21_touch=[],
+            patterns={},
+        ),
+    )
+    dump(
+        root,
         "market_inputs.json",
         meta(series={s: [{"date": SESSION, "close": 100.0}] for s in ("QQQ", "TQQQ", "^VIX", "NQ=F", "SPY")}),
     )
