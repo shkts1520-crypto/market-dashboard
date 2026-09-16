@@ -14,10 +14,15 @@
       "ブロックチェーン技術",
       0.98,
       "StablecoinX operates Ethereum validator and cross-chain verifier infrastructure and develops middleware for Ethena digital-dollar integration."
+    ],
+    "WCCB": [
+      "地方銀行（西部）",
+      0.99,
+      "West Coast Community Bancorp is the California-based parent of West Coast Community Bank, a community bank serving California's Central Coast and Silicon Valley; Nasdaq listing began September 16, 2026."
     ]
   },
   "policy": "Supplemental researched overrides for current-universe legacy-map gaps only; values must use existing fine-theme IDs.",
-  "researched_at": "2026-09-15",
+  "researched_at": "2026-09-16",
   "schema_version": "v38.theme_manual_overrides.supplemental.1",
   "source_kind": "SEC/Nasdaq/issuer cross-check"
 }
