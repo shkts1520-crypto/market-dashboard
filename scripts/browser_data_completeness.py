@@ -178,6 +178,7 @@ def assert_rotation(page, width: int) -> None:
     strong = page.locator('#t-rotation .card[data-v38-card-title*="強い業種の主導株"]')
     assert strong.count() == 1 and strong.locator('.v38-strong-theme-group').count() >= 1, (width, 'source-style grouped strong-theme leaders missing')
     assert strong.locator('.v38-strong-theme-chips .v38-ticker-link').count() >= 1, (width, 'qualified leader chips missing')
+    assert 'RS—' not in strong.inner_text(), (width, 'missing RS must not render as a fake score placeholder')
     headers = page.locator('#t-rotation .v38-source-table th').all_inner_texts()
     for banned in ('Group', 'Breadth50', 'Members', 'Ticker', 'Theme', '1D', '1W', '1M'):
         assert banned not in headers, (width, 'Rotation table header regressed to English-first', banned, headers)
