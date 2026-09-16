@@ -490,41 +490,11 @@ def _rotation_money_flow(market_series: dict[str, list[dict[str, Any]]]) -> dict
         "IWD": "バリュー", "IWF": "グロース", "IWM": "小型株",
         "MDY": "中型株", "RSP": "S&P等加重",
     }
-
-
-def _ratio_observation(
-    market_series: dict[str, list[dict[str, Any]]], left: str, right: str
-) -> dict[str, Any]:
-    right_by_date = {
-        str(row.get("date")): _finite(row.get("close"))
-        for row in market_series.get(right, []) if isinstance(row, dict)
-    }
-    rows = []
-    for row in market_series.get(left, []):
-        if not isinstance(row, dict):
-            continue
-        date = str(row.get("date") or "")
-        lhs, rhs = _finite(row.get("close")), right_by_date.get(date)
-        if date and lhs is not None and rhs is not None and rhs != 0:
-            rows.append({"date": date, "value": lhs / rhs})
-    return {"status": READY if len(rows) >= 2 else DATA_REQUIRED, "rows": rows,
-            "current": rows[-1]["value"] if rows else None,
-            "source": f"market_inputs.json completed daily close: {left}/{right}"}
-
-
-def _distribution_observation(rows: list[dict[str, Any]]) -> int | None:
-    sample = rows[-26:]
-    if len(sample) < 2:
-        return None
-    count = 0
-    for previous, current in zip(sample, sample[1:]):
-        pc, cc = _finite(previous.get("close")), _finite(current.get("close"))
-        pv, cv = _finite(previous.get("volume")), _finite(current.get("volume"))
-        if None not in (pc, cc, pv, cv) and cc < pc and cv > pv:
-            count += 1
-    return count
     spy = market_series.get("SPY") or []
-    spy_by_date = {str(row.get("date")): _finite(row.get("close")) for row in spy if isinstance(row, dict)}
+    spy_by_date = {
+        str(row.get("date")): _finite(row.get("close"))
+        for row in spy if isinstance(row, dict)
+    }
     rows: list[dict[str, Any]] = []
     for ticker, label in labels.items():
         rel: list[tuple[str, float]] = []
@@ -559,6 +529,43 @@ def _distribution_observation(rows: list[dict[str, Any]]) -> int | None:
         "definition": "x=100*(relative strength now / 63 sessions ago); y=100*(relative strength now / 10 sessions ago)",
         "trading_gate_eligible": False,
     }
+
+
+def _ratio_observation(
+    market_series: dict[str, list[dict[str, Any]]], left: str, right: str
+) -> dict[str, Any]:
+    right_by_date = {
+        str(row.get("date")): _finite(row.get("close"))
+        for row in market_series.get(right, []) if isinstance(row, dict)
+    }
+    rows = []
+    for row in market_series.get(left, []):
+        if not isinstance(row, dict):
+            continue
+        date = str(row.get("date") or "")
+        lhs, rhs = _finite(row.get("close")), right_by_date.get(date)
+        if date and lhs is not None and rhs is not None and rhs != 0:
+            rows.append({"date": date, "value": lhs / rhs})
+    return {
+        "status": READY if len(rows) >= 2 else DATA_REQUIRED,
+        "rows": rows,
+        "current": rows[-1]["value"] if rows else None,
+        "source": f"market_inputs.json completed daily close: {left}/{right}",
+    }
+
+
+def _distribution_observation(rows: list[dict[str, Any]]) -> int | None:
+    sample = rows[-26:]
+    if len(sample) < 2:
+        return None
+    count = 0
+    for previous, current in zip(sample, sample[1:]):
+        pc, cc = _finite(previous.get("close")), _finite(current.get("close"))
+        pv, cv = _finite(previous.get("volume")), _finite(current.get("volume"))
+        if None not in (pc, cc, pv, cv) and cc < pc and cv > pv:
+            count += 1
+    return count
+
 
 def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
     root = Path(data_dir)
