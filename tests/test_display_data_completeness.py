@@ -49,20 +49,21 @@ def test_validator_requires_stock_contract_options_chart_and_vwap_completeness()
     assert 'NO_VALID_0_45_DTE_CONTRACTS' in script
 
 
-def test_browser_gate_checks_rendered_product_not_patch_statuses():
+def test_browser_gate_checks_user_visible_failures_not_ui_shape():
     script = BROWSER.read_text(encoding="utf-8")
     assert 'v38CanonicalBinder' in script
     assert 'v38TruthBinding' not in script
     assert 'v38AuthoritativeFinal' not in script
     assert 'v38PublicRenderContract' not in script
-    for token in ('DATA_REQUIRED', 'SOURCE_UNAVAILABLE', 'producer未復元', 'full_v38_ready:'):
+    for token in ('SOURCE_DEFINED_', 'SOURCE_UNAVAILABLE', 'producer未復元', 'full_v38_ready:'):
         assert token in script
-    assert 'REPAIRED_CARD_CONTRACT' in script
-    assert 'data-v38-truth-source' in script
-    assert 'v38-sector-cell' in script
+    assert 'visible tab is empty' in script
+    assert 'unexpected horizontal overflow' in script
+    assert 'REPAIRED_CARD_CONTRACT' not in script
+    assert 'data-v38-truth-source' not in script
 
 
-def test_production_runs_strict_completeness_before_browser_acceptance():
+def test_production_runs_completeness_before_browser_smoke_acceptance():
     workflow = WORKFLOW.read_text(encoding="utf-8")
     validator = 'PYTHONPATH=src python scripts/validate_display_completeness.py --data-dir data --site-dir _site'
     browser = 'python scripts/browser_data_completeness.py --url http://127.0.0.1:8000/'
