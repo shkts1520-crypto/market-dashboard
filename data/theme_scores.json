@@ -2,13 +2,13 @@
   "calculation_version": "v38-peer-theme-1.0.0",
   "coverage": 1.0,
   "coverage_detail": {
-    "missing_theme_neutral": 0,
+    "missing_theme_neutral": 1,
     "partial_neutral_component": 81,
-    "rs_rows": 3388,
-    "score_rows": 3388,
+    "rs_rows": 3389,
+    "score_rows": 3389,
     "strict_loo_ready": 3307
   },
-  "generated_at": "2026-09-16T08:05:46Z",
+  "generated_at": "2026-09-16T10:13:35Z",
   "loo_required": true,
   "rows": [
     {
@@ -58841,6 +58841,20 @@
       "theme_rs63_score": 56.01173020527859,
       "theme_status": "STRICT_LOO_READY",
       "ticker": "WCC"
+    },
+    {
+      "above_ema21_score": 50.0,
+      "major_theme": null,
+      "peer_count": 0,
+      "peer_theme_score": 50.0,
+      "rank_acceleration_score": 50.0,
+      "tag_confidence": null,
+      "tag_method": "UNMAPPED",
+      "theme_id": null,
+      "theme_name": null,
+      "theme_rs63_score": 50.0,
+      "theme_status": "MISSING_NEUTRAL",
+      "ticker": "WCCB"
     },
     {
       "above_ema21_score": 45.45454545454545,

@@ -66627,7 +66627,7 @@
     "trading_gate_eligible": false
   },
   "eligible_count": 297,
-  "generated_at": "2026-09-16T08:11:49Z",
+  "generated_at": "2026-09-16T10:18:55Z",
   "inception_bootstrap_attempted": 0,
   "inception_bootstrap_ready": 0,
   "inception_pending": 0,
@@ -68728,7 +68728,7 @@
       "industry": "Packaged Software",
       "major": "Technology Services",
       "name": "Adeia Inc.",
-      "price": 24.89999961853028,
+      "price": 24.899999618530277,
       "rs189": 94.01425178147268,
       "ticker": "ADEA",
       "vwap252": {
@@ -68748,7 +68748,7 @@
         "value": 28.41255719985926
       },
       "vwap_life": {
-        "dist": 1.2289792256232874,
+        "dist": 1.228979225623287,
         "through": "2026-09-15",
         "valid": true,
         "value": 11.171032610933159
@@ -72658,7 +72658,7 @@
       "industry": "Packaged Software",
       "major": "Technology Services",
       "name": "Twilio Inc.",
-      "price": 242.16000366210932,
+      "price": 242.16000366210935,
       "rs189": 93.30166270783849,
       "ticker": "TWLO",
       "vwap252": {
@@ -74818,24 +74818,24 @@
       "industry": "Publishing: Books/Magazines",
       "major": "Consumer Services",
       "name": "John Wiley & Sons, Inc.",
-      "price": 49.33,
+      "price": 49.33000183105469,
       "rs189": 89.26365795724466,
       "ticker": "WLY",
       "vwap252": {
         "break": false,
-        "dist": 0.2280644183984626,
+        "dist": 0.24978578826313402,
         "label": "—",
         "near": false,
         "touch": false,
-        "value": 39.436042262615246
+        "value": 39.470765545838155
       },
       "vwap63": {
         "break": false,
-        "dist": -0.026189780118695882,
+        "dist": -0.010116848001878953,
         "label": "—",
         "near": false,
         "touch": false,
-        "value": 49.73248310238397
+        "value": 49.83416651902802
       },
       "vwap_life": {
         "dist": null,
@@ -76858,7 +76858,7 @@
       "industry": "Packaged Software",
       "major": "Technology Services",
       "name": "First Advantage Corporation",
-      "price": 21.64999961853028,
+      "price": 21.649999618530277,
       "rs189": 85.5106888361045,
       "ticker": "FA",
       "vwap252": {
@@ -76878,7 +76878,7 @@
         "value": 20.43217097985688
       },
       "vwap_life": {
-        "dist": 0.3209594896472394,
+        "dist": 0.3209594896472392,
         "through": "2026-09-15",
         "valid": true,
         "value": 16.3896014890751

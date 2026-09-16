@@ -963,7 +963,7 @@
     }
   ],
   "failed": [],
-  "generated_at": "2026-09-16T08:13:08Z",
+  "generated_at": "2026-09-16T10:20:16Z",
   "patterns": {
     "cup_handle": [
       {
@@ -2136,13 +2136,13 @@
         "vdry_pre": 1.5220771862862765
       },
       {
-        "atr_contract": 1.061233960294657,
+        "atr_contract": 0.7458063883138826,
         "base_depth25": 0.15143227228237977,
         "base_depth40": 0.19042510010028457,
         "confluence": [],
         "contractions": 1,
         "cup_handle": false,
-        "ddv20": 28478578.51678583,
+        "ddv20": 28478573.6418602,
         "ema21_touch": false,
         "flat_base": false,
         "high_tight_flag": false,
@@ -2150,11 +2150,11 @@
         "industry": "Publishing: Books/Magazines",
         "name": "John Wiley & Sons, Inc.",
         "pivot": 57.44990158081055,
-        "pivot_dist": -0.15700464278336723,
+        "pivot_dist": -0.1413387930409975,
         "pp_days": null,
         "pp_ratio": null,
         "prebreakout": false,
-        "price": 48.43000030517578,
+        "price": 49.33000183105469,
         "rs189": 89.26365795724466,
         "rs63": 76.1263353460288,
         "sector": "Consumer Services",
@@ -2164,8 +2164,8 @@
         "true_breakout": false,
         "ucr": true,
         "vcp_ready": false,
-        "vcp_score": 15.0,
-        "vdry_pre": 1.2633473075181798
+        "vcp_score": 25.0,
+        "vdry_pre": 1.0543503738025797
       },
       {
         "atr_contract": 1.0155925123094627,
@@ -10345,13 +10345,13 @@
       "vdry_pre": 0.854091525760233
     },
     {
-      "atr_contract": 1.061233960294657,
+      "atr_contract": 0.7458063883138826,
       "base_depth25": 0.15143227228237977,
       "base_depth40": 0.19042510010028457,
       "confluence": [],
       "contractions": 1,
       "cup_handle": false,
-      "ddv20": 28478578.51678583,
+      "ddv20": 28478573.6418602,
       "ema21_touch": false,
       "flat_base": false,
       "high_tight_flag": false,
@@ -10359,11 +10359,11 @@
       "industry": "Publishing: Books/Magazines",
       "name": "John Wiley & Sons, Inc.",
       "pivot": 57.44990158081055,
-      "pivot_dist": -0.15700464278336723,
+      "pivot_dist": -0.1413387930409975,
       "pp_days": null,
       "pp_ratio": null,
       "prebreakout": false,
-      "price": 48.43000030517578,
+      "price": 49.33000183105469,
       "rs189": 89.26365795724466,
       "rs63": 76.1263353460288,
       "sector": "Consumer Services",
@@ -10373,8 +10373,8 @@
       "true_breakout": false,
       "ucr": true,
       "vcp_ready": false,
-      "vcp_score": 15.0,
-      "vdry_pre": 1.2633473075181798
+      "vcp_score": 25.0,
+      "vdry_pre": 1.0543503738025797
     },
     {
       "atr_contract": 0.9642181386202117,

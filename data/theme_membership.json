@@ -1,16 +1,16 @@
 {
   "calculation_version": "v38-recovered-theme-1.1.0",
-  "coverage": 1.0,
+  "coverage": 0.9997049277072882,
   "coverage_detail": {
     "exact": 3174,
     "inferred": 101,
     "manual": 113,
     "override_tickers": 118,
-    "rows": 3388,
+    "rows": 3389,
     "source_map_tickers": 5197,
-    "unmapped": 0
+    "unmapped": 1
   },
-  "generated_at": "2026-09-16T08:05:46Z",
+  "generated_at": "2026-09-16T10:13:35Z",
   "note": "Legacy exact tags remain authoritative. Researched overrides are allowed only for legacy-map gaps and may reference only fine themes already present in the legacy taxonomy. Remaining gaps may use same-industry inference only with >=60% agreement and >=2 mapped peers.",
   "override_policy": "Only current-universe legacy-map gaps; existing legacy fine themes only. Each value=[theme_id, confidence, evidence].",
   "rows": [
@@ -46913,6 +46913,20 @@
       "theme_id": "ストリーミング",
       "theme_name": "ストリーミング",
       "ticker": "WBTN"
+    },
+    {
+      "industry": "Regional Banks",
+      "major_theme": null,
+      "sector": "Finance",
+      "tag_confidence": null,
+      "tag_evidence": null,
+      "tag_method": "UNMAPPED",
+      "tag_peer_count": null,
+      "tag_researched_at": null,
+      "tag_source_kind": null,
+      "theme_id": null,
+      "theme_name": null,
+      "ticker": "WCCB"
     },
     {
       "industry": "Financial Conglomerates",

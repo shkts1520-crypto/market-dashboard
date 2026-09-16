@@ -5,7 +5,7 @@
     {
       "calculation_version": "v38-market-engine-1.0.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "market_state.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.market_state.1",
@@ -16,12 +16,12 @@
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "breadth.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.breadth.1",
       "session_date": "2026-09-15",
-      "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated Yahoo retry; exact-date Nasdaq historical target-session fallback; verified corporate-action alias fallback only when required",
+      "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close",
       "status": "READY"
     },
     {
@@ -38,7 +38,7 @@
     {
       "calculation_version": "v38-f123-engine-1.1.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "f123.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.f123.1",
@@ -49,7 +49,7 @@
     {
       "calculation_version": "v38-market-engine-1.0.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "core12.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.core12.1",
@@ -60,7 +60,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "positions.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.positions.1",
@@ -71,7 +71,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "rotation.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rotation.1",
@@ -82,18 +82,18 @@
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "rs.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rs.1",
       "session_date": "2026-09-15",
-      "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated Yahoo retry; exact-date Nasdaq historical target-session fallback; verified corporate-action alias fallback only when required",
+      "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close",
       "status": "READY"
     },
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "weekly.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.weekly.1",
@@ -104,7 +104,7 @@
     {
       "calculation_version": "v38-options-live-1.2.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:11:08Z",
+      "generated_at": "2026-09-16T10:18:14Z",
       "name": "options/index.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.options.1",
@@ -115,7 +115,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "rules.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rules.1",
@@ -126,7 +126,7 @@
     {
       "calculation_version": "v38-tqqq-panic-state-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-16T08:05:46Z",
+      "generated_at": "2026-09-16T10:13:35Z",
       "name": "tqqq_panic.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.tqqq_panic_state.1",
@@ -137,7 +137,7 @@
   ],
   "coverage": 1.0,
   "full_v38_ready": true,
-  "generated_at": "2026-09-16T08:05:46Z",
+  "generated_at": "2026-09-16T10:13:35Z",
   "note": "This shard reports publication readiness; READY means the report itself is current, not that every trading dependency is available.",
   "publish_extension_version": "v38-publish-tqqq-extension-1.0.0",
   "ready_count": 12,

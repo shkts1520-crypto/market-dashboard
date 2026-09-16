@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.1",
   "coverage": 1.0,
-  "generated_at": "2026-09-16T08:05:46Z",
+  "generated_at": "2026-09-16T10:13:35Z",
   "loo_required": true,
   "ordering": "authoritative source order; dashboard does not re-rank themes",
   "rows": [
@@ -58835,6 +58835,20 @@
       "theme_rs63_score": 56.01173020527859,
       "theme_status": "STRICT_LOO_READY",
       "ticker": "WCC"
+    },
+    {
+      "above_ema21_score": 50.0,
+      "major_theme": null,
+      "peer_count": 0,
+      "peer_theme_score": 50.0,
+      "rank_acceleration_score": 50.0,
+      "tag_confidence": null,
+      "tag_method": "UNMAPPED",
+      "theme_id": null,
+      "theme_name": null,
+      "theme_rs63_score": 50.0,
+      "theme_status": "MISSING_NEUTRAL",
+      "ticker": "WCCB"
     },
     {
       "above_ema21_score": 45.45454545454545,
