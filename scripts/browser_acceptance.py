@@ -52,10 +52,11 @@ def _assert_source_specialized(page):
     assert daily_regime.locator(".reg-cell").count() == 3
     assert core_regime.locator(".reg-cell").count() == 3
     for regime in (daily_regime, core_regime):
-        text = regime.inner_text()
+        cells_text = " ".join(regime.locator(".reg-cell").all_inner_texts())
         for label in ("F1", "F2", "F3"):
-            assert label in text
-        assert "NQSAR" not in text
+            assert label in cells_text
+        # NQSAR may be mentioned in the explanatory note, but must never return as a fourth instrument.
+        assert "NQSAR" not in cells_text
 
     defense = page.locator("#t-port .def-card")
     assert defense.count() == 1
@@ -162,8 +163,6 @@ def main() -> int:
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
                 _assert_canonical_binder(page)
-                # The source finalizer explicitly runs after the canonical binder. Do not inspect
-                # or capture screenshots until the specialized cards have won the render race.
                 page.wait_for_function("document.body.dataset.v38PySourceFinal === 'ready'")
                 tabs = page.locator("a.tabx")
                 assert tabs.count() == 11
