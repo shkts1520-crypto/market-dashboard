@@ -8,6 +8,9 @@ on:
 permissions:
   contents: read
 
+env:
+  TZ: Asia/Tokyo
+
 jobs:
   diagnose:
     runs-on: ubuntu-24.04
@@ -23,8 +26,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check -e . playwright==1.55.0 yfinance==0.2.66
+          python -m pip install --disable-pip-version-check -e . pytest playwright==1.55.0 yfinance==0.2.66
           python -m playwright install --with-deps chromium
+      - name: Reproduce official pre-build verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          touch /tmp/v38-before-tests
+          PYTHONPATH=src pytest -q
+          COUNT="$(PYTHONPATH=src pytest -o addopts='' --collect-only -q | grep -c '::')"
+          echo "Collected tests: $COUNT"
+          python -m compileall -q src scripts
+          node --check assets/v38-runtime.js
+          node --check assets/v38-site.js
+          node --check assets/v38-baseline-shell.js
+          node --check assets/v38-data-repair.js
+          node --check assets/v38-restored-experience.js
+          node --check assets/v38-live-binder.js
+          node --check assets/v38-tradingview-fallback.js
+          node --check assets/v38-observables.js
+          node --check assets/v38-options-chart.js
+          node --check assets/v38-data-completeness-fallback.js
+          echo '=== git status after tests ==='
+          git status --short --untracked-files=all || true
+          echo '=== tracked diff names after tests ==='
+          git diff --name-only || true
+          echo '=== data files touched after tests ==='
+          find data -type f -newer /tmp/v38-before-tests -print | sort || true
       - name: Build exact failing PR product
         shell: bash
         run: |
@@ -58,6 +86,7 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 2
           python scripts/browser_acceptance.py --url http://127.0.0.1:8000/ --screenshot-dir visual-acceptance
+          python scripts/browser_data_completeness.py --url http://127.0.0.1:8000/ || true
           python - <<'PY'
           from playwright.sync_api import sync_playwright
           tokens = ('DATA_REQUIRED', 'SOURCE_UNAVAILABLE')
@@ -76,7 +105,7 @@ jobs:
                     if (!own.includes(token)) return false;
                     const s=getComputedStyle(el), r=el.getBoundingClientRect();
                     return s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0;
-                  }).map((el)=>({tag:el.tagName,id:el.id,cls:String(el.className||''),text:Array.from(el.childNodes).filter((n)=>n.nodeType===Node.TEXT_NODE).map((n)=>n.nodeValue||'').join(' ').trim(),html:el.outerHTML.slice(0,1600)}))''', token)
+                  }).map((el)=>({tag:el.tagName,id:el.id,cls:String(el.className||''),text:Array.from(el.childNodes).filter((n)=>n.nodeType===Node.TEXT_NODE).map((n)=>n.nodeValue||'').join(' ').trim(),html:el.outerHTML.slice(0,2000)}))''', token)
                   print('MATCHES', matches)
               browser.close()
           PY
