@@ -139,10 +139,10 @@ def assert_setups(page, width: int) -> None:
 
 def assert_rotation(page, width: int) -> None:
     page.locator('a.tabx[href="#t-rotation"]').click()
-    flow = page.locator('#t-rotation .v38-rrg')
-    assert flow.count() == 1 and flow.is_visible(), (width, 'money-flow RRG missing')
-    dots = flow.locator('.v38-rrg-dot')
-    assert dots.count() == 16, (width, 'money-flow must contain GICS11 + five styles', dots.count())
+    flow_card = page.locator('#t-rotation .card[data-v38-card-title*="資金フロー"]')
+    assert flow_card.count() == 1, (width, 'money-flow card missing')
+    assert flow_card.get_attribute('data-v38-status') == 'READY', (width, 'money-flow card not READY')
+    assert flow_card.get_attribute('data-v38-truth-source'), (width, 'money-flow truth source missing')
     heat = page.locator('#t-rotation .v38-sector-cell')
     assert heat.count() == 11, (width, 'rotation heatmap must contain 11 GICS sectors', heat.count())
 
