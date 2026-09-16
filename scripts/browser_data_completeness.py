@@ -163,6 +163,11 @@ def assert_rotation(page, width: int) -> None:
     assert controls.all_inner_texts() == ['日', '週', '月'], (width, 'rotation heatmap controls must be Japanese', controls.all_inner_texts())
     breadth = page.locator('#t-rotation .card[data-v38-generated="breadth-quality"]')
     assert breadth.count() == 1 and breadth.get_attribute('data-v38-status') == 'READY', (width, 'breadth-quality diagnosis missing')
+    headers = page.locator('#t-rotation .v38-source-table th').all_inner_texts()
+    for banned in ('Group', 'Breadth50', 'Members', 'Ticker', 'Theme', '1D', '1W', '1M'):
+        assert banned not in headers, (width, 'Rotation table header regressed to English-first', banned, headers)
+    for required in ('セクター', '1カ月', '50日線上', '銘柄数', '銘柄', '業種', 'テーマRS', '業種RS63', '順位', '日', '週', '月', 'サブテーマ', '主導株'):
+        assert required in headers, (width, 'Japanese Rotation table header missing', required, headers)
 
 
 def assert_rs(page, width: int) -> None:
