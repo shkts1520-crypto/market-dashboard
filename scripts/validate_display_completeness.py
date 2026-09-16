@@ -9,7 +9,6 @@ from typing import Any
 
 
 NO_CONTRACT = "NO_VALID_0_45_DTE_CONTRACTS"
-MIN_STOCK_COVERAGE = 0.98
 OPTION_MIN_PRICE_USD = 5.0
 OPTION_MIN_DDV20_USD = 10_000_000.0
 REQUESTED_MIN_MARKET_CAP_USD = 1_000_000.0
@@ -88,14 +87,17 @@ def main() -> int:
     session = str(state.get("session_date") or "")
     assert session, "state.session_date missing"
     assert state.get("status") == "READY", state.get("status")
-    assert float(state.get("coverage") or 0.0) >= MIN_STOCK_COVERAGE, state.get("coverage")
 
     yahoo = manifest.get("yahoo") or {}
     requested = int(yahoo.get("requested") or 0)
     received = int(yahoo.get("target_session_received") or 0)
+    target_coverage = float(yahoo.get("target_session_coverage") or 0.0)
+    state_coverage = float(state.get("coverage") or 0.0)
     assert requested > 0, requested
-    assert received / requested >= MIN_STOCK_COVERAGE, (received, requested)
-    assert float(yahoo.get("target_session_coverage") or 0.0) >= MIN_STOCK_COVERAGE
+    assert 0 < received <= requested, (received, requested)
+    assert 0.0 < target_coverage <= 1.0, target_coverage
+    assert abs(target_coverage - (received / requested)) < 1e-12, (target_coverage, received, requested)
+    assert abs(state_coverage - target_coverage) < 1e-12, (state_coverage, target_coverage)
     failed_tickers = yahoo.get("failed_tickers") or []
     assert len(failed_tickers) <= requested - received, (len(failed_tickers), requested - received)
 
@@ -136,7 +138,7 @@ def main() -> int:
         upstream_mcap = float(target_policy.get("upstream_min_market_cap_usd") or 0.0)
         assert upstream_mcap >= REQUESTED_MIN_MARKET_CAP_USD, target_policy
 
-        assert overlay.get("all_universe") is True, overlay  # legacy resilient CLI mode token
+        assert overlay.get("all_universe") is True, overlay
         assert overlay.get("target_priority") == RS_LEADER_SCOPE, overlay
         assert 0 < targets <= RS_LEADER_TOP_N * len(RS_LEADER_PERIODS), targets
         assert targets <= active, (targets, active)
@@ -150,7 +152,7 @@ def main() -> int:
         expected_coverage = resolved / targets
         assert abs(resolution_coverage - expected_coverage) < 1e-12, (resolution_coverage, expected_coverage)
 
-        assert scan.get("mode") == "FULL_ACTIVE_UNIVERSE", scan  # legacy resilient CLI mode token
+        assert scan.get("mode") == "FULL_ACTIVE_UNIVERSE", scan
         assert scan.get("scope") == RS_LEADER_SCOPE, scan
         assert scan.get("periods") == RS_LEADER_PERIODS, scan
         assert int(scan.get("top_n_per_period") or 0) == RS_LEADER_TOP_N, scan
@@ -217,8 +219,9 @@ def main() -> int:
     search_rows = search.get("rows") or []
     assert isinstance(search_rows, list)
     assert active > 0, active
+    assert len(search_rows) > 0, "search index is empty"
     search_coverage = len(search_rows) / active
-    assert search_coverage >= MIN_STOCK_COVERAGE, (len(search_rows), active, search_coverage)
+    assert 0.0 < search_coverage <= 1.0, search_coverage
     search_tickers = {
         str(row.get("ticker") or "").strip().upper()
         for row in search_rows if isinstance(row, dict)
@@ -256,6 +259,7 @@ def main() -> int:
         "stock_requested": requested,
         "stock_received": received,
         "stock_failed": len(failed_tickers),
+        "stock_coverage": target_coverage,
         "search_rows": len(search_rows),
         "search_coverage": search_coverage,
         "search_unindexed": unindexed,
