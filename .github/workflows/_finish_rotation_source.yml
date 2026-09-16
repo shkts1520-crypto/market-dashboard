@@ -1,0 +1,63 @@
+name: Finish Rotation Source Fidelity
+on:
+  push:
+    branches: [fix/rotation-japanese-clean-20260916]
+    paths: [.github/workflows/_finish_rotation_source.yml]
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/rotation-japanese-clean-20260916
+          fetch-depth: 1
+      - name: Restore source grouping without changing calculations
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('assets/v38-canonical-binder.js')
+          s = p.read_text(encoding='utf-8')
+
+          old_core = "const cols=[{label:'#',key:'_rank'},{label:'銘柄',key:'ticker',ticker:true,align:'left'}"
+          new_core = "const cols=[{label:'#',key:'_rank'},{label:'Ticker',key:'ticker',ticker:true,align:'left'}"
+          if old_core not in s:
+              raise SystemExit('Core12 scope-leak marker not found')
+          s = s.replace(old_core, new_core, 1)
+
+          old_leaders = "    const leaderRows=[];industries.slice(0,12).forEach((r)=>(r.leaders||[]).slice(0,3).forEach((ticker)=>leaderRows.push({ticker,group:r.group,theme_rs:r.theme_rs,rs63_avg:r.rs63_avg,ret20_avg:r.ret20_avg})));richTable(card('t-rotation','強い業種の主導株'),'強い業種の主導株',[{label:'銘柄',key:'ticker',ticker:true,align:'left'},{label:'業種',key:'group',align:'left'},{label:'テーマRS',format:(r)=>num(r.theme_rs,1)},{label:'業種RS63',format:(r)=>num(r.rs63_avg,1)},{label:'1カ月',format:(r)=>pct(r.ret20_avg)}],leaderRows,'data/ui_view_model.json.rotation.diagnostics.industry.leaders');"
+          new_leaders = """    const strong=card('t-rotation','強い業種の主導株');if(strong){heading(strong,'強い業種の主導株','強いサブテーマごとに、復元済み定義（RS189≥85かつ200日線上）を満たす主導株をまとめて表示。表示専用で売買ゲートではありません。');const list=el('div','bglist v38-strong-theme-list'),rsMap=new Map((view.rs&&Array.isArray(view.rs.rows)?view.rs.rows:[]).map((r)=>[String(r.ticker||''),r]));industries.filter((r)=>Array.isArray(r.leaders)&&r.leaders.length).slice(0,12).forEach((r)=>{const line=el('div','bgrow v38-strong-theme-group');const name=el('div','bgname',r.group||'—'),meta=el('div','bgmeta',`${r.major_theme||''}${r.major_theme?' ・ ':''}テーマRS ${num(r.theme_rs,1)} ・ RS63 ${num(r.rs63_avg,1)} ・ 1カ月 ${pct(r.ret20_avg)}`),chips=el('div','chips v38-strong-theme-chips');(r.leaders||[]).slice(0,5).forEach((ticker)=>{const raw=rsMap.get(String(ticker))||{};const chip=el('button','chip v38-ticker-link',`${ticker}  RS${num(raw.rs189,0)}`);chip.type='button';chip.dataset.v38Ticker=ticker;chips.appendChild(chip);});line.append(name,meta,chips);list.appendChild(line);});if(!list.childElementCount)list.appendChild(el('div','empty','該当なし'));strong.appendChild(list);mark(strong,'data/ui_view_model.json.rotation.diagnostics.industry.leaders+rs.rows','READY');}"
+          if old_leaders not in s:
+              raise SystemExit('flat leader table marker not found')
+          s = s.replace(old_leaders, new_leaders, 1)
+
+          old_sector = "    richTable(card('t-rotation','セクターETF強弱'),'セクターETF強弱',[{label:'順位',key:'rank'},{label:'ETF',key:'ticker',ticker:true,align:'left'},{label:'日',format:(r)=>pct(r.d1)},{label:'週',format:(r)=>pct(r.w1)},{label:'月',format:(r)=>pct(r.m1)}],SECTORS.map((ticker)=>({ticker,d1:marketSummary(view,ticker).change_1d,w1:marketSummary(view,ticker).change_1w,m1:marketSummary(view,ticker).change_1m})).sort((a,b)=>(finite(b.m1)||-99)-(finite(a.m1)||-99)).map((r,i)=>({...r,rank:i+1})),'data/ui_view_model.json.daily.market_summaries');"
+          new_sector = "    richTable(card('t-rotation','セクターETF強弱'),'セクターETF強弱',[{label:'順位',key:'rank'},{label:'セクター',format:(r)=>SECTOR_LABELS[r.ticker]||r.ticker,align:'left'},{label:'ETF',key:'ticker',ticker:true,align:'left'},{label:'日',format:(r)=>pct(r.d1)},{label:'週',format:(r)=>pct(r.w1)},{label:'月',format:(r)=>pct(r.m1)}],SECTORS.map((ticker)=>({ticker,d1:marketSummary(view,ticker).change_1d,w1:marketSummary(view,ticker).change_1w,m1:marketSummary(view,ticker).change_1m})).sort((a,b)=>(finite(b.m1)||-99)-(finite(a.m1)||-99)).map((r,i)=>({...r,rank:i+1})),'data/ui_view_model.json.daily.market_summaries');"
+          if old_sector not in s:
+              raise SystemExit('sector ETF table marker not found')
+          s = s.replace(old_sector, new_sector, 1)
+          p.write_text(s, encoding='utf-8')
+
+          q = Path('scripts/browser_data_completeness.py')
+          t = q.read_text(encoding='utf-8')
+          old = """    headers = page.locator('#t-rotation .v38-source-table th').all_inner_texts()\n    for banned in ('Group', 'Breadth50', 'Members', 'Ticker', 'Theme', '1D', '1W', '1M'):\n        assert banned not in headers, (width, 'Rotation table header regressed to English-first', banned, headers)\n    for required in ('セクター', '1カ月', '50日線上', '銘柄数', '銘柄', '業種', 'テーマRS', '業種RS63', '順位', '日', '週', '月', 'サブテーマ', '主導株'):\n        assert required in headers, (width, 'Japanese Rotation table header missing', required, headers)\n"""
+          new = """    leading = page.locator('#t-rotation .card[data-v38-card-title*=\"主導セクター・業種\"]')\n    assert leading.count() == 1 and leading.locator('.v38-leading-groups-source .bgrow').count() >= 10, (width, 'source-style leading groups missing')\n    leading_text = leading.inner_text()\n    for required in ('RS63', '1カ月', '50日線上', '銘柄'):\n        assert required in leading_text, (width, 'leading-group current metric missing', required)\n    strong = page.locator('#t-rotation .card[data-v38-card-title*=\"強い業種の主導株\"]')\n    assert strong.count() == 1 and strong.locator('.v38-strong-theme-group').count() >= 1, (width, 'source-style grouped strong-theme leaders missing')\n    assert strong.locator('.v38-strong-theme-chips .v38-ticker-link').count() >= 1, (width, 'qualified leader chips missing')\n    headers = page.locator('#t-rotation .v38-source-table th').all_inner_texts()\n    for banned in ('Group', 'Breadth50', 'Members', 'Ticker', 'Theme', '1D', '1W', '1M'):\n        assert banned not in headers, (width, 'Rotation table header regressed to English-first', banned, headers)\n    for required in ('セクター', 'ETF', '日', '週', '月', '順位', 'サブテーマ', 'テーマRS', 'RS63', 'RS189', '1カ月', '主導株'):\n        assert required in headers, (width, 'Japanese Rotation table header missing', required, headers)\n"""
+          if old not in t:
+              raise SystemExit('old Rotation browser contract not found')
+          t = t.replace(old, new, 1)
+          q.write_text(t, encoding='utf-8')
+          PY
+          node --check assets/v38-canonical-binder.js
+          python -m py_compile scripts/browser_data_completeness.py
+      - name: Commit final Rotation source fidelity and remove helper workflow
+        shell: bash
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          rm .github/workflows/_finish_rotation_source.yml
+          git add assets/v38-canonical-binder.js scripts/browser_data_completeness.py .github/workflows/_finish_rotation_source.yml
+          git commit -m "Finish source-style Rotation grouping"
+          git push origin HEAD:fix/rotation-japanese-clean-20260916
