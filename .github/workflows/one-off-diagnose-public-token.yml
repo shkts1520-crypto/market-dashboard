@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: fix/complete-31-card-bindings
+          ref: c4c0b1a570f69d6070ed0794e42ddd3aff2dd0d8
           fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
@@ -25,12 +25,21 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check -e . playwright==1.55.0 yfinance==0.2.66
           python -m playwright install --with-deps chromium
-      - name: Build the same PR product
+      - name: Build exact failing PR product
         shell: bash
         run: |
           set -euo pipefail
           PYTHONPATH=src python scripts/materialize_supplemental.py --data-dir data
-          rm -rf _site
+          SESSION="$(python - <<'PY'
+          import json
+          print(json.load(open('data/state.json', encoding='utf-8'))['session_date'])
+          PY
+          )"
+          PYTHONPATH=src python - <<PY
+          from v38.market_status import normalize_market_statuses
+          normalize_market_statuses('data', session_date='${SESSION}')
+          PY
+          rm -rf _site visual-acceptance
           mkdir -p _site/assets _site/data/options
           GITHUB_EVENT_NAME=pull_request PYTHONPATH=src python scripts/build_site.py --canonical V38_Command_Center_mock_v5.html --output _site/index.html
           cp assets/v38-runtime.js _site/assets/v38-runtime.js
@@ -40,7 +49,7 @@ jobs:
           GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           PYTHONPATH=src python scripts/build_ui_payload.py --data-dir data --output _site/data/ui_payload.json --generated-at "$GENERATED_AT"
           PYTHONPATH=src python scripts/build_ui_view_model.py --data-dir data --output _site/data/ui_view_model.json
-      - name: Locate visible internal tokens
+      - name: Reproduce browser sequence and locate token owner
         shell: bash
         run: |
           set -euo pipefail
@@ -48,6 +57,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 2
+          python scripts/browser_acceptance.py --url http://127.0.0.1:8000/ --screenshot-dir visual-acceptance
           python - <<'PY'
           from playwright.sync_api import sync_playwright
           tokens = ('DATA_REQUIRED', 'SOURCE_UNAVAILABLE')
@@ -57,6 +67,7 @@ jobs:
               page.goto('http://127.0.0.1:8000/', wait_until='networkidle')
               page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
               page.wait_for_function("['ready','error'].includes(document.documentElement.dataset.v38CanonicalBinder)")
+              print('BINDER', page.evaluate("document.documentElement.dataset.v38CanonicalBinder"))
               for token in tokens:
                   body_text = page.locator('body').inner_text()
                   print(f'TOKEN {token} PRESENT={token in body_text}')
@@ -65,7 +76,7 @@ jobs:
                     if (!own.includes(token)) return false;
                     const s=getComputedStyle(el), r=el.getBoundingClientRect();
                     return s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0;
-                  }).map((el)=>({tag:el.tagName,id:el.id,cls:el.className,text:Array.from(el.childNodes).filter((n)=>n.nodeType===Node.TEXT_NODE).map((n)=>n.nodeValue||'').join(' ').trim(),parent:(el.parentElement&&el.parentElement.outerHTML||'').slice(0,1200)}))''', token)
+                  }).map((el)=>({tag:el.tagName,id:el.id,cls:String(el.className||''),text:Array.from(el.childNodes).filter((n)=>n.nodeType===Node.TEXT_NODE).map((n)=>n.nodeValue||'').join(' ').trim(),html:el.outerHTML.slice(0,1600)}))''', token)
                   print('MATCHES', matches)
               browser.close()
           PY
