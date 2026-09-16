@@ -76,10 +76,35 @@ def _repair_vix3m(root: Path, *, session: str, generated_at: str) -> bool:
                 diagnostic_rows = recovered[-520:]
             except Exception:
                 diagnostic_rows = []
+        if len(diagnostic_rows) < 64:
+            try:
+                url = f"https://api.nasdaq.com/api/quote/{symbol}/historical?assetclass=etf&limit=5000"
+                request = urllib.request.Request(url, headers={
+                    "User-Agent": "Mozilla/5.0", "Accept": "application/json, text/plain, */*",
+                    "Origin": "https://www.nasdaq.com", "Referer": "https://www.nasdaq.com/",
+                })
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                source_rows = (((payload.get("data") or {}).get("tradesTable") or {}).get("rows") or [])
+                recovered = []
+                for item in source_rows:
+                    raw_date = str(item.get("date") or "").strip()
+                    raw_close = str(item.get("close") or "").replace("$", "").replace(",", "").strip()
+                    try:
+                        date = __import__("datetime").datetime.strptime(raw_date, "%m/%d/%Y").date().isoformat()
+                        close = float(raw_close)
+                    except (TypeError, ValueError):
+                        continue
+                    if date <= session:
+                        recovered.append({"date": date, "close": close})
+                recovered.sort(key=lambda item: item["date"])
+                diagnostic_rows = recovered[-520:]
+            except Exception:
+                diagnostic_rows = []
         if len(diagnostic_rows) >= 64:
             series[symbol] = diagnostic_rows
             obj.setdefault("diagnostic_repairs", {})[symbol] = {
-                "status": "READY", "source": "Yahoo Finance retry or Stooq daily ETF history",
+                "status": "READY", "source": "Yahoo Finance, Stooq, or Nasdaq observed ETF history",
                 "latest_date": diagnostic_rows[-1]["date"], "row_count": len(diagnostic_rows),
             }
             changed = True
