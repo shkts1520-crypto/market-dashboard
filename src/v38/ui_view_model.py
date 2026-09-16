@@ -475,6 +475,98 @@ def _flatten_rules(value: Any, prefix: str = "") -> list[dict[str, str]]:
     return rows
 
 
+
+def _rotation_money_flow(market_series: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    """Display-only RRG coordinates from completed daily bars.
+
+    Canonical definition: GICS11 + five style ETFs, horizontal relative strength
+    versus SPY with 100 neutral, vertical 10-session momentum of that relative
+    strength with 100 neutral. This is diagnostic display data, never a trading gate.
+    """
+    labels = {
+        "XLB": "素材", "XLC": "通信", "XLE": "エネルギー", "XLF": "金融",
+        "XLI": "資本財", "XLK": "テクノロジー", "XLP": "生活必需品",
+        "XLRE": "不動産", "XLU": "公益", "XLV": "ヘルスケア", "XLY": "一般消費財",
+        "IWD": "バリュー", "IWF": "グロース", "IWM": "小型株",
+        "MDY": "中型株", "RSP": "S&P等加重",
+    }
+    spy = market_series.get("SPY") or []
+    spy_by_date = {
+        str(row.get("date")): _finite(row.get("close"))
+        for row in spy if isinstance(row, dict)
+    }
+    rows: list[dict[str, Any]] = []
+    for ticker, label in labels.items():
+        rel: list[tuple[str, float]] = []
+        for row in market_series.get(ticker) or []:
+            if not isinstance(row, dict):
+                continue
+            date = str(row.get("date") or "")
+            close = _finite(row.get("close"))
+            benchmark = spy_by_date.get(date)
+            if date and close is not None and benchmark is not None and benchmark > 0:
+                rel.append((date, close / benchmark))
+        if len(rel) < 64:
+            continue
+        current = rel[-1][1]
+        base63 = rel[-64][1]
+        base10 = rel[-11][1]
+        if base63 <= 0 or base10 <= 0:
+            continue
+        rows.append({
+            "ticker": ticker,
+            "label": label,
+            "x": 100.0 * current / base63,
+            "y": 100.0 * current / base10,
+            "date": rel[-1][0],
+            "source": "completed daily close / SPY; 63-session RS and 10-session RS momentum",
+        })
+    return {
+        "status": READY if len(rows) == len(labels) else DATA_REQUIRED,
+        "reason": "CURRENT_MARKET_SERIES" if len(rows) == len(labels) else "STYLE_OR_SECTOR_SERIES_INCOMPLETE",
+        "rows": rows,
+        "expected_count": len(labels),
+        "definition": "x=100*(relative strength now / 63 sessions ago); y=100*(relative strength now / 10 sessions ago)",
+        "trading_gate_eligible": False,
+    }
+
+
+def _ratio_observation(
+    market_series: dict[str, list[dict[str, Any]]], left: str, right: str
+) -> dict[str, Any]:
+    right_by_date = {
+        str(row.get("date")): _finite(row.get("close"))
+        for row in market_series.get(right, []) if isinstance(row, dict)
+    }
+    rows = []
+    for row in market_series.get(left, []):
+        if not isinstance(row, dict):
+            continue
+        date = str(row.get("date") or "")
+        lhs, rhs = _finite(row.get("close")), right_by_date.get(date)
+        if date and lhs is not None and rhs is not None and rhs != 0:
+            rows.append({"date": date, "value": lhs / rhs})
+    return {
+        "status": READY if len(rows) >= 2 else DATA_REQUIRED,
+        "rows": rows,
+        "current": rows[-1]["value"] if rows else None,
+        "source": f"market_inputs.json completed daily close: {left}/{right}",
+    }
+
+
+def _distribution_observation(rows: list[dict[str, Any]]) -> int | None:
+    sample = rows[-26:]
+    if len(sample) < 2:
+        return None
+    count = 0
+    for previous, current in zip(sample, sample[1:]):
+        pc, cc = _finite(previous.get("close")), _finite(current.get("close"))
+        pv, cv = _finite(previous.get("volume")), _finite(current.get("volume"))
+        if None not in (pc, cc, pv, cv) and cc < pc and cv > pv:
+            count += 1
+    return count
+
+
 def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
     root = Path(data_dir)
     state = _read(root / "state.json")
@@ -539,7 +631,9 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
 
     market_labels = (
         ("QQQ", "QQQ"), ("TQQQ", "TQQQ"), ("SPY", "SPY"),
-        ("RSP", "RSP"), ("QQQE", "QQQE"), ("SOXL", "SOXL"),
+        ("RSP", "RSP"), ("IWD", "Value"), ("IWF", "Growth"),
+        ("IWM", "Small Cap"), ("MDY", "Mid Cap"),
+        ("QQQE", "QQQE"), ("SOXL", "SOXL"),
         ("^VIX", "VIX"), ("^VIX3M", "VIX3M"), ("^VXN", "VXN"),
         ("NQ=F", "NQ"), ("HYG", "HYG"), ("IEF", "IEF"),
         ("^TNX", "US10Y"), ("^FVX", "US5Y"), ("DX-Y.NYB", "DXY"),
@@ -569,6 +663,26 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
         symbol: _market_summary(rows, session)
         for symbol, rows in market_series.items()
         if rows
+    }
+    vix = _finite((market_summaries.get("^VIX") or {}).get("close"))
+    vxn = _finite((market_summaries.get("^VXN") or {}).get("close"))
+    daily_card_observations = {
+        "risk_rotation": _ratio_observation(market_series, "XLY", "XLP"),
+        "credit_ratio": _ratio_observation(market_series, "HYG", "IEF"),
+        "vix_term": _ratio_observation(market_series, "^VIX", "^VIX3M"),
+        "expected_move": {
+            "status": READY if vix is not None and vxn is not None else DATA_REQUIRED,
+            "spy_1m_pct": vix / math.sqrt(12.0) if vix is not None else None,
+            "qqq_1m_pct": vxn / math.sqrt(12.0) if vxn is not None else None,
+            "source": "market_inputs.json VIX/VXN annualized IV divided by sqrt(12)",
+        },
+        "distribution_days": {
+            "status": READY if all(len(market_series.get(symbol, [])) >= 26 for symbol in ("SPY", "QQQ")) else DATA_REQUIRED,
+            "SPY": _distribution_observation(market_series.get("SPY", [])),
+            "QQQ": _distribution_observation(market_series.get("QQQ", [])),
+            "source": "market_inputs.json completed daily close/volume; 25-session display proxy",
+            "trading_gate_eligible": False,
+        },
     }
     authoritative_daily_keys = {
         "market_mode", "nqsar", "breadth50", "breadth200", "mc57",
@@ -706,6 +820,7 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
         READY if any(group_diagnostics.values()) else DATA_REQUIRED
     )
     rotation["diagnostics"] = group_diagnostics
+    rotation["money_flow"] = _rotation_money_flow(market_series)
     weekly = _section(root, name="weekly.json", session=session, title="Weekly")
     weekly_obj = _read(root / "weekly.json")
     weekly["state"] = weekly_obj.get("state") if weekly_obj else None
@@ -714,15 +829,30 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
 
     vwap = _read(root / "history" / "vwap_restore.json")
     vwap_rows = [dict(row) for row in ((vwap or {}).get("rows") or []) if isinstance(row, dict)]
+    setup_restore = _read(root / "history" / "setup_restore.json")
+    setup_status, setup_reason = _status(setup_restore, session)
     setups = {
-        "status": READY if vwap_rows else DATA_REQUIRED,
-        "reason": "RECOVERED_VWAP_AND_RS_INPUTS" if vwap_rows else "SETUP_PRODUCER_DATA_REQUIRED",
+        "status": setup_status,
+        "reason": setup_reason,
         "title": "Setups",
-        "rows": vwap_rows,
-        "source": "history/vwap_restore.json" if vwap_rows else None,
+        "rows": [dict(row) for row in ((setup_restore or {}).get("rows") or []) if isinstance(row, dict)],
+        "prebreakout": [dict(row) for row in ((setup_restore or {}).get("prebreakout") or []) if isinstance(row, dict)],
+        "confluence": [dict(row) for row in ((setup_restore or {}).get("confluence") or []) if isinstance(row, dict)],
+        "pocket_pivots": [dict(row) for row in ((setup_restore or {}).get("pocket_pivots") or []) if isinstance(row, dict)],
+        "todays_setups": [dict(row) for row in ((setup_restore or {}).get("todays_setups") or []) if isinstance(row, dict)],
+        "vcp": [dict(row) for row in ((setup_restore or {}).get("vcp") or []) if isinstance(row, dict)],
+        "ema21_touch": [dict(row) for row in ((setup_restore or {}).get("ema21_touch") or []) if isinstance(row, dict)],
+        "patterns": dict((setup_restore or {}).get("patterns") or {}),
+        "coverage": _finite((setup_restore or {}).get("coverage")),
+        "source": (setup_restore or {}).get("source"),
+        "vwap_rows": vwap_rows,
     }
 
-    mover_source = [row for row in rs_rows if _finite(row.get("ret1")) is not None]
+    mover_source = []
+    for rank, raw in enumerate(all_rs_rows, start=1):
+        row = _rs_display_row(raw, rank)
+        if row is not None and _finite(row.get("ret1")) is not None:
+            mover_source.append(row)
     movers = {
         "status": READY if mover_source else DATA_REQUIRED,
         "reason": "CURRENT_SESSION_RS_RETURNS" if mover_source else "CURRENT_RETURN_ROWS_MISSING",
@@ -774,6 +904,7 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
             "breadth_coverage": breadth_coverage,
             "market_series": market_series,
             "market_summaries": market_summaries,
+            "card_observations": daily_card_observations,
             "history": history,
             "leader_diagnostics": leader_diagnostics,
             "market_diagnostics": (

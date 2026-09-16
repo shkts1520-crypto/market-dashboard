@@ -6,6 +6,7 @@ BUILD = Path("scripts/build_site.py")
 VALIDATOR = Path("scripts/validate_display_completeness.py")
 MATERIALIZER = Path("scripts/materialize_restored_experience.py")
 WORKFLOW = Path(".github/workflows/production.yml")
+BROWSER = Path("scripts/browser_data_completeness.py")
 
 
 def test_uncached_search_tickers_use_live_tradingview_instead_of_missing_state():
@@ -25,32 +26,40 @@ def test_search_index_preserves_exchange_for_unambiguous_fallback_symbols():
     assert "exchange + ':' + ticker" in js
 
 
-def test_destructive_fallback_is_retired_without_fixed_canvas_source_layer():
+def test_destructive_display_patch_layers_are_retired():
     script = BUILD.read_text(encoding="utf-8")
-    restored = script.index('restored_chart = Path("assets/v38-restored-chart.js")')
-    restored_experience = script.index('restored_experience = Path("assets/v38-restored-experience.js")')
-    assert restored < restored_experience
-    assert 'data_completeness_fallback_enabled = False' in script
-    assert '_inject_external_extension(out, data_completeness_fallback)' not in script
-    assert 'source_fidelity_enabled = False' in script
-    assert '_inject_external_extension(out, source_fidelity)' not in script
-    assert '"data_completeness_fallback_extension": data_completeness_fallback_enabled' in script
+    assert 'canonical_binder_enabled = _inject_external_extension(out, Path("assets/v38-canonical-binder.js"))' in script
+    for flag in (
+        'live_binder_enabled = False', 'restored_experience_enabled = False',
+        'production_truth_enabled = False', 'production_label_truth_enabled = False',
+        'public_final_enabled = False', 'data_completeness_fallback_enabled = False',
+        'source_fidelity_enabled = False',
+    ):
+        assert flag in script
 
 
 def test_validator_requires_stock_contract_options_chart_and_vwap_completeness():
     script = VALIDATOR.read_text(encoding="utf-8")
     for token in (
-        'MIN_STOCK_COVERAGE',
-        'target_session_coverage',
-        'failed_tickers',
-        'ticker_snapshot_coverage',
-        'fetch_errors',
-        'chart_ohlc_contract',
-        'inception_pending',
-        'search_uncached_chart_policy',
+        'MIN_STOCK_COVERAGE', 'target_session_coverage', 'failed_tickers',
+        'ticker_snapshot_coverage', 'fetch_errors', 'chart_ohlc_contract',
+        'inception_pending', 'search_uncached_chart_policy',
     ):
         assert token in script
     assert 'NO_VALID_0_45_DTE_CONTRACTS' in script
+
+
+def test_browser_gate_checks_rendered_product_not_patch_statuses():
+    script = BROWSER.read_text(encoding="utf-8")
+    assert 'v38CanonicalBinder' in script
+    assert 'v38TruthBinding' not in script
+    assert 'v38AuthoritativeFinal' not in script
+    assert 'v38PublicRenderContract' not in script
+    for token in ('DATA_REQUIRED', 'SOURCE_UNAVAILABLE', 'producer未復元', 'full_v38_ready:'):
+        assert token in script
+    assert 'REPAIRED_CARD_CONTRACT' in script
+    assert 'data-v38-truth-source' in script
+    assert 'v38-sector-cell' in script
 
 
 def test_production_runs_strict_completeness_before_browser_acceptance():

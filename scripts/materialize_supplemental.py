@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import io
 import json
 import os
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
@@ -14,6 +17,8 @@ from v38.display_observation_history import exact_old_top20
 from v38.display_observations_live import materialize_display_observations
 from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
+from v38.freshness import atomic_write_json
+from v38.live_acquisition import market_rows, select_yfinance_symbol_frame
 from v38.options_resilience import recover_options_if_transient_failure
 from v38.publish_extension import include_tqqq_panic_readiness
 from v38.rs_history import write_rs_history
@@ -34,6 +39,126 @@ def _load(path: Path) -> dict:
 def _is_production_context() -> bool:
     event = str(os.environ.get("GITHUB_EVENT_NAME") or "").strip().lower()
     return event not in {"", "pull_request", "pull_request_target"}
+
+
+def _repair_vix3m(root: Path, *, session: str, generated_at: str) -> bool:
+    """Retry source-defined diagnostic series required by public charts."""
+    path = root / "market_inputs.json"
+    obj = _load(path)
+    series = obj.get("series") if isinstance(obj.get("series"), dict) else {}
+    changed = False
+    for symbol in ("IWD", "IWF", "IWM", "MDY"):
+        existing = series.get(symbol) if isinstance(series, dict) else None
+        if isinstance(existing, list) and len(existing) >= 64:
+            continue
+        try:
+            import yfinance as yf
+            raw = yf.download([symbol], period="2y", interval="1d", progress=False,
+                              auto_adjust=False, group_by="ticker", threads=False, timeout=30)
+            diagnostic_rows = market_rows(select_yfinance_symbol_frame(raw, symbol), target_session=session)
+        except Exception:
+            diagnostic_rows = []
+        if len(diagnostic_rows) < 64:
+            try:
+                url = f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"
+                request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    text = response.read().decode("utf-8-sig")
+                recovered = []
+                for item in csv.DictReader(io.StringIO(text)):
+                    date = str(item.get("Date") or "").strip()
+                    try:
+                        close = float(item.get("Close"))
+                    except (TypeError, ValueError):
+                        continue
+                    if date and date <= session:
+                        recovered.append({"date": date, "close": close})
+                diagnostic_rows = recovered[-520:]
+            except Exception:
+                diagnostic_rows = []
+        if len(diagnostic_rows) < 64:
+            try:
+                url = f"https://api.nasdaq.com/api/quote/{symbol}/historical?assetclass=etf&limit=5000"
+                request = urllib.request.Request(url, headers={
+                    "User-Agent": "Mozilla/5.0", "Accept": "application/json, text/plain, */*",
+                    "Origin": "https://www.nasdaq.com", "Referer": "https://www.nasdaq.com/",
+                })
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                source_rows = (((payload.get("data") or {}).get("tradesTable") or {}).get("rows") or [])
+                recovered = []
+                for item in source_rows:
+                    raw_date = str(item.get("date") or "").strip()
+                    raw_close = str(item.get("close") or "").replace("$", "").replace(",", "").strip()
+                    try:
+                        date = __import__("datetime").datetime.strptime(raw_date, "%m/%d/%Y").date().isoformat()
+                        close = float(raw_close)
+                    except (TypeError, ValueError):
+                        continue
+                    if date <= session:
+                        recovered.append({"date": date, "close": close})
+                recovered.sort(key=lambda item: item["date"])
+                diagnostic_rows = recovered[-520:]
+            except Exception:
+                diagnostic_rows = []
+        if len(diagnostic_rows) >= 64:
+            series[symbol] = diagnostic_rows
+            obj.setdefault("diagnostic_repairs", {})[symbol] = {
+                "status": "READY", "source": "Yahoo Finance, Stooq, or Nasdaq observed ETF history",
+                "latest_date": diagnostic_rows[-1]["date"], "row_count": len(diagnostic_rows),
+            }
+            changed = True
+    existing = series.get("^VIX3M") if isinstance(series, dict) else None
+    if isinstance(existing, list) and len(existing) >= 2:
+        if changed:
+            obj["series"] = series
+            obj["generated_at"] = generated_at
+            atomic_write_json(path, obj)
+        return changed
+    try:
+        import yfinance as yf
+        raw = yf.download(["^VIX3M"], period="2y", interval="1d", progress=False,
+                          auto_adjust=False, group_by="ticker", threads=False, timeout=30)
+        rows = market_rows(select_yfinance_symbol_frame(raw, "^VIX3M"), target_session=session)
+    except Exception:
+        rows = []
+    if len(rows) < 2:
+        try:
+            request = urllib.request.Request(
+                "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv",
+                headers={"User-Agent": "Mozilla/5.0"},
+            )
+            with urllib.request.urlopen(request, timeout=30) as response:
+                text = response.read().decode("utf-8-sig")
+            recovered = []
+            for item in csv.DictReader(io.StringIO(text)):
+                raw_date = str(item.get("DATE") or item.get("Date") or "").strip()
+                raw_value = item.get("VIX3M") or item.get("CLOSE") or item.get("Close")
+                try:
+                    date = __import__("datetime").datetime.strptime(raw_date, "%m/%d/%Y").date().isoformat()
+                    value = float(raw_value)
+                except (TypeError, ValueError):
+                    continue
+                if date <= session:
+                    recovered.append({"date": date, "close": value})
+            rows = recovered[-520:]
+        except Exception:
+            rows = []
+    if len(rows) < 2:
+        if changed:
+            obj["series"] = series
+            obj["generated_at"] = generated_at
+            atomic_write_json(path, obj)
+        return changed
+    series["^VIX3M"] = rows
+    obj["series"] = series
+    obj["generated_at"] = generated_at
+    obj.setdefault("diagnostic_repairs", {})["^VIX3M"] = {
+        "status": "READY", "source": "Yahoo Finance retry or Cboe VIX3M historical CSV",
+        "latest_date": rows[-1]["date"], "row_count": len(rows),
+    }
+    atomic_write_json(path, obj)
+    return True
 
 
 def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_at: str) -> Path | None:
@@ -163,6 +288,8 @@ def main() -> int:
     if not isinstance(generated_at, str) or not generated_at:
         raise SystemExit("state.generated_at is required")
 
+    vix3m_repaired = _repair_vix3m(root, session=session, generated_at=generated_at)
+
     options_resilience = recover_options_if_transient_failure(
         root,
         session_date=session,
@@ -232,6 +359,7 @@ def main() -> int:
             {
                 "session_date": session,
                 "options_resilience": options_resilience,
+                "vix3m_repaired": vix3m_repaired,
                 "positions_mode": "EMPTY" if empty_ledger is not None else "LEDGER_REQUIRED",
                 "positions_ledger": empty_ledger.as_posix() if empty_ledger is not None else ledger_arg,
                 "outputs": [p.as_posix() for p in outputs],

@@ -143,14 +143,16 @@ def main() -> int:
     final_ui_enabled = data_repair_enabled = visual_fidelity_enabled = False
     detail_restore_enabled = False
 
-    live_binder_enabled = _inject_external_extension(out, Path("assets/v38-live-binder.js"))
+    live_binder_enabled = False
+    restored_experience_enabled = False
+    production_truth_enabled = False
+    production_label_truth_enabled = False
+    public_final_enabled = False
+    canonical_binder_enabled = _inject_external_extension(out, Path("assets/v38-canonical-binder.js"))
     restored_chart_enabled = _inject_external_extension(out, Path("assets/v38-restored-chart.js"))
     options_chart_enabled = False if restored_chart_enabled else _inject_external_extension(out, Path("assets/v38-options-chart.js"))
-    restored_experience_enabled = _inject_external_extension(out, Path("assets/v38-restored-experience.js"))
     tradingview_fallback_enabled = _inject_external_extension(out, Path("assets/v38-tradingview-fallback.js"))
-    production_truth_enabled = _inject_external_extension(out, Path("assets/v38-production-truth.js"))
-    production_label_truth_enabled = _inject_external_extension(out, Path("assets/v38-production-label-truth.js"))
-    public_final_enabled = _inject_external_extension(out, Path("assets/v38-public-final.js"))
+    public_labels_enabled = _inject_external_extension(out, Path("assets/v38-public-labels.js"))
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -191,9 +193,11 @@ def main() -> int:
         "restored_chart_extension": restored_chart_enabled,
         "restored_experience_extension": restored_experience_enabled,
         "tradingview_fallback_extension": tradingview_fallback_enabled,
+        "public_labels_extension": public_labels_enabled,
         "production_truth_extension": production_truth_enabled,
         "production_label_truth_extension": production_label_truth_enabled,
         "public_final_extension": public_final_enabled,
+        "canonical_binder_extension": canonical_binder_enabled,
         "source_fidelity_extension": source_fidelity_enabled,
         "source_fidelity_contract_extension": source_fidelity_contract_enabled,
         "data_completeness_fallback_extension": data_completeness_fallback_enabled,
