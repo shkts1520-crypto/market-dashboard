@@ -1,0 +1,39 @@
+name: One-off Visual Fidelity CI Fix
+
+on:
+  push:
+    branches:
+      - fix/restore-visual-fidelity-20260916
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: ${{ !contains(github.event.head_commit.message, '[vf-ci-fix]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/restore-visual-fidelity-20260916
+      - name: Apply CI fixes
+        run: |
+          python scripts/apply_visual_fidelity_ci_fix.py
+          node --check assets/v38-site.js
+          node --check assets/v38-canonical-binder.js
+      - name: Run focused contracts
+        run: |
+          python -m pip install -q pytest
+          PYTHONPATH=src pytest -q tests/test_v10_runtime.py tests/test_production_truth.py tests/test_visual_fidelity_contract.py
+      - name: Remove one-off tooling
+        run: |
+          rm scripts/apply_visual_fidelity_ci_fix.py
+          rm .github/workflows/one-off-visual-fidelity-ci-fix.yml
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Align visual fidelity implementation with runtime contracts [vf-ci-fix]"
+          git push origin HEAD:fix/restore-visual-fidelity-20260916
