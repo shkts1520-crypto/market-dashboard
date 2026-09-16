@@ -135,6 +135,7 @@ def main() -> int:
 
     baseline_shell_enabled = _copy_asset(out, Path("assets/v38-baseline-shell.js"))
     source_mobile_enabled = _inject_stylesheet(out, Path("assets/v38-source-mobile.css"))
+    source_fidelity_css_enabled = _inject_stylesheet(out, Path("assets/v38-source-fidelity.css"))
     setups_0905_enabled = _restore_section_0905(out, "t-today", Path("assets/baseline-0905/setups.html"))
     movers_0905_enabled = _restore_section_0905(out, "t-movers", Path("assets/baseline-0905/movers.html"))
     rules_0905_enabled = _restore_rules_0905(out, Path("assets/v38-rules-0905.html"))
@@ -153,8 +154,9 @@ def main() -> int:
     options_chart_enabled = False if restored_chart_enabled else _inject_external_extension(out, Path("assets/v38-options-chart.js"))
     tradingview_fallback_enabled = _inject_external_extension(out, Path("assets/v38-tradingview-fallback.js"))
     public_labels_enabled = _inject_external_extension(out, Path("assets/v38-public-labels.js"))
+    source_fidelity_enabled = _inject_external_extension(out, Path("assets/v38-source-fidelity.js"))
+    visual_polish_enabled = _inject_external_extension(out, Path("assets/v38-visual-polish.js"))
 
-    source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
     data_completeness_fallback_enabled = False
     observation_ribbon_repair_enabled = False
@@ -178,6 +180,7 @@ def main() -> int:
         "legacy_replacement_cards": False,
         "baseline_0905_shell": baseline_shell_enabled,
         "source_mobile_styles": source_mobile_enabled,
+        "source_fidelity_css": source_fidelity_css_enabled,
         "setups_0905_restored": setups_0905_enabled,
         "movers_0905_restored": movers_0905_enabled,
         "rules_0905_restored": rules_0905_enabled,
@@ -199,6 +202,7 @@ def main() -> int:
         "public_final_extension": public_final_enabled,
         "canonical_binder_extension": canonical_binder_enabled,
         "source_fidelity_extension": source_fidelity_enabled,
+        "visual_polish_extension": visual_polish_enabled,
         "source_fidelity_contract_extension": source_fidelity_contract_enabled,
         "data_completeness_fallback_extension": data_completeness_fallback_enabled,
         "observation_ribbon_repair_extension": observation_ribbon_repair_enabled,
