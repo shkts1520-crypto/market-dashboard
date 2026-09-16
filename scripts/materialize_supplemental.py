@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import io
 import json
 import os
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 from v38.authority_status import sync_acquisition_manifest
@@ -54,12 +57,34 @@ def _repair_vix3m(root: Path, *, session: str, generated_at: str) -> bool:
     except Exception:
         rows = []
     if len(rows) < 2:
+        try:
+            request = urllib.request.Request(
+                "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv",
+                headers={"User-Agent": "Mozilla/5.0"},
+            )
+            with urllib.request.urlopen(request, timeout=30) as response:
+                text = response.read().decode("utf-8-sig")
+            recovered = []
+            for item in csv.DictReader(io.StringIO(text)):
+                raw_date = str(item.get("DATE") or item.get("Date") or "").strip()
+                raw_value = item.get("VIX3M") or item.get("CLOSE") or item.get("Close")
+                try:
+                    date = __import__("datetime").datetime.strptime(raw_date, "%m/%d/%Y").date().isoformat()
+                    value = float(raw_value)
+                except (TypeError, ValueError):
+                    continue
+                if date <= session:
+                    recovered.append({"date": date, "close": value})
+            rows = recovered[-520:]
+        except Exception:
+            rows = []
+    if len(rows) < 2:
         return False
     series["^VIX3M"] = rows
     obj["series"] = series
     obj["generated_at"] = generated_at
     obj.setdefault("diagnostic_repairs", {})["^VIX3M"] = {
-        "status": "READY", "source": "Yahoo Finance exact diagnostic retry",
+        "status": "READY", "source": "Yahoo Finance retry or Cboe VIX3M historical CSV",
         "latest_date": rows[-1]["date"], "row_count": len(rows),
     }
     atomic_write_json(path, obj)
