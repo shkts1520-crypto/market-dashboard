@@ -170,10 +170,18 @@ def assert_rotation(page, width: int) -> None:
     rotation_text = page.locator('#t-rotation').inner_text()
     for banned in ('Energy Minerals', 'Health Services', 'Technology Services', 'Commercial Services', 'Consumer Services', 'Distribution Services'):
         assert banned not in rotation_text, (width, 'English sector label leaked into Rotation UI', banned)
+    leading = page.locator('#t-rotation .card[data-v38-card-title*="主導セクター・業種"]')
+    assert leading.count() == 1 and leading.locator('.v38-leading-groups-source .bgrow').count() >= 10, (width, 'source-style leading groups missing')
+    leading_text = leading.inner_text()
+    for required in ('RS63', '1カ月', '50日線上', '銘柄'):
+        assert required in leading_text, (width, 'leading-group current metric missing', required)
+    strong = page.locator('#t-rotation .card[data-v38-card-title*="強い業種の主導株"]')
+    assert strong.count() == 1 and strong.locator('.v38-strong-theme-group').count() >= 1, (width, 'source-style grouped strong-theme leaders missing')
+    assert strong.locator('.v38-strong-theme-chips .v38-ticker-link').count() >= 1, (width, 'qualified leader chips missing')
     headers = page.locator('#t-rotation .v38-source-table th').all_inner_texts()
     for banned in ('Group', 'Breadth50', 'Members', 'Ticker', 'Theme', '1D', '1W', '1M'):
         assert banned not in headers, (width, 'Rotation table header regressed to English-first', banned, headers)
-    for required in ('セクター', '1カ月', '50日線上', '銘柄数', '銘柄', '業種', 'テーマRS', '業種RS63', '順位', '日', '週', '月', 'サブテーマ', '主導株'):
+    for required in ('セクター', 'ETF', '日', '週', '月', '順位', 'サブテーマ', 'テーマRS', 'RS63', 'RS189', '1カ月', '主導株'):
         assert required in headers, (width, 'Japanese Rotation table header missing', required, headers)
 
 
