@@ -1,0 +1,16 @@
+/* Final source-py card details applied after the canonical binder. Options excluded. */
+section:not(#t-options) .def-card{border-color:#d0cdc2!important}
+section:not(#t-options) .def-badge{display:inline-block;margin-left:7px;padding:2px 7px;border:1px solid #d7cba7;border-radius:999px;background:#f4edd9;color:#7b5a18;font-size:10px;font-weight:800;vertical-align:middle}
+section:not(#t-options) .def-list{margin:8px 0 0;padding-left:18px;color:#34322d;font-size:11.5px;line-height:1.55}
+section:not(#t-options) .def-list li{margin:5px 0}
+section:not(#t-options) .note{margin-top:8px;padding:8px 10px;border:1px solid #dfddd5;border-radius:8px;background:#f0eee8;color:#57534a;font-size:10.5px;line-height:1.5}
+#t-rules .rule-rh{margin:13px 0 5px;padding-top:9px;border-top:1px solid #dcd8cc;color:#25231f;font-size:12px;font-weight:850}
+#t-rules .rule-rh:first-of-type{margin-top:5px;border-top:0;padding-top:0}
+#t-rules .rule-grid{display:block;border-top:1px solid rgba(27,29,28,.05)}
+#t-rules .rule-readable-row{display:grid;grid-template-columns:minmax(115px,.55fr) minmax(0,1.45fr);gap:10px;align-items:start;padding:7px 2px;border-bottom:1px solid rgba(27,29,28,.06);font-size:11px;line-height:1.45}
+#t-rules .rule-readable-row span{color:#696458;font-weight:700}
+#t-rules .rule-readable-row b{color:#282622;font-weight:700;overflow-wrap:anywhere}
+@media(max-width:700px){
+ #t-rules .rule-readable-row{grid-template-columns:1fr;gap:2px;padding:7px 0}
+ #t-rules .rule-readable-row b{font-size:11px}
+}
