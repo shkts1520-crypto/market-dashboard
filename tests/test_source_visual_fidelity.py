@@ -8,21 +8,20 @@ RUNTIME = Path('assets/v38-runtime.js')
 BINDER = Path('assets/v38-canonical-binder.js')
 
 
-def test_source_fidelity_visual_layer_is_bound_to_production():
+def test_legacy_fixed_canvas_layer_stays_unbound():
     py = BUILD.read_text(encoding='utf-8')
-    assert 'source_fidelity_enabled = _inject_external_extension' in py
-    assert 'assets/v38-source-fidelity.js' in py
-    assert 'assets/v38-source-fidelity.css' in py
-    assert 'assets/v38-visual-polish.js' in py
-
-
-def test_source_fidelity_fixed_canvas_has_mobile_fit_path():
+    assert 'source_fidelity_enabled = False' in py
     js = SOURCE_ASSET.read_text(encoding='utf-8')
     assert 'width:1680px!important' in js
     assert 'height:1080px!important' in js
     assert 'v38-source-rotation-frame' in js
-    assert 'fitRotation' in js
-    assert 'rotate(90deg)' in js
+
+
+def test_safe_visual_assets_are_injected():
+    py = BUILD.read_text(encoding='utf-8')
+    assert 'assets/v38-source-fidelity.css' in py
+    assert 'assets/v38-visual-polish.js' in py
+    assert 'visual_polish_enabled = _inject_external_extension' in py
 
 
 def test_primary_tabs_receive_source_density_css():
