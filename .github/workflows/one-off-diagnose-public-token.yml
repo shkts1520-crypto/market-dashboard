@@ -1,0 +1,71 @@
+name: One-off diagnose public token
+
+on:
+  push:
+    branches:
+      - fix/complete-31-card-bindings
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/complete-31-card-bindings
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . playwright==1.55.0 yfinance==0.2.66
+          python -m playwright install --with-deps chromium
+      - name: Build the same PR product
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/materialize_supplemental.py --data-dir data
+          rm -rf _site
+          mkdir -p _site/assets _site/data/options
+          PYTHONPATH=src python scripts/build_site.py --canonical V38_Command_Center_mock_v5.html --output _site/index.html
+          cp assets/v38-runtime.js _site/assets/v38-runtime.js
+          cp assets/v38-site.js _site/assets/v38-site.js
+          cp data/options/index.json _site/data/options/index.json
+          if [ -f data/tqqq_panic.json ]; then cp data/tqqq_panic.json _site/data/tqqq_panic.json; fi
+          GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          PYTHONPATH=src python scripts/build_ui_payload.py --data-dir data --output _site/data/ui_payload.json --generated-at "$GENERATED_AT"
+          PYTHONPATH=src python scripts/build_ui_view_model.py --data-dir data --output _site/data/ui_view_model.json
+      - name: Locate visible internal tokens
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --directory _site > /tmp/v38-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 2
+          python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          tokens = ('DATA_REQUIRED', 'SOURCE_UNAVAILABLE')
+          with sync_playwright() as p:
+              browser = p.chromium.launch(headless=True)
+              page = browser.new_page(viewport={'width': 375, 'height': 900})
+              page.goto('http://127.0.0.1:8000/', wait_until='networkidle')
+              page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
+              page.wait_for_function("['ready','error'].includes(document.documentElement.dataset.v38CanonicalBinder)")
+              for token in tokens:
+                  body_text = page.locator('body').inner_text()
+                  print(f'TOKEN {token} PRESENT={token in body_text}')
+                  matches = page.evaluate('''(token) => Array.from(document.querySelectorAll('body *')).filter((el) => {
+                    const own = Array.from(el.childNodes).filter((n)=>n.nodeType===Node.TEXT_NODE).map((n)=>n.nodeValue||'').join(' ').trim();
+                    if (!own.includes(token)) return false;
+                    const s=getComputedStyle(el), r=el.getBoundingClientRect();
+                    return s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0;
+                  }).map((el)=>({tag:el.tagName,id:el.id,cls:el.className,text:Array.from(el.childNodes).filter((n)=>n.nodeType===Node.TEXT_NODE).map((n)=>n.nodeValue||'').join(' ').trim(),parent:(el.parentElement&&el.parentElement.outerHTML||'').slice(0,1200)}))''', token)
+                  print('MATCHES', matches)
+              browser.close()
+          PY
