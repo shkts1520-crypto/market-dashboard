@@ -58,10 +58,28 @@ def _repair_vix3m(root: Path, *, session: str, generated_at: str) -> bool:
             diagnostic_rows = market_rows(select_yfinance_symbol_frame(raw, symbol), target_session=session)
         except Exception:
             diagnostic_rows = []
+        if len(diagnostic_rows) < 64:
+            try:
+                url = f"https://stooq.com/q/d/l/?s={symbol.lower()}.us&i=d"
+                request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    text = response.read().decode("utf-8-sig")
+                recovered = []
+                for item in csv.DictReader(io.StringIO(text)):
+                    date = str(item.get("Date") or "").strip()
+                    try:
+                        close = float(item.get("Close"))
+                    except (TypeError, ValueError):
+                        continue
+                    if date and date <= session:
+                        recovered.append({"date": date, "close": close})
+                diagnostic_rows = recovered[-520:]
+            except Exception:
+                diagnostic_rows = []
         if len(diagnostic_rows) >= 64:
             series[symbol] = diagnostic_rows
             obj.setdefault("diagnostic_repairs", {})[symbol] = {
-                "status": "READY", "source": "Yahoo Finance exact diagnostic retry",
+                "status": "READY", "source": "Yahoo Finance retry or Stooq daily ETF history",
                 "latest_date": diagnostic_rows[-1]["date"], "row_count": len(diagnostic_rows),
             }
             changed = True
