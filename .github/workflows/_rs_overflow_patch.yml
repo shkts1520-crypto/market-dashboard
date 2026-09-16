@@ -1,0 +1,48 @@
+name: RS Overflow One Shot
+
+on:
+  push:
+    branches:
+      - fix/source-visual-fidelity-v2-20260916
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[rs-overflow]') }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/source-visual-fidelity-v2-20260916
+          fetch-depth: 1
+      - name: Patch RS table containment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('assets/v38-canonical-binder.js')
+          s=p.read_text(encoding='utf-8')
+          old='.v38-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}'
+          new='.v38-table-wrap{display:block;width:100%;max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}'
+          assert old in s
+          s=s.replace(old,new,1)
+          anchor='.v38-source-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:6px;min-width:560px}'
+          repl='.v38-source-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:6px;min-width:560px}#t-rs .card{min-width:0;max-width:100%;overflow:hidden}#t-rs .v38-table-wrap{overflow-x:auto;overscroll-behavior-x:contain}'
+          assert anchor in s
+          s=s.replace(anchor,repl,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check assets/v38-canonical-binder.js
+          git diff --check
+      - name: Commit binder
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/v38-canonical-binder.js
+          git commit -m 'Contain RS source tables on mobile [rs-overflow]'
+          git push origin HEAD:fix/source-visual-fidelity-v2-20260916
