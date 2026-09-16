@@ -12,6 +12,17 @@
     return href && href.startsWith('#') ? href.slice(1) : '';
   }
 
+  function forceTop() {
+    const top = () => window.scrollTo(0, 0);
+    top();
+    requestAnimationFrame(() => {
+      top();
+      requestAnimationFrame(top);
+    });
+    setTimeout(top, 0);
+    setTimeout(top, 80);
+  }
+
   function activate(targetId, updateHistory) {
     if (!SECTION_IDS.includes(targetId)) targetId = SECTION_IDS[0];
     document.querySelectorAll('section').forEach((section) => {
@@ -26,7 +37,7 @@
       const hash = '#' + targetId;
       if (location.hash !== hash) history.pushState({v38Tab: targetId}, '', hash);
     }
-    window.scrollTo(0, 0);
+    forceTop();
   }
 
   function activateFromLocation() {
@@ -100,6 +111,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     rememberCardTitles();
     document.querySelectorAll(TAB_SELECTOR).forEach((tab) => {
       tab.addEventListener('click', (event) => {
