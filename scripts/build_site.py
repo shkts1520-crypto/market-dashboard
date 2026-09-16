@@ -18,7 +18,7 @@ _RULES_SECTION = re.compile(r'(<section[^>]+id="t-rules"[^>]*>).*?(</section>)',
 
 
 def _restore_section_0905(out: Path, section_id: str, fragment: Path) -> bool:
-    """Restore source DOM at build time; runtime code may only bind its slots."""
+    """Keep recovered DOM slots; visual authority is applied later from build_dashboard(2).py."""
     if not fragment.is_file():
         return False
     source = out.read_text(encoding="utf-8")
@@ -104,6 +104,19 @@ def _run_materializer(script_name: str) -> bool:
     return True
 
 
+def _run_py_source_display_materializer() -> bool:
+    """Display-only adapter. Safe in PR builds; never mutates trading calculations."""
+    script = Path("scripts/materialize_py_source_display.py")
+    if not script.is_file():
+        return False
+    subprocess.run(
+        [sys.executable, str(script), "--data-dir", "data"],
+        check=True,
+        env=os.environ.copy(),
+    )
+    return True
+
+
 def _copy_restored_data(out: Path) -> dict[str, bool]:
     target = out.parent / "data"
     target.mkdir(parents=True, exist_ok=True)
@@ -111,11 +124,14 @@ def _copy_restored_data(out: Path) -> dict[str, bool]:
         "search_index": Path("data/history/search_index.json"),
         "vwap_restore": Path("data/history/vwap_restore.json"),
         "setup_restore": Path("data/history/setup_restore.json"),
+        "py_source_display": Path("data/py_source_display.json"),
     }
     copied: dict[str, bool] = {}
     for key, source in sources.items():
         if source.is_file() and source.stat().st_size > 0:
-            shutil.copy2(source, target / f"{key}.json")
+            destination = target / f"{key}.json"
+            if source.resolve() != destination.resolve():
+                shutil.copy2(source, destination)
             copied[key] = True
         else:
             copied[key] = False
@@ -123,7 +139,7 @@ def _copy_restored_data(out: Path) -> dict[str, bool]:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Build live-bound V38 production UI from canonical v5")
+    p = argparse.ArgumentParser(description="Build live-bound V38 production UI; build_dashboard(2).py owns every non-options display")
     p.add_argument("--canonical", default="V38_Command_Center_mock_v5.html")
     p.add_argument("--output", default="index.html")
     args = p.parse_args()
@@ -131,11 +147,18 @@ def main() -> int:
     recency_validated = _run_materializer("validate_benchmark_recency.py")
     restored_materialized = _run_materializer("materialize_restored_experience.py")
     setup_materialized = _run_materializer("materialize_setup_cards.py")
+    py_source_display_materialized = _run_py_source_display_materializer()
     out = build_site(args.canonical, args.output)
 
     baseline_shell_enabled = _copy_asset(out, Path("assets/v38-baseline-shell.js"))
+    # Keep containment/navigation behavior required by the current Options implementation.
     source_mobile_enabled = _inject_stylesheet(out, Path("assets/v38-source-mobile.css"))
-    source_fidelity_css_enabled = _inject_stylesheet(out, Path("assets/v38-source-fidelity.css"))
+    # The old fidelity stylesheet reinterpreted the py source; it is intentionally disabled.
+    source_fidelity_css_enabled = False
+    py_source_css_enabled = _inject_stylesheet(out, Path("assets/v38-py-source-authority.css"))
+
+    # These recovered fragments remain only as data-binding DOM slots. Their visual authority
+    # is removed by v38-py-source-authority.js/css after the live binder has populated them.
     setups_0905_enabled = _restore_section_0905(out, "t-today", Path("assets/baseline-0905/setups.html"))
     movers_0905_enabled = _restore_section_0905(out, "t-movers", Path("assets/baseline-0905/movers.html"))
     rules_0905_enabled = _restore_rules_0905(out, Path("assets/v38-rules-0905.html"))
@@ -154,9 +177,12 @@ def main() -> int:
     options_chart_enabled = False if restored_chart_enabled else _inject_external_extension(out, Path("assets/v38-options-chart.js"))
     tradingview_fallback_enabled = _inject_external_extension(out, Path("assets/v38-tradingview-fallback.js"))
     public_labels_enabled = _inject_external_extension(out, Path("assets/v38-public-labels.js"))
-    source_fidelity_enabled = False
-    visual_polish_enabled = _inject_external_extension(out, Path("assets/v38-visual-polish.js"))
+    # The previous visual-polish layer is disabled: it must not redesign the py-source UI.
+    visual_polish_enabled = False
+    # Must be last: current data binders populate slots first; source-py authority owns final DOM/order/style.
+    py_source_authority_enabled = _inject_external_extension(out, Path("assets/v38-py-source-authority.js"))
 
+    source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
     data_completeness_fallback_enabled = False
     observation_ribbon_repair_enabled = False
@@ -168,8 +194,12 @@ def main() -> int:
     report = validate_production_html(out.read_text(encoding="utf-8"))
 
     print(json.dumps({
-        "status": "LIVE_BINDING_SHELL_READY",
+        "status": "PY_SOURCE_UI_READY",
         "output": str(out),
+        "ui_authority": "build_dashboard(2).py",
+        "ui_authority_scope": "all_non_options_tabs",
+        "options_ui_authority": "current_options_implementation",
+        "trading_logic_changed": False,
         "canonical_blob_sha": CANONICAL_BLOB_SHA,
         "canonical_size": CANONICAL_SIZE,
         "tabs": [label for label, _ in report["tabs"]],
@@ -181,9 +211,12 @@ def main() -> int:
         "baseline_0905_shell": baseline_shell_enabled,
         "source_mobile_styles": source_mobile_enabled,
         "source_fidelity_css": source_fidelity_css_enabled,
-        "setups_0905_restored": setups_0905_enabled,
-        "movers_0905_restored": movers_0905_enabled,
-        "rules_0905_restored": rules_0905_enabled,
+        "py_source_css": py_source_css_enabled,
+        "py_source_authority": py_source_authority_enabled,
+        "py_source_display_materialized": py_source_display_materialized,
+        "setups_0905_restored_as_slots": setups_0905_enabled,
+        "movers_0905_restored_as_slots": movers_0905_enabled,
+        "rules_0905_restored_as_slots": rules_0905_enabled,
         "observables_extension": observables_enabled,
         "polish_extension": polish_enabled,
         "recovery_extension": recovery_enabled,
