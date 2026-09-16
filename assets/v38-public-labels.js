@@ -15,28 +15,6 @@
 
   let sanitizing = false;
 
-  function ensureVisualFidelityStyle() {
-    if (document.getElementById('v38-public-fidelity-style')) return;
-    const style = document.createElement('style');
-    style.id = 'v38-public-fidelity-style';
-    style.textContent = [
-      '@media(max-width:600px){',
-      '.v38-theme-bar small{display:block!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '.v38-theme-bar{grid-template-columns:20px minmax(78px,.95fr) minmax(62px,1.15fr) 34px minmax(72px,.9fr)!important;gap:5px!important}',
-      '}'
-    ].join('');
-    document.head.appendChild(style);
-  }
-
-  function polishDteHeadings(root) {
-    const scope = root && root.querySelectorAll ? root : document;
-    scope.querySelectorAll('#t-options .card h2').forEach((heading) => {
-      const text = String(heading.textContent || '').trim();
-      const match = text.match(/^DTE\s+(\d+)-(\d+)$/);
-      if (match) heading.textContent = `${match[1]}–${match[2]} DTE`;
-    });
-  }
-
   function sanitizeTextNode(node) {
     const parent = node && node.parentElement;
     if (!parent || parent.closest('script, style')) return;
@@ -59,8 +37,6 @@
         let node;
         while ((node = walker.nextNode())) sanitizeTextNode(node);
       }
-      ensureVisualFidelityStyle();
-      polishDteHeadings(target.nodeType === Node.ELEMENT_NODE ? target : document);
       document.body.dataset.v38PublicLabels = 'ready';
     } finally {
       sanitizing = false;
