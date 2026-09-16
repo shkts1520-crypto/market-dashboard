@@ -180,8 +180,12 @@ def main() -> int:
     public_labels_enabled = _inject_external_extension(out, Path("assets/v38-public-labels.js"))
     # The previous visual-polish layer is disabled: it must not redesign the py-source UI.
     visual_polish_enabled = False
-    # Must be last: current data binders populate slots first; source-py authority owns final DOM/order/style.
+    # Must be last among the broad non-options layers: current data binders populate slots first;
+    # source-py authority owns final DOM/order/style.
     py_source_authority_enabled = _inject_external_extension(out, Path("assets/v38-py-source-authority.js"))
+    # Positions needs a narrow mapping because the source-py card names belong to rejected legacy
+    # allocation/rebalance logic. Keep the source hierarchy, but bind only current V38 live cards.
+    py_source_positions_enabled = _inject_external_extension(out, Path("assets/v38-py-source-positions.js"))
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -215,6 +219,7 @@ def main() -> int:
         "py_source_css": py_source_css_enabled,
         "py_source_guard": py_source_guard_enabled,
         "py_source_authority": py_source_authority_enabled,
+        "py_source_positions": py_source_positions_enabled,
         "py_source_display_materialized": py_source_display_materialized,
         "setups_0905_restored_as_slots": setups_0905_enabled,
         "movers_0905_restored_as_slots": movers_0905_enabled,
