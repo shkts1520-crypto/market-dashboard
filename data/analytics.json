@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-recovered-live-inputs-1.0.1",
   "coverage": 1.0,
-  "generated_at": "2026-09-16T13:29:38Z",
+  "generated_at": "2026-09-16T15:01:21Z",
   "industry": [
     {
       "group": "Oil Refining/Marketing",
@@ -25,7 +25,7 @@
       ],
       "member_count": 37,
       "ret20_avg": 0.09029362996521122,
-      "ret63_avg": 0.20563184161209386,
+      "ret63_avg": 0.20563184410030413,
       "rs63_avg": 81.31828187160484,
       "trade_input": false
     },
@@ -75,9 +75,9 @@
         "CRGY",
         "APA"
       ],
-      "member_count": 28,
-      "ret20_avg": 0.07505040251514686,
-      "ret63_avg": 0.15577657425627617,
+      "member_count": 27,
+      "ret20_avg": 0.07698480613711806,
+      "ret63_avg": 0.15426452392057866,
       "rs63_avg": 75.88248954946586,
       "trade_input": false
     },
@@ -160,19 +160,6 @@
       "trade_input": false
     },
     {
-      "group": "Trucks/Construction/Farm Machinery",
-      "leaders": [
-        "CNH",
-        "DE",
-        "ALG"
-      ],
-      "member_count": 24,
-      "ret20_avg": 0.017435338204873255,
-      "ret63_avg": 0.08377455889380314,
-      "rs63_avg": 47.86012872403955,
-      "trade_input": false
-    },
-    {
       "group": "Financial Conglomerates",
       "leaders": [
         "RFAI",
@@ -181,7 +168,7 @@
       ],
       "member_count": 220,
       "ret20_avg": 0.016474255053965985,
-      "ret63_avg": 0.014622098865988944,
+      "ret63_avg": 0.014622098396881954,
       "rs63_avg": 78.2117974918718,
       "trade_input": false
     },
@@ -196,6 +183,19 @@
       "ret20_avg": 0.015224904043485832,
       "ret63_avg": -0.021153365301779904,
       "rs63_avg": 48.25308355266552,
+      "trade_input": false
+    },
+    {
+      "group": "Major Telecommunications",
+      "leaders": [
+        "IDT",
+        "OOMA",
+        "LBTYA"
+      ],
+      "member_count": 10,
+      "ret20_avg": 0.013720122282837244,
+      "ret63_avg": -0.007938969590367528,
+      "rs63_avg": 39.170150178046136,
       "trade_input": false
     },
     {
@@ -246,7 +246,7 @@
       ],
       "member_count": 211,
       "ret20_avg": 0.010865955832791697,
-      "ret63_avg": 0.17135468332714832,
+      "ret63_avg": 0.1713546828307595,
       "rs63_avg": 69.15108150534728,
       "trade_input": false
     },
@@ -300,19 +300,6 @@
       "ret20_avg": 0.0028707176008648137,
       "ret63_avg": 0.07738463871247547,
       "rs63_avg": 64.16369923104712,
-      "trade_input": false
-    },
-    {
-      "group": "Major Telecommunications",
-      "leaders": [
-        "IDT",
-        "OOMA",
-        "LBTYA"
-      ],
-      "member_count": 9,
-      "ret20_avg": 0.001921301556264379,
-      "ret63_avg": 0.021407680918916712,
-      "rs63_avg": 39.170150178046136,
       "trade_input": false
     },
     {
@@ -407,6 +394,19 @@
       "trade_input": false
     },
     {
+      "group": "Investment Trusts/Mutual Funds",
+      "leaders": [
+        "FSK",
+        "TRIN",
+        "BXSL"
+      ],
+      "member_count": 35,
+      "ret20_avg": -0.005791420207514331,
+      "ret63_avg": 0.02729807453944141,
+      "rs63_avg": 60.88597306084533,
+      "trade_input": false
+    },
+    {
       "group": "Tobacco",
       "leaders": [
         "PM",
@@ -417,19 +417,6 @@
       "ret20_avg": -0.0060881726006114896,
       "ret63_avg": -0.01669046669392386,
       "rs63_avg": 46.35392475615421,
-      "trade_input": false
-    },
-    {
-      "group": "Investment Trusts/Mutual Funds",
-      "leaders": [
-        "FSK",
-        "TRIN",
-        "BXSL"
-      ],
-      "member_count": 36,
-      "ret20_avg": -0.007553236193203611,
-      "ret63_avg": 0.0262706397732637,
-      "rs63_avg": 60.88597306084533,
       "trade_input": false
     },
     {
@@ -452,9 +439,9 @@
         "ARCT",
         "OMER"
       ],
-      "member_count": 163,
-      "ret20_avg": -0.008891983057082954,
-      "ret63_avg": 0.10614192819382803,
+      "member_count": 164,
+      "ret20_avg": -0.00933866911885097,
+      "ret63_avg": 0.10552896327147747,
       "rs63_avg": 65.59757498716596,
       "trade_input": false
     },
@@ -586,6 +573,19 @@
       "ret20_avg": -0.019763974026770038,
       "ret63_avg": 0.0839195266361306,
       "rs63_avg": 54.18795479176344,
+      "trade_input": false
+    },
+    {
+      "group": "Trucks/Construction/Farm Machinery",
+      "leaders": [
+        "CNH",
+        "DE",
+        "ALG"
+      ],
+      "member_count": 23,
+      "ret20_avg": -0.02237490079054836,
+      "ret63_avg": 0.03473381734679392,
+      "rs63_avg": 47.86012872403955,
       "trade_input": false
     },
     {
@@ -792,7 +792,7 @@
       ],
       "member_count": 157,
       "ret20_avg": -0.04029772649173927,
-      "ret63_avg": -0.0421276902359565,
+      "ret63_avg": -0.0421276892210595,
       "rs63_avg": 41.71458635614434,
       "trade_input": false
     },
@@ -896,7 +896,7 @@
       ],
       "member_count": 63,
       "ret20_avg": -0.05014174804797736,
-      "ret63_avg": -0.021016696591087507,
+      "ret63_avg": -0.02101669679411518,
       "rs63_avg": 47.29715245274929,
       "trade_input": false
     },
@@ -1182,8 +1182,21 @@
       ],
       "member_count": 10,
       "ret20_avg": -0.08049598644681157,
-      "ret63_avg": -0.03142860379536251,
+      "ret63_avg": -0.03142861610555975,
       "rs63_avg": 30.199721319089644,
+      "trade_input": false
+    },
+    {
+      "group": "Auto Parts: OEM",
+      "leaders": [
+        "THRM",
+        "ITW",
+        "DAN"
+      ],
+      "member_count": 26,
+      "ret20_avg": -0.08720104411609693,
+      "ret63_avg": -0.124111688457184,
+      "rs63_avg": 34.02229447282861,
       "trade_input": false
     },
     {
@@ -1317,19 +1330,6 @@
       "trade_input": false
     },
     {
-      "group": "Auto Parts: OEM",
-      "leaders": [
-        "THRM",
-        "ITW",
-        "DAN"
-      ],
-      "member_count": 27,
-      "ret20_avg": -0.10016121784605077,
-      "ret63_avg": -0.13153108185628845,
-      "rs63_avg": 34.02229447282861,
-      "trade_input": false
-    },
-    {
       "group": "Alternative Power Generation",
       "leaders": [
         "RNW",
@@ -1343,19 +1343,6 @@
       "trade_input": false
     },
     {
-      "group": "Apparel/Footwear",
-      "leaders": [
-        "WWW",
-        "FIGS",
-        "VSTS"
-      ],
-      "member_count": 23,
-      "ret20_avg": -0.104178911861759,
-      "ret63_avg": -0.13005001614462092,
-      "rs63_avg": 23.128070990295054,
-      "trade_input": false
-    },
-    {
       "group": "Airlines",
       "leaders": [
         "SKYW",
@@ -1366,6 +1353,19 @@
       "ret20_avg": -0.10526726064696885,
       "ret63_avg": -0.11259136545824018,
       "rs63_avg": 28.35578262888992,
+      "trade_input": false
+    },
+    {
+      "group": "Apparel/Footwear",
+      "leaders": [
+        "WWW",
+        "FIGS",
+        "VSTS"
+      ],
+      "member_count": 22,
+      "ret20_avg": -0.10827260462846718,
+      "ret63_avg": -0.133127649009765,
+      "rs63_avg": 23.128070990295054,
       "trade_input": false
     },
     {
@@ -1414,9 +1414,9 @@
         "ATKR",
         "AME"
       ],
-      "member_count": 42,
-      "ret20_avg": -0.11694470064451161,
-      "ret63_avg": -0.221139440448857,
+      "member_count": 43,
+      "ret20_avg": -0.11495180067660704,
+      "ret63_avg": -0.21903143997582186,
       "rs63_avg": 22.05759405480725,
       "trade_input": false
     },
@@ -1574,9 +1574,9 @@
         "CVI",
         "DK"
       ],
-      "member_count": 75,
-      "ret20_avg": 0.07268495853082323,
-      "ret63_avg": 0.19576199688663387,
+      "member_count": 74,
+      "ret20_avg": 0.07335878898770026,
+      "ret63_avg": 0.19575064639428963,
       "rs63_avg": 75.7984754514904,
       "trade_input": false
     },
@@ -1602,7 +1602,7 @@
       ],
       "member_count": 345,
       "ret20_avg": 0.008776434302575934,
-      "ret63_avg": 0.12585274370384256,
+      "ret63_avg": 0.12585274339927363,
       "rs63_avg": 64.04831943615034,
       "trade_input": false
     },
@@ -1615,8 +1615,21 @@
       ],
       "member_count": 88,
       "ret20_avg": -0.0014970992550555568,
-      "ret63_avg": 0.03965252763017458,
+      "ret63_avg": 0.03965252867635388,
       "rs63_avg": 52.351655714862204,
+      "trade_input": false
+    },
+    {
+      "group": "Communications",
+      "leaders": [
+        "IDT",
+        "OOMA",
+        "T"
+      ],
+      "member_count": 26,
+      "ret20_avg": -0.002298524058349486,
+      "ret63_avg": -0.044749521040024706,
+      "rs63_avg": 40.96609382257315,
       "trade_input": false
     },
     {
@@ -1633,28 +1646,15 @@
       "trade_input": false
     },
     {
-      "group": "Communications",
-      "leaders": [
-        "IDT",
-        "OOMA",
-        "T"
-      ],
-      "member_count": 25,
-      "ret20_avg": -0.007186845373563186,
-      "ret63_avg": -0.03565714891466867,
-      "rs63_avg": 40.96609382257315,
-      "trade_input": false
-    },
-    {
       "group": "Miscellaneous",
       "leaders": [
         "FSK",
         "TRIN",
         "BXSL"
       ],
-      "member_count": 36,
-      "ret20_avg": -0.007553236193203611,
-      "ret63_avg": 0.0262706397732637,
+      "member_count": 35,
+      "ret20_avg": -0.005791420207514331,
+      "ret63_avg": 0.02729807453944141,
       "rs63_avg": 60.88597306084533,
       "trade_input": false
     },
@@ -1667,7 +1667,7 @@
       ],
       "member_count": 914,
       "ret20_avg": -0.016101935673811303,
-      "ret63_avg": 0.030785590153412996,
+      "ret63_avg": 0.03078559022255247,
       "rs63_avg": 53.32680663209434,
       "trade_input": false
     },
@@ -1678,9 +1678,9 @@
         "FTH",
         "IOVA"
       ],
-      "member_count": 447,
-      "ret20_avg": -0.020019920603827256,
-      "ret63_avg": 0.14880043957034947,
+      "member_count": 448,
+      "ret20_avg": -0.02015860046227192,
+      "ret63_avg": 0.1484812597661803,
       "rs63_avg": 66.69029750409467,
       "trade_input": false
     },
@@ -1737,19 +1737,6 @@
       "trade_input": false
     },
     {
-      "group": "Consumer Non-Durables",
-      "leaders": [
-        "UTZ",
-        "ELF",
-        "DAR"
-      ],
-      "member_count": 95,
-      "ret20_avg": -0.0588714497137857,
-      "ret63_avg": -0.03677103589225941,
-      "rs63_avg": 42.377724341072536,
-      "trade_input": false
-    },
-    {
       "group": "Consumer Durables",
       "leaders": [
         "SN",
@@ -1758,8 +1745,21 @@
       ],
       "member_count": 79,
       "ret20_avg": -0.05899611289590074,
-      "ret63_avg": -0.010824254504326409,
+      "ret63_avg": -0.010824256082556827,
       "rs63_avg": 42.13694070289518,
+      "trade_input": false
+    },
+    {
+      "group": "Consumer Non-Durables",
+      "leaders": [
+        "UTZ",
+        "ELF",
+        "DAR"
+      ],
+      "member_count": 94,
+      "ret20_avg": -0.05934755374271769,
+      "ret63_avg": -0.03649900336865098,
+      "rs63_avg": 42.377724341072536,
       "trade_input": false
     },
     {
@@ -1808,9 +1808,9 @@
         "MLKN",
         "CNH"
       ],
-      "member_count": 208,
-      "ret20_avg": -0.09500333648541269,
-      "ret63_avg": -0.10881868470384795,
+      "member_count": 207,
+      "ret20_avg": -0.09800912604475931,
+      "ret63_avg": -0.11435152004466774,
       "rs63_avg": 30.842235640191987,
       "trade_input": false
     },
