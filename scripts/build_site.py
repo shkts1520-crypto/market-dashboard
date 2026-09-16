@@ -90,17 +90,26 @@ def _is_production_context() -> bool:
     return event not in {"", "pull_request", "pull_request_target"}
 
 
-def _materialize_restored_experience() -> bool:
-    """Generate recovered search/VWAP/chart payloads in production only."""
-    script = Path("scripts/materialize_restored_experience.py")
+def _run_materializer(script_name: str) -> bool:
+    script = Path("scripts") / script_name
     if not _is_production_context() or not script.is_file():
         return False
     subprocess.run(
-        [sys.executable, str(script), "--data-dir", "data"],
+        [sys.executable, str(script), "--data-dir", "data"]
+        if script_name == "materialize_restored_experience.py"
+        else [sys.executable, str(script)],
         check=True,
         env=os.environ.copy(),
     )
     return True
+
+
+def _materialize_restored_experience() -> bool:
+    return _run_materializer("materialize_restored_experience.py")
+
+
+def _materialize_setup_cards() -> bool:
+    return _run_materializer("materialize_setup_cards.py")
 
 
 def _copy_restored_data(out: Path) -> dict[str, bool]:
@@ -109,6 +118,7 @@ def _copy_restored_data(out: Path) -> dict[str, bool]:
     sources = {
         "search_index": Path("data/history/search_index.json"),
         "vwap_restore": Path("data/history/vwap_restore.json"),
+        "setup_restore": Path("data/history/setup_restore.json"),
     }
     copied: dict[str, bool] = {}
     for key, source in sources.items():
@@ -127,6 +137,7 @@ def main() -> int:
     args = p.parse_args()
 
     restored_materialized = _materialize_restored_experience()
+    setup_materialized = _materialize_setup_cards()
     out = build_site(args.canonical, args.output)
 
     baseline_shell = Path("assets/v38-baseline-shell.js")
@@ -140,34 +151,26 @@ def main() -> int:
     )
     rules_0905_enabled = _restore_rules_0905(out, Path("assets/v38-rules-0905.html"))
 
-    # Canonical/source DOM remains the visual authority. Runtime extensions may
-    # bind current data but must not replace it with synthetic or legacy values.
     observables_enabled = polish_enabled = recovery_enabled = False
     final_ui_enabled = data_repair_enabled = visual_fidelity_enabled = False
     detail_restore_enabled = False
 
-    live_binder = Path("assets/v38-live-binder.js")
-    live_binder_enabled = _inject_external_extension(out, live_binder)
-    restored_chart = Path("assets/v38-restored-chart.js")
-    restored_chart_enabled = _inject_external_extension(out, restored_chart)
+    live_binder_enabled = _inject_external_extension(out, Path("assets/v38-live-binder.js"))
+    restored_chart_enabled = _inject_external_extension(out, Path("assets/v38-restored-chart.js"))
     if restored_chart_enabled:
         options_chart_enabled = False
     else:
-        options_chart = Path("assets/v38-options-chart.js")
-        options_chart_enabled = _inject_external_extension(out, options_chart)
+        options_chart_enabled = _inject_external_extension(out, Path("assets/v38-options-chart.js"))
 
-    restored_experience = Path("assets/v38-restored-experience.js")
-    restored_experience_enabled = _inject_external_extension(out, restored_experience)
-    tradingview_fallback = Path("assets/v38-tradingview-fallback.js")
-    tradingview_fallback_enabled = _inject_external_extension(out, tradingview_fallback)
+    restored_experience_enabled = _inject_external_extension(out, Path("assets/v38-restored-experience.js"))
+    tradingview_fallback_enabled = _inject_external_extension(out, Path("assets/v38-tradingview-fallback.js"))
 
-    # Final one-shot truth pass. This strips any visible baseline/mock value that
-    # was not replaced by a current authoritative shard. Unsupported semantics are
-    # SOURCE_UNAVAILABLE, never silently inherited from the mock HTML.
-    production_truth = Path("assets/v38-production-truth.js")
-    production_truth_enabled = _inject_external_extension(out, production_truth)
-    production_label_truth = Path("assets/v38-production-label-truth.js")
-    production_label_truth_enabled = _inject_external_extension(out, production_label_truth)
+    # Legacy truth passes still own supported legacy/current bindings. The public
+    # finalizer runs last and restores rich source DOM for current producers while
+    # removing internal diagnostic placeholders from the public surface.
+    production_truth_enabled = _inject_external_extension(out, Path("assets/v38-production-truth.js"))
+    production_label_truth_enabled = _inject_external_extension(out, Path("assets/v38-production-label-truth.js"))
+    public_final_enabled = _inject_external_extension(out, Path("assets/v38-public-final.js"))
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -212,6 +215,7 @@ def main() -> int:
                 "tradingview_fallback_extension": tradingview_fallback_enabled,
                 "production_truth_extension": production_truth_enabled,
                 "production_label_truth_extension": production_label_truth_enabled,
+                "public_final_extension": public_final_enabled,
                 "source_fidelity_extension": source_fidelity_enabled,
                 "source_fidelity_contract_extension": source_fidelity_contract_enabled,
                 "data_completeness_fallback_extension": data_completeness_fallback_enabled,
@@ -220,6 +224,7 @@ def main() -> int:
                 "rotation_movers_visual_extension": rotation_movers_visual_enabled,
                 "rotation_movers_owner_extension": rotation_movers_owner_enabled,
                 "restored_materialized": restored_materialized,
+                "setup_materialized": setup_materialized,
                 "restored_data": restored_data,
             },
             ensure_ascii=False,
