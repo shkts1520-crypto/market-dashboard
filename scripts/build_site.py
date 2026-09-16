@@ -152,6 +152,7 @@ def main() -> int:
     restored_chart_enabled = _inject_external_extension(out, Path("assets/v38-restored-chart.js"))
     options_chart_enabled = False if restored_chart_enabled else _inject_external_extension(out, Path("assets/v38-options-chart.js"))
     tradingview_fallback_enabled = _inject_external_extension(out, Path("assets/v38-tradingview-fallback.js"))
+    public_labels_enabled = _inject_external_extension(out, Path("assets/v38-public-labels.js"))
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -192,6 +193,7 @@ def main() -> int:
         "restored_chart_extension": restored_chart_enabled,
         "restored_experience_extension": restored_experience_enabled,
         "tradingview_fallback_extension": tradingview_fallback_enabled,
+        "public_labels_extension": public_labels_enabled,
         "production_truth_extension": production_truth_enabled,
         "production_label_truth_extension": production_label_truth_enabled,
         "public_final_extension": public_final_enabled,
