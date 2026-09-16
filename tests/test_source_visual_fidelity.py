@@ -1,8 +1,11 @@
 from pathlib import Path
+import re
 
-SOURCE_ASSET = Path('assets/v38-source-fidelity.js')
-SOURCE_CSS = Path('assets/v38-source-fidelity.css')
-VISUAL_POLISH = Path('assets/v38-visual-polish.js')
+LEGACY_SOURCE_ASSET = Path('assets/v38-source-fidelity.js')
+LEGACY_SOURCE_CSS = Path('assets/v38-source-fidelity.css')
+LEGACY_VISUAL_POLISH = Path('assets/v38-visual-polish.js')
+PY_SOURCE_CSS = Path('assets/v38-py-source-authority.css')
+PY_SOURCE_JS = Path('assets/v38-py-source-authority.js')
 BUILD = Path('scripts/build_site.py')
 RUNTIME = Path('assets/v38-runtime.js')
 BINDER = Path('assets/v38-canonical-binder.js')
@@ -11,35 +14,50 @@ BINDER = Path('assets/v38-canonical-binder.js')
 def test_legacy_fixed_canvas_layer_stays_unbound():
     py = BUILD.read_text(encoding='utf-8')
     assert 'source_fidelity_enabled = False' in py
-    js = SOURCE_ASSET.read_text(encoding='utf-8')
+    js = LEGACY_SOURCE_ASSET.read_text(encoding='utf-8')
     assert 'width:1680px!important' in js
     assert 'height:1080px!important' in js
     assert 'v38-source-rotation-frame' in js
 
 
-def test_safe_visual_assets_are_injected():
+def test_uploaded_py_authority_assets_are_injected_and_legacy_layers_are_not():
     py = BUILD.read_text(encoding='utf-8')
-    assert 'assets/v38-source-fidelity.css' in py
-    assert 'assets/v38-visual-polish.js' in py
-    assert 'visual_polish_enabled = _inject_external_extension' in py
+    assert 'assets/v38-py-source-authority.css' in py
+    assert 'assets/v38-py-source-authority.js' in py
+    assert 'assets/v38-source-fidelity.css' not in py
+    assert 'assets/v38-visual-polish.js' not in py
+    assert 'visual_polish_enabled = False' in py
 
 
-def test_primary_tabs_receive_source_density_css():
-    css = SOURCE_CSS.read_text(encoding='utf-8')
-    for selector in ('#t-market', '#t-alloc', '#t-port', '#t-rotation', '#t-movers', '#t-post1'):
-        assert selector in css
-    assert '.v38-trend-svg' in css
-    assert '.v38-source-table' in css
-    assert '.v38-rrg-svg' in css
-    assert '1680/1080' in css
+def test_uploaded_py_authority_excludes_options_and_covers_non_options_tabs():
+    css = PY_SOURCE_CSS.read_text(encoding='utf-8')
+    js = PY_SOURCE_JS.read_text(encoding='utf-8')
+    assert 'section:not(#t-options)' in css
+    match = re.search(r"const\s+NON_OPTIONS\s*=\s*\[(.*?)\];", js, re.S)
+    assert match, 'NON_OPTIONS authority list is missing'
+    authority = match.group(1)
+    assert "'t-options'" not in authority
+    for section in ('t-market', 't-alloc', 't-port', 't-today', 't-rotation', 't-movers', 't-rs', 't-weekly', 't-post1', 't-rules'):
+        assert f"'{section}'" in authority
 
 
-def test_visual_polish_reuses_existing_display_observations():
-    js = VISUAL_POLISH.read_text(encoding='utf-8')
-    assert 'display_observations' in js
-    assert 'sentiment.current' in js
-    assert 'sentiment.band' in js
-    assert 'v38-publish-visual-polish' in js
+def test_source_py_specialized_cards_are_locked():
+    css = PY_SOURCE_CSS.read_text(encoding='utf-8')
+    js = PY_SOURCE_JS.read_text(encoding='utf-8')
+    for token in ('reg-grid', 'vixvals', 'vixwtabs', 'ftd-row'):
+        assert token in css
+    for token in ('sourceRegime', 'sourceVix', 'sourceFtd', 'sourceOrder'):
+        assert token in js
+    assert 'F1 リーダー脱落率' in js
+    assert 'LWMA5' in js
+    assert 'LWMA10' in js
+
+
+def test_legacy_visual_assets_remain_available_but_are_not_authoritative():
+    assert LEGACY_SOURCE_CSS.is_file()
+    assert LEGACY_VISUAL_POLISH.is_file()
+    assert PY_SOURCE_CSS.is_file()
+    assert PY_SOURCE_JS.is_file()
 
 
 def test_canonical_binder_remains_data_owner():

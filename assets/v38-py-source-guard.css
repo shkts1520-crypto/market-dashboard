@@ -1,0 +1,10 @@
+/* Final guard: only build_dashboard(2).py section headings may be visible outside Options. */
+section:not(#t-options) > .msec:not([data-v38-py-source="1"]) {
+  display: none !important;
+}
+
+/* Cards outside the uploaded py source are retained as binder slots only, never rendered. */
+section:not(#t-options) .card.v38-py-unbound,
+section:not(#t-options) .v38-py-unbound {
+  display: none !important;
+}

@@ -1,0 +1,147 @@
+/*
+ * Non-options visual authority extracted from build_dashboard(2).py.
+ * Options is intentionally excluded and remains owned by the current Options implementation.
+ */
+
+:root{
+  --py-paper:#eceae3;
+  --py-surface:#f6f4ef;
+  --py-soft:#f2f1ee;
+  --py-line:#dedacd;
+  --py-line2:#e3e1db;
+  --py-ink:#1b1d1c;
+  --py-muted:#565243;
+  --py-blue:#2962bc;
+  --py-tab:#3774d3;
+}
+
+html,body{background:var(--py-paper);color:var(--py-ink)}
+body::before{content:"";position:fixed;inset:0;background:var(--py-paper);z-index:-1;pointer-events:none}
+
+/* Keep the current Options implementation completely outside this authority layer. */
+section:not(#t-options){font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;color:var(--py-ink)}
+section:not(#t-options)>.card,
+section:not(#t-options) .card{
+  background:var(--py-surface)!important;
+  border:1px solid var(--py-line)!important;
+  border-radius:15px!important;
+  padding:14px 18px!important;
+  margin:0 0 14px!important;
+  box-shadow:none!important;
+  min-height:0!important;
+  height:auto!important;
+}
+section:not(#t-options) .card h2{
+  display:flex!important;align-items:baseline!important;flex-wrap:wrap!important;gap:8px!important;
+  margin:0 0 7px!important;color:#1b1a18!important;font-size:16px!important;line-height:1.28!important;
+  font-weight:800!important;letter-spacing:0!important;
+}
+section:not(#t-options) .card .sub,
+section:not(#t-options) .mut{
+  color:var(--py-muted)!important;font-size:12px!important;line-height:1.55!important;
+}
+section:not(#t-options) .card .sub{margin:-3px 0 9px!important}
+section:not(#t-options) .hdr,
+section:not(#t-options) .chd{
+  display:flex!important;justify-content:space-between!important;align-items:center!important;gap:8px!important;margin-bottom:6px!important;
+}
+section:not(#t-options) .hdr h2,
+section:not(#t-options) .chd h2{margin:0!important}
+section:not(#t-options) .h2en{font-size:.72em!important;font-weight:650!important;color:#706e64!important;letter-spacing:.025em!important}
+
+/* Source-py section hierarchy. */
+section:not(#t-options)>.msec{
+  margin:22px 0 8px!important;padding-top:14px!important;border-top:2px solid #e1dfd8!important;scroll-margin-top:56px!important;
+}
+section:not(#t-options)>.msec:first-child{border-top:0!important;padding-top:4px!important;margin-top:6px!important}
+section:not(#t-options) .msec-l{font-size:16px!important;font-weight:800!important;color:#1c1b19!important;letter-spacing:.02em!important}
+section:not(#t-options) .msec-en{font-size:10px!important;font-weight:600!important;color:#706e64!important;letter-spacing:.04em!important;text-transform:uppercase!important;margin-left:8px!important}
+section:not(#t-options) .msec-q{font-size:12px!important;color:#53514a!important;margin-top:2px!important;line-height:1.4!important}
+section:not(#t-options) .v38-py-unbound{display:none!important}
+
+/* Tables/rows return to the dense source-py rhythm. */
+section:not(#t-options) table{width:100%;border-collapse:collapse!important;font-variant-numeric:tabular-nums!important}
+section:not(#t-options) th{font-size:10px!important;color:#575242!important;font-weight:700!important;padding:5px 4px!important;border-bottom:1px solid #ddd9ce!important}
+section:not(#t-options) td{font-size:11.5px!important;line-height:1.32!important;padding:7px 4px!important;border-bottom:1px solid rgba(27,29,28,.06)!important}
+section:not(#t-options) .v38-canonical-list{display:block!important;margin:0!important;gap:0!important}
+section:not(#t-options) .v38-canonical-row{
+  min-height:0!important;padding:8px 2px!important;margin:0!important;border:0!important;border-top:1px solid rgba(27,29,28,.06)!important;
+  border-radius:0!important;background:transparent!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;
+}
+section:not(#t-options) .v38-canonical-row:first-child{border-top:0!important}
+section:not(#t-options) .v38-canonical-left{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important}
+section:not(#t-options) .v38-canonical-value{font-size:12px!important;white-space:nowrap!important}
+section:not(#t-options) .v38-ticker-link{padding:0!important;border:0!important;background:none!important;color:#1c427d!important;font:inherit!important;font-weight:800!important}
+
+/* Compact source chart footprint. */
+section:not(#t-options) .chart,
+section:not(#t-options) .v38-chart,
+section:not(#t-options) .v38-chart-wrap{min-height:0!important;height:auto!important;margin-top:5px!important}
+section:not(#t-options) .spark,
+section:not(#t-options) .v38-canonical-spark{height:68px!important;max-height:68px!important}
+section:not(#t-options) .v38-trend-svg{height:150px!important;max-height:150px!important;width:100%!important;display:block!important}
+
+/* Regime Early-Warning: the py has three distinct instruments, not a tall generic KV list. */
+section:not(#t-options) .reg-card{border:1px solid #d0cdc2!important}
+section:not(#t-options) .reg-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;margin:10px 0 4px!important}
+section:not(#t-options) .reg-cell{border:1px solid #e1dfd8!important;border-radius:10px!important;padding:11px 12px!important;background:var(--py-soft)!important;min-width:0!important}
+section:not(#t-options) .reg-cell.reg-ok{border-color:rgba(67,201,138,.3)!important}
+section:not(#t-options) .reg-cell.reg-warn{border-color:rgba(227,170,60,.4)!important;background:rgba(227,170,60,.05)!important}
+section:not(#t-options) .reg-cell.reg-bad{border-color:rgba(229,100,94,.5)!important;background:rgba(229,100,94,.07)!important}
+section:not(#t-options) .reg-k{font-size:11.5px!important;font-weight:800!important;color:#292824!important}
+section:not(#t-options) .reg-role{font-size:9.5px!important;color:#706e64!important;line-height:1.35!important;margin-top:3px!important}
+section:not(#t-options) .reg-v{font-size:22px!important;font-weight:850!important;font-variant-numeric:tabular-nums!important;margin-top:7px!important}
+section:not(#t-options) .reg-l{font-size:10px!important;color:#706e64!important;margin-top:1px!important}
+
+/* VIX Fear Cycle source card. */
+section:not(#t-options) .vixcy .chd-now{display:flex!important;flex-direction:column!important;align-items:flex-end!important;line-height:1.1!important}
+section:not(#t-options) .vixcy .chd-now b{font-size:14px!important;letter-spacing:.02em!important}
+section:not(#t-options) .vixvals{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:5px!important;margin:9px 0 5px!important}
+section:not(#t-options) .vixvals>div{min-width:0!important;padding:6px 5px!important;border-radius:7px!important;text-align:center!important;background:rgba(27,29,28,.03)!important;border:1px solid rgba(27,29,28,.06)!important}
+section:not(#t-options) .vixvals span{display:block!important;font-size:9px!important;color:#575242!important;white-space:nowrap!important}
+section:not(#t-options) .vixvals b{display:block!important;margin-top:1px!important;font-size:12px!important;color:#1c1b19!important;font-variant-numeric:tabular-nums!important;white-space:nowrap!important}
+section:not(#t-options) .vixleg{display:flex!important;gap:12px!important;align-items:center!important;flex-wrap:wrap!important;font-size:9.5px!important;color:#66645b!important;margin:5px 0!important}
+section:not(#t-options) .vixleg span{display:flex!important;align-items:center!important;gap:4px!important}
+section:not(#t-options) .vixleg i{display:inline-block!important;width:16px!important;height:2px!important;background:#1c1b19!important}
+section:not(#t-options) .vixleg .vix-lg-w5{background:#1f4b8f!important}.vixleg .vix-lg-w10{background:#9f1e62!important}
+section:not(#t-options) .vixwtabs{display:flex!important;gap:4px!important;margin:6px 0!important}
+section:not(#t-options) .vixwbt{font-size:10px!important;font-weight:750!important;padding:3px 9px!important;border-radius:6px!important;border:1px solid #d0cdc2!important;background:#ebe9e5!important;color:#575242!important}
+section:not(#t-options) .vixwbt.on{background:rgba(88,166,255,.16)!important;color:#2962bc!important;border-color:rgba(88,166,255,.5)!important}
+section:not(#t-options) .vixchart,section:not(#t-options) .vixchart svg{height:150px!important;max-height:150px!important;width:100%!important;display:block!important}
+
+/* FTD source rows. */
+section:not(#t-options) .ftd-row{display:grid!important;grid-template-columns:minmax(120px,.8fr) minmax(0,2fr)!important;gap:8px!important;align-items:center!important;padding:8px 2px!important;border-top:1px solid rgba(27,29,28,.06)!important}
+section:not(#t-options) .ftd-row:first-of-type{border-top:0!important}
+section:not(#t-options) .ftd-x{font-size:11.5px!important;font-weight:800!important}.warnt{font-size:11.5px!important;color:#8a5b12!important;font-weight:700!important}
+
+/* RS source controls. */
+section:not(#t-options) .rsper,section:not(#t-options) .rspbar{
+  background:#e7e6e0!important;border:1px solid #d6d3c9!important;color:#1c427d!important;font-size:12px!important;font-weight:700!important;border-radius:8px!important;padding:6px 12px!important;
+}
+section:not(#t-options) .rsx-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;margin-bottom:14px!important}
+section:not(#t-options) .rsx-grid>.card{margin-bottom:0!important}
+
+/* Rotation: source py is a sequence, not a dashboard mosaic. */
+#t-rotation{display:block!important}
+#t-rotation>.card{width:100%!important;max-width:none!important}
+#t-rotation .v38-sector-heatmap{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(104px,1fr))!important;gap:6px!important;margin-top:6px!important}
+#t-rotation .v38-sector-heatmap>*{min-height:44px!important;border-radius:9px!important;padding:8px!important}
+#t-rotation .v38-rrg-source,#t-rotation .v38-rrg-list,#t-rotation .v38-big-group-list{gap:6px!important}
+#t-rotation .v38-rrg-svg,#t-rotation svg{max-height:320px!important}
+#t-rotation .v38-rotation-table{font-size:11px!important}
+
+/* Publish stays on the source 1680x1080 canvas hierarchy; only scale the preview on phones. */
+#t-post1 .postwrap{margin-bottom:14px!important}
+#t-post1 .postcard{box-shadow:none!important}
+
+@media (max-width:700px){
+  section:not(#t-options)>.card,section:not(#t-options) .card{padding:12px 14px!important;border-radius:13px!important;margin-bottom:12px!important}
+  section:not(#t-options) .card h2{font-size:14.5px!important}
+  section:not(#t-options) .card .sub,section:not(#t-options) .mut{font-size:11px!important}
+  section:not(#t-options)>.msec{margin:18px 0 7px!important;padding-top:12px!important}
+  section:not(#t-options) .msec-l{font-size:15px!important}
+  section:not(#t-options) .reg-grid{grid-template-columns:1fr!important}
+  section:not(#t-options) .vixvals{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  section:not(#t-options) .rsx-grid{grid-template-columns:1fr!important}
+  #t-rotation .v38-sector-heatmap{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))!important;gap:5px!important}
+}
