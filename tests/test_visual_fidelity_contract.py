@@ -21,6 +21,8 @@ def test_publish_cards_are_fixed_1680_by_1080_live_cards():
     assert "frame.srcdoc=srcdoc" in BINDER
     assert "wraps[index].replaceChildren()" not in BINDER
     assert "V38 MARKET OVERVIEW" not in BINDER
+    assert ".postwrap.fs .pfsbtn{visibility:hidden;opacity:0;pointer-events:none}" in BINDER
+    assert ".postwrap.fs .pfsbtn{display:none}" not in BINDER
 
 
 def test_ticker_links_do_not_use_browser_button_chrome():
