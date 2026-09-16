@@ -145,8 +145,19 @@ def main() -> int:
                         assert section.locator(".card:visible,.postwrap:visible").count() > 0
                     _assert_ready_has_no_false_missing(section, view.get(VIEW_KEYS[section_id]) or {})
                     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 2"), section_id
+
+                    # v38-site.js intentionally forces scrollTop again at 0/80ms after a tab click.
+                    # Wait past that stabilization window so the evidence screenshot cannot race it.
+                    page.wait_for_timeout(120)
+                    assert section.inner_text().strip(), (width, section_id, "visible section has no text")
                     if screenshot_dir:
-                        section.screenshot(path=str(screenshot_dir / f"{width}-{section_id}.png"))
+                        image = section.screenshot(path=str(screenshot_dir / f"{width}-{section_id}.png"))
+                        assert len(image) > 5000, (
+                            width,
+                            section_id,
+                            "visual evidence is effectively blank",
+                            len(image),
+                        )
 
                 _assert_interactions(page)
                 page.locator('a.tabx[href="#t-rs"]').click()
