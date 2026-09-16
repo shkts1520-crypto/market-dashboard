@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          PYTHONPATH=src python scripts/materialize_supplemental.py --data-dir data
+          GITHUB_EVENT_NAME=pull_request PYTHONPATH=src python scripts/materialize_supplemental.py --data-dir data
           SESSION="$(python - <<'PY'
           import json
           print(json.load(open('data/state.json', encoding='utf-8'))['session_date'])
