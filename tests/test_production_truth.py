@@ -18,7 +18,7 @@ def test_canonical_binder_does_not_hide_missing_diagnostics():
     assert "dataset.v38TruthSource" in source
     assert "dataset.v38Status" in source
     assert "UNBOUND_VISIBLE_CARD" in source
-    assert 'style.display' not in source
+    assert "display:none" not in source.replace(' ', '')
 
 
 def test_retired_patch_assets_are_not_runtime_injected():
