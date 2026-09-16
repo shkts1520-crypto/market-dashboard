@@ -14,32 +14,26 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Extract canonical definitions
+      - name: Extract canonical card inventory
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-          text = Path('V38_Command_Center_mock_v5.html').read_text(encoding='utf-8')
-          needles = [
-              '資金フロー', 'GICS11', 'スタイル', 'STYLE', 'style',
-              'エクイティカーブ', '来週の経済指標', '自分 vs QQQ',
-              'CURRENT EXPECTED 12', 'RECOVERY CANDIDATES',
-          ]
-          for needle in needles:
-              print('\n===== NEEDLE:', needle, '=====')
-              found = 0
-              for m in re.finditer(re.escape(needle), text, re.I):
-                  lo=max(0,m.start()-2200); hi=min(len(text),m.end()+4200)
-                  chunk=text[lo:hi].replace('\n',' ')
-                  print(chunk)
-                  found += 1
-                  if found >= 4: break
-              if not found: print('NOT_FOUND')
-          print('\n===== ETF SYMBOL ARRAYS NEAR FLOW =====')
-          for pat in [r'\[["\'][A-Z^=.-]{2,10}["\'](?:\s*,\s*["\'][A-Z^=.-]{2,10}["\']){3,20}\]',
-                      r'(?:flow|FLOW|style|STYLE)[^;]{0,3000}']:
-              for m in re.finditer(pat, text):
-                  if any(x in m.group(0) for x in ('XLB','SPY','QQQ','RSP','IWM','IWF','IWD','MTUM','QUAL','USMV')):
-                      print(m.group(0)[:5000])
+          from html import unescape
+          text=Path('V38_Command_Center_mock_v5.html').read_text(encoding='utf-8')
+          for sid in ['t-market','t-alloc','t-port','t-today','t-rotation','t-movers','t-rs','t-weekly','t-options','t-post1','t-rules']:
+              m=re.search(rf'<section\s+id="{sid}"[^>]*>(.*?)(?=<section\s+id=|</main>|</body>)',text,re.S)
+              print(f'\n=== {sid} ===')
+              if not m:
+                  print('MISSING');continue
+              sec=m.group(1)
+              hs=re.findall(r'<h2[^>]*>(.*?)</h2>',sec,re.S|re.I)
+              for i,h in enumerate(hs,1):
+                  h=re.sub(r'<[^>]+>',' ',h)
+                  h=unescape(re.sub(r'\s+',' ',h)).strip()
+                  print(f'{i:02d}. {h}')
+          print('\n=== RRG STYLE TICKERS ===')
+          for tk in ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY','IWD','IWF','IWM','MDY','RSP']:
+              print(tk)
           PY
