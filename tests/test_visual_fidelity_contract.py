@@ -32,3 +32,10 @@ def test_ticker_links_do_not_use_browser_button_chrome():
 def test_missing_core_rank_is_not_fabricated_or_printed_as_rank_dash():
     assert "Rank ${r.rank ?? '—'}" not in BINDER
     assert "Rank ${r.rank??'—'}" not in BINDER
+
+
+def test_core12_liquidity_utility_is_bound_not_left_as_blank_card():
+    assert "function bindLiquidityUtility(sectionId, source)" in BINDER
+    assert "bindLiquidityUtility('t-port','data/ui_view_model.json.core12.rows')" in BINDER
+    assert "bindLiquidityUtility('t-today','data/ui_view_model.json.setups')" in BINDER
+    assert "ddv20:r.ddv20" in BINDER

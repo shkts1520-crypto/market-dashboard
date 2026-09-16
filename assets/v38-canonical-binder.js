@@ -321,6 +321,7 @@
 
   function renderCore(view) {
     const core = view.core12 || {}, metrics = metricMap(view);
+    bindLiquidityUtility('t-port','data/ui_view_model.json.core12.rows');
     simpleList(card('t-port','レジーム警戒灯'),'レジーム警戒灯 Regime Early-Warning',[
       {label:'Market Mode',value:core.market_mode || metricDisplay(metrics,'market_mode')},
       {label:'NQSAR',value:metricDisplay(metrics,'nqsar')},
@@ -329,13 +330,35 @@
     ],'data/ui_view_model.json.core12+daily.metrics');
     const entrants = core.new_entrants || {};
     simpleList(card('t-port','新規参入'),'新規参入（ポート候補36位圏） New Entrants',(entrants.rows||[]).map((r)=>({ticker:r.ticker,value:`現在 ${r.rank ?? '—'}位 / 20日前 ${r.prior_rank ?? '圏外'}`})),'data/ui_view_model.json.core12.new_entrants');
-    simpleList(card('t-port','個別株スリーブ Core 12'),'個別株スリーブ Core 12',(core.rows||[]).slice(0,12).map((r)=>({ticker:r.ticker,meta:r.theme_name||r.industry||'',value:`${finite(r.rank)!==null?`Rank ${r.rank} · `:''}RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
-    simpleList(card('t-port','RSリーダー控え'),'RSリーダー控え Bench',(core.rows||[]).slice(12,24).map((r)=>({ticker:r.ticker,meta:r.theme_name||r.industry||'',value:`${finite(r.rank)!==null?`Rank ${r.rank} · `:''}RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
+    simpleList(card('t-port','個別株スリーブ Core 12'),'個別株スリーブ Core 12',(core.rows||[]).slice(0,12).map((r)=>({ticker:r.ticker,ddv20:r.ddv20,meta:r.theme_name||r.industry||'',value:`${finite(r.rank)!==null?`Rank ${r.rank} · `:''}RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
+    simpleList(card('t-port','RSリーダー控え'),'RSリーダー控え Bench',(core.rows||[]).slice(12,24).map((r)=>({ticker:r.ticker,ddv20:r.ddv20,meta:r.theme_name||r.industry||'',value:`${finite(r.rank)!==null?`Rank ${r.rank} · `:''}RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
     cards('t-port').filter((node)=>!node.dataset.v38TruthSource).forEach((node)=>{
       const title=originalTitle(node);
       if(title.includes('V38 Data')) simpleList(node,'Core 12 データ品質',[{label:'Eligible',value:core.rows?.length??0},{label:'Market Mode',value:core.market_mode||'—'},{label:'新規上限',value:core.max_new_total_slots??'—'}],'data/ui_view_model.json.core12');
-      else if(title.includes('個別株スリーブ')) simpleList(node,'個別株スリーブ Core 12',(core.rows||[]).slice(0,12).map((r)=>({ticker:r.ticker,value:`${finite(r.rank)!==null?`Rank ${r.rank} · `:''}RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
+      else if(title.includes('個別株スリーブ')) simpleList(node,'個別株スリーブ Core 12',(core.rows||[]).slice(0,12).map((r)=>({ticker:r.ticker,ddv20:r.ddv20,value:`${finite(r.rank)!==null?`Rank ${r.rank} · `:''}RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
     });
+  }
+
+  function bindLiquidityUtility(sectionId, source) {
+    const utility=document.querySelector(`#${sectionId} .card.liqstick`);
+    if(!utility)return;
+    mark(utility,source,'READY');
+    const apply=(button)=>{
+      utility.querySelectorAll('button').forEach((x)=>x.classList.toggle('active',x===button));
+      const label=String(button.textContent||'');
+      const m=label.match(/\$(\d+)M/);
+      const threshold=m?Number(m[1]):-1;
+      document.querySelectorAll(`#${sectionId} .v38-canonical-row[data-liq]`).forEach((row)=>{
+        const value=Number(row.dataset.liq||0);
+        row.hidden=threshold>=0&&value<threshold;
+      });
+    };
+    utility.querySelectorAll('button').forEach((button)=>{
+      button.removeAttribute('onclick');
+      button.addEventListener('click',()=>apply(button));
+    });
+    const active=utility.querySelector('button.active')||utility.querySelector('button');
+    if(active)apply(active);
   }
 
   function setupRows(cardNode,title,rows,source,subtitle) {
@@ -343,8 +366,7 @@
   }
   function renderSetups(view) {
     const data = view.setups || {};
-    const utility=document.querySelector('#t-today .card.liqstick');
-    if(utility){mark(utility,'data/ui_view_model.json.setups','READY');utility.querySelectorAll('button').forEach((button)=>{button.removeAttribute('onclick');button.addEventListener('click',()=>{utility.querySelectorAll('button').forEach((x)=>x.classList.remove('active'));button.classList.add('active');const label=String(button.textContent||'');const m=label.match(/\$(\d+)M/);const threshold=m?Number(m[1]):-1;document.querySelectorAll('#t-today .v38-canonical-row[data-liq]').forEach((row)=>{const value=Number(row.dataset.liq||0);row.hidden=threshold>=0&&value<threshold;});});});}
+    bindLiquidityUtility('t-today','data/ui_view_model.json.setups');
     const search = card('t-today','銘柄検索');
     if (search) {
       heading(search,'銘柄検索 Ticker Search','全ユニバースを検索。ティッカーをタップするとCommand Center内のチャートを開きます。');
