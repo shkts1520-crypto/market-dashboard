@@ -42,13 +42,36 @@ def _is_production_context() -> bool:
 
 
 def _repair_vix3m(root: Path, *, session: str, generated_at: str) -> bool:
-    """Retry the one source-defined diagnostic series required by the public VIX curve card."""
+    """Retry source-defined diagnostic series required by public charts."""
     path = root / "market_inputs.json"
     obj = _load(path)
     series = obj.get("series") if isinstance(obj.get("series"), dict) else {}
+    changed = False
+    for symbol in ("IWD", "IWF", "IWM", "MDY"):
+        existing = series.get(symbol) if isinstance(series, dict) else None
+        if isinstance(existing, list) and len(existing) >= 64:
+            continue
+        try:
+            import yfinance as yf
+            raw = yf.download([symbol], period="2y", interval="1d", progress=False,
+                              auto_adjust=False, group_by="ticker", threads=False, timeout=30)
+            diagnostic_rows = market_rows(select_yfinance_symbol_frame(raw, symbol), target_session=session)
+        except Exception:
+            diagnostic_rows = []
+        if len(diagnostic_rows) >= 64:
+            series[symbol] = diagnostic_rows
+            obj.setdefault("diagnostic_repairs", {})[symbol] = {
+                "status": "READY", "source": "Yahoo Finance exact diagnostic retry",
+                "latest_date": diagnostic_rows[-1]["date"], "row_count": len(diagnostic_rows),
+            }
+            changed = True
     existing = series.get("^VIX3M") if isinstance(series, dict) else None
     if isinstance(existing, list) and len(existing) >= 2:
-        return False
+        if changed:
+            obj["series"] = series
+            obj["generated_at"] = generated_at
+            atomic_write_json(path, obj)
+        return changed
     try:
         import yfinance as yf
         raw = yf.download(["^VIX3M"], period="2y", interval="1d", progress=False,
@@ -79,7 +102,11 @@ def _repair_vix3m(root: Path, *, session: str, generated_at: str) -> bool:
         except Exception:
             rows = []
     if len(rows) < 2:
-        return False
+        if changed:
+            obj["series"] = series
+            obj["generated_at"] = generated_at
+            atomic_write_json(path, obj)
+        return changed
     series["^VIX3M"] = rows
     obj["series"] = series
     obj["generated_at"] = generated_at
