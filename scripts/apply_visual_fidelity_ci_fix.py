@@ -81,14 +81,21 @@ def test_runtime_uses_history_and_never_manages_section_hidden_state():
 
 def test_canonical_binder_owns_live_component_rendering():
     text = binder_js()
-    for class_name in (
-        "rsx-item",
-        "rsx-row",
-        "rsx-name",
-        "rsx-score",
-        "w30exit",
+    for renderer in (
+        "function renderDaily(view)",
+        "function renderPositions(view)",
+        "function renderCore(view)",
+        "function renderSetups(view)",
+        "function renderRotation(view)",
+        "function renderMovers(view)",
+        "function renderRs(view)",
+        "function renderWeekly(view)",
+        "function renderOptions(options)",
+        "function renderPublish(view)",
+        "function renderRules(view)",
     ):
-        assert class_name in text
+        assert renderer in text
+    assert "v38-canonical-list" in text
     assert "dataset.v38TruthSource" in text
     assert "UNBOUND_VISIBLE_CARD" in text
 ''', encoding='utf-8')
