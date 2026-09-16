@@ -13,27 +13,60 @@
     [/正本producer/g, '取得元']
   ];
 
-  function sanitizePublicText() {
-    if (!document.body) return;
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      const parent = node.parentElement;
-      if (!parent || parent.closest('script, style')) continue;
-      let next = node.nodeValue || '';
-      REPLACEMENTS.forEach(([pattern, replacement]) => {
-        next = next.replace(pattern, replacement);
-      });
-      if (next !== node.nodeValue) node.nodeValue = next;
+  let sanitizing = false;
+
+  function sanitizeTextNode(node) {
+    const parent = node && node.parentElement;
+    if (!parent || parent.closest('script, style')) return;
+    let next = node.nodeValue || '';
+    REPLACEMENTS.forEach(([pattern, replacement]) => {
+      next = next.replace(pattern, replacement);
+    });
+    if (next !== node.nodeValue) node.nodeValue = next;
+  }
+
+  function sanitizePublicText(root) {
+    if (!document.body || sanitizing) return;
+    sanitizing = true;
+    try {
+      const target = root && root.nodeType ? root : document.body;
+      if (target.nodeType === Node.TEXT_NODE) {
+        sanitizeTextNode(target);
+      } else {
+        const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+        let node;
+        while ((node = walker.nextNode())) sanitizeTextNode(node);
+      }
+      document.body.dataset.v38PublicLabels = 'ready';
+    } finally {
+      sanitizing = false;
     }
-    document.body.dataset.v38PublicLabels = 'ready';
   }
 
   function schedule() {
-    window.requestAnimationFrame(() => window.requestAnimationFrame(sanitizePublicText));
+    window.requestAnimationFrame(() => sanitizePublicText(document.body));
   }
 
+  function observe() {
+    if (!document.body) return;
+    sanitizePublicText(document.body);
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'characterData') {
+          sanitizePublicText(mutation.target);
+          return;
+        }
+        mutation.addedNodes.forEach((node) => sanitizePublicText(node));
+      });
+    });
+    observer.observe(document.body, {subtree: true, childList: true, characterData: true});
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', observe, {once: true});
+  } else {
+    observe();
+  }
   document.addEventListener('v38:view-ready', schedule);
   window.addEventListener('load', schedule, {once: true});
-  if (window.V38UiViewModel) schedule();
 })();
