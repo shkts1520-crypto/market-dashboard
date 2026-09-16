@@ -85,12 +85,15 @@ def test_single_binder_never_silently_hides_unbound_cards():
     assert 'style.display' not in js
 
 
-def test_browser_gate_checks_all_eleven_tabs_and_every_visible_card():
+def test_browser_gate_checks_all_eleven_tabs_without_ui_shape_locking():
     script = BROWSER.read_text(encoding='utf-8')
     for tab in ('#t-market','#t-alloc','#t-port','#t-today','#t-rotation','#t-movers','#t-rs','#t-weekly','#t-options','#t-post1','#t-rules'):
         assert tab in script
-    assert 'visible card has no truth source' in script
-    assert 'visible card binding error' in script
+    assert 'visible tab is empty' in script
+    assert 'unexpected horizontal overflow' in script
+    assert "page.on('pageerror'" in script
+    assert 'visible card has no truth source' not in script
+    assert 'REPAIRED_CARD_CONTRACT' not in script
 
 
 def test_canonical_core_sections_still_exist():
