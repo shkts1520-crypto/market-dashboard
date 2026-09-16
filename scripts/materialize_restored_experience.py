@@ -11,6 +11,7 @@ import pandas as pd
 import yfinance as yf
 
 from v38.live_acquisition import select_yfinance_symbol_frame, yahoo_symbol
+from v38.setup_restore import build_payload as build_setup_payload, pool_rows as setup_pool_rows
 from v38.vwap_restore import (
     CALCULATION_VERSION,
     SCHEMA_VERSION,
@@ -204,7 +205,7 @@ def setup_triggered(row: dict[str, Any]) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Restore search, VWAP and chart data used by the pre-v5 dashboard")
+    parser = argparse.ArgumentParser(description="Restore search, VWAP, setup and chart data used by the pre-v5 dashboard")
     parser.add_argument("--data-dir", default="data")
     args = parser.parse_args()
     root = Path(args.data_dir)
@@ -232,7 +233,9 @@ def main() -> int:
     options_targets = option_targets(options)
     leaders = leader_candidates(rs)
     leaders_by_ticker = {str(row.get("ticker") or "").strip().upper(): row for row in leaders}
-    two_year_tickers = sorted(set(options_targets) | set(leaders_by_ticker))
+    setup_pool = setup_pool_rows(rs)
+    setup_by_ticker = {str(row.get("ticker") or "").strip().upper(): row for row in setup_pool}
+    two_year_tickers = sorted(set(options_targets) | set(leaders_by_ticker) | set(setup_by_ticker))
     frames = batch_frames(two_year_tickers, period="2y")
 
     setup_rows = []
@@ -241,6 +244,15 @@ def main() -> int:
         if frame is None or frame.empty:
             continue
         setup_rows.append(setup_row(raw, frame))
+
+    setup_payload = build_setup_payload(
+        session=session,
+        generated_at=generated_at,
+        pool=setup_pool,
+        frames=frames,
+        failed=[ticker for ticker in setup_by_ticker if ticker not in frames],
+    )
+    write_json(root / "history" / "setup_restore.json", setup_payload)
 
     trigger_tickers = [row["ticker"] for row in setup_rows if setup_triggered(row)]
     chart_targets = sorted(set(options_targets) | set(trigger_tickers))
@@ -347,6 +359,9 @@ def main() -> int:
         "leader_candidates": len(leaders),
         "two_year_frames": len(frames),
         "setup_rows": len(setup_rows),
+        "setup_restore_requested": setup_payload.get("requested"),
+        "setup_restore_received": setup_payload.get("received"),
+        "setup_restore_coverage": setup_payload.get("coverage"),
         "trigger_rows": len(trigger_tickers),
         "option_targets": len(options_targets),
         "chart_ready": sum(1 for ticker in chart_targets if chart.get(ticker)),
