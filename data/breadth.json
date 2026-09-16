@@ -1,18 +1,18 @@
 {
-  "breadth200": 58.96540780704538,
+  "breadth200": 59.05636478784041,
   "breadth200_status": "FULL",
-  "breadth50": 42.10368594545999,
+  "breadth50": 42.22488038277512,
   "calculation_version": "v38-stock-adapter-1.2.0",
   "coverage": 1.0,
   "coverage_detail": {
-    "active_universe": 3381,
-    "current_valid_ohlcv": 3381,
-    "min_sma200_count": 2029,
-    "valid_sma200_count": 3151,
-    "valid_sma50_count": 3337
+    "active_universe": 3388,
+    "current_valid_ohlcv": 3388,
+    "min_sma200_count": 2033,
+    "valid_sma200_count": 3158,
+    "valid_sma50_count": 3344
   },
   "excluded": [],
-  "generated_at": "2026-09-15T15:16:39Z",
+  "generated_at": "2026-09-16T00:04:06Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,
@@ -20,5 +20,5 @@
   },
   "schema_version": "v38.breadth.1",
   "session_date": "2026-09-14",
-  "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close; isolated Yahoo retry; exact-date Nasdaq historical target-session fallback; verified corporate-action alias fallback only when required"
+  "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close"
 }
