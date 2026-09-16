@@ -3,10 +3,10 @@
   "coverage": 1.0,
   "coverage_detail": {
     "classified_rows": 3389,
-    "revenue_ttm_available": 3221,
+    "revenue_ttm_available": 3222,
     "rs_rows": 3389
   },
-  "generated_at": "2026-09-16T10:13:35Z",
+  "generated_at": "2026-09-16T12:47:11Z",
   "rows": [
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -23147,7 +23147,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Trucking",
-      "market_cap": 1137547150.9999998,
+      "market_cap": 1132647450.4213924,
       "revenue_ttm": 857647000.0,
       "structural_clinical_biotech": false,
       "ticker": "MRTN"
@@ -23483,7 +23483,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Trusts/Mutual Funds",
-      "market_cap": 681946254.9999999,
+      "market_cap": 658333157.5277008,
       "revenue_ttm": 203150000.0,
       "structural_clinical_biotech": false,
       "ticker": "NMFC"
@@ -26812,7 +26812,7 @@
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
       "market_cap": 625567731.9999999,
-      "revenue_ttm": null,
+      "revenue_ttm": 177765000.0,
       "structural_clinical_biotech": false,
       "ticker": "WCCB"
     },

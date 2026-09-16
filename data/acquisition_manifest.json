@@ -34,7 +34,7 @@
   "authority_status_version": "v38-authority-status-1.0.0",
   "calculation_version": "v38-live-acquisition-1.2.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-16T10:13:35Z",
+  "generated_at": "2026-09-16T12:47:11Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
   "options_status": "READY",
@@ -67,7 +67,7 @@
     "duplicate_class_rows": 0,
     "duplicate_symbol_rows": 0,
     "malformed_rows": 0,
-    "previous_active_universe": 3388,
+    "previous_active_universe": 3389,
     "response_rows": 3390,
     "response_total_count": 3390,
     "special_security_rows": 1

@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.1",
   "coverage": 1.0,
-  "generated_at": "2026-09-16T10:13:35Z",
+  "generated_at": "2026-09-16T12:47:11Z",
   "loo_required": true,
   "ordering": "authoritative source order; dashboard does not re-rank themes",
   "rows": [
@@ -5771,11 +5771,11 @@
       "ticker": "AVBC"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6571,11 +6571,11 @@
       "ticker": "BAND"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6589,11 +6589,11 @@
       "ticker": "BANF"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 40.757993869612484,
+      "peer_count": 51,
+      "peer_theme_score": 41.0847912552334,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6877,11 +6877,11 @@
       "ticker": "BC"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6949,11 +6949,11 @@
       "ticker": "BCCQ"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -8324,11 +8324,11 @@
       "ticker": "BMNR"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -8522,11 +8522,11 @@
       "ticker": "BOC"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -8540,11 +8540,11 @@
       "ticker": "BOH"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 41.42466053627915,
+      "peer_count": 51,
+      "peer_theme_score": 41.738386026475226,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -9062,11 +9062,11 @@
       "ticker": "BSP"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -9080,11 +9080,11 @@
       "ticker": "BSRR"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -10253,11 +10253,11 @@
       "ticker": "CATX"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 40.757993869612484,
+      "peer_count": 51,
+      "peer_theme_score": 41.0847912552334,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -11443,11 +11443,11 @@
       "ticker": "CFG"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 41.42466053627915,
+      "peer_count": 51,
+      "peer_theme_score": 41.738386026475226,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -13250,11 +13250,11 @@
       "ticker": "COKE"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -13574,11 +13574,11 @@
       "ticker": "CPB"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -14942,11 +14942,11 @@
       "ticker": "CV"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 40.757993869612484,
+      "peer_count": 51,
+      "peer_theme_score": 41.0847912552334,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -15144,11 +15144,11 @@
       "ticker": "CW"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -19513,11 +19513,11 @@
       "ticker": "EW"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -20611,11 +20611,11 @@
       "ticker": "FFBC"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 40.757993869612484,
+      "peer_count": 51,
+      "peer_theme_score": 41.0847912552334,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -20683,11 +20683,11 @@
       "ticker": "FGII"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -20755,11 +20755,11 @@
       "ticker": "FHTX"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 40.757993869612484,
+      "peer_count": 51,
+      "peer_theme_score": 41.0847912552334,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -21460,11 +21460,11 @@
       "ticker": "FNLC"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 0.96,
       "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
@@ -21964,11 +21964,11 @@
       "ticker": "FRVO"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -21982,11 +21982,11 @@
       "ticker": "FSBC"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -22090,11 +22090,11 @@
       "ticker": "FSTR"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 40.757993869612484,
+      "peer_count": 51,
+      "peer_theme_score": 41.0847912552334,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -22720,11 +22720,11 @@
       "ticker": "GATX"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -22756,11 +22756,11 @@
       "ticker": "GBDC"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -25053,11 +25053,11 @@
       "ticker": "HAE"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -25575,11 +25575,11 @@
       "ticker": "HESM"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 41.42466053627915,
+      "peer_count": 51,
+      "peer_theme_score": 41.738386026475226,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -26155,11 +26155,11 @@
       "ticker": "HOOD"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 40.757993869612484,
+      "peer_count": 51,
+      "peer_theme_score": 41.0847912552334,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -26623,11 +26623,11 @@
       "ticker": "HTGC"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27185,11 +27185,11 @@
       "ticker": "IBM"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -34311,11 +34311,11 @@
       "ticker": "MCGA"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -37069,11 +37069,11 @@
       "ticker": "MYE"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -37361,11 +37361,11 @@
       "ticker": "NBBK"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -38859,11 +38859,11 @@
       "ticker": "NRGV"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -41555,11 +41555,11 @@
       "ticker": "OVID"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -42171,11 +42171,11 @@
       "ticker": "PAYX"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 41.42466053627915,
+      "peer_count": 51,
+      "peer_theme_score": 41.738386026475226,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -42189,11 +42189,11 @@
       "ticker": "PB"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 0.94,
       "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
@@ -42369,11 +42369,11 @@
       "ticker": "PCAR"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -43503,11 +43503,11 @@
       "ticker": "PLAY"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -46058,11 +46058,11 @@
       "ticker": "RCAT"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 0.98,
       "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
@@ -48845,11 +48845,11 @@
       "ticker": "SBRA"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -51327,11 +51327,11 @@
       "ticker": "SPCX"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.08989985495837,
+      "peer_count": 51,
+      "peer_theme_score": 43.403625345154445,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53271,11 +53271,11 @@
       "ticker": "TBPH"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53289,11 +53289,11 @@
       "ticker": "TCBI"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 41.42466053627915,
+      "peer_count": 51,
+      "peer_theme_score": 41.738386026475226,
       "rank_acceleration_score": 22.71386430678466,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53307,11 +53307,11 @@
       "ticker": "TCBK"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53757,11 +53757,11 @@
       "ticker": "TFC"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 44.36470903727541,
+      "peer_count": 51,
+      "peer_theme_score": 44.67843452747149,
       "rank_acceleration_score": 26.548672566371685,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -55295,11 +55295,11 @@
       "ticker": "TSAT"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -58657,11 +58657,11 @@
       "ticker": "WAB"
     },
     {
-      "above_ema21_score": 50.0,
+      "above_ema21_score": 50.98039215686274,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 42.42323318829171,
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
       "rank_acceleration_score": 24.48377581120944,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -58675,11 +58675,11 @@
       "ticker": "WABC"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -58693,11 +58693,11 @@
       "ticker": "WAFD"
     },
     {
-      "above_ema21_score": 52.0,
+      "above_ema21_score": 52.94117647058823,
       "major_theme": "12. 金融・銀行・保険",
       "missing_components": [],
-      "peer_count": 50,
-      "peer_theme_score": 43.97139536962546,
+      "peer_count": 51,
+      "peer_theme_score": 44.28512085982154,
       "rank_acceleration_score": 25.368731563421832,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -58837,17 +58837,21 @@
       "ticker": "WCC"
     },
     {
-      "above_ema21_score": 50.0,
-      "major_theme": null,
-      "peer_count": 0,
-      "peer_theme_score": 50.0,
-      "rank_acceleration_score": 50.0,
-      "tag_confidence": null,
-      "tag_method": "UNMAPPED",
-      "theme_id": null,
-      "theme_name": null,
-      "theme_rs63_score": 50.0,
-      "theme_status": "MISSING_NEUTRAL",
+      "above_ema21_score": 50.98039215686274,
+      "major_theme": "12. 金融・銀行・保険",
+      "missing_components": [],
+      "peer_count": 51,
+      "peer_theme_score": 42.750030573912625,
+      "rank_acceleration_score": 24.48377581120944,
+      "tag_confidence": 0.99,
+      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
+      "theme_id": "地方銀行（西部）",
+      "theme_name": "地方銀行（西部）",
+      "theme_rank_acceleration_raw": -14.662756598240463,
+      "theme_rs63_20d_raw_loo": 58.700642791551886,
+      "theme_rs63_raw_loo": 47.86344635392476,
+      "theme_rs63_score": 52.785923753665685,
+      "theme_status": "STRICT_LOO_READY",
       "ticker": "WCCB"
     },
     {

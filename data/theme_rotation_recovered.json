@@ -1,8 +1,8 @@
 {
   "calculation_version": "v38-recovered-theme-1.1.0",
-  "coverage": 0.9997049277072882,
+  "coverage": 1.0,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-16T10:13:35Z",
+  "generated_at": "2026-09-16T12:47:11Z",
   "rows": [
     {
       "leaders": [
@@ -2539,10 +2539,10 @@
         "HFWA"
       ],
       "major_theme": "12. 金融・銀行・保険",
-      "member_count": 51,
+      "member_count": 52,
       "raw_strength": 49.29989419834005,
-      "ret1_median": 0.0008462278886107732,
-      "ret20_median": -0.022559496030190473,
+      "ret1_median": 0.0006634423236249187,
+      "ret20_median": -0.022260686536752006,
       "rs189_median": 50.73634204275534,
       "rs63_median": 47.86344635392476,
       "theme_id": "地方銀行（西部）",
