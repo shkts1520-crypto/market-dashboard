@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 LEGACY_SOURCE_ASSET = Path('assets/v38-source-fidelity.js')
 LEGACY_SOURCE_CSS = Path('assets/v38-source-fidelity.css')
@@ -32,10 +33,12 @@ def test_uploaded_py_authority_excludes_options_and_covers_non_options_tabs():
     css = PY_SOURCE_CSS.read_text(encoding='utf-8')
     js = PY_SOURCE_JS.read_text(encoding='utf-8')
     assert 'section:not(#t-options)' in css
-    assert "const NON_OPTIONS = ['t-market','t-alloc','t-port','t-today','t-rotation','t-movers','t-rs','t-weekly','t-post1','t-rules']" in js
-    assert "'t-options'" not in js.split('const NON_OPTIONS =', 1)[1].split(';', 1)[0]
+    match = re.search(r"const\s+NON_OPTIONS\s*=\s*\[(.*?)\];", js, re.S)
+    assert match, 'NON_OPTIONS authority list is missing'
+    authority = match.group(1)
+    assert "'t-options'" not in authority
     for section in ('t-market', 't-alloc', 't-port', 't-today', 't-rotation', 't-movers', 't-rs', 't-weekly', 't-post1', 't-rules'):
-        assert section in js
+        assert f"'{section}'" in authority
 
 
 def test_source_py_specialized_cards_are_locked():
