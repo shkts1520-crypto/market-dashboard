@@ -14,6 +14,14 @@ FORBIDDEN_PUBLIC_TEXT = (
     'full_v38_ready:', 'blockers:', 'MOCK DATA', '正本producer',
 )
 ALLOWED_NON_READY_SOURCES = {'account-equity-history', 'economic-calendar'}
+REPAIRED_CARD_CONTRACT = {
+    '#t-market': ('売買代金 参加度','集積／分散','騰落ライン','攻守ローテーション','レジーム警戒灯','ネット流動性','クレジット推移','VIX期間構造','オプション想定変動幅','ディストリビューション','センチメント','転換初動','フォロースルー'),
+    '#t-today': ('Multi VWAP','底打ち','ブレイク一覧','運用ルール','定義・グレード','状態の凡例','コホート分析','入り方','手仕舞い','リーダー監視'),
+    '#t-rotation': ('サブテーマ別RS','テーマETFの温度計'),
+    '#t-rs': ('Top10 IN / OUT',),
+    '#t-port': ('V38 Data','個別株スリーブ'),
+    '#t-weekly': ('今週の変化','地合いの帯','週次騰落ボード'),
+}
 
 
 def fetch_json(page, path: str):
@@ -67,6 +75,26 @@ def assert_card_contract(section, href: str, width: int) -> None:
             assert status == 'NOT_CONNECTED' and source in ALLOWED_NON_READY_SOURCES, (
                 width, href, title, source, status, 'non-ready card is not an explicit approved external-source gap'
             )
+
+
+def assert_repaired_cards(page, width: int) -> None:
+    seen = 0
+    for href, needles in REPAIRED_CARD_CONTRACT.items():
+        for needle in needles:
+            card = page.locator(f'{href} .card[data-v38-card-title*="{needle}"]')
+            assert card.count() == 1, (width, href, needle, 'repaired card missing or duplicated')
+            assert card.get_attribute('data-v38-status') == 'READY', (width, href, needle, 'not READY')
+            assert card.get_attribute('data-v38-truth-source'), (width, href, needle, 'truth source missing')
+            text = ' '.join(card.inner_text().split())
+            assert text and text not in {'—', '該当なし'}, (width, href, needle, 'empty repaired card')
+            for token in FORBIDDEN_PUBLIC_TEXT + ('表示データを接続できません',):
+                assert token not in text, (width, href, needle, token)
+            seen += 1
+    assert seen == 31, (width, 'repaired-card contract count changed', seen)
+    for key in ('volume_participation','up_down_dollar_ratio','mcclellan','risk_rotation','credit_ratio','vix_term','weekly_regime'):
+        spark = page.locator(f'svg[data-v38-live-spark="{key}"]')
+        assert spark.count() == 1, (width, key, 'required repaired spark missing')
+        assert len((spark.locator('polyline').get_attribute('points') or '').split()) >= 2, (width, key, 'spark too short')
 
 
 def assert_mobile_geometry(page, href: str, width: int) -> None:
@@ -163,6 +191,7 @@ def main() -> int:
                 assert_rotation(page, width)
                 assert_options(page, width)
                 assert_publish(page, view, width)
+                assert_repaired_cards(page, width)
 
                 for href in ALL_TABS:
                     page.locator(f'a.tabx[href="{href}"]').click()

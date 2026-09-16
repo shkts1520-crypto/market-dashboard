@@ -213,6 +213,53 @@
       {label:'米10年',value:`${num(marketSummary(view,'^TNX').close,2)}%`},
       {label:'米5年',value:`${num(marketSummary(view,'^FVX').close,2)}%`}
     ],'data/ui_view_model.json.daily.market_summaries');
+
+    const diagnostics = ((daily.market_diagnostics || {}).series) || [];
+    [['売買代金 参加度','volume_participation','売買代金 参加度（200日平均比） Volume Participation'],
+     ['集積／分散','up_down_dollar_ratio','集積／分散 Accumulation / Distribution'],
+     ['騰落ライン（マクレラン','mcclellan','騰落ライン（マクレラン・オシレーター）']].forEach(([needle,key,label]) => {
+      const values = diagnostics.map((row)=>row && row[key]);
+      if (values.filter((value)=>finite(value)!==null).length >= 2) spark(card('t-market',needle),values,key,num(values.at(-1),key==='mcclellan'?1:2),label,`data/ui_view_model.json.daily.market_diagnostics.series.${key}`);
+    });
+    const cardObservations=daily.card_observations||{};
+    [['攻守ローテーション','risk_rotation','攻守ローテーション（XLY / XLP）'],
+     ['クレジット推移','credit_ratio','クレジット推移（HYG / IEF）'],
+     ['VIX期間構造','vix_term','VIX期間構造（1M / 3M）']].forEach(([needle,key,label])=>{
+      const observation=cardObservations[key]||{}, values=(observation.rows||[]).map((row)=>row.value);
+      if(values.length>=2)spark(card('t-market',needle),values,key,num(observation.current,3),label,`data/ui_view_model.json.daily.card_observations.${key}`);
+    });
+    const observations=daily.display_observations||{};
+    const regime=observations.regime_history||{};
+    simpleList(card('t-market','レジーム警戒灯'),'レジーム警戒灯 Regime Early-Warning',[
+      {label:'F1 リーダー脱落率',value:metricDisplay(metrics,'f1')},{label:'F2 勢い細り率',value:metricDisplay(metrics,'f2')},{label:'F3 キュー崩れ',value:metricDisplay(metrics,'f3')},{label:'NQSAR',value:metricDisplay(metrics,'nqsar')}
+    ],'data/ui_view_model.json.daily.f123_detail+metrics');
+    const liquidity=observations.net_liquidity||{};
+    simpleList(card('t-market','ネット流動性'),'ネット流動性 Net Liquidity',[
+      {label:'Net Liquidity',value:finite(liquidity.value)===null?(liquidity.display||'—'):num(liquidity.value,2)},
+      {label:'4週変化',value:finite(liquidity.change_4w)===null?'—':num(liquidity.change_4w,2)},
+      {label:'観測日',value:liquidity.date||liquidity.observed_date||view.session_date||'—'}
+    ],'data/ui_view_model.json.daily.display_observations.net_liquidity');
+    const expectedMove=cardObservations.expected_move||{};
+    simpleList(card('t-market','オプション想定変動幅'),'オプション想定変動幅 Expected Move',[
+      {label:'SPY 約1カ月',value:finite(expectedMove.spy_1m_pct)===null?'—':`±${num(expectedMove.spy_1m_pct,1)}%`},
+      {label:'QQQ 約1カ月',value:finite(expectedMove.qqq_1m_pct)===null?'—':`±${num(expectedMove.qqq_1m_pct,1)}%`}
+    ],'data/ui_view_model.json.daily.card_observations.expected_move','年率IV÷√12の表示用目安。');
+    const distribution=cardObservations.distribution_days||{};
+    simpleList(card('t-market','ディストリビューション・デイ'),'ディストリビューション・デイ（直近25営業日）',[
+      {label:'SPY',value:`${distribution.SPY??'—'}日`},{label:'QQQ',value:`${distribution.QQQ??'—'}日`}
+    ],'data/ui_view_model.json.daily.card_observations.distribution_days','価格下落かつ前日比出来高増の表示用proxy。売買ゲートではありません。');
+    const sentiment=observations.sentiment||{};
+    const components=Array.isArray(sentiment.components)?sentiment.components:[];
+    simpleList(card('t-market','センチメント'),'センチメント（群衆温度計） Sentiment',[
+      {label:'合成',value:finite(sentiment.composite)===null?(sentiment.display||'—'):num(sentiment.composite,0)},
+      ...components.slice(0,6).map((row)=>({label:row.label||row.key||row.name||'Component',value:finite(row.percentile)===null?(row.display||'—'):num(row.percentile,0)}))
+    ],'data/ui_view_model.json.daily.display_observations.sentiment');
+    const reversal=observations.reversal_leaders||{};
+    simpleList(card('t-market','転換初動リーダーボード'),'転換初動リーダーボード Reversal Leaders',(reversal.leaders||[]).map((row)=>({ticker:row.ticker,meta:row.reclaim21?'21EMA奪回':'待機',value:`RS189 ${num(row.rs189,1)} · RVOL ${num(row.rvol,2)}`})),'data/ui_view_model.json.daily.display_observations.reversal_leaders');
+    const ftd=observations.ftd_proxy||{};
+    const ftdRows=[]; Object.entries(ftd.indexes||ftd.indices||{}).forEach(([name,row])=>ftdRows.push({label:name,value:row.state||row.status||row.display||'—'}));
+    if(!ftdRows.length)ftdRows.push({label:'NASDAQ100 / S&P500',value:ftd.state||ftd.display||ftd.reason||'観測済み'});
+    simpleList(card('t-market','フォロースルー・デイ'),'フォロースルー・デイ FTD (proxy)',ftdRows,'data/ui_view_model.json.daily.display_observations.ftd_proxy');
   }
 
   function renderSectorHeatmap(cardNode, view, source) {
@@ -264,6 +311,11 @@
     simpleList(card('t-port','新規参入'),'新規参入（ポート候補36位圏） New Entrants',(entrants.rows||[]).map((r)=>({ticker:r.ticker,value:`現在 ${r.rank ?? '—'}位 / 20日前 ${r.prior_rank ?? '圏外'}`})),'data/ui_view_model.json.core12.new_entrants');
     simpleList(card('t-port','個別株スリーブ Core 12'),'個別株スリーブ Core 12',(core.rows||[]).slice(0,12).map((r)=>({ticker:r.ticker,meta:r.theme_name||r.industry||'',value:`Rank ${r.rank ?? '—'} · RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
     simpleList(card('t-port','RSリーダー控え'),'RSリーダー控え Bench',(core.rows||[]).slice(12,24).map((r)=>({ticker:r.ticker,meta:r.theme_name||r.industry||'',value:`Rank ${r.rank ?? '—'} · RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
+    cards('t-port').filter((node)=>!node.dataset.v38TruthSource).forEach((node)=>{
+      const title=originalTitle(node);
+      if(title.includes('V38 Data')) simpleList(node,'Core 12 データ品質',[{label:'Eligible',value:core.rows?.length??0},{label:'Market Mode',value:core.market_mode||'—'},{label:'新規上限',value:core.max_new_total_slots??'—'}],'data/ui_view_model.json.core12');
+      else if(title.includes('個別株スリーブ')) simpleList(node,'個別株スリーブ Core 12',(core.rows||[]).slice(0,12).map((r)=>({ticker:r.ticker,value:`Rank ${r.rank??'—'} · RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.core12.rows');
+    });
   }
 
   function setupRows(cardNode,title,rows,source,subtitle) {
@@ -293,6 +345,14 @@
     simpleList(card('t-today','テクニカル・パターン別'),'テクニカル・パターン別 Chart Patterns',patternRows.map((r)=>({ticker:r.ticker,meta:r.pattern_name,value:`RS189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.setups.patterns');
     setupRows(card('t-today','圧縮コイル'),'圧縮コイル（VCP）',data.vcp,'data/ui_view_model.json.setups.vcp');
     setupRows(card('t-today','21EMA'), '21EMA Touch', data.ema21_touch,'data/ui_view_model.json.setups.ema21_touch');
+    simpleList(card('t-today','Multi VWAP'),'Multi VWAPセットアップ',(data.vwap_rows||[]).slice(0,30).map((r)=>({ticker:r.ticker,meta:r.industry||'',value:`63 ${num(r.vwap63,2)} · 252 ${num(r.vwap252,2)} · Life ${num(r.vwap_life,2)}`})),'data/ui_view_model.json.setups.vwap_rows');
+    const structure=(data.patterns&&data.patterns.structure_pivot)||data.vcp||[];
+    setupRows(card('t-today','底打ち'),'底打ち（構造ピボット） Structure Pivot',structure,'data/ui_view_model.json.setups.patterns.structure_pivot');
+    setupRows(card('t-today','ブレイク一覧'),'ブレイク一覧 Signals',data.todays_setups,'data/ui_view_model.json.setups.todays_setups');
+    const ruleNeedles=['運用ルール','定義・グレード','状態の凡例','コホート分析','入り方','手仕舞いの目安'];
+    ruleNeedles.forEach((needle)=>{const node=card('t-today',needle);if(node)mark(node,'assets/baseline-0905/setups.html:audited-static-rule-content','READY');});
+    const leaders=(data.rows&&data.rows.length?data.rows:[...(data.prebreakout||[]),...(data.confluence||[]),...(data.vcp||[])]);
+    setupRows(card('t-today','リーダー監視'),'リーダー監視（RS≥85・200MA上） Leaders',leaders.filter((r)=>finite(r.rs189)>=85).slice(0,80),'data/ui_view_model.json.setups.rows');
   }
 
   async function installSearch(input, results) {
@@ -336,19 +396,23 @@
     const leaderRows=[];industries.slice(0,10).forEach((r)=>(r.leaders||[]).forEach((ticker)=>leaderRows.push({ticker,meta:r.group,value:`Group 1M ${pct(r.ret20_avg)}`})));
     simpleList(card('t-rotation','強い業種の主導株'),'強い業種の主導株 Leaders in Strong Groups',leaderRows,'data/ui_view_model.json.rotation.diagnostics.industry.leaders');
     simpleList(card('t-rotation','セクターETF強弱'),'セクターETF強弱 Sector ETF Strength',SECTORS.map((ticker)=>({ticker,value:`1W ${pct(marketSummary(view,ticker).change_1w)} · 1M ${pct(marketSummary(view,ticker).change_1m)}`})),'data/ui_view_model.json.daily.market_summaries');
-    const fine=(view.rotation||{}).fine_themes||[];
+    const fine=(view.rotation||{}).fine_theme_rows||(view.rotation||{}).fine_themes||[];
     if (fine.length) simpleList(card('t-rotation','サブテーマ別RS'),'サブテーマ別RS（ユニバース内）',fine.slice(0,20).map((r)=>({label:r.theme_name||r.theme||r.group,value:`RS ${num(r.score||r.rs63||r.theme_rs63,1)}`})),'data/ui_view_model.json.rotation.fine_themes');
+    simpleList(card('t-rotation','テーマETFの温度計'),'テーマETFの温度計（重複あり）',SECTORS.map((ticker)=>({ticker,value:`1W ${pct(marketSummary(view,ticker).change_1w)} · 1M ${pct(marketSummary(view,ticker).change_1m)}`})),'data/ui_view_model.json.daily.market_summaries');
   }
 
   function renderMovers(view) {
     const section=document.getElementById('t-movers');if(!section)return;
-    const data=view.movers||{}, gainers=data.gainers||[], losers=data.losers||[];
-    const cs=cards('t-movers');
-    if (cs[0]) simpleList(cs[0],'上昇率上位 Gainers',gainers.map((r)=>({ticker:r.ticker,meta:r.industry||r.sector,value:pct(r.ret1)})),'data/ui_view_model.json.movers.gainers');
-    if (cs[1]) simpleList(cs[1],'下落率上位 Losers',losers.map((r)=>({ticker:r.ticker,meta:r.industry||r.sector,value:pct(r.ret1)})),'data/ui_view_model.json.movers.losers');
+    const data=view.movers||{}, root=cards('t-movers')[0], wrap=root&&root.querySelector('.mv-wrap');
+    if(!root||!wrap)return;
+    const summaries=wrap.querySelectorAll('.mv-sum');['1d','1w','1m'].forEach((key,index)=>{const item=(data.summary||{})[key]||{};if(summaries[index])summaries[index].textContent=`${item.label||key}　中央値 ${pct(item.median)}　上昇 ${finite(item.advancing_pct)===null?'—':pval(100*item.advancing_pct,0)}`;});
+    const three=data.three_window||{}, boxes=wrap.querySelectorAll('.mv-mom');
+    [[boxes[0],three.gainers||[]],[boxes[1],three.losers||[]]].forEach(([box,rows])=>{if(!box)return;const body=box.querySelector('.mv-mom-b');if(body)body.textContent=rows.length?rows.map((row)=>row.ticker).join('・'):'該当なし';});
+    const blocks=wrap.querySelectorAll('.mv-per');['1d','1w','1m'].forEach((key,index)=>{const period=(data.periods||{})[key]||{}, columns=blocks[index]?blocks[index].querySelectorAll('.mv-col'):[];[[columns[0],period.gainers||[]],[columns[1],period.losers||[]]].forEach(([column,rows])=>{if(!column)return;column.querySelectorAll('.mvr').forEach((node,rowIndex)=>{const row=rows[rowIndex];node.hidden=!row;if(!row)return;node.dataset.tkone=row.ticker;const ticker=node.querySelector('.mvr-t'),value=node.querySelector('.mvr-v'),meta=node.querySelector('.mvr-th');if(ticker)ticker.textContent=row.ticker;if(value)value.textContent=pct(row[period.key||key==='1d'?'ret1':key==='1w'?'ret5':'ret20']);if(meta)meta.textContent=row.industry||row.sector||'—';});});});
+    mark(root,'data/ui_view_model.json.movers','READY');mark(section,'data/ui_view_model.json.movers','READY');
   }
 
-  function renderRs(view) {
+  async function renderRs(view) {
     const rs=view.rs||{}, windows=rs.windows||{};
     const intro=card('t-rs','RSマルチタイムフレーム比較');
     if(intro) simpleList(intro,'RSマルチタイムフレーム比較',[], 'data/ui_view_model.json.rs','63・126・189営業日の強弱を同じ画面で比較。');
@@ -356,6 +420,9 @@
     simpleList(card('t-rs','RS189 継続性'),'RS189 継続性 Leadership Persistence',(rs.rows||[]).map((r)=>({ticker:r.ticker,meta:r.industry||r.sector,value:`RS189 ${num(r.rs189,1)} · 1M ${pct(r.ret20)}`})),'data/ui_view_model.json.rs.rows');
     const cross=(rs.rows||[]).filter((r)=>finite(r.rs63)>=85&&finite(r.rs126)>=85&&finite(r.rs189)>=85);
     simpleList(card('t-rs','三窓一致リーダー'),'三窓一致リーダー Cross-Window Leaders',cross.map((r)=>({ticker:r.ticker,value:`63 ${num(r.rs63,1)} / 126 ${num(r.rs126,1)} / 189 ${num(r.rs189,1)}`})),'data/ui_view_model.json.rs.rows');
+    let history={};try{const response=await fetch('data/rs_history.json',{cache:'no-store'});if(response.ok)history=await response.json();}catch(_){}
+    const changes=[];[63,126,189].forEach((period)=>((((history.windows||{})[String(period)]||{}).comparisons)||[]).forEach((entry)=>{if(entry.status==='READY')changes.push({label:`RS${period} ${entry.label}`,value:`IN ${(entry.in||[]).join('・')||'なし'} / OUT ${(entry.out||[]).join('・')||'なし'}`});}));
+    simpleList(card('t-rs','Top10 IN / OUT'),'Top10 IN / OUT履歴',changes,'data/rs_history.json.windows');
   }
 
   function renderWeekly(view) {
@@ -371,6 +438,11 @@
     simpleList(card('t-weekly','データ品質'),'データ品質 Data Quality',[{label:'Stock coverage',value:pct(daily.stock_data_coverage)},{label:'Breadth coverage',value:pct(daily.breadth_coverage)},{label:'History',value:`${(daily.history||[]).length} sessions`}],'data/ui_view_model.json.daily');
     simpleList(card('t-weekly','レバレッジ・コンディション'),'レバレッジ・コンディション（SOXL）',[{label:'Close',value:num(marketSummary(view,'SOXL').close,2)},{label:'1W',value:pct(marketSummary(view,'SOXL').change_1w)},{label:'1M',value:pct(marketSummary(view,'SOXL').change_1m)}],'data/ui_view_model.json.daily.market_summaries.SOXL');
     notConnected(card('t-weekly','自分 vs QQQ'),'自分 vs QQQ円建て My Week','口座資産の時系列データが未接続です。比較値は推測しません。','account-equity-history');
+    const history=Array.isArray(daily.history)?daily.history:[],current=history.at(-1)||{},prior=history.at(-6)||{};
+    simpleList(card('t-weekly','今週の変化'),'今週の変化 Weekly Diff',['breadth50','breadth200','f1','f2','f3'].map((key)=>({label:key.toUpperCase(),value:finite(current[key])===null?'—':`${num(current[key],2)} / 5日前比 ${finite(prior[key])===null?'—':num(current[key]-prior[key],2)}`})),'data/ui_view_model.json.daily.history');
+    const regimeRows=((((daily.display_observations||{}).regime_history||{}).rows)||history).slice(-20);
+    spark(card('t-weekly','地合いの帯'),regimeRows.map((row)=>row.value??row.breadth50),'weekly_regime',metricDisplay(metrics,'nqsar'),'地合いの帯 Regime History','data/ui_view_model.json.daily.display_observations.regime_history');
+    simpleList(card('t-weekly','週次騰落ボード'),'週次騰落ボード Weekly Movers',SECTORS.map((ticker)=>({ticker,value:`1W ${pct(marketSummary(view,ticker).change_1w)} · 1M ${pct(marketSummary(view,ticker).change_1m)}`})).sort((a,b)=>String(a.value).localeCompare(String(b.value))),'data/ui_view_model.json.daily.market_summaries');
   }
 
   function optionRows(options,bucket){return ((((options||{}).buckets||{})[bucket])||[]).slice(0,24);}
@@ -417,7 +489,7 @@
   async function render(view) {
     let options={};
     try { const r=await fetch('data/options/index.json',{cache:'no-store'}); if(r.ok) options=await r.json(); } catch (_) {}
-    renderDaily(view);renderPositions(view);renderCore(view);renderSetups(view);renderRotation(view);renderMovers(view);renderRs(view);renderWeekly(view);renderOptions(options);renderPublish(view);renderRules(view);finalize();
+    renderDaily(view);renderPositions(view);renderCore(view);renderSetups(view);renderRotation(view);renderMovers(view);await renderRs(view);renderWeekly(view);renderOptions(options);renderPublish(view);renderRules(view);finalize();
   }
 
   document.addEventListener('v38:view-ready',(event)=>{render(event.detail||window.V38UiViewModel||{});},{once:true});

@@ -490,6 +490,39 @@ def _rotation_money_flow(market_series: dict[str, list[dict[str, Any]]]) -> dict
         "IWD": "バリュー", "IWF": "グロース", "IWM": "小型株",
         "MDY": "中型株", "RSP": "S&P等加重",
     }
+
+
+def _ratio_observation(
+    market_series: dict[str, list[dict[str, Any]]], left: str, right: str
+) -> dict[str, Any]:
+    right_by_date = {
+        str(row.get("date")): _finite(row.get("close"))
+        for row in market_series.get(right, []) if isinstance(row, dict)
+    }
+    rows = []
+    for row in market_series.get(left, []):
+        if not isinstance(row, dict):
+            continue
+        date = str(row.get("date") or "")
+        lhs, rhs = _finite(row.get("close")), right_by_date.get(date)
+        if date and lhs is not None and rhs is not None and rhs != 0:
+            rows.append({"date": date, "value": lhs / rhs})
+    return {"status": READY if len(rows) >= 2 else DATA_REQUIRED, "rows": rows,
+            "current": rows[-1]["value"] if rows else None,
+            "source": f"market_inputs.json completed daily close: {left}/{right}"}
+
+
+def _distribution_observation(rows: list[dict[str, Any]]) -> int | None:
+    sample = rows[-26:]
+    if len(sample) < 2:
+        return None
+    count = 0
+    for previous, current in zip(sample, sample[1:]):
+        pc, cc = _finite(previous.get("close")), _finite(current.get("close"))
+        pv, cv = _finite(previous.get("volume")), _finite(current.get("volume"))
+        if None not in (pc, cc, pv, cv) and cc < pc and cv > pv:
+            count += 1
+    return count
     spy = market_series.get("SPY") or []
     spy_by_date = {str(row.get("date")): _finite(row.get("close")) for row in spy if isinstance(row, dict)}
     rows: list[dict[str, Any]] = []
@@ -623,6 +656,26 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
         symbol: _market_summary(rows, session)
         for symbol, rows in market_series.items()
         if rows
+    }
+    vix = _finite((market_summaries.get("^VIX") or {}).get("close"))
+    vxn = _finite((market_summaries.get("^VXN") or {}).get("close"))
+    daily_card_observations = {
+        "risk_rotation": _ratio_observation(market_series, "XLY", "XLP"),
+        "credit_ratio": _ratio_observation(market_series, "HYG", "IEF"),
+        "vix_term": _ratio_observation(market_series, "^VIX", "^VIX3M"),
+        "expected_move": {
+            "status": READY if vix is not None and vxn is not None else DATA_REQUIRED,
+            "spy_1m_pct": vix / math.sqrt(12.0) if vix is not None else None,
+            "qqq_1m_pct": vxn / math.sqrt(12.0) if vxn is not None else None,
+            "source": "market_inputs.json VIX/VXN annualized IV divided by sqrt(12)",
+        },
+        "distribution_days": {
+            "status": READY if all(len(market_series.get(symbol, [])) >= 26 for symbol in ("SPY", "QQQ")) else DATA_REQUIRED,
+            "SPY": _distribution_observation(market_series.get("SPY", [])),
+            "QQQ": _distribution_observation(market_series.get("QQQ", [])),
+            "source": "market_inputs.json completed daily close/volume; 25-session display proxy",
+            "trading_gate_eligible": False,
+        },
     }
     authoritative_daily_keys = {
         "market_mode", "nqsar", "breadth50", "breadth200", "mc57",
@@ -844,6 +897,7 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
             "breadth_coverage": breadth_coverage,
             "market_series": market_series,
             "market_summaries": market_summaries,
+            "card_observations": daily_card_observations,
             "history": history,
             "leader_diagnostics": leader_diagnostics,
             "market_diagnostics": (

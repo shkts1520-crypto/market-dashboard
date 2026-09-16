@@ -14,6 +14,8 @@ from v38.display_observation_history import exact_old_top20
 from v38.display_observations_live import materialize_display_observations
 from v38.f123_display import complete_f123_file
 from v38.history_archive import stage_session_snapshot
+from v38.freshness import atomic_write_json
+from v38.live_acquisition import market_rows, select_yfinance_symbol_frame
 from v38.options_resilience import recover_options_if_transient_failure
 from v38.publish_extension import include_tqqq_panic_readiness
 from v38.rs_history import write_rs_history
@@ -34,6 +36,34 @@ def _load(path: Path) -> dict:
 def _is_production_context() -> bool:
     event = str(os.environ.get("GITHUB_EVENT_NAME") or "").strip().lower()
     return event not in {"", "pull_request", "pull_request_target"}
+
+
+def _repair_vix3m(root: Path, *, session: str, generated_at: str) -> bool:
+    """Retry the one source-defined diagnostic series required by the public VIX curve card."""
+    path = root / "market_inputs.json"
+    obj = _load(path)
+    series = obj.get("series") if isinstance(obj.get("series"), dict) else {}
+    existing = series.get("^VIX3M") if isinstance(series, dict) else None
+    if isinstance(existing, list) and len(existing) >= 2:
+        return False
+    try:
+        import yfinance as yf
+        raw = yf.download(["^VIX3M"], period="2y", interval="1d", progress=False,
+                          auto_adjust=False, group_by="ticker", threads=False, timeout=30)
+        rows = market_rows(select_yfinance_symbol_frame(raw, "^VIX3M"), target_session=session)
+    except Exception:
+        rows = []
+    if len(rows) < 2:
+        return False
+    series["^VIX3M"] = rows
+    obj["series"] = series
+    obj["generated_at"] = generated_at
+    obj.setdefault("diagnostic_repairs", {})["^VIX3M"] = {
+        "status": "READY", "source": "Yahoo Finance exact diagnostic retry",
+        "latest_date": rows[-1]["date"], "row_count": len(rows),
+    }
+    atomic_write_json(path, obj)
+    return True
 
 
 def _materialize_confirmed_empty_ledger(root: Path, *, session: str, generated_at: str) -> Path | None:
@@ -163,6 +193,8 @@ def main() -> int:
     if not isinstance(generated_at, str) or not generated_at:
         raise SystemExit("state.generated_at is required")
 
+    vix3m_repaired = _repair_vix3m(root, session=session, generated_at=generated_at)
+
     options_resilience = recover_options_if_transient_failure(
         root,
         session_date=session,
@@ -232,6 +264,7 @@ def main() -> int:
             {
                 "session_date": session,
                 "options_resilience": options_resilience,
+                "vix3m_repaired": vix3m_repaired,
                 "positions_mode": "EMPTY" if empty_ledger is not None else "LEDGER_REQUIRED",
                 "positions_ledger": empty_ledger.as_posix() if empty_ledger is not None else ledger_arg,
                 "outputs": [p.as_posix() for p in outputs],
