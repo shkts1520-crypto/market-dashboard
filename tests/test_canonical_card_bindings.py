@@ -74,7 +74,7 @@ def test_single_binder_targets_named_canonical_cards():
     assert '[63,126,189].forEach' in js
     assert '`RS${period} Top10`' in js
     assert "const OPTION_BUCKETS = ['0-6','7-21','22-45','0-45'];" in js
-    assert 'simpleList(c,`DTE ${bucket}`' in js
+    assert "bucket.replace('-','–')+' DTE'" in js
 
 
 def test_single_binder_never_silently_hides_unbound_cards():
