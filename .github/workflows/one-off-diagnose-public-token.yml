@@ -32,7 +32,7 @@ jobs:
           PYTHONPATH=src python scripts/materialize_supplemental.py --data-dir data
           rm -rf _site
           mkdir -p _site/assets _site/data/options
-          PYTHONPATH=src python scripts/build_site.py --canonical V38_Command_Center_mock_v5.html --output _site/index.html
+          GITHUB_EVENT_NAME=pull_request PYTHONPATH=src python scripts/build_site.py --canonical V38_Command_Center_mock_v5.html --output _site/index.html
           cp assets/v38-runtime.js _site/assets/v38-runtime.js
           cp assets/v38-site.js _site/assets/v38-site.js
           cp data/options/index.json _site/data/options/index.json
