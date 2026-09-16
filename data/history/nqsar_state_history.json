@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-display-observations-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-16T00:04:06Z",
+  "generated_at": "2026-09-16T05:41:10Z",
   "history_kind": "AUTHORITATIVE_OBSERVED_ONLY",
   "records": [
     {
@@ -15,10 +15,16 @@
       "generated_at": "2026-09-14T23:45:32Z",
       "source": "recovered-legacy-live-fallback:Yahoo NQ=F completed daily bars",
       "state": "Yellow"
+    },
+    {
+      "date": "2026-09-15",
+      "generated_at": "2026-09-16T05:41:10Z",
+      "source": "recovered-legacy-live-fallback:Yahoo NQ=F completed daily bars",
+      "state": "Red"
     }
   ],
   "schema_version": "v38.nqsar_observed_history.1",
-  "session_date": "2026-09-14",
+  "session_date": "2026-09-15",
   "source": "observed-authoritative-nqsar-only; no historical state inference",
   "status": "READY"
 }

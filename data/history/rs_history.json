@@ -1,11 +1,11 @@
 {
   "calculation_version": "v38-rs-history-1.1.0",
   "coverage": 1.0,
-  "first_observed_session": "2025-06-05",
-  "generated_at": "2026-09-16T00:04:06Z",
+  "first_observed_session": "2025-06-06",
+  "generated_at": "2026-09-16T05:41:10Z",
   "history_kind": "CURRENT_UNIVERSE_RECONSTRUCTED",
   "history_policy": "Historical RS ranks are recomputed from downloaded split-adjusted Yahoo OHLC using the current universe; exact PIT membership is unavailable for reconstructed dates. Exact observed sessions override reconstructed windows.",
-  "latest_observed_session": "2026-09-14",
+  "latest_observed_session": "2026-09-15",
   "observed_sessions": 320,
   "persistence": {
     "classification_ready": true,
@@ -22,30 +22,14 @@
     "rows": [
       {
         "classification": "失速中",
-        "consecutive_top10_observed": 52,
-        "delta_rs126": -2.747703322392084,
-        "delta_rs189": 0.0,
-        "delta_rs63": -3.4095448788855407,
+        "consecutive_top10_observed": 174,
+        "delta_rs126": -1.2924119391439461,
+        "delta_rs189": 0.23320895522388696,
+        "delta_rs63": -69.1306725149566,
         "rank": 1,
-        "rank_change": 0,
-        "rank_change_sessions": 20,
-        "rs189": 100.0,
-        "ticker": "CLYM",
-        "top10_days": 21,
-        "top24_days": 21,
-        "top24_pct": 100.0,
-        "window_sessions": 21
-      },
-      {
-        "classification": "失速中",
-        "consecutive_top10_observed": 173,
-        "delta_rs126": -0.30800956065175455,
-        "delta_rs189": 0.23271436004993973,
-        "delta_rs63": -56.5138908927684,
-        "rank": 2,
         "rank_change": 5,
         "rank_change_sessions": 20,
-        "rs189": 99.95247148288973,
+        "rs189": 100.0,
         "ticker": "SNDK",
         "top10_days": 21,
         "top24_days": 21,
@@ -54,14 +38,30 @@
       },
       {
         "classification": "失速中",
-        "consecutive_top10_observed": 56,
-        "delta_rs126": -2.315637088855894,
-        "delta_rs189": -0.048349888027161114,
-        "delta_rs63": -1.249779573253818,
-        "rank": 3,
+        "consecutive_top10_observed": 53,
+        "delta_rs126": -3.876973890707575,
+        "delta_rs189": -0.04750593824228133,
+        "delta_rs63": -11.163699657556009,
+        "rank": 2,
         "rank_change": -1,
         "rank_change_sessions": 20,
-        "rs189": 99.90494296577947,
+        "rs189": 99.95249406175772,
+        "ticker": "CLYM",
+        "top10_days": 21,
+        "top24_days": 21,
+        "top24_pct": 100.0,
+        "window_sessions": 21
+      },
+      {
+        "classification": "失速中",
+        "consecutive_top10_observed": 57,
+        "delta_rs126": -2.5033428398182878,
+        "delta_rs189": -0.0017282943950078788,
+        "delta_rs63": -3.507502504673468,
+        "rank": 3,
+        "rank_change": 0,
+        "rank_change_sessions": 20,
+        "rs189": 99.90498812351544,
         "ticker": "SLS",
         "top10_days": 21,
         "top24_days": 21,
@@ -70,14 +70,14 @@
       },
       {
         "classification": "定着",
-        "consecutive_top10_observed": 26,
+        "consecutive_top10_observed": 27,
         "delta_rs126": 0.0,
-        "delta_rs189": 0.0909501796360388,
-        "delta_rs63": -59.69791115599802,
+        "delta_rs189": 0.18397472258658354,
+        "delta_rs63": -51.707059191330615,
         "rank": 4,
-        "rank_change": 2,
+        "rank_change": 4,
         "rank_change_sessions": 20,
-        "rs189": 99.8574144486692,
+        "rs189": 99.85748218527316,
         "ticker": "AGL",
         "top10_days": 21,
         "top24_days": 21,
@@ -86,30 +86,30 @@
       },
       {
         "classification": "再浮上",
-        "consecutive_top10_observed": 18,
-        "delta_rs126": 12.516734420751789,
-        "delta_rs189": 3.779993357995181,
-        "delta_rs63": 21.28684332868434,
+        "consecutive_top10_observed": 19,
+        "delta_rs126": 13.331939301100917,
+        "delta_rs189": 3.727886694792076,
+        "delta_rs63": 17.67623454065206,
         "rank": 5,
-        "rank_change": 81,
+        "rank_change": 80,
         "rank_change_sessions": 20,
-        "rs189": 99.80988593155894,
+        "rs189": 99.80997624703087,
         "ticker": "MRNA",
-        "top10_days": 18,
-        "top24_days": 18,
-        "top24_pct": 85.71428571428571,
+        "top10_days": 19,
+        "top24_days": 19,
+        "top24_pct": 90.47619047619048,
         "window_sessions": 21
       },
       {
         "classification": "失速中",
-        "consecutive_top10_observed": 83,
-        "delta_rs126": -24.56492692836727,
-        "delta_rs189": -0.14422829316458774,
-        "delta_rs63": -21.880055788005592,
+        "consecutive_top10_observed": 84,
+        "delta_rs126": -21.245596902629174,
+        "delta_rs189": -0.09760431807707448,
+        "delta_rs63": -23.764179821267177,
         "rank": 6,
-        "rank_change": -3,
+        "rank_change": -2,
         "rank_change_sessions": 20,
-        "rs189": 99.76235741444867,
+        "rs189": 99.7624703087886,
         "ticker": "ERAS",
         "top10_days": 21,
         "top24_days": 21,
@@ -117,79 +117,79 @@
         "window_sessions": 21
       },
       {
-        "classification": "継続",
-        "consecutive_top10_observed": 3,
-        "delta_rs126": null,
-        "delta_rs189": null,
-        "delta_rs63": null,
+        "classification": "一日急騰型",
+        "consecutive_top10_observed": 2,
+        "delta_rs126": 0.6943240915398974,
+        "delta_rs189": 0.92765093771051,
+        "delta_rs63": -0.002665680578104457,
         "rank": 7,
-        "rank_change": null,
+        "rank_change": 20,
         "rank_change_sessions": 20,
-        "rs189": 99.7148288973384,
-        "ticker": "FTH",
-        "top10_days": 4,
-        "top24_days": 6,
-        "top24_pct": 28.571428571428573,
+        "rs189": 99.71496437054633,
+        "ticker": "TXG",
+        "top10_days": 2,
+        "top24_days": 17,
+        "top24_pct": 80.95238095238095,
         "window_sessions": 21
       },
       {
-        "classification": "継続",
-        "consecutive_top10_observed": 2,
-        "delta_rs126": 1.3834516751914947,
-        "delta_rs189": 0.3679075731286616,
-        "delta_rs63": -1.1198640568139808,
+        "classification": "定着",
+        "consecutive_top10_observed": 3,
+        "delta_rs126": 1.0102950298967528,
+        "delta_rs189": 0.41372708902045474,
+        "delta_rs63": -1.3971365045975404,
         "rank": 8,
-        "rank_change": 8,
+        "rank_change": 9,
         "rank_change_sessions": 20,
-        "rs189": 99.66730038022814,
+        "rs189": 99.66745843230403,
         "ticker": "TWST",
-        "top10_days": 14,
+        "top10_days": 15,
         "top24_days": 21,
         "top24_pct": 100.0,
         "window_sessions": 21
       },
       {
         "classification": "一日急騰型",
-        "consecutive_top10_observed": 1,
-        "delta_rs126": -0.5871534755768124,
-        "delta_rs189": 2.3754934885265584,
-        "delta_rs63": 0.9614132961413162,
+        "consecutive_top10_observed": 2,
+        "delta_rs126": -0.49242224159510783,
+        "delta_rs189": 1.9986838373453395,
+        "delta_rs63": 0.7784000542519323,
         "rank": 9,
-        "rank_change": 51,
+        "rank_change": 43,
         "rank_change_sessions": 20,
-        "rs189": 99.61977186311786,
+        "rs189": 99.61995249406176,
         "ticker": "IOVA",
-        "top10_days": 1,
-        "top24_days": 14,
-        "top24_pct": 66.66666666666667,
+        "top10_days": 2,
+        "top24_days": 15,
+        "top24_pct": 71.42857142857143,
         "window_sessions": 21
       },
       {
-        "classification": "一日急騰型",
+        "classification": "新規急浮上",
         "consecutive_top10_observed": 1,
-        "delta_rs126": 0.6010833364312873,
-        "delta_rs189": 0.7866291470351712,
-        "delta_rs63": -0.0485419772680018,
+        "delta_rs126": 2.6222357454019942,
+        "delta_rs189": 1.2049092423866483,
+        "delta_rs63": 1.0037033767135455,
         "rank": 10,
+        "rank_change": 26,
+        "rank_change_sessions": 20,
+        "rs189": 99.57244655581948,
+        "ticker": "PLSE",
+        "top10_days": 3,
+        "top24_days": 17,
+        "top24_pct": 80.95238095238095,
+        "window_sessions": 21
+      },
+      {
+        "classification": "失速中",
+        "consecutive_top10_observed": 0,
+        "delta_rs126": -0.003819764728689279,
+        "delta_rs189": 0.7842689757861621,
+        "delta_rs63": -8.049161120984778,
+        "rank": 11,
         "rank_change": 17,
         "rank_change_sessions": 20,
-        "rs189": 99.57224334600761,
-        "ticker": "TXG",
-        "top10_days": 1,
-        "top24_days": 16,
-        "top24_pct": 76.19047619047619,
-        "window_sessions": 21
-      },
-      {
-        "classification": "継続",
-        "consecutive_top10_observed": 0,
-        "delta_rs126": 0.04351714772431592,
-        "delta_rs189": 0.5055648989580703,
-        "delta_rs63": -7.452764552173008,
-        "rank": 11,
-        "rank_change": 11,
-        "rank_change_sessions": 20,
-        "rs189": 99.52471482889734,
+        "rs189": 99.5249406175772,
         "ticker": "DELL",
         "top10_days": 1,
         "top24_days": 16,
@@ -199,45 +199,29 @@
       {
         "classification": "継続",
         "consecutive_top10_observed": 0,
-        "delta_rs126": 4.203253508160017,
-        "delta_rs189": 1.5323007442952417,
-        "delta_rs63": 4.362686160406554,
+        "delta_rs126": null,
+        "delta_rs189": null,
+        "delta_rs63": null,
         "rank": 12,
-        "rank_change": 33,
+        "rank_change": null,
         "rank_change_sessions": 20,
-        "rs189": 99.47718631178707,
-        "ticker": "PLSE",
-        "top10_days": 2,
-        "top24_days": 16,
-        "top24_pct": 76.19047619047619,
-        "window_sessions": 21
-      },
-      {
-        "classification": "失速中",
-        "consecutive_top10_observed": 0,
-        "delta_rs126": -42.56501877360369,
-        "delta_rs189": -0.4302207667430906,
-        "delta_rs63": -1.1263405953926804,
-        "rank": 13,
-        "rank_change": -9,
-        "rank_change_sessions": 20,
-        "rs189": 99.42965779467681,
-        "ticker": "AXTI",
-        "top10_days": 20,
-        "top24_days": 21,
-        "top24_pct": 100.0,
+        "rs189": 99.47743467933492,
+        "ticker": "FTH",
+        "top10_days": 4,
+        "top24_days": 7,
+        "top24_pct": 33.333333333333336,
         "window_sessions": 21
       },
       {
         "classification": "継続",
         "consecutive_top10_observed": 0,
-        "delta_rs126": -24.039309761180526,
-        "delta_rs189": 0.4096864938206295,
-        "delta_rs63": 62.25345068051748,
-        "rank": 14,
-        "rank_change": 9,
+        "delta_rs126": -44.29281312357659,
+        "delta_rs189": 0.2694809798986171,
+        "delta_rs63": 50.03723422631501,
+        "rank": 13,
+        "rank_change": 6,
         "rank_change_sessions": 20,
-        "rs189": 99.38212927756655,
+        "rs189": 99.42992874109264,
         "ticker": "IBRX",
         "top10_days": 0,
         "top24_days": 20,
@@ -247,45 +231,29 @@
       {
         "classification": "失速中",
         "consecutive_top10_observed": 0,
-        "delta_rs126": -2.652730974368623,
-        "delta_rs189": -0.24503492380343062,
-        "delta_rs63": -61.566296349733086,
-        "rank": 15,
+        "delta_rs126": -0.002291858837210725,
+        "delta_rs189": -0.24444286879143817,
+        "delta_rs63": -2.579888314381412,
+        "rank": 14,
         "rank_change": -5,
         "rank_change_sessions": 20,
-        "rs189": 99.33460076045627,
-        "ticker": "ATEX",
-        "top10_days": 10,
+        "rs189": 99.38242280285036,
+        "ticker": "MXL",
+        "top10_days": 4,
         "top24_days": 21,
         "top24_pct": 100.0,
         "window_sessions": 21
       },
       {
-        "classification": "継続",
-        "consecutive_top10_observed": 0,
-        "delta_rs126": -0.24284317863242677,
-        "delta_rs189": 0.6415794829536594,
-        "delta_rs63": 0.21654723544781973,
-        "rank": 16,
-        "rank_change": 14,
-        "rank_change_sessions": 20,
-        "rs189": 99.287072243346,
-        "ticker": "ETON",
-        "top10_days": 1,
-        "top24_days": 16,
-        "top24_pct": 76.19047619047619,
-        "window_sessions": 21
-      },
-      {
         "classification": "失速中",
         "consecutive_top10_observed": 0,
-        "delta_rs126": -0.6015862984401537,
-        "delta_rs189": -0.1532633732504678,
-        "delta_rs63": -43.495278859872705,
-        "rank": 17,
-        "rank_change": -3,
+        "delta_rs126": -1.160269906758458,
+        "delta_rs189": -0.058739851809832544,
+        "delta_rs63": -66.79459800897118,
+        "rank": 15,
+        "rank_change": -1,
         "rank_change_sessions": 20,
-        "rs189": 99.23954372623575,
+        "rs189": 99.33491686460808,
         "ticker": "MU",
         "top10_days": 4,
         "top24_days": 21,
@@ -295,61 +263,45 @@
       {
         "classification": "失速中",
         "consecutive_top10_observed": 0,
-        "delta_rs126": 0.09136414230762568,
-        "delta_rs189": -0.43432762132759706,
-        "delta_rs63": -10.22940412638869,
+        "delta_rs126": -36.88711874928243,
+        "delta_rs189": -0.6659472825894284,
+        "delta_rs63": -3.3373041311224814,
+        "rank": 16,
+        "rank_change": -14,
+        "rank_change_sessions": 20,
+        "rs189": 99.2874109263658,
+        "ticker": "AXTI",
+        "top10_days": 19,
+        "top24_days": 21,
+        "top24_pct": 100.0,
+        "window_sessions": 21
+      },
+      {
+        "classification": "失速中",
+        "consecutive_top10_observed": 0,
+        "delta_rs126": -1.997431371924165,
+        "delta_rs189": -0.3403188924735048,
+        "delta_rs63": -63.97639785090699,
+        "rank": 17,
+        "rank_change": -7,
+        "rank_change_sessions": 20,
+        "rs189": 99.23990498812351,
+        "ticker": "ATEX",
+        "top10_days": 9,
+        "top24_days": 21,
+        "top24_pct": 100.0,
+        "window_sessions": 21
+      },
+      {
+        "classification": "継続",
+        "consecutive_top10_observed": 0,
+        "delta_rs126": -0.09879002949730875,
+        "delta_rs189": 0.1718766618215284,
+        "delta_rs63": 14.893583898777496,
         "rank": 18,
-        "rank_change": -9,
+        "rank_change": 4,
         "rank_change_sessions": 20,
-        "rs189": 99.19201520912547,
-        "ticker": "MXL",
-        "top10_days": 5,
-        "top24_days": 21,
-        "top24_pct": 100.0,
-        "window_sessions": 21
-      },
-      {
-        "classification": "失速中",
-        "consecutive_top10_observed": 0,
-        "delta_rs126": -1.0612935745509873,
-        "delta_rs189": 0.21875105446265763,
-        "delta_rs63": -1.45350197983295,
-        "rank": 19,
-        "rank_change": 5,
-        "rank_change_sessions": 20,
-        "rs189": 99.1444866920152,
-        "ticker": "DFTX",
-        "top10_days": 0,
-        "top24_days": 14,
-        "top24_pct": 66.66666666666667,
-        "window_sessions": 21
-      },
-      {
-        "classification": "失速中",
-        "consecutive_top10_observed": 0,
-        "delta_rs126": -1.9799864856295102,
-        "delta_rs189": -0.5760918017414838,
-        "delta_rs63": -67.33182641594125,
-        "rank": 20,
-        "rank_change": -12,
-        "rank_change_sessions": 20,
-        "rs189": 99.09695817490494,
-        "ticker": "AEHR",
-        "top10_days": 7,
-        "top24_days": 21,
-        "top24_pct": 100.0,
-        "window_sessions": 21
-      },
-      {
-        "classification": "失速中",
-        "consecutive_top10_observed": 0,
-        "delta_rs126": -0.19283126061961298,
-        "delta_rs189": -0.20325600311143432,
-        "delta_rs63": -27.75947033456772,
-        "rank": 21,
-        "rank_change": -4,
-        "rank_change_sessions": 20,
-        "rs189": 99.04942965779468,
+        "rs189": 99.19239904988123,
         "ticker": "BAND",
         "top10_days": 0,
         "top24_days": 13,
@@ -362,26 +314,74 @@
         "delta_rs126": null,
         "delta_rs189": null,
         "delta_rs63": null,
-        "rank": 22,
+        "rank": 19,
         "rank_change": null,
         "rank_change_sessions": 20,
-        "rs189": 99.00190114068441,
+        "rs189": 99.14489311163895,
         "ticker": "PURR",
         "top10_days": 0,
-        "top24_days": 4,
-        "top24_pct": 19.047619047619047,
+        "top24_days": 5,
+        "top24_pct": 23.80952380952381,
         "window_sessions": 21
       },
       {
         "classification": "失速中",
         "consecutive_top10_observed": 0,
-        "delta_rs126": -1.14038981742479,
-        "delta_rs189": -0.39172732971870516,
-        "delta_rs63": -4.777377001875635,
-        "rank": 23,
-        "rank_change": -8,
+        "delta_rs126": -0.2431553090145968,
+        "delta_rs189": 0.2167901584713121,
+        "delta_rs63": -0.7548780888307078,
+        "rank": 20,
+        "rank_change": 5,
         "rank_change_sessions": 20,
-        "rs189": 98.95437262357414,
+        "rs189": 99.09738717339668,
+        "ticker": "ETON",
+        "top10_days": 1,
+        "top24_days": 17,
+        "top24_pct": 80.95238095238095,
+        "window_sessions": 21
+      },
+      {
+        "classification": "継続",
+        "consecutive_top10_observed": 0,
+        "delta_rs126": null,
+        "delta_rs189": null,
+        "delta_rs63": null,
+        "rank": 21,
+        "rank_change": null,
+        "rank_change_sessions": 20,
+        "rs189": 99.04988123515439,
+        "ticker": "RFAI",
+        "top10_days": 2,
+        "top24_days": 12,
+        "top24_pct": 57.142857142857146,
+        "window_sessions": 21
+      },
+      {
+        "classification": "失速中",
+        "consecutive_top10_observed": 0,
+        "delta_rs126": -2.4030249044294862,
+        "delta_rs189": -0.7177739568192152,
+        "delta_rs63": -82.87645700769038,
+        "rank": 22,
+        "rank_change": -15,
+        "rank_change_sessions": 20,
+        "rs189": 99.00237529691212,
+        "ticker": "AEHR",
+        "top10_days": 6,
+        "top24_days": 21,
+        "top24_pct": 100.0,
+        "window_sessions": 21
+      },
+      {
+        "classification": "失速中",
+        "consecutive_top10_observed": 0,
+        "delta_rs126": -1.7048810481608996,
+        "delta_rs189": -0.3455037756585142,
+        "delta_rs63": -6.622105017578562,
+        "rank": 23,
+        "rank_change": -7,
+        "rank_change_sessions": 20,
+        "rs189": 98.95486935866984,
         "ticker": "ORKA",
         "top10_days": 0,
         "top24_days": 10,
@@ -389,884 +389,28 @@
         "window_sessions": 21
       },
       {
-        "classification": "失速中",
+        "classification": "継続",
         "consecutive_top10_observed": 0,
-        "delta_rs126": -0.1935529017627715,
-        "delta_rs189": 1.0086656851654254,
-        "delta_rs63": -0.3744850029657414,
+        "delta_rs126": 0.08580282941979078,
+        "delta_rs189": 1.1461693905768016,
+        "delta_rs63": -0.23436663642718258,
         "rank": 24,
-        "rank_change": 22,
+        "rank_change": 25,
         "rank_change_sessions": 20,
-        "rs189": 98.90684410646388,
+        "rs189": 98.90736342042756,
         "ticker": "ABCL",
         "top10_days": 0,
-        "top24_days": 5,
-        "top24_pct": 23.80952380952381,
+        "top24_days": 6,
+        "top24_pct": 28.571428571428573,
         "window_sessions": 21
       }
     ],
     "status": "READY"
   },
-  "reconstructed_sessions": 317,
+  "reconstructed_sessions": 316,
   "schema_version": "v38.rs_history.1",
-  "session_date": "2026-09-14",
+  "session_date": "2026-09-15",
   "snapshots": [
-    {
-      "date": "2025-06-05",
-      "window_source": {
-        "126": "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC",
-        "189": "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC",
-        "63": "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC"
-      },
-      "windows": {
-        "126": [
-          {
-            "rank": 1,
-            "rs126": 100.0,
-            "rs189": 100.0,
-            "rs63": 100.0,
-            "ticker": "RGC"
-          },
-          {
-            "rank": 2,
-            "rs126": 99.94432071269487,
-            "rs189": 98.26815642458101,
-            "rs63": 99.94453688297283,
-            "ticker": "ASST"
-          },
-          {
-            "rank": 3,
-            "rs126": 99.88864142538975,
-            "rs189": 99.16201117318437,
-            "rs63": 99.88907376594565,
-            "ticker": "SBET"
-          },
-          {
-            "rank": 4,
-            "rs126": 99.83296213808464,
-            "rs189": 99.88826815642457,
-            "rs63": 99.55629506378258,
-            "ticker": "QBTS"
-          },
-          {
-            "rank": 5,
-            "rs126": 99.77728285077951,
-            "rs189": 99.77653631284916,
-            "rs63": 99.61175818080976,
-            "ticker": "TDUP"
-          },
-          {
-            "rank": 6,
-            "rs126": 99.72160356347439,
-            "rs189": 99.60893854748603,
-            "rs63": 99.83361064891847,
-            "ticker": "AEVA"
-          },
-          {
-            "rank": 7,
-            "rs126": 99.66592427616926,
-            "rs189": 98.88268156424581,
-            "rs63": 99.72268441486412,
-            "ticker": "XXI"
-          },
-          {
-            "rank": 8,
-            "rs126": 99.61024498886414,
-            "rs189": 99.83240223463687,
-            "rs63": 88.96283971159178,
-            "ticker": "RGTI"
-          },
-          {
-            "rank": 9,
-            "rs126": 99.55456570155901,
-            "rs189": 91.11731843575419,
-            "rs63": 96.78313921242375,
-            "ticker": "APPS"
-          },
-          {
-            "rank": 10,
-            "rs126": 99.49888641425389,
-            "rs189": 97.09497206703911,
-            "rs63": 99.50083194675541,
-            "ticker": "GRPN"
-          }
-        ],
-        "189": [
-          {
-            "rank": 1,
-            "rs126": 100.0,
-            "rs189": 100.0,
-            "rs63": 100.0,
-            "ticker": "RGC"
-          },
-          {
-            "rank": 2,
-            "rs126": 98.44097995545657,
-            "rs189": 99.94413407821229,
-            "rs63": 99.16805324459234,
-            "ticker": "QUBT"
-          },
-          {
-            "rank": 3,
-            "rs126": 99.83296213808464,
-            "rs189": 99.88826815642457,
-            "rs63": 99.55629506378258,
-            "ticker": "QBTS"
-          },
-          {
-            "rank": 4,
-            "rs126": 99.61024498886414,
-            "rs189": 99.83240223463687,
-            "rs63": 88.96283971159178,
-            "ticker": "RGTI"
-          },
-          {
-            "rank": 5,
-            "rs126": 99.77728285077951,
-            "rs189": 99.77653631284916,
-            "rs63": 99.61175818080976,
-            "ticker": "TDUP"
-          },
-          {
-            "rank": 6,
-            "rs126": 98.99777282850779,
-            "rs189": 99.72067039106145,
-            "rs63": 98.33610648918469,
-            "ticker": "OKLO"
-          },
-          {
-            "rank": 7,
-            "rs126": 99.2761692650334,
-            "rs189": 99.66480446927373,
-            "rs63": 94.50915141430949,
-            "ticker": "PRCH"
-          },
-          {
-            "rank": 8,
-            "rs126": 99.72160356347439,
-            "rs189": 99.60893854748603,
-            "rs63": 99.83361064891847,
-            "ticker": "AEVA"
-          },
-          {
-            "rank": 9,
-            "rs126": 99.33184855233853,
-            "rs189": 99.55307262569832,
-            "rs63": 96.8940654464781,
-            "ticker": "LTBR"
-          },
-          {
-            "rank": 10,
-            "rs126": 99.38752783964365,
-            "rs189": 99.4972067039106,
-            "rs63": 0.776483638380477,
-            "ticker": "GRRR"
-          },
-          {
-            "rank": 11,
-            "rs126": 99.44320712694878,
-            "rs189": 99.4413407821229,
-            "rs63": 99.38990571270105,
-            "ticker": "NUTX"
-          },
-          {
-            "rank": 12,
-            "rs126": 98.4966592427617,
-            "rs189": 99.3854748603352,
-            "rs63": 99.66722129783693,
-            "ticker": "SEZL"
-          },
-          {
-            "rank": 13,
-            "rs126": 99.10913140311804,
-            "rs189": 99.32960893854748,
-            "rs63": 99.2789794786467,
-            "ticker": "DAVE"
-          },
-          {
-            "rank": 14,
-            "rs126": 84.57683741648107,
-            "rs189": 99.27374301675978,
-            "rs63": 98.22518025513034,
-            "ticker": "IONQ"
-          },
-          {
-            "rank": 15,
-            "rs126": 94.82182628062361,
-            "rs189": 99.21787709497207,
-            "rs63": 74.87520798668885,
-            "ticker": "PDYN"
-          },
-          {
-            "rank": 16,
-            "rs126": 99.88864142538975,
-            "rs189": 99.16201117318437,
-            "rs63": 99.88907376594565,
-            "ticker": "SBET"
-          },
-          {
-            "rank": 17,
-            "rs126": 89.3652561247216,
-            "rs189": 99.10614525139665,
-            "rs63": 96.83860232945092,
-            "ticker": "APP"
-          },
-          {
-            "rank": 18,
-            "rs126": 80.79064587973274,
-            "rs189": 99.05027932960894,
-            "rs63": 93.84359400998336,
-            "ticker": "RKLB"
-          },
-          {
-            "rank": 19,
-            "rs126": 84.29844097995546,
-            "rs189": 98.99441340782123,
-            "rs63": 98.7798114254021,
-            "ticker": "SMR"
-          },
-          {
-            "rank": 20,
-            "rs126": 93.31848552338529,
-            "rs189": 98.93854748603353,
-            "rs63": 98.39156960621187,
-            "ticker": "APLD"
-          },
-          {
-            "rank": 21,
-            "rs126": 99.66592427616926,
-            "rs189": 98.88268156424581,
-            "rs63": 99.72268441486412,
-            "ticker": "XXI"
-          },
-          {
-            "rank": 22,
-            "rs126": 98.21826280623608,
-            "rs189": 98.8268156424581,
-            "rs63": 95.34109816971714,
-            "ticker": "PLTR"
-          },
-          {
-            "rank": 23,
-            "rs126": 97.7728285077951,
-            "rs189": 98.77094972067039,
-            "rs63": 97.78147531891292,
-            "ticker": "LEU"
-          },
-          {
-            "rank": 24,
-            "rs126": 97.93986636971047,
-            "rs189": 98.71508379888269,
-            "rs63": 99.11259012756517,
-            "ticker": "ASPI"
-          },
-          {
-            "rank": 25,
-            "rs126": 46.770601336302896,
-            "rs189": 98.65921787709497,
-            "rs63": 29.83915696062119,
-            "ticker": "SRRK"
-          },
-          {
-            "rank": 26,
-            "rs126": 98.38530066815144,
-            "rs189": 98.60335195530726,
-            "rs63": 97.00499168053244,
-            "ticker": "HOOD"
-          },
-          {
-            "rank": 27,
-            "rs126": 97.88418708240535,
-            "rs189": 98.54748603351955,
-            "rs63": 96.11758180809761,
-            "ticker": "HIMS"
-          },
-          {
-            "rank": 28,
-            "rs126": 1.1692650334075725,
-            "rs189": 98.49162011173185,
-            "rs63": 77.59290072102051,
-            "ticker": "UMAC"
-          },
-          {
-            "rank": 29,
-            "rs126": 32.071269487750556,
-            "rs189": 98.43575418994413,
-            "rs63": 21.46422628951747,
-            "ticker": "QMCO"
-          },
-          {
-            "rank": 30,
-            "rs126": 96.82628062360801,
-            "rs189": 98.37988826815642,
-            "rs63": 95.61841375485302,
-            "ticker": "NAGE"
-          },
-          {
-            "rank": 31,
-            "rs126": 95.21158129175946,
-            "rs189": 98.32402234636871,
-            "rs63": 67.66500277315585,
-            "ticker": "ROOT"
-          },
-          {
-            "rank": 32,
-            "rs126": 99.94432071269487,
-            "rs189": 98.26815642458101,
-            "rs63": 99.94453688297283,
-            "ticker": "ASST"
-          },
-          {
-            "rank": 33,
-            "rs126": 97.10467706013362,
-            "rs189": 98.2122905027933,
-            "rs63": 98.66888519134775,
-            "ticker": "TSSI"
-          },
-          {
-            "rank": 34,
-            "rs126": 70.15590200445433,
-            "rs189": 98.15642458100558,
-            "rs63": 61.342207432057684,
-            "ticker": "NNE"
-          },
-          {
-            "rank": 35,
-            "rs126": 96.7706013363029,
-            "rs189": 98.10055865921787,
-            "rs63": 98.94620077648364,
-            "ticker": "AGX"
-          },
-          {
-            "rank": 36,
-            "rs126": 10.634743875278396,
-            "rs189": 98.04469273743017,
-            "rs63": 36.66112035496395,
-            "ticker": "CAPR"
-          },
-          {
-            "rank": 37,
-            "rs126": 60.57906458797328,
-            "rs189": 97.98882681564245,
-            "rs63": 85.24681087077094,
-            "ticker": "MSTR"
-          },
-          {
-            "rank": 38,
-            "rs126": 98.7750556792873,
-            "rs189": 97.93296089385476,
-            "rs63": 97.61508596783139,
-            "ticker": "RBRK"
-          },
-          {
-            "rank": 39,
-            "rs126": 99.16481069042317,
-            "rs189": 97.87709497206704,
-            "rs63": 90.95951192457015,
-            "ticker": "QURE"
-          },
-          {
-            "rank": 40,
-            "rs126": 98.94209354120267,
-            "rs189": 97.82122905027933,
-            "rs63": 82.58458125346645,
-            "ticker": "GRAL"
-          },
-          {
-            "rank": 41,
-            "rs126": 98.2739420935412,
-            "rs189": 97.76536312849163,
-            "rs63": 94.34276206322795,
-            "ticker": "OPFI"
-          },
-          {
-            "rank": 42,
-            "rs126": 88.47438752783965,
-            "rs189": 97.70949720670392,
-            "rs63": 15.196894065446479,
-            "ticker": "CRNC"
-          },
-          {
-            "rank": 43,
-            "rs126": 83.51893095768375,
-            "rs189": 97.6536312849162,
-            "rs63": 41.48641153632834,
-            "ticker": "INOD"
-          },
-          {
-            "rank": 44,
-            "rs126": 66.64810690423162,
-            "rs189": 97.5977653631285,
-            "rs63": 97.67054908485858,
-            "ticker": "ARQQ"
-          },
-          {
-            "rank": 45,
-            "rs126": 95.65701559020044,
-            "rs189": 97.54189944134079,
-            "rs63": 90.57127010537992,
-            "ticker": "AS"
-          },
-          {
-            "rank": 46,
-            "rs126": 93.59688195991092,
-            "rs189": 97.48603351955308,
-            "rs63": 94.12090959511926,
-            "ticker": "RDW"
-          },
-          {
-            "rank": 47,
-            "rs126": 92.14922048997772,
-            "rs189": 97.43016759776536,
-            "rs63": 87.29894620077648,
-            "ticker": "ACHR"
-          },
-          {
-            "rank": 48,
-            "rs126": 94.93318485523386,
-            "rs189": 97.37430167597766,
-            "rs63": 98.55795895729341,
-            "ticker": "HNRG"
-          },
-          {
-            "rank": 49,
-            "rs126": 99.05345211581292,
-            "rs189": 97.31843575418995,
-            "rs63": 88.18635607321131,
-            "ticker": "SSRM"
-          },
-          {
-            "rank": 50,
-            "rs126": 83.07349665924276,
-            "rs189": 97.26256983240224,
-            "rs63": 17.249029395452027,
-            "ticker": "VSTM"
-          },
-          {
-            "rank": 51,
-            "rs126": 96.65924276169265,
-            "rs189": 97.20670391061452,
-            "rs63": 98.61342207432058,
-            "ticker": "DUOL"
-          },
-          {
-            "rank": 52,
-            "rs126": 95.7683741648107,
-            "rs189": 97.15083798882681,
-            "rs63": 97.33777038269551,
-            "ticker": "GEV"
-          },
-          {
-            "rank": 53,
-            "rs126": 99.49888641425389,
-            "rs189": 97.09497206703911,
-            "rs63": 99.50083194675541,
-            "ticker": "GRPN"
-          },
-          {
-            "rank": 54,
-            "rs126": 93.93095768374164,
-            "rs189": 97.0391061452514,
-            "rs63": 98.89073765945646,
-            "ticker": "CMP"
-          },
-          {
-            "rank": 55,
-            "rs126": 12.861915367483295,
-            "rs189": 96.98324022346368,
-            "rs63": 93.17803660565723,
-            "ticker": "RCAT"
-          },
-          {
-            "rank": 56,
-            "rs126": 93.0957683741648,
-            "rs189": 96.92737430167597,
-            "rs63": 95.6738768718802,
-            "ticker": "PL"
-          },
-          {
-            "rank": 57,
-            "rs126": 92.81737193763921,
-            "rs189": 96.87150837988827,
-            "rs63": 85.579589572934,
-            "ticker": "EAT"
-          },
-          {
-            "rank": 58,
-            "rs126": 94.04231625835189,
-            "rs189": 96.81564245810056,
-            "rs63": 98.50249584026622,
-            "ticker": "CVNA"
-          },
-          {
-            "rank": 59,
-            "rs126": 93.98663697104676,
-            "rs189": 96.75977653631284,
-            "rs63": 75.81808097615085,
-            "ticker": "BROS"
-          },
-          {
-            "rank": 60,
-            "rs126": 97.55011135857461,
-            "rs189": 96.70391061452513,
-            "rs63": 94.17637271214643,
-            "ticker": "CRK"
-          },
-          {
-            "rank": 61,
-            "rs126": 98.83073496659243,
-            "rs189": 96.64804469273743,
-            "rs63": 99.22351636161952,
-            "ticker": "NVTS"
-          },
-          {
-            "rank": 62,
-            "rs126": 41.648106904231625,
-            "rs189": 96.59217877094972,
-            "rs63": 94.06544647809207,
-            "ticker": "ALAB"
-          },
-          {
-            "rank": 63,
-            "rs126": 96.93763919821826,
-            "rs189": 96.53631284916202,
-            "rs63": 98.0587909040488,
-            "ticker": "CRDO"
-          },
-          {
-            "rank": 64,
-            "rs126": 82.51670378619154,
-            "rs189": 96.4804469273743,
-            "rs63": 74.43150305047143,
-            "ticker": "SEI"
-          },
-          {
-            "rank": 65,
-            "rs126": 51.00222717149221,
-            "rs189": 96.42458100558659,
-            "rs63": 59.73377703826955,
-            "ticker": "REAL"
-          },
-          {
-            "rank": 66,
-            "rs126": 99.22048997772829,
-            "rs189": 96.36871508379889,
-            "rs63": 96.45036051026068,
-            "ticker": "TRVI"
-          },
-          {
-            "rank": 67,
-            "rs126": 82.57238307349665,
-            "rs189": 96.31284916201118,
-            "rs63": 95.56295063782585,
-            "ticker": "VST"
-          },
-          {
-            "rank": 68,
-            "rs126": 98.88641425389754,
-            "rs189": 96.25698324022346,
-            "rs63": 99.33444259567388,
-            "ticker": "TNXP"
-          },
-          {
-            "rank": 69,
-            "rs126": 97.82850779510022,
-            "rs189": 96.20111731843576,
-            "rs63": 91.90238491403217,
-            "ticker": "NET"
-          },
-          {
-            "rank": 70,
-            "rs126": 93.54120267260579,
-            "rs189": 96.14525139664805,
-            "rs63": 93.28896283971159,
-            "ticker": "CRMD"
-          },
-          {
-            "rank": 71,
-            "rs126": 45.37861915367483,
-            "rs189": 96.08938547486034,
-            "rs63": 2.5513033832501386,
-            "ticker": "WGS"
-          },
-          {
-            "rank": 72,
-            "rs126": 92.92873051224944,
-            "rs189": 96.03351955307262,
-            "rs63": 98.44703272323905,
-            "ticker": "LMB"
-          },
-          {
-            "rank": 73,
-            "rs126": 90.36748329621382,
-            "rs189": 95.97765363128492,
-            "rs63": 96.67221297836939,
-            "ticker": "AXON"
-          },
-          {
-            "rank": 74,
-            "rs126": 96.71492204899778,
-            "rs189": 95.92178770949721,
-            "rs63": 88.79645036051026,
-            "ticker": "ADPT"
-          },
-          {
-            "rank": 75,
-            "rs126": 98.10690423162583,
-            "rs189": 95.8659217877095,
-            "rs63": 96.94952856350527,
-            "ticker": "RBLX"
-          },
-          {
-            "rank": 76,
-            "rs126": 93.76391982182628,
-            "rs189": 95.81005586592178,
-            "rs63": 96.56128674431503,
-            "ticker": "PSIX"
-          },
-          {
-            "rank": 77,
-            "rs126": 98.32962138084632,
-            "rs189": 95.75418994413408,
-            "rs63": 98.72434830837493,
-            "ticker": "PPTA"
-          },
-          {
-            "rank": 78,
-            "rs126": 96.21380846325167,
-            "rs189": 95.69832402234637,
-            "rs63": 90.18302828618968,
-            "ticker": "SPOT"
-          },
-          {
-            "rank": 79,
-            "rs126": 97.9955456570156,
-            "rs189": 95.64245810055866,
-            "rs63": 98.114254021076,
-            "ticker": "ODD"
-          },
-          {
-            "rank": 80,
-            "rs126": 97.71714922048997,
-            "rs189": 95.58659217877094,
-            "rs63": 94.28729894620078,
-            "ticker": "IRTC"
-          },
-          {
-            "rank": 81,
-            "rs126": 65.25612472160356,
-            "rs189": 95.53072625698324,
-            "rs63": 81.53078202995009,
-            "ticker": "LB"
-          },
-          {
-            "rank": 82,
-            "rs126": 48.66369710467706,
-            "rs189": 95.47486033519553,
-            "rs63": 79.70049916805324,
-            "ticker": "BTDR"
-          },
-          {
-            "rank": 83,
-            "rs126": 19.43207126948775,
-            "rs189": 95.41899441340782,
-            "rs63": 35.662784248474765,
-            "ticker": "LUNR"
-          },
-          {
-            "rank": 84,
-            "rs126": 93.26280623608018,
-            "rs189": 95.3631284916201,
-            "rs63": 91.18136439267886,
-            "ticker": "UTI"
-          },
-          {
-            "rank": 85,
-            "rs126": 95.60133630289532,
-            "rs189": 95.3072625698324,
-            "rs63": 97.94786466999446,
-            "ticker": "OUST"
-          },
-          {
-            "rank": 86,
-            "rs126": 94.71046770601336,
-            "rs189": 95.25139664804469,
-            "rs63": 79.97781475318912,
-            "ticker": "SRAD"
-          },
-          {
-            "rank": 87,
-            "rs126": 77.06013363028953,
-            "rs189": 95.19553072625698,
-            "rs63": 44.20410427066001,
-            "ticker": "SOUN"
-          },
-          {
-            "rank": 88,
-            "rs126": 84.9109131403118,
-            "rs189": 95.13966480446928,
-            "rs63": 89.01830282861897,
-            "ticker": "UI"
-          },
-          {
-            "rank": 89,
-            "rs126": 98.71937639198218,
-            "rs189": 95.08379888268156,
-            "rs63": 75.09706045479756,
-            "ticker": "FUBO"
-          },
-          {
-            "rank": 90,
-            "rs126": 98.16258351893096,
-            "rs189": 95.02793296089386,
-            "rs63": 98.16971713810317,
-            "ticker": "EYE"
-          },
-          {
-            "rank": 91,
-            "rs126": 86.19153674832963,
-            "rs189": 94.97206703910615,
-            "rs63": 88.85191347753744,
-            "ticker": "CORT"
-          },
-          {
-            "rank": 92,
-            "rs126": 90.8685968819599,
-            "rs189": 94.91620111731844,
-            "rs63": 63.33887964503605,
-            "ticker": "MP"
-          },
-          {
-            "rank": 93,
-            "rs126": 91.48106904231625,
-            "rs189": 94.86033519553074,
-            "rs63": 94.62007764836385,
-            "ticker": "HTZ"
-          },
-          {
-            "rank": 94,
-            "rs126": 59.743875278396445,
-            "rs189": 94.80446927374302,
-            "rs63": 55.24126455906821,
-            "ticker": "GEO"
-          },
-          {
-            "rank": 95,
-            "rs126": 97.43875278396436,
-            "rs189": 94.74860335195531,
-            "rs63": 97.8369384359401,
-            "ticker": "NRG"
-          },
-          {
-            "rank": 96,
-            "rs126": 97.60579064587974,
-            "rs189": 94.6927374301676,
-            "rs63": 85.19134775374376,
-            "ticker": "LQDA"
-          },
-          {
-            "rank": 97,
-            "rs126": 85.02227171492206,
-            "rs189": 94.63687150837988,
-            "rs63": 72.54575707154743,
-            "ticker": "TWLO"
-          },
-          {
-            "rank": 98,
-            "rs126": 94.37639198218262,
-            "rs189": 94.58100558659218,
-            "rs63": 84.636716583472,
-            "ticker": "GH"
-          },
-          {
-            "rank": 99,
-            "rs126": 88.69710467706014,
-            "rs189": 94.52513966480447,
-            "rs63": 92.789794786467,
-            "ticker": "MIR"
-          },
-          {
-            "rank": 100,
-            "rs126": 97.0489977728285,
-            "rs189": 94.46927374301676,
-            "rs63": 95.11924570160843,
-            "ticker": "GRND"
-          }
-        ],
-        "63": [
-          {
-            "rank": 1,
-            "rs126": 100.0,
-            "rs189": 100.0,
-            "rs63": 100.0,
-            "ticker": "RGC"
-          },
-          {
-            "rank": 2,
-            "rs126": 99.94432071269487,
-            "rs189": 98.26815642458101,
-            "rs63": 99.94453688297283,
-            "ticker": "ASST"
-          },
-          {
-            "rank": 3,
-            "rs126": 99.88864142538975,
-            "rs189": 99.16201117318437,
-            "rs63": 99.88907376594565,
-            "ticker": "SBET"
-          },
-          {
-            "rank": 4,
-            "rs126": 99.72160356347439,
-            "rs189": 99.60893854748603,
-            "rs63": 99.83361064891847,
-            "ticker": "AEVA"
-          },
-          {
-            "rank": 5,
-            "rs126": 96.88195991091314,
-            "rs189": 92.12290502793297,
-            "rs63": 99.77814753189129,
-            "ticker": "ABTC"
-          },
-          {
-            "rank": 6,
-            "rs126": 99.66592427616926,
-            "rs189": 98.88268156424581,
-            "rs63": 99.72268441486412,
-            "ticker": "XXI"
-          },
-          {
-            "rank": 7,
-            "rs126": 98.4966592427617,
-            "rs189": 99.3854748603352,
-            "rs63": 99.66722129783693,
-            "ticker": "SEZL"
-          },
-          {
-            "rank": 8,
-            "rs126": 99.77728285077951,
-            "rs189": 99.77653631284916,
-            "rs63": 99.61175818080976,
-            "ticker": "TDUP"
-          },
-          {
-            "rank": 9,
-            "rs126": 99.83296213808464,
-            "rs189": 99.88826815642457,
-            "rs63": 99.55629506378258,
-            "ticker": "QBTS"
-          },
-          {
-            "rank": 10,
-            "rs126": 99.49888641425389,
-            "rs189": 97.09497206703911,
-            "rs63": 99.50083194675541,
-            "ticker": "GRPN"
-          }
-        ]
-      }
-    },
     {
       "date": "2025-06-06",
       "window_source": {
@@ -274188,6 +273332,862 @@
           }
         ]
       }
+    },
+    {
+      "date": "2026-09-15",
+      "window_source": {
+        "126": "CURRENT_RS_FULL_UNIVERSE",
+        "189": "CURRENT_RS_FULL_UNIVERSE",
+        "63": "CURRENT_RS_FULL_UNIVERSE"
+      },
+      "windows": {
+        "126": [
+          {
+            "rank": 1,
+            "rs126": 100.0,
+            "rs189": 99.85748218527316,
+            "rs63": 15.281003251277287,
+            "ticker": "AGL"
+          },
+          {
+            "rank": 2,
+            "rs126": 99.95289684408856,
+            "rs189": 99.71496437054633,
+            "rs63": 99.7677659080353,
+            "ticker": "TXG"
+          },
+          {
+            "rank": 3,
+            "rs126": 99.9057936881771,
+            "rs189": 97.62470308788599,
+            "rs63": 97.86344635392476,
+            "ticker": "QMCO"
+          },
+          {
+            "rank": 4,
+            "rs126": 99.85869053226565,
+            "rs189": 99.38242280285036,
+            "rs63": 11.2401300510915,
+            "ticker": "MXL"
+          },
+          {
+            "rank": 5,
+            "rs126": 99.81158737635421,
+            "rs189": 98.57482185273159,
+            "rs63": 96.88806316767301,
+            "ticker": "BLZE"
+          },
+          {
+            "rank": 6,
+            "rs126": 99.76448422044277,
+            "rs189": 99.5249406175772,
+            "rs63": 90.75708313980493,
+            "ticker": "DELL"
+          },
+          {
+            "rank": 7,
+            "rs126": 99.71738106453132,
+            "rs189": 73.4916864608076,
+            "rs63": 90.94287041337668,
+            "ticker": "CORT"
+          },
+          {
+            "rank": 8,
+            "rs126": 99.67027790861988,
+            "rs189": null,
+            "rs63": 99.86065954482119,
+            "ticker": "LIFE"
+          },
+          {
+            "rank": 9,
+            "rs126": 99.62317475270844,
+            "rs189": 99.19239904988123,
+            "rs63": 37.52902926149559,
+            "ticker": "BAND"
+          },
+          {
+            "rank": 10,
+            "rs126": 99.576071596797,
+            "rs189": 98.90736342042756,
+            "rs63": 99.58197863446354,
+            "ticker": "ABCL"
+          }
+        ],
+        "189": [
+          {
+            "rank": 1,
+            "rs126": 97.45642958078191,
+            "rs189": 100.0,
+            "rs63": 9.335810496980956,
+            "ticker": "SNDK"
+          },
+          {
+            "rank": 2,
+            "rs126": 95.24258125294395,
+            "rs189": 99.95249406175772,
+            "rs63": 83.4184858337204,
+            "ticker": "CLYM"
+          },
+          {
+            "rank": 3,
+            "rs126": 97.07960433349034,
+            "rs189": 99.90498812351544,
+            "rs63": 94.4263817928472,
+            "ticker": "SLS"
+          },
+          {
+            "rank": 4,
+            "rs126": 100.0,
+            "rs189": 99.85748218527316,
+            "rs63": 15.281003251277287,
+            "ticker": "AGL"
+          },
+          {
+            "rank": 5,
+            "rs126": 99.15214319359397,
+            "rs189": 99.80997624703087,
+            "rs63": 99.95355318160706,
+            "ticker": "MRNA"
+          },
+          {
+            "rank": 6,
+            "rs126": 64.34291097503532,
+            "rs189": 99.7624703087886,
+            "rs63": 73.66465397120298,
+            "ticker": "ERAS"
+          },
+          {
+            "rank": 7,
+            "rs126": 99.95289684408856,
+            "rs189": 99.71496437054633,
+            "rs63": 99.7677659080353,
+            "ticker": "TXG"
+          },
+          {
+            "rank": 8,
+            "rs126": 99.43476212906265,
+            "rs189": 99.66745843230403,
+            "rs63": 98.28146771946122,
+            "ticker": "TWST"
+          },
+          {
+            "rank": 9,
+            "rs126": 98.21008007536504,
+            "rs189": 99.61995249406176,
+            "rs63": 99.81421272642824,
+            "ticker": "IOVA"
+          },
+          {
+            "rank": 10,
+            "rs126": 98.82242110221385,
+            "rs189": 99.57244655581948,
+            "rs63": 99.44263817928471,
+            "ticker": "PLSE"
+          },
+          {
+            "rank": 11,
+            "rs126": 99.76448422044277,
+            "rs189": 99.5249406175772,
+            "rs63": 90.75708313980493,
+            "ticker": "DELL"
+          },
+          {
+            "rank": 12,
+            "rs126": 61.422515308525675,
+            "rs189": 99.47743467933492,
+            "rs63": 99.90710636321411,
+            "ticker": "FTH"
+          },
+          {
+            "rank": 13,
+            "rs126": 31.88883655204899,
+            "rs189": 99.42992874109264,
+            "rs63": 75.24384579656294,
+            "ticker": "IBRX"
+          },
+          {
+            "rank": 14,
+            "rs126": 99.85869053226565,
+            "rs189": 99.38242280285036,
+            "rs63": 11.2401300510915,
+            "ticker": "MXL"
+          },
+          {
+            "rank": 15,
+            "rs126": 97.0325011775789,
+            "rs189": 99.33491686460808,
+            "rs63": 20.8546214584301,
+            "ticker": "MU"
+          },
+          {
+            "rank": 16,
+            "rs126": 62.788506829957605,
+            "rs189": 99.2874109263658,
+            "rs63": 1.2540640966093821,
+            "ticker": "AXTI"
+          },
+          {
+            "rank": 17,
+            "rs126": 96.84408855393312,
+            "rs189": 99.23990498812351,
+            "rs63": 30.376219228982816,
+            "ticker": "ATEX"
+          },
+          {
+            "rank": 18,
+            "rs126": 99.62317475270844,
+            "rs189": 99.19239904988123,
+            "rs63": 37.52902926149559,
+            "ticker": "BAND"
+          },
+          {
+            "rank": 19,
+            "rs126": 94.44182760244937,
+            "rs189": 99.14489311163895,
+            "rs63": 82.67533673943335,
+            "ticker": "PURR"
+          },
+          {
+            "rank": 20,
+            "rs126": 99.2934526613283,
+            "rs189": 99.09738717339668,
+            "rs63": 98.23502090106828,
+            "ticker": "ETON"
+          },
+          {
+            "rank": 21,
+            "rs126": 99.34055581723975,
+            "rs189": 99.04988123515439,
+            "rs63": 100.0,
+            "ticker": "RFAI"
+          },
+          {
+            "rank": 22,
+            "rs126": 97.5506358926048,
+            "rs189": 99.00237529691212,
+            "rs63": 7.8030654900139345,
+            "ticker": "AEHR"
+          },
+          {
+            "rank": 23,
+            "rs126": 97.73904851625059,
+            "rs189": 98.95486935866984,
+            "rs63": 91.0822108685555,
+            "ticker": "ORKA"
+          },
+          {
+            "rank": 24,
+            "rs126": 99.576071596797,
+            "rs189": 98.90736342042756,
+            "rs63": 99.58197863446354,
+            "ticker": "ABCL"
+          },
+          {
+            "rank": 25,
+            "rs126": 95.99623174752708,
+            "rs189": 98.85985748218528,
+            "rs63": 96.14491407338596,
+            "ticker": "DFTX"
+          },
+          {
+            "rank": 26,
+            "rs126": 96.32595383890721,
+            "rs189": 98.812351543943,
+            "rs63": 98.37436135624709,
+            "ticker": "CLMT"
+          },
+          {
+            "rank": 27,
+            "rs126": 95.1954780970325,
+            "rs189": 98.76484560570071,
+            "rs63": 87.2735717603344,
+            "ticker": "ELVN"
+          },
+          {
+            "rank": 28,
+            "rs126": 63.63636363636363,
+            "rs189": 98.71733966745843,
+            "rs63": 2.6474686483975844,
+            "ticker": "ICHR"
+          },
+          {
+            "rank": 29,
+            "rs126": 96.56146961846443,
+            "rs189": 98.66983372921615,
+            "rs63": 98.0492336274965,
+            "ticker": "ECO"
+          },
+          {
+            "rank": 30,
+            "rs126": 99.3876589731512,
+            "rs189": 98.62232779097387,
+            "rs63": 99.72131908964236,
+            "ticker": "CDNA"
+          },
+          {
+            "rank": 31,
+            "rs126": 99.81158737635421,
+            "rs189": 98.57482185273159,
+            "rs63": 96.88806316767301,
+            "ticker": "BLZE"
+          },
+          {
+            "rank": 32,
+            "rs126": 96.65567593028733,
+            "rs189": 98.52731591448931,
+            "rs63": 67.53367394333488,
+            "ticker": "SYRE"
+          },
+          {
+            "rank": 33,
+            "rs126": 77.86151672162035,
+            "rs189": 98.47980997624704,
+            "rs63": 9.289363678588018,
+            "ticker": "TNGX"
+          },
+          {
+            "rank": 34,
+            "rs126": 35.70419218087612,
+            "rs189": 98.43230403800474,
+            "rs63": 0.7895959126799814,
+            "ticker": "AAOI"
+          },
+          {
+            "rank": 35,
+            "rs126": 96.74988224211022,
+            "rs189": 98.38479809976248,
+            "rs63": 88.5276358569438,
+            "ticker": "RVMD"
+          },
+          {
+            "rank": 36,
+            "rs126": 94.63024022609515,
+            "rs189": 98.33729216152018,
+            "rs63": 57.686948444031586,
+            "ticker": "IRDM"
+          },
+          {
+            "rank": 37,
+            "rs126": 89.82571832312765,
+            "rs189": 98.28978622327791,
+            "rs63": 95.30887134231305,
+            "ticker": "NAT"
+          },
+          {
+            "rank": 38,
+            "rs126": 98.1629769194536,
+            "rs189": 98.24228028503563,
+            "rs63": 99.67487227124941,
+            "ticker": "AMLX"
+          },
+          {
+            "rank": 39,
+            "rs126": 95.8078191238813,
+            "rs189": 98.19477434679335,
+            "rs63": 92.75429633070135,
+            "ticker": "BFLY"
+          },
+          {
+            "rank": 40,
+            "rs126": 93.26424870466322,
+            "rs189": 98.14726840855107,
+            "rs63": 92.98653042266605,
+            "ticker": "INSW"
+          },
+          {
+            "rank": 41,
+            "rs126": 95.00706547338672,
+            "rs189": 98.09976247030879,
+            "rs63": 11.425917324663262,
+            "ticker": "STX"
+          },
+          {
+            "rank": 42,
+            "rs126": 78.37965143664626,
+            "rs189": 98.05225653206651,
+            "rs63": 87.97027403622852,
+            "ticker": "DNTH"
+          },
+          {
+            "rank": 43,
+            "rs126": 94.86575600565239,
+            "rs189": 98.00475059382423,
+            "rs63": 91.50023223409195,
+            "ticker": "LPG"
+          },
+          {
+            "rank": 44,
+            "rs126": 98.58690532265662,
+            "rs189": 97.95724465558195,
+            "rs63": 8.639108221086856,
+            "ticker": "MRVL"
+          },
+          {
+            "rank": 45,
+            "rs126": 70.41921808761187,
+            "rs189": 97.90973871733966,
+            "rs63": 89.73525313516024,
+            "ticker": "VG"
+          },
+          {
+            "rank": 46,
+            "rs126": 92.27508243052284,
+            "rs189": 97.8622327790974,
+            "rs63": 98.97816999535532,
+            "ticker": "PBF"
+          },
+          {
+            "rank": 47,
+            "rs126": 97.12670748940178,
+            "rs189": 97.8147268408551,
+            "rs63": 11.565257779842081,
+            "ticker": "INTC"
+          },
+          {
+            "rank": 48,
+            "rs126": 94.34762129062648,
+            "rs189": 97.76722090261283,
+            "rs63": 87.78448676265675,
+            "ticker": "RLAY"
+          },
+          {
+            "rank": 49,
+            "rs126": 91.70984455958549,
+            "rs189": 97.71971496437054,
+            "rs63": 89.59591267998142,
+            "ticker": "FRO"
+          },
+          {
+            "rank": 50,
+            "rs126": 90.72067828544512,
+            "rs189": 97.67220902612827,
+            "rs63": 5.20204366000929,
+            "ticker": "DOCN"
+          },
+          {
+            "rank": 51,
+            "rs126": 99.9057936881771,
+            "rs189": 97.62470308788599,
+            "rs63": 97.86344635392476,
+            "ticker": "QMCO"
+          },
+          {
+            "rank": 52,
+            "rs126": 52.99105040037683,
+            "rs189": 97.5771971496437,
+            "rs63": 94.93729679516953,
+            "ticker": "IRD"
+          },
+          {
+            "rank": 53,
+            "rs126": 91.66274140367405,
+            "rs189": 97.52969121140143,
+            "rs63": 37.018114259173245,
+            "ticker": "BE"
+          },
+          {
+            "rank": 54,
+            "rs126": 92.8403203014602,
+            "rs189": 97.48218527315915,
+            "rs63": 75.94054807245703,
+            "ticker": "FEIM"
+          },
+          {
+            "rank": 55,
+            "rs126": 95.05416862929816,
+            "rs189": 97.43467933491686,
+            "rs63": 99.02461681374825,
+            "ticker": "RNG"
+          },
+          {
+            "rank": 56,
+            "rs126": 92.18087611869996,
+            "rs189": 97.38717339667458,
+            "rs63": 97.07385044124479,
+            "ticker": "VLO"
+          },
+          {
+            "rank": 57,
+            "rs126": 60.85727743758832,
+            "rs189": 97.3396674584323,
+            "rs63": 2.740362285183465,
+            "ticker": "UCTT"
+          },
+          {
+            "rank": 58,
+            "rs126": 44.79510127178521,
+            "rs189": 97.29216152019002,
+            "rs63": 89.6888063167673,
+            "ticker": "FSLY"
+          },
+          {
+            "rank": 59,
+            "rs126": 95.94912859161565,
+            "rs189": 97.24465558194775,
+            "rs63": 97.9098931723177,
+            "ticker": "DINO"
+          },
+          {
+            "rank": 60,
+            "rs126": 94.95996231747526,
+            "rs189": 97.19714964370546,
+            "rs63": 98.60659544821179,
+            "ticker": "DK"
+          },
+          {
+            "rank": 61,
+            "rs126": 99.05793688177108,
+            "rs189": 97.14964370546319,
+            "rs63": 75.6618671620994,
+            "ticker": "HPE"
+          },
+          {
+            "rank": 62,
+            "rs126": 85.77484691474328,
+            "rs189": 97.1021377672209,
+            "rs63": 96.79516953088714,
+            "ticker": "FET"
+          },
+          {
+            "rank": 63,
+            "rs126": 99.48186528497409,
+            "rs189": 97.05463182897861,
+            "rs63": 77.42684626103113,
+            "ticker": "APPS"
+          },
+          {
+            "rank": 64,
+            "rs126": 92.41639189825719,
+            "rs189": 97.00712589073635,
+            "rs63": 11.37947050627032,
+            "ticker": "SATL"
+          },
+          {
+            "rank": 65,
+            "rs126": 99.01083372585964,
+            "rs189": 96.95961995249405,
+            "rs63": 31.862517417556894,
+            "ticker": "AMD"
+          },
+          {
+            "rank": 66,
+            "rs126": 78.3325482807348,
+            "rs189": 96.91211401425178,
+            "rs63": 24.059451927542963,
+            "ticker": "LITE"
+          },
+          {
+            "rank": 67,
+            "rs126": 93.3584550164861,
+            "rs189": 96.8646080760095,
+            "rs63": 97.58476544356711,
+            "ticker": "MPC"
+          },
+          {
+            "rank": 68,
+            "rs126": 86.52849740932642,
+            "rs189": 96.81710213776722,
+            "rs63": 91.45378541569903,
+            "ticker": "TEN"
+          },
+          {
+            "rank": 69,
+            "rs126": 83.98492699010833,
+            "rs189": 96.76959619952494,
+            "rs63": 4.551788202508128,
+            "ticker": "WDC"
+          },
+          {
+            "rank": 70,
+            "rs126": 89.63730569948186,
+            "rs189": 96.72209026128266,
+            "rs63": 14.723641430562006,
+            "ticker": "NBIS"
+          },
+          {
+            "rank": 71,
+            "rs126": 99.19924634950542,
+            "rs189": 96.67458432304038,
+            "rs63": 96.09846725499304,
+            "ticker": "QURE"
+          },
+          {
+            "rank": 72,
+            "rs126": 99.24634950541686,
+            "rs189": 96.62707838479811,
+            "rs63": 10.682768230376219,
+            "ticker": "PENG"
+          },
+          {
+            "rank": 73,
+            "rs126": 88.93075836081017,
+            "rs189": 96.57957244655582,
+            "rs63": 94.37993497445424,
+            "ticker": "SM"
+          },
+          {
+            "rank": 74,
+            "rs126": 96.51436646255299,
+            "rs189": 96.53206650831353,
+            "rs63": 96.37714816535068,
+            "ticker": "MBX"
+          },
+          {
+            "rank": 75,
+            "rs126": 88.78944889307584,
+            "rs189": 96.48456057007125,
+            "rs63": 84.90478402229448,
+            "ticker": "NESR"
+          },
+          {
+            "rank": 76,
+            "rs126": 96.60857277437587,
+            "rs189": 96.43705463182897,
+            "rs63": 46.95773339526242,
+            "ticker": "TH"
+          },
+          {
+            "rank": 77,
+            "rs126": 90.4851625058879,
+            "rs189": 96.3895486935867,
+            "rs63": 95.44821179749187,
+            "ticker": "LBRX"
+          },
+          {
+            "rank": 78,
+            "rs126": 68.25247291568535,
+            "rs189": 96.34204275534441,
+            "rs63": 34.04551788202508,
+            "ticker": "UMAC"
+          },
+          {
+            "rank": 79,
+            "rs126": 98.53980216674518,
+            "rs189": 96.29453681710214,
+            "rs63": 99.5355318160706,
+            "ticker": "ARCT"
+          },
+          {
+            "rank": 80,
+            "rs126": 98.72821479039095,
+            "rs189": 96.24703087885986,
+            "rs63": 97.02740362285184,
+            "ticker": "OKTA"
+          },
+          {
+            "rank": 81,
+            "rs126": 93.68817710786622,
+            "rs189": 96.19952494061758,
+            "rs63": 70.64561077566186,
+            "ticker": "AMN"
+          },
+          {
+            "rank": 82,
+            "rs126": 97.97456429580782,
+            "rs189": 96.1520190023753,
+            "rs63": 98.56014862981885,
+            "ticker": "MAN"
+          },
+          {
+            "rank": 83,
+            "rs126": 96.4201601507301,
+            "rs189": 96.10451306413302,
+            "rs63": 76.86948444031584,
+            "ticker": "FTNT"
+          },
+          {
+            "rank": 84,
+            "rs126": 5.605275553462082,
+            "rs189": 96.05700712589073,
+            "rs63": 13.190896423594983,
+            "ticker": "ALM"
+          },
+          {
+            "rank": 85,
+            "rs126": 99.52896844088554,
+            "rs189": 96.00950118764845,
+            "rs63": 68.23037621922899,
+            "ticker": "ABSI"
+          },
+          {
+            "rank": 86,
+            "rs126": 69.75977390485163,
+            "rs189": 95.96199524940617,
+            "rs63": 93.63678588016721,
+            "ticker": "ANRO"
+          },
+          {
+            "rank": 87,
+            "rs126": 72.63306641544983,
+            "rs189": 95.91448931116389,
+            "rs63": 82.86112401300511,
+            "ticker": "PTEN"
+          },
+          {
+            "rank": 88,
+            "rs126": 98.8695242581253,
+            "rs189": 95.86698337292161,
+            "rs63": 96.47004180213655,
+            "ticker": "CRSR"
+          },
+          {
+            "rank": 89,
+            "rs126": 98.63400847856806,
+            "rs189": 95.81947743467933,
+            "rs63": 71.66744078030655,
+            "ticker": "OSCR"
+          },
+          {
+            "rank": 90,
+            "rs126": 96.70277908619877,
+            "rs189": 95.77197149643706,
+            "rs63": 95.86623316302834,
+            "ticker": "HZO"
+          },
+          {
+            "rank": 91,
+            "rs126": 98.25718323127649,
+            "rs189": 95.72446555819477,
+            "rs63": 8.128193218764515,
+            "ticker": "AMBQ"
+          },
+          {
+            "rank": 92,
+            "rs126": 93.92369288742346,
+            "rs189": 95.6769596199525,
+            "rs63": 30.515559684161637,
+            "ticker": "LQDA"
+          },
+          {
+            "rank": 93,
+            "rs126": 92.55770136599152,
+            "rs189": 95.62945368171022,
+            "rs63": 13.051555968416165,
+            "ticker": "COHU"
+          },
+          {
+            "rank": 94,
+            "rs126": 93.49976448422044,
+            "rs189": 95.58194774346794,
+            "rs63": 0.7431490942870413,
+            "ticker": "VSH"
+          },
+          {
+            "rank": 95,
+            "rs126": 90.9090909090909,
+            "rs189": 95.53444180522565,
+            "rs63": 89.921040408732,
+            "ticker": "CAKE"
+          },
+          {
+            "rank": 96,
+            "rs126": 89.02496467263306,
+            "rs189": 95.48693586698337,
+            "rs63": 96.33070134695774,
+            "ticker": "PARR"
+          },
+          {
+            "rank": 97,
+            "rs126": 82.19500706547339,
+            "rs189": 95.43942992874109,
+            "rs63": 88.43474222015791,
+            "ticker": "DHT"
+          },
+          {
+            "rank": 98,
+            "rs126": 90.53226566179934,
+            "rs189": 95.39192399049881,
+            "rs63": 90.3855085926614,
+            "ticker": "OOMA"
+          },
+          {
+            "rank": 99,
+            "rs126": 97.92746113989638,
+            "rs189": 95.34441805225653,
+            "rs63": 90.19972131908965,
+            "ticker": "PANW"
+          },
+          {
+            "rank": 100,
+            "rs126": 56.099858690532265,
+            "rs189": 95.29691211401425,
+            "rs63": 89.54946586158849,
+            "ticker": "AUGO"
+          }
+        ],
+        "63": [
+          {
+            "rank": 1,
+            "rs126": 99.34055581723975,
+            "rs189": 99.04988123515439,
+            "rs63": 100.0,
+            "ticker": "RFAI"
+          },
+          {
+            "rank": 2,
+            "rs126": 99.15214319359397,
+            "rs189": 99.80997624703087,
+            "rs63": 99.95355318160706,
+            "ticker": "MRNA"
+          },
+          {
+            "rank": 3,
+            "rs126": 61.422515308525675,
+            "rs189": 99.47743467933492,
+            "rs63": 99.90710636321411,
+            "ticker": "FTH"
+          },
+          {
+            "rank": 4,
+            "rs126": 99.67027790861988,
+            "rs189": null,
+            "rs63": 99.86065954482119,
+            "ticker": "LIFE"
+          },
+          {
+            "rank": 5,
+            "rs126": 98.21008007536504,
+            "rs189": 99.61995249406176,
+            "rs63": 99.81421272642824,
+            "ticker": "IOVA"
+          },
+          {
+            "rank": 6,
+            "rs126": 99.95289684408856,
+            "rs189": 99.71496437054633,
+            "rs63": 99.7677659080353,
+            "ticker": "TXG"
+          },
+          {
+            "rank": 7,
+            "rs126": 99.3876589731512,
+            "rs189": 98.62232779097387,
+            "rs63": 99.72131908964236,
+            "ticker": "CDNA"
+          },
+          {
+            "rank": 8,
+            "rs126": 98.1629769194536,
+            "rs189": 98.24228028503563,
+            "rs63": 99.67487227124941,
+            "ticker": "AMLX"
+          },
+          {
+            "rank": 9,
+            "rs126": 89.68440885539331,
+            "rs189": 63.18289786223278,
+            "rs63": 99.62842545285649,
+            "ticker": "NIQ"
+          },
+          {
+            "rank": 10,
+            "rs126": 99.576071596797,
+            "rs189": 98.90736342042756,
+            "rs63": 99.58197863446354,
+            "ticker": "ABCL"
+          }
+        ]
+      }
     }
   ],
   "source": "Yahoo adjusted OHLC current-universe reconstruction + observed V38 session archive + current RS universe",
@@ -274200,136 +274200,136 @@
       "comparisons": [
         {
           "available_sessions": 319,
-          "continuing": 9,
+          "continuing": 8,
           "detail": "前営業日",
           "in": [
-            "APPS"
+            "BAND",
+            "ABCL"
           ],
           "label": "1日",
           "lag": 1,
           "out": [
-            "BAND"
+            "ABSI",
+            "APPS"
           ],
-          "replacement_count": 1,
+          "replacement_count": 2,
           "required_sessions": 2,
           "status": "READY",
-          "target_session": "2026-09-11"
-        },
-        {
-          "available_sessions": 319,
-          "continuing": 7,
-          "detail": "約5営業日前",
-          "in": [
-            "TXG",
-            "APPS",
-            "LIFE"
-          ],
-          "label": "1週",
-          "lag": 5,
-          "out": [
-            "QURE",
-            "RFAI",
-            "ETON"
-          ],
-          "replacement_count": 3,
-          "required_sessions": 6,
-          "status": "READY",
-          "target_session": "2026-09-03"
+          "target_session": "2026-09-14"
         },
         {
           "available_sessions": 319,
           "continuing": 6,
-          "detail": "約21営業日前",
+          "detail": "約5営業日前",
           "in": [
             "TXG",
             "CORT",
-            "APPS",
-            "LIFE"
+            "LIFE",
+            "BAND"
+          ],
+          "label": "1週",
+          "lag": 5,
+          "out": [
+            "RFAI",
+            "ABSI",
+            "ETON",
+            "SNDK"
+          ],
+          "replacement_count": 4,
+          "required_sessions": 6,
+          "status": "READY",
+          "target_session": "2026-09-04"
+        },
+        {
+          "available_sessions": 319,
+          "continuing": 8,
+          "detail": "約21営業日前",
+          "in": [
+            "TXG",
+            "CORT"
           ],
           "label": "1か月",
           "lag": 21,
           "out": [
             "AEHR",
-            "QTTB",
-            "BAND",
-            "ABCL"
+            "ABSI"
           ],
-          "replacement_count": 4,
+          "replacement_count": 2,
           "required_sessions": 22,
           "status": "READY",
-          "target_session": "2026-08-12"
+          "target_session": "2026-08-13"
         }
       ],
       "current": [
         {
           "rank": 1,
           "rs126": 100.0,
-          "rs189": 99.8574144486692,
-          "rs63": 14.876801487680149,
+          "rs189": 99.85748218527316,
+          "rs63": 15.281003251277287,
           "ticker": "AGL"
         },
         {
           "rank": 2,
-          "rs126": 99.95287464655985,
-          "rs189": 97.76615969581749,
-          "rs63": 97.90794979079497,
-          "ticker": "QMCO"
-        },
-        {
-          "rank": 3,
-          "rs126": 99.9057492931197,
-          "rs189": 99.19201520912547,
-          "rs63": 10.460251046025103,
-          "ticker": "MXL"
-        },
-        {
-          "rank": 4,
-          "rs126": 99.85862393967955,
-          "rs189": 99.57224334600761,
-          "rs63": 99.76754997675499,
+          "rs126": 99.95289684408856,
+          "rs189": 99.71496437054633,
+          "rs63": 99.7677659080353,
           "ticker": "TXG"
         },
         {
-          "rank": 5,
-          "rs126": 99.8114985862394,
-          "rs189": 99.52471482889734,
-          "rs63": 91.25987912598791,
-          "ticker": "DELL"
+          "rank": 3,
+          "rs126": 99.9057936881771,
+          "rs189": 97.62470308788599,
+          "rs63": 97.86344635392476,
+          "ticker": "QMCO"
         },
         {
-          "rank": 6,
-          "rs126": 99.76437323279924,
-          "rs189": 98.33650190114068,
-          "rs63": 97.35006973500697,
+          "rank": 4,
+          "rs126": 99.85869053226565,
+          "rs189": 99.38242280285036,
+          "rs63": 11.2401300510915,
+          "ticker": "MXL"
+        },
+        {
+          "rank": 5,
+          "rs126": 99.81158737635421,
+          "rs189": 98.57482185273159,
+          "rs63": 96.88806316767301,
           "ticker": "BLZE"
         },
         {
+          "rank": 6,
+          "rs126": 99.76448422044277,
+          "rs189": 99.5249406175772,
+          "rs63": 90.75708313980493,
+          "ticker": "DELL"
+        },
+        {
           "rank": 7,
-          "rs126": 99.71724787935909,
-          "rs189": 75.52281368821293,
-          "rs63": 90.9809390980939,
+          "rs126": 99.71738106453132,
+          "rs189": 73.4916864608076,
+          "rs63": 90.94287041337668,
           "ticker": "CORT"
         },
         {
           "rank": 8,
-          "rs126": 99.67012252591894,
-          "rs189": 95.86501901140684,
-          "rs63": 80.7996280799628,
-          "ticker": "ABSI"
+          "rs126": 99.67027790861988,
+          "rs189": null,
+          "rs63": 99.86065954482119,
+          "ticker": "LIFE"
         },
         {
           "rank": 9,
-          "rs126": 99.62299717247879,
-          "rs189": 97.33840304182509,
-          "rs63": 81.77591817759182,
-          "ticker": "APPS"
+          "rs126": 99.62317475270844,
+          "rs189": 99.19239904988123,
+          "rs63": 37.52902926149559,
+          "ticker": "BAND"
         },
         {
           "rank": 10,
-          "rs126": 99.57587181903864,
-          "rs189": null,
-          "rs63": 99.81403998140401,
-          "ticker": "LIFE"
+          "rs126": 99.576071596797,
+          "rs189": 98.90736342042756,
+          "rs63": 99.58197863446354,
+          "ticker": "ABCL"
         }
       ],
       "period": 126,
@@ -274340,43 +274340,43 @@
       "comparisons": [
         {
           "available_sessions": 320,
-          "continuing": 8,
+          "continuing": 9,
           "detail": "前営業日",
           "in": [
-            "IOVA",
-            "TXG"
+            "PLSE"
           ],
           "label": "1日",
           "lag": 1,
           "out": [
-            "AXTI",
-            "DELL"
+            "FTH"
           ],
-          "replacement_count": 2,
+          "replacement_count": 1,
           "required_sessions": 2,
           "status": "READY",
-          "target_session": "2026-09-11"
+          "target_session": "2026-09-14"
         },
         {
           "available_sessions": 320,
-          "continuing": 7,
+          "continuing": 6,
           "detail": "約5営業日前",
           "in": [
+            "TXG",
             "TWST",
             "IOVA",
-            "TXG"
+            "PLSE"
           ],
           "label": "1週",
           "lag": 5,
           "out": [
             "AXTI",
             "MU",
+            "AAOI",
             "ATEX"
           ],
-          "replacement_count": 3,
+          "replacement_count": 4,
           "required_sessions": 6,
           "status": "READY",
-          "target_session": "2026-09-04"
+          "target_session": "2026-09-08"
         },
         {
           "available_sessions": 320,
@@ -274384,96 +274384,96 @@
           "detail": "約21営業日前",
           "in": [
             "MRNA",
-            "FTH",
+            "TXG",
             "TWST",
             "IOVA",
-            "TXG"
+            "PLSE"
           ],
           "label": "1か月",
           "lag": 21,
           "out": [
             "AXTI",
             "AAOI",
+            "AEHR",
             "MXL",
-            "ATEX",
-            "AEHR"
+            "ATEX"
           ],
           "replacement_count": 5,
           "required_sessions": 22,
           "status": "READY",
-          "target_session": "2026-08-13"
+          "target_session": "2026-08-14"
         }
       ],
       "current": [
         {
           "rank": 1,
-          "rs126": 96.32422243166823,
+          "rs126": 97.45642958078191,
           "rs189": 100.0,
-          "rs63": 86.84332868433286,
-          "ticker": "CLYM"
-        },
-        {
-          "rank": 2,
-          "rs126": 98.06786050895381,
-          "rs189": 99.95247148288973,
-          "rs63": 11.761971176197118,
+          "rs63": 9.335810496980956,
           "ticker": "SNDK"
         },
         {
+          "rank": 2,
+          "rs126": 95.24258125294395,
+          "rs189": 99.95249406175772,
+          "rs63": 83.4184858337204,
+          "ticker": "CLYM"
+        },
+        {
           "rank": 3,
-          "rs126": 97.26672950047124,
-          "rs189": 99.90494296577947,
-          "rs63": 95.07205950720595,
+          "rs126": 97.07960433349034,
+          "rs189": 99.90498812351544,
+          "rs63": 94.4263817928472,
           "ticker": "SLS"
         },
         {
           "rank": 4,
           "rs126": 100.0,
-          "rs189": 99.8574144486692,
-          "rs63": 14.876801487680149,
+          "rs189": 99.85748218527316,
+          "rs63": 15.281003251277287,
           "ticker": "AGL"
         },
         {
           "rank": 5,
-          "rs126": 99.19886899151744,
-          "rs189": 99.80988593155894,
-          "rs63": 99.953509995351,
+          "rs126": 99.15214319359397,
+          "rs189": 99.80997624703087,
+          "rs63": 99.95355318160706,
           "ticker": "MRNA"
         },
         {
           "rank": 6,
-          "rs126": 59.47219604147031,
-          "rs189": 99.76235741444867,
-          "rs63": 75.45327754532775,
+          "rs126": 64.34291097503532,
+          "rs189": 99.7624703087886,
+          "rs63": 73.66465397120298,
           "ticker": "ERAS"
         },
         {
           "rank": 7,
-          "rs126": 62.912346842601316,
-          "rs189": 99.7148288973384,
-          "rs63": 100.0,
-          "ticker": "FTH"
+          "rs126": 99.95289684408856,
+          "rs189": 99.71496437054633,
+          "rs63": 99.7677659080353,
+          "ticker": "TXG"
         },
         {
           "rank": 8,
-          "rs126": 99.43449575871819,
-          "rs189": 99.66730038022814,
-          "rs63": 98.512319851232,
+          "rs126": 99.43476212906265,
+          "rs189": 99.66745843230403,
+          "rs63": 98.28146771946122,
           "ticker": "TWST"
         },
         {
           "rank": 9,
-          "rs126": 98.02073515551368,
-          "rs189": 99.61977186311786,
-          "rs63": 99.62807996280799,
+          "rs126": 98.21008007536504,
+          "rs189": 99.61995249406176,
+          "rs63": 99.81421272642824,
           "ticker": "IOVA"
         },
         {
           "rank": 10,
-          "rs126": 99.85862393967955,
-          "rs189": 99.57224334600761,
-          "rs63": 99.76754997675499,
-          "ticker": "TXG"
+          "rs126": 98.82242110221385,
+          "rs189": 99.57244655581948,
+          "rs63": 99.44263817928471,
+          "ticker": "PLSE"
         }
       ],
       "period": 189,
@@ -274487,145 +274487,143 @@
           "continuing": 9,
           "detail": "前営業日",
           "in": [
-            "BNC"
+            "ABCL"
           ],
           "label": "1日",
           "lag": 1,
           "out": [
-            "TRAX"
+            "BNC"
           ],
           "replacement_count": 1,
           "required_sessions": 2,
           "status": "READY",
-          "target_session": "2026-09-11"
+          "target_session": "2026-09-14"
         },
         {
           "available_sessions": 319,
           "continuing": 6,
           "detail": "約5営業日前",
           "in": [
-            "FTH",
-            "BNC",
+            "IOVA",
             "TXG",
-            "IOVA"
+            "NIQ",
+            "ABCL"
           ],
           "label": "1週",
           "lag": 5,
           "out": [
             "TRAX",
             "XNCR",
-            "UTZ",
-            "ELF"
+            "ELF",
+            "VSTM"
           ],
           "replacement_count": 4,
           "required_sessions": 6,
           "status": "READY",
-          "target_session": "2026-09-03"
+          "target_session": "2026-09-04"
         },
         {
           "available_sessions": 319,
-          "continuing": 1,
+          "continuing": 2,
           "detail": "約21営業日前",
           "in": [
-            "FTH",
-            "MRNA",
             "RFAI",
-            "BNC",
+            "MRNA",
+            "FTH",
             "LIFE",
-            "AMLX",
-            "CDNA",
             "IOVA",
+            "CDNA",
+            "AMLX",
             "NIQ"
           ],
           "label": "1か月",
           "lag": 21,
           "out": [
-            "REPL",
             "APPS",
-            "BLZE",
-            "QTTB",
-            "TRAX",
+            "REPL",
             "QMCO",
-            "PSNL",
-            "BFLY",
-            "SLS"
+            "BLZE",
+            "TRAX",
+            "MAN",
+            "FWRD",
+            "TWST"
           ],
-          "replacement_count": 9,
+          "replacement_count": 8,
           "required_sessions": 22,
           "status": "READY",
-          "target_session": "2026-08-12"
+          "target_session": "2026-08-13"
         }
       ],
       "current": [
         {
           "rank": 1,
-          "rs126": 62.912346842601316,
-          "rs189": 99.7148288973384,
+          "rs126": 99.34055581723975,
+          "rs189": 99.04988123515439,
           "rs63": 100.0,
-          "ticker": "FTH"
+          "ticker": "RFAI"
         },
         {
           "rank": 2,
-          "rs126": 99.19886899151744,
-          "rs189": 99.80988593155894,
-          "rs63": 99.953509995351,
+          "rs126": 99.15214319359397,
+          "rs189": 99.80997624703087,
+          "rs63": 99.95355318160706,
           "ticker": "MRNA"
         },
         {
           "rank": 3,
-          "rs126": 99.10461828463714,
-          "rs189": 98.71673003802282,
-          "rs63": 99.907019990702,
-          "ticker": "RFAI"
+          "rs126": 61.422515308525675,
+          "rs189": 99.47743467933492,
+          "rs63": 99.90710636321411,
+          "ticker": "FTH"
         },
         {
           "rank": 4,
-          "rs126": 89.72667295004713,
-          "rs189": 8.460076045627376,
-          "rs63": 99.86052998605301,
-          "ticker": "BNC"
-        },
-        {
-          "rank": 5,
-          "rs126": 99.57587181903864,
+          "rs126": 99.67027790861988,
           "rs189": null,
-          "rs63": 99.81403998140401,
+          "rs63": 99.86065954482119,
           "ticker": "LIFE"
         },
         {
+          "rank": 5,
+          "rs126": 98.21008007536504,
+          "rs189": 99.61995249406176,
+          "rs63": 99.81421272642824,
+          "ticker": "IOVA"
+        },
+        {
           "rank": 6,
-          "rs126": 99.85862393967955,
-          "rs189": 99.57224334600761,
-          "rs63": 99.76754997675499,
+          "rs126": 99.95289684408856,
+          "rs189": 99.71496437054633,
+          "rs63": 99.7677659080353,
           "ticker": "TXG"
         },
         {
           "rank": 7,
-          "rs126": 98.35061262959472,
-          "rs189": 98.28897338403041,
-          "rs63": 99.72105997210599,
-          "ticker": "AMLX"
-        },
-        {
-          "rank": 8,
-          "rs126": 99.38737040527805,
-          "rs189": 98.57414448669202,
-          "rs63": 99.67456996745699,
+          "rs126": 99.3876589731512,
+          "rs189": 98.62232779097387,
+          "rs63": 99.72131908964236,
           "ticker": "CDNA"
         },
         {
+          "rank": 8,
+          "rs126": 98.1629769194536,
+          "rs189": 98.24228028503563,
+          "rs63": 99.67487227124941,
+          "ticker": "AMLX"
+        },
+        {
           "rank": 9,
-          "rs126": 98.02073515551368,
-          "rs189": 99.61977186311786,
-          "rs63": 99.62807996280799,
-          "ticker": "IOVA"
+          "rs126": 89.68440885539331,
+          "rs189": 63.18289786223278,
+          "rs63": 99.62842545285649,
+          "ticker": "NIQ"
         },
         {
           "rank": 10,
-          "rs126": 89.30254476908577,
-          "rs189": 61.83460076045627,
-          "rs63": 99.581589958159,
-          "ticker": "NIQ"
+          "rs126": 99.576071596797,
+          "rs189": 98.90736342042756,
+          "rs63": 99.58197863446354,
+          "ticker": "ABCL"
         }
       ],
       "period": 63,

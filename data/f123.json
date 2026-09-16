@@ -1,5 +1,5 @@
 {
-  "base_pool_count": 1477,
+  "base_pool_count": 1475,
   "calculation_version": "v38-f123-engine-1.1.0",
   "coverage": 1.0,
   "display_completion_policy": {
@@ -12,24 +12,24 @@
     "f3": {
       "break_count": 176,
       "broken": [
-        "AXTI",
-        "RFAI",
+        "ASST",
         "FCEL",
-        "VSH",
+        "AXTI",
         "VOR",
-        "MXL",
-        "ALAB",
-        "PENG"
+        "VSH",
+        "RFAI",
+        "WDC",
+        "MXL"
       ],
-      "coverage": 0.9899665551839465,
+      "coverage": 0.98989898989899,
       "display_only": true,
       "display_source": "OBSERVED_BREAKS_OVER_FULL_QUEUE_WITH_UNKNOWN_COVERAGE_REPORTED",
-      "observable_count": 296,
-      "queue_count": 299,
+      "observable_count": 294,
+      "queue_count": 297,
       "severity": "CAUTION",
       "status": "PARTIAL",
       "trading_gate_eligible": false,
-      "value": 0.5886287625418061
+      "value": 0.5925925925925926
     }
   },
   "f1": {
@@ -55,38 +55,38 @@
     "severity": "SEVERE",
     "status": "OK",
     "top24_count": 24,
-    "value": 0.4166666666666667,
+    "value": 0.4583333333333333,
     "weak": [
       "SNDK",
+      "CLYM",
       "AGL",
       "ERAS",
-      "AXTI",
       "IBRX",
-      "ATEX",
+      "MXL",
       "MU",
-      "MXL"
+      "AXTI"
     ],
-    "weak_count": 10
+    "weak_count": 11
   },
   "f3": {
     "break_count": 176,
     "broken": [
-      "AXTI",
-      "RFAI",
+      "ASST",
       "FCEL",
-      "VSH",
+      "AXTI",
       "VOR",
-      "MXL",
-      "ALAB",
-      "PENG"
+      "VSH",
+      "RFAI",
+      "WDC",
+      "MXL"
     ],
-    "observable_count": 296,
-    "queue_count": 299,
+    "observable_count": 294,
+    "queue_count": 297,
     "severity": "NO_JUDGMENT",
     "status": "DATA_INCOMPLETE",
     "value": null
   },
-  "generated_at": "2026-09-16T00:04:06Z",
+  "generated_at": "2026-09-16T05:41:10Z",
   "rules": {
     "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
     "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
@@ -96,6 +96,6 @@
     "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; break=Ret20<=0 OR Dist52<-15%; queue<3 no judgment"
   },
   "schema_version": "v38.f123.1",
-  "session_date": "2026-09-14",
+  "session_date": "2026-09-15",
   "source": "derived:rs+pit_old_top24"
 }
