@@ -1,4 +1,4 @@
-/* Source-layout mobile containment. No card geometry or visual tokens change. */
+/* Source-layout mobile containment. Preserve source cards; only contain overflow and navigation. */
 #t-port table,
 #t-alloc table,
 #t-weekly table,
@@ -9,9 +9,37 @@
   max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+nav:has(a.tabx) {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  padding-inline: 1px 10px;
+}
+nav:has(a.tabx)::-webkit-scrollbar { display: none; }
+nav a.tabx {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  white-space: nowrap;
 }
 
 @media (max-width: 600px) {
+  nav:has(a.tabx) {
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 5px;
+  }
+  nav a.tabx {
+    min-width: max-content;
+  }
   #t-movers .mv-cols {
     grid-template-columns: minmax(0, 1fr);
   }
