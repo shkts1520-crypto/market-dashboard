@@ -371,9 +371,9 @@
     const flow = ((view.rotation||{}).money_flow)||{};
     const rows = Array.isArray(flow.rows) ? flow.rows : [];
     heading(cardNode,'資金フロー（GICS11＋スタイル）','GICS11＋スタイル5本。横=SPY比63営業日相対力、縦=その10営業日モメンタム。100が市場並み。');
-    if (rows.length !== 16) {
-      cardNode.appendChild(el('div','empty','必要な16系列が揃っていません。公開処理を停止します。'));
-      mark(cardNode,'data/ui_view_model.json.rotation.money_flow','ERROR','RRG_SERIES_INCOMPLETE');
+    if (rows.length < 11) {
+      cardNode.appendChild(el('div','empty','GICS11系列が揃っていません。公開処理を停止します。'));
+      mark(cardNode,'data/ui_view_model.json.rotation.money_flow','ERROR','RRG_GICS_SERIES_INCOMPLETE');
       return;
     }
     const plot=el('div','v38-rrg');
@@ -385,7 +385,9 @@
       const dot=el('button','v38-rrg-dot',r.ticker);dot.type='button';dot.dataset.v38Ticker=r.ticker;dot.title=`${r.label||STYLE_LABELS[r.ticker]||r.ticker} RS ${x.toFixed(1)} / Mom ${y.toFixed(1)}`;
       dot.style.left=`${5+90*(x-minX)/(maxX-minX||1)}%`;dot.style.top=`${95-90*(y-minY)/(maxY-minY||1)}%`;plot.appendChild(dot);
     });
-    cardNode.appendChild(plot);mark(cardNode,'data/ui_view_model.json.rotation.money_flow','READY');
+    cardNode.appendChild(plot);
+    if(rows.length<16)cardNode.appendChild(el('div','sub',`実測取得済み ${rows.length}/16系列を表示。未取得スタイルETFは推測しません。`));
+    mark(cardNode,'data/ui_view_model.json.rotation.money_flow','READY',rows.length<16?'OPTIONAL_STYLE_SERIES_PARTIAL':'COMPLETE_16_SERIES');
   }
 
   function renderRotation(view) {
