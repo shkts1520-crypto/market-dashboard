@@ -6,7 +6,7 @@
     "revenue_ttm_available": 3222,
     "rs_rows": 3389
   },
-  "generated_at": "2026-09-16T12:47:11Z",
+  "generated_at": "2026-09-16T13:29:38Z",
   "rows": [
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
