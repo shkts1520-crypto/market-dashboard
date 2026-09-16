@@ -91,10 +91,12 @@ def assert_repaired_cards(page, width: int) -> None:
                 assert token not in text, (width, href, needle, token)
             seen += 1
     assert seen == 31, (width, 'repaired-card contract count changed', seen)
-    for key in ('volume_participation','up_down_dollar_ratio','mcclellan','risk_rotation','credit_ratio','vix_term','weekly_regime'):
+    for key in ('volume_participation','up_down_dollar_ratio','mcclellan','risk_rotation','credit_ratio','vix_term'):
         spark = page.locator(f'svg[data-v38-live-spark="{key}"]')
-        assert spark.count() == 1, (width, key, 'required repaired spark missing')
-        assert len((spark.locator('polyline').get_attribute('points') or '').split()) >= 2, (width, key, 'spark too short')
+        assert spark.count() == 1, (width, key, 'required repaired trend missing')
+        assert len((spark.locator('polyline').get_attribute('points') or '').split()) >= 2, (width, key, 'trend too short')
+    ribbon = page.locator('#t-weekly .card[data-v38-card-title*="地合いの帯"] .ribbon .rb')
+    assert ribbon.count() >= 1, (width, 'weekly source-format regime ribbon missing')
 
 
 def assert_mobile_geometry(page, href: str, width: int) -> None:
@@ -112,9 +114,14 @@ def assert_daily_visuals(page, width: int) -> None:
     page.locator('a.tabx[href="#t-market"]').click()
     for key in ('breadth50', 'breadth200'):
         svg = page.locator(f'#t-market svg[data-v38-live-spark="{key}"]')
-        assert svg.count() == 1 and svg.is_visible(), (width, key, 'required trend spark missing')
+        assert svg.count() == 1 and svg.is_visible(), (width, key, 'required trend chart missing')
+        assert svg.get_attribute('data-v38-full-trend') == '1', (width, key, 'compact spark regressed over full source chart')
         points = svg.locator('polyline').get_attribute('points') or ''
         assert len(points.split()) >= 20, (width, key, 'trend has too few points')
+        assert svg.locator('text.v38-y-label').count() >= 4, (width, key, 'vertical-axis labels missing')
+        assert svg.locator('line.v38-grid-line').count() >= 4, (width, key, 'vertical-axis grid/ticks missing')
+    mc57 = page.locator('#t-market svg[data-v38-live-spark="mc57"]')
+    assert mc57.count() == 1 and mc57.locator('text.v38-y-label').count() >= 4, (width, 'MC57 source chart axis missing')
     heat = page.locator('#t-market .v38-sector-cell')
     if heat.count():
         assert heat.count() == 11, (width, 'daily sector heatmap must have 11 sectors', heat.count())
@@ -143,8 +150,26 @@ def assert_rotation(page, width: int) -> None:
     assert flow_card.count() == 1, (width, 'money-flow card missing')
     assert flow_card.get_attribute('data-v38-status') == 'READY', (width, 'money-flow card not READY')
     assert flow_card.get_attribute('data-v38-truth-source'), (width, 'money-flow truth source missing')
+    assert flow_card.locator('svg.v38-rrg-svg').count() == 1, (width, 'source-format RRG missing')
+    assert flow_card.locator('.v38-rrg-quadrant').count() == 4, (width, 'RRG quadrants missing')
     heat = page.locator('#t-rotation .v38-sector-cell')
     assert heat.count() == 11, (width, 'rotation heatmap must contain 11 GICS sectors', heat.count())
+    assert page.locator('#t-rotation .v38-heat-controls button').count() == 3, (width, 'rotation 1D/1W/1M heatmap controls missing')
+    breadth = page.locator('#t-rotation .card[data-v38-generated="breadth-quality"]')
+    assert breadth.count() == 1 and breadth.get_attribute('data-v38-status') == 'READY', (width, 'breadth-quality diagnosis missing')
+
+
+def assert_rs(page, width: int) -> None:
+    page.locator('a.tabx[href="#t-rs"]').click()
+    overlap = page.locator('#t-rs .card[data-v38-card-title*="RSマルチタイムフレーム比較"]')
+    assert overlap.count() == 1 and overlap.get_attribute('data-v38-status') == 'READY', (width, 'RS overlap card not connected')
+    assert overlap.locator('.v38-rs-box').count() == 4, (width, 'RS overlap structure missing')
+    for period in (63, 126, 189):
+        top = page.locator(f'#t-rs .card[data-v38-card-title*="RS{period} Top10"]')
+        assert top.count() == 1 and top.get_attribute('data-v38-status') == 'READY', (width, period, 'RS Top10 card missing')
+        assert top.locator('tbody tr').count() >= 1, (width, period, 'RS Top10 data missing')
+    persist = page.locator('#t-rs .card[data-v38-card-title*="RS189 継続性"]')
+    assert persist.count() == 1 and persist.get_attribute('data-v38-status') == 'READY', (width, 'RS persistence missing')
 
 
 def assert_options(page, width: int) -> None:
@@ -153,6 +178,8 @@ def assert_options(page, width: int) -> None:
     assert buckets.count() == 4, (width, 'four DTE buckets missing', buckets.count())
     text = page.locator('#t-options').inner_text()
     assert 'Confidence' not in text and 'Direction' not in text, (width, 'removed inferred option labels resurfaced')
+    nonempty = page.locator('#t-options .card[data-v38-option-bucket] .rsx-item')
+    assert nonempty.count() >= 1, (width, 'source-format option rows missing')
 
 
 def assert_publish(page, view: dict, width: int) -> None:
@@ -189,6 +216,7 @@ def main() -> int:
                 assert_positions(page, view, width)
                 assert_setups(page, width)
                 assert_rotation(page, width)
+                assert_rs(page, width)
                 assert_options(page, width)
                 assert_publish(page, view, width)
                 assert_repaired_cards(page, width)
