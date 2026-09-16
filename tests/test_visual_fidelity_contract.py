@@ -39,3 +39,5 @@ def test_core12_liquidity_utility_is_bound_not_left_as_blank_card():
     assert "bindLiquidityUtility('t-port','data/ui_view_model.json.core12.rows')" in BINDER
     assert "bindLiquidityUtility('t-today','data/ui_view_model.json.setups')" in BINDER
     assert "ddv20:r.ddv20" in BINDER
+    assert ".v38-canonical-row[data-liq]" in BINDER
+    assert "row.hidden=threshold>=0&&value<threshold" in BINDER
