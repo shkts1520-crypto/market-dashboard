@@ -43,6 +43,49 @@ def _assert_ready_has_no_false_missing(section, expected):
         assert "READY" not in text
 
 
+def _assert_source_specialized(page):
+    # These exact source-py displays previously regressed while generic card-count CI stayed green.
+    daily_regime = page.locator("#t-market .reg-card")
+    core_regime = page.locator("#t-port .reg-card")
+    assert daily_regime.count() == 1
+    assert core_regime.count() == 1
+    assert daily_regime.locator(".reg-cell").count() == 3
+    assert core_regime.locator(".reg-cell").count() == 3
+    for regime in (daily_regime, core_regime):
+        cells_text = " ".join(regime.locator(".reg-cell").all_inner_texts())
+        for label in ("F1", "F2", "F3"):
+            assert label in cells_text
+        # NQSAR may be mentioned in the explanatory note, but must never return as a fourth instrument.
+        assert "NQSAR" not in cells_text
+
+    defense = page.locator("#t-port .def-card")
+    assert defense.count() == 1
+    assert "防御チェックリスト" in defense.inner_text()
+    assert "Hard Gate" in defense.inner_text()
+
+    vix = page.locator("#t-market .vixcy")
+    assert vix.count() == 1
+    assert vix.locator(".vixvals > div").count() == 6
+    vix_text = vix.inner_text()
+    for label in ("VIX", "High", "LWMA5", "LWMA10", "+1σ", "+2σ"):
+        assert label in vix_text
+    assert vix.locator(".vixwtabs button").count() == 4
+    assert vix.locator(".vixchart svg").count() == 1
+
+    ftd = page.locator("#t-market .card").filter(has_text="フォロースルー・デイ").first
+    assert ftd.count() == 1
+    ftd_text = ftd.inner_text()
+    for machine_token in ("SOURCE_DEFINED_", "SOURCE_UNAVAILABLE"):
+        assert machine_token not in ftd_text
+
+    rules = page.locator("#t-rules")
+    rules_text = rules.inner_text()
+    for heading in ("配分", "市場モード", "通常個別株", "RSI30 Panic Reset", "TQQQ Panic"):
+        assert heading in rules_text
+    for machine_prefix in ("allocation.", "market_mode.", "normal_stock.", "panic_reset.", "tqqq_panic."):
+        assert machine_prefix not in rules_text
+
+
 def _assert_source_dom(page):
     for section_id, minimum in BASELINE_COUNTS.items():
         assert page.locator(f"#{section_id} .card").count() >= minimum, section_id
@@ -57,6 +100,7 @@ def _assert_source_dom(page):
     for title in ("強い業種の主導株", "セクターETF強弱", "サブテーマ別RS"):
         assert title in rotation
     assert page.locator(".v38-live-grid,.v38-generic-row,.v38-rs-row").count() == 0
+    _assert_source_specialized(page)
 
 
 def _assert_interactions(page):
@@ -119,6 +163,7 @@ def main() -> int:
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
                 _assert_canonical_binder(page)
+                page.wait_for_function("document.body.dataset.v38PySourceFinal === 'ready'")
                 tabs = page.locator("a.tabx")
                 assert tabs.count() == 11
                 assert [tabs.nth(i).inner_text().strip() for i in range(11)] == list(TAB_LABELS)
@@ -146,8 +191,6 @@ def main() -> int:
                     _assert_ready_has_no_false_missing(section, view.get(VIEW_KEYS[section_id]) or {})
                     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 2"), section_id
 
-                    # v38-site.js intentionally forces scrollTop again at 0/80ms after a tab click.
-                    # Wait past that stabilization window so the evidence screenshot cannot race it.
                     page.wait_for_timeout(120)
                     assert section.inner_text().strip(), (width, section_id, "visible section has no text")
                     if screenshot_dir:

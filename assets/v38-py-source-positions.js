@@ -52,6 +52,27 @@
     return card;
   }
 
+  function markGeneratedTruth() {
+    const section = document.getElementById('t-port');
+    if (!section) return false;
+    const defense = findCard(section, '防御チェックリスト');
+    if (!defense) return false;
+    defense.dataset.v38TruthSource = 'data/py_source_display.json.f1_display+f2+f3';
+    defense.dataset.v38Status = 'READY';
+    defense.dataset.v38UiSource = SOURCE;
+    return true;
+  }
+
+  function observeGeneratedTruth() {
+    const section = document.getElementById('t-port');
+    if (!section) return;
+    if (markGeneratedTruth()) return;
+    const observer = new MutationObserver(() => {
+      if (markGeneratedTruth()) observer.disconnect();
+    });
+    observer.observe(section, {childList: true, subtree: true});
+  }
+
   function applyPositionsSourceLayout() {
     const section = document.getElementById('t-alloc');
     if (!section) return;
@@ -103,7 +124,9 @@
     } catch (_) {}
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     applyPositionsSourceLayout();
+    markGeneratedTruth();
   }
 
+  observeGeneratedTruth();
   document.addEventListener('v38:view-ready', () => { void afterAuthority(); }, {once: true});
 })();
