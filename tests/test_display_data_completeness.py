@@ -57,7 +57,8 @@ def test_browser_gate_checks_rendered_product_not_patch_statuses():
     assert 'v38PublicRenderContract' not in script
     for token in ('DATA_REQUIRED', 'SOURCE_UNAVAILABLE', 'producer未復元', 'full_v38_ready:'):
         assert token in script
-    assert 'v38-rrg-dot' in script
+    assert 'REPAIRED_CARD_CONTRACT' in script
+    assert 'data-v38-truth-source' in script
     assert 'v38-sector-cell' in script
 
 
