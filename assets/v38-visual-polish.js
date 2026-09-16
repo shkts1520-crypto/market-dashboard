@@ -35,8 +35,47 @@
     row.dataset.v38DisplaySource = 'daily.display_observations.sentiment.current';
   }
 
+  function repairBreadthChart(view, key) {
+    var history = (((view || {}).daily || {}).history) || [];
+    if (!Array.isArray(history)) return;
+    var values = history.map(function (row) { return finite(row && row[key]); }).filter(function (v) { return v !== null; });
+    if (values.length < 2) return;
+    var maxAbs = Math.max.apply(null, values.map(Math.abs));
+    if (maxAbs <= 1.5) values = values.map(function (v) { return v * 100; });
+
+    var svg = document.querySelector('#t-market svg[data-v38-live-spark="' + key + '"]');
+    if (!svg) return;
+    var W = 680, H = 180, P = 6, R = 52;
+    var x = function (i) { return P + i * (W - R - P) / Math.max(1, values.length - 1); };
+    var y = function (v) { return P + (1 - Math.max(0, Math.min(100, v)) / 100) * (H - 2 * P); };
+    var coords = values.map(function (v, i) { return x(i).toFixed(1) + ',' + y(v).toFixed(1); });
+    var poly = svg.querySelector('polyline');
+    var dot = svg.querySelector('circle');
+    var area = Array.from(svg.querySelectorAll('path')).find(function (path) {
+      return String(path.getAttribute('fill') || '').indexOf('url(') === 0;
+    });
+    if (poly) poly.setAttribute('points', coords.join(' '));
+    if (dot) {
+      dot.setAttribute('cx', x(values.length - 1).toFixed(1));
+      dot.setAttribute('cy', y(values[values.length - 1]).toFixed(1));
+    }
+    if (area) {
+      area.setAttribute('d', 'M' + coords[0] + ' ' + coords.slice(1).map(function (p) { return 'L' + p; }).join(' ') +
+        ' L' + x(values.length - 1).toFixed(1) + ',' + (H - P) + ' L' + x(0).toFixed(1) + ',' + (H - P) + ' Z');
+    }
+    svg.dataset.v38BreadthScale = maxAbs <= 1.5 ? 'fraction-to-percent' : 'percent-points';
+  }
+
+  function repairBreadth(view) {
+    repairBreadthChart(view, 'breadth50');
+    repairBreadthChart(view, 'breadth200');
+  }
+
   function polishPublishFrame(frame) {
-    if (!frame || !frame.srcdoc || frame.dataset.v38VisualPolish === '1') return;
+    if (!frame || !frame.srcdoc) return;
+    frame.style.setProperty('width', '100%', 'important');
+    frame.style.setProperty('max-width', '100%', 'important');
+    if (frame.dataset.v38VisualPolish === '1') return;
     var css = '<style id="v38-publish-visual-polish">' +
       '.card{padding:26px 30px 20px!important}' +
       '.hd{margin-bottom:12px!important;padding-bottom:10px;border-bottom:1px solid rgba(90,82,68,.14)}' +
@@ -58,7 +97,9 @@
   }
 
   function apply(view) {
-    repairSentiment(view || window.V38UiViewModel || {});
+    var model = view || window.V38UiViewModel || {};
+    repairSentiment(model);
+    repairBreadth(model);
     polishPublish();
     document.documentElement.dataset.v38VisualPolish = 'ready';
   }
