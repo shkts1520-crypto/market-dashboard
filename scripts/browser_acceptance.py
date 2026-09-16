@@ -85,6 +85,21 @@ def _assert_interactions(page):
     assert "Direction" not in text and "Confidence" not in text
 
 
+def _assert_canonical_binder(page) -> None:
+    page.wait_for_function("document.documentElement.dataset.v38CanonicalBinder !== undefined")
+    state = page.evaluate("document.documentElement.dataset.v38CanonicalBinder")
+    error_count = page.evaluate("document.body.dataset.v38CanonicalBinderErrors || '0'")
+    if state != "ready" or error_count != "0":
+        failures = page.evaluate(
+            """() => Array.from(document.querySelectorAll('section .card[data-v38-reason="UNBOUND_VISIBLE_CARD"]'))
+              .map(card => ({
+                section: card.closest('section')?.id || '',
+                title: (card.querySelector('h2,.hdr h2,.chd h2')?.textContent || '').replace(/\s+/g,' ').trim()
+              }))"""
+        )
+        raise AssertionError(f"canonical binder state={state} errors={error_count} unbound={failures}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:8000/")
@@ -103,8 +118,7 @@ def main() -> int:
                 page.on("pageerror", lambda exc: errors.append(str(exc)))
                 page.goto(args.url, wait_until="networkidle")
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
-                page.wait_for_function("document.documentElement.dataset.v38CanonicalBinder === 'ready'")
-                assert page.evaluate("document.body.dataset.v38CanonicalBinderErrors === '0'")
+                _assert_canonical_binder(page)
                 tabs = page.locator("a.tabx")
                 assert tabs.count() == 11
                 assert [tabs.nth(i).inner_text().strip() for i in range(11)] == list(TAB_LABELS)
