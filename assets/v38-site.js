@@ -19,7 +19,7 @@
     });
     document.querySelectorAll(TAB_SELECTOR).forEach((tab) => {
       const active = targetOf(tab) === targetId;
-      tab.classList.toggle('active', active);
+      tab.classList.toggle('on', active);
       tab.setAttribute('aria-selected', active ? 'true' : 'false');
     });
     if (updateHistory) {
