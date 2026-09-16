@@ -156,6 +156,7 @@ def main() -> int:
     # The old fidelity stylesheet reinterpreted the py source; it is intentionally disabled.
     source_fidelity_css_enabled = False
     py_source_css_enabled = _inject_stylesheet(out, Path("assets/v38-py-source-authority.css"))
+    py_source_guard_enabled = _inject_stylesheet(out, Path("assets/v38-py-source-guard.css"))
 
     # These recovered fragments remain only as data-binding DOM slots. Their visual authority
     # is removed by v38-py-source-authority.js/css after the live binder has populated them.
@@ -212,6 +213,7 @@ def main() -> int:
         "source_mobile_styles": source_mobile_enabled,
         "source_fidelity_css": source_fidelity_css_enabled,
         "py_source_css": py_source_css_enabled,
+        "py_source_guard": py_source_guard_enabled,
         "py_source_authority": py_source_authority_enabled,
         "py_source_display_materialized": py_source_display_materialized,
         "setups_0905_restored_as_slots": setups_0905_enabled,
