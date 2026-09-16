@@ -68,11 +68,12 @@ def test_single_binder_targets_named_canonical_cards():
         '現在の想定ポジション', 'マーケット回復後', 'エクイティカーブ×21日EMA',
         '新規参入', '個別株スリーブ Core 12', 'RSリーダー控え',
         '資金フロー', 'セクター温度マップ', '主導セクター・業種',
-        'RS63 Top10', 'RS126 Top10', 'RS189 Top10', 'RS189 継続性',
-        '今週の結論', '来週の経済指標', '自分 vs QQQ',
+        'RS189 継続性', '今週の結論', '来週の経済指標', '自分 vs QQQ',
         '0–6 DTE', '7–21 DTE', '22–45 DTE', '0–45 DTE',
     ):
         assert needle in js
+    assert '[63,126,189].forEach' in js
+    assert '`RS${period} Top10`' in js
 
 
 def test_single_binder_never_silently_hides_unbound_cards():
