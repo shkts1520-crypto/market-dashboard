@@ -322,9 +322,22 @@ def import_source(source_path: Path, env: dict[str, str]):
 
 def _install_mc57_score_patch(module: Any, data_dir: Path, session: str) -> None:
     original = module.mri_frame
+    stable_macro = build_macro_from_market_inputs(data_dir, session)
+
+    def _trim_stable_macro(max_date: pd.Timestamp | None) -> dict[str, pd.DataFrame]:
+        if max_date is None:
+            return stable_macro
+        cutoff = pd.Timestamp(max_date).tz_localize(None).normalize()
+        trimmed: dict[str, pd.DataFrame] = {}
+        for symbol, frame in stable_macro.items():
+            if not isinstance(frame, pd.DataFrame) or frame.empty:
+                continue
+            current = frame.loc[frame.index <= cutoff].copy()
+            if not current.empty:
+                trimmed[symbol] = current
+        return trimmed
 
     def mc57_mri_frame(macro, W=None):
-        _legacy_series, breakdown, dropped, active, vals = original(macro, W)
         max_date = None
         try:
             close = W.get("Close") if isinstance(W, dict) else None
@@ -332,6 +345,28 @@ def _install_mc57_score_patch(module: Any, data_dir: Path, session: str) -> None
                 max_date = pd.Timestamp(close.index[-1])
         except Exception:
             max_date = None
+
+        try:
+            _legacy_series, breakdown, dropped, active, vals = original(macro, W)
+        except ValueError as exc:
+            if "market score needs QQQ/SPY history" not in str(exc):
+                raise
+            fallback_macro = _trim_stable_macro(max_date)
+            counts = {
+                symbol: int(len(frame.index))
+                for symbol, frame in fallback_macro.items()
+                if symbol in {"QQQ", "SPY", "HYG", "LQD", "RSP", "IWM", "^VIX"}
+            }
+            print(
+                "[mc57-adapter] source runtime macro lost required overlap; "
+                f"retrying legacy diagnostics from isolated market_inputs: {counts}",
+                file=sys.stderr,
+            )
+            _legacy_series, breakdown, dropped, active, vals = original(
+                fallback_macro,
+                W,
+            )
+
         score = mc57_series(data_dir, session, max_date=max_date)
         return score, breakdown, dropped, active, vals
 
