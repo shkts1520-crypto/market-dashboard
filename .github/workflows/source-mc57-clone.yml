@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66'
+          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
 
       - name: Recover exact Pages artifact from Production
         if: github.event_name == 'workflow_run'
