@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import base64
 import csv
-import gzip
+import lzma
 import hashlib
 import importlib.util
 import json
@@ -19,7 +19,7 @@ from typing import Any
 import pandas as pd
 
 SOURCE_SHA256 = "ee306726ee4b629f92c5d2d6687c06869702030f60922c93f44ead713bc8bb80"
-SOURCE_PART_GLOB = "build_dashboard_4.py.gz.b64.part*"
+SOURCE_PART_GLOB = "build_dashboard_4.py.lzma.b85.part*"
 
 
 class CloneBuildError(RuntimeError):
@@ -52,8 +52,8 @@ def reconstruct_source(source_dir: Path, target: Path) -> Path:
         raise CloneBuildError(f"source archive parts missing: {source_dir}/{SOURCE_PART_GLOB}")
     encoded = "".join(part.read_text(encoding="ascii").strip() for part in parts)
     try:
-        compressed = base64.b64decode(encoded, validate=True)
-        raw = gzip.decompress(compressed)
+        compressed = base64.b85decode(encoded.encode("ascii"))
+        raw = lzma.decompress(compressed)
     except Exception as exc:
         raise CloneBuildError(f"source archive cannot be decoded: {exc}") from exc
     digest = hashlib.sha256(raw).hexdigest()
