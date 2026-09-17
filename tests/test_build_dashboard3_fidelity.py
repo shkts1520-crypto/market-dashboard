@@ -29,12 +29,21 @@ def test_mc57_detail_table_is_restored_from_live_view_model():
     assert "restoreMc57" in js
 
 
-def test_rrg_is_single_owner_in_rotation():
+def test_rrg_is_single_owner_in_rotation_and_reuses_source_rank_flow():
     js = ASSET.read_text(encoding="utf-8")
     assert "function repairRrg" in js
     assert "rotation-rrg" in js
+    assert "順位フロー（大分類）" in js
+    assert "#bump,#rrg" in js
     assert "rr.length!==1" in js
     assert "rr[0]?.closest('section')?.id!=='t-rotation'" in js
+
+
+def test_guard_waits_until_py_source_finalizer_finishes():
+    js = ASSET.read_text(encoding="utf-8")
+    assert "dataset.v38PySourceFinal" in js
+    assert "final==='ready'" in js
+    assert "await wait();" in js
 
 
 def test_full_card_inventory_audit_is_fail_closed():
