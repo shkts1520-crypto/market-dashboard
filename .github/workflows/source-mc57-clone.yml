@@ -144,12 +144,77 @@ jobs:
               source=source,
           )
 
+          previous_market_path = data_dir / "market_inputs.json"
+          previous_market = {}
+          if previous_market_path.is_file():
+              try:
+                  previous_market = json.loads(
+                      previous_market_path.read_text(encoding="utf-8")
+                  )
+              except Exception:
+                  previous_market = {}
+
           market_inputs = download_market_inputs(
               yf,
               target_session=session,
               generated_at=generated_at,
           )
+
+          # Preserve valid prior history while replacing same-date rows with the
+          # newly acquired session. The exact source UI calculates legacy
+          # diagnostics from overlapping QQQ/SPY/HYG/LQD/RSP/IWM/VIX history;
+          # a provider may return only a short current slice for one symbol.
+          prior_series = (
+              previous_market.get("series")
+              if isinstance(previous_market.get("series"), dict)
+              else {}
+          )
+          fresh_series = (
+              market_inputs.get("series")
+              if isinstance(market_inputs.get("series"), dict)
+              else {}
+          )
+          merged_series = {}
+          for symbol in sorted(set(prior_series) | set(fresh_series)):
+              by_date = {}
+              old_rows = prior_series.get(symbol)
+              new_rows = fresh_series.get(symbol)
+              if isinstance(old_rows, list):
+                  for row in old_rows:
+                      if isinstance(row, dict) and isinstance(row.get("date"), str):
+                          by_date[row["date"]] = row
+              if isinstance(new_rows, list):
+                  for row in new_rows:
+                      if isinstance(row, dict) and isinstance(row.get("date"), str):
+                          by_date[row["date"]] = row
+              merged_series[symbol] = [
+                  by_date[d]
+                  for d in sorted(by_date)
+                  if d <= session
+              ][-520:]
+          market_inputs["series"] = merged_series
+
+          required_history = ("QQQ", "SPY", "HYG", "LQD", "RSP", "IWM", "^VIX")
+          history_counts = {
+              symbol: len(merged_series.get(symbol) or [])
+              for symbol in required_history
+          }
+          if history_counts["QQQ"] < 200 or history_counts["SPY"] < 200:
+              raise RuntimeError(
+                  "clone market history too short after merge: "
+                  + json.dumps(history_counts, sort_keys=True)
+              )
+
           write_json(data_dir / "market_inputs.json", market_inputs)
+          print(
+              json.dumps(
+                  {
+                      "clone_market_history_counts": history_counts,
+                      "clone_market_history_merged": True,
+                  },
+                  sort_keys=True,
+              )
+          )
           write_json(
               data_dir / "state.json",
               state_object(
