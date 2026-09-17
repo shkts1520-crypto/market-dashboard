@@ -1,0 +1,122 @@
+name: Exact Source MC57 Clone
+
+on:
+  workflow_run:
+    workflows:
+      - V38 Production Full Pipeline
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: exact-source-mc57-pages
+  cancel-in-progress: false
+
+jobs:
+  append-clone-and-deploy:
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+      }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout exact main state
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install clone dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66'
+
+      - name: Recover exact Pages artifact from Production
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: /tmp/v38-pages-artifact
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Recover current Pages artifact for manual run
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          RUN_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production.yml/runs?branch=main&status=success&per_page=1" --jq '.workflow_runs[0].id')"
+          test -n "$RUN_ID"
+          ARTIFACT_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" --jq '.artifacts[] | select(.name=="github-pages") | .id' | head -n1)"
+          test -n "$ARTIFACT_ID"
+          mkdir -p /tmp/v38-pages-artifact
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > /tmp/v38-pages.zip
+          unzip -q /tmp/v38-pages.zip -d /tmp/v38-pages-artifact
+
+      - name: Unpack Production Pages byte-for-byte
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+          TAR="$(find /tmp/v38-pages-artifact -type f -name '*.tar' | head -n1)"
+          test -n "$TAR"
+          tar -xf "$TAR" -C _site
+          test -s _site/index.html
+          sha256sum _site/index.html | tee /tmp/index.before.sha256
+
+      - name: Build separate exact source page with MC57 only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v38-clone-live"
+          PYTHONPATH=src python scripts/build_exact_source_mc57_clone.py \
+            --repo-root . \
+            --data-dir data \
+            --source-dir sources/build_dashboard_4 \
+            --work-dir "$RUNNER_TEMP/v38-clone-live" \
+            --output _site/source-mc57.html
+          test -s _site/source-mc57.html
+
+      - name: Prove existing page was not changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum _site/index.html | tee /tmp/index.after.sha256
+          cmp /tmp/index.before.sha256 /tmp/index.after.sha256
+          grep -q 'マーケットステータス（地合いスコア）' _site/source-mc57.html
+          grep -q '地合いスコアの内訳（4本柱）' _site/source-mc57.html
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact with separate clone
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy unchanged Production artifact plus clone
+        id: deployment
+        uses: actions/deploy-pages@v4
