@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - .github/workflows/source-mc57-clone.yml
+      - scripts/build_exact_source_mc57_clone.py
   schedule:
     # 06:45 JST every morning (GitHub cron is UTC).
     - cron: '45 21 * * *'
