@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - .github/workflows/source-mc57-clone.yml
+  schedule:
+    # 06:45 JST every morning (GitHub cron is UTC).
+    - cron: '45 21 * * *'
   workflow_run:
     workflows:
       - V38 Production Full Pipeline
@@ -30,6 +33,7 @@ jobs:
     if: >-
       ${{
         github.event_name == 'push' ||
+        github.event_name == 'schedule' ||
         github.event_name == 'workflow_dispatch' ||
         (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
       }}
@@ -56,6 +60,122 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
+
+      - name: Refresh isolated clone data from the existing live acquisition route
+        shell: bash
+        env:
+          CLONE_DATA: ${{ runner.temp }}/v38-clone-data
+          CLONE_WORK: ${{ runner.temp }}/v38-clone-live
+        run: |
+          set -euo pipefail
+          rm -rf "$CLONE_DATA" "$CLONE_WORK"
+          cp -a data "$CLONE_DATA"
+          mkdir -p "$CLONE_WORK"
+
+          PYTHONPATH=src python - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          import yfinance as yf
+
+          from v38.live_acquisition import (
+              choose_completed_session,
+              download_market_inputs,
+              download_stock_ohlcv,
+              fetch_benchmark_frames,
+              fetch_tradingview_response,
+              frame_dates,
+              parse_tradingview_universe,
+              previous_active_universe,
+              state_object,
+              validate_universe_count,
+              write_json,
+              write_universe_csv,
+          )
+          from v38.stock_adapter import calculate_from_files
+
+          data_dir = Path(os.environ["CLONE_DATA"])
+          work_dir = Path(os.environ["CLONE_WORK"])
+          generated_at = (
+              datetime.now(timezone.utc)
+              .replace(microsecond=0)
+              .isoformat()
+              .replace("+00:00", "Z")
+          )
+
+          benchmarks = fetch_benchmark_frames(yf)
+          session = choose_completed_session(
+              frame_dates(benchmarks["QQQ"]),
+              frame_dates(benchmarks["SPY"]),
+          )
+
+          tv_response = fetch_tradingview_response()
+          universe_rows, _ = parse_tradingview_universe(
+              tv_response,
+              session_date=session,
+          )
+          previous_count = previous_active_universe(data_dir / "rs.json")
+          validate_universe_count(len(universe_rows), previous_count)
+
+          universe_path = write_universe_csv(
+              work_dir / "universe.csv",
+              universe_rows,
+          )
+          ohlcv_path = work_dir / "ohlcv.csv"
+          yahoo_stats = download_stock_ohlcv(
+              yf,
+              [row["ticker"] for row in universe_rows],
+              target_session=session,
+              output_path=ohlcv_path,
+          )
+
+          source = (
+              "TradingView america/scan universe + Yahoo Finance/yfinance "
+              "0.2.66 adjusted by Adj Close"
+          )
+          calculate_from_files(
+              ohlcv_path,
+              universe_path,
+              data_dir,
+              session_date=session,
+              generated_at=generated_at,
+              source=source,
+          )
+
+          market_inputs = download_market_inputs(
+              yf,
+              target_session=session,
+              generated_at=generated_at,
+          )
+          write_json(data_dir / "market_inputs.json", market_inputs)
+          write_json(
+              data_dir / "state.json",
+              state_object(
+                  session_date=session,
+                  generated_at=generated_at,
+                  coverage=float(yahoo_stats["target_session_coverage"]),
+              ),
+          )
+
+          print(
+              json.dumps(
+                  {
+                      "session_date": session,
+                      "active_universe": len(universe_rows),
+                      "stock_coverage": float(yahoo_stats["target_session_coverage"]),
+                  },
+                  sort_keys=True,
+              )
+          )
+          PY
+
+          PYTHONPATH=src python scripts/calculate_mc57_live.py \
+            --data-dir "$CLONE_DATA" \
+            --reference config/mc57_reference.json \
+            --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json \
+            --force
 
       - name: Recover exact Pages artifact from Production
         if: github.event_name == 'workflow_run'
@@ -100,7 +220,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/v38-clone-live"
           PYTHONPATH=src python scripts/build_exact_source_mc57_clone.py \
             --repo-root . \
-            --data-dir data \
+            --data-dir "$RUNNER_TEMP/v38-clone-data" \
             --source-dir sources/build_dashboard_4 \
             --work-dir "$RUNNER_TEMP/v38-clone-live" \
             --output _site/source-mc57.html
@@ -129,12 +249,12 @@ jobs:
           cp -a "$SOURCE_TMP/." "$KIT/frozen_runtime/"
           cp "$SOURCE_TMP/build_dashboard_4.py" "$KIT/source/build_dashboard(4).py"
 
-          cp data/state.json "$KIT/repo_data/"
-          cp data/rs.json "$KIT/repo_data/"
-          cp data/market_inputs.json "$KIT/repo_data/"
-          cp data/mc57.json "$KIT/repo_data/"
-          if [ -f data/theme_membership.json ]; then cp data/theme_membership.json "$KIT/repo_data/"; fi
-          if [ -f data/acquisition_manifest.json ]; then cp data/acquisition_manifest.json "$KIT/repo_data/"; fi
+          cp "$RUNNER_TEMP/v38-clone-data/state.json" "$KIT/repo_data/"
+          cp "$RUNNER_TEMP/v38-clone-data/rs.json" "$KIT/repo_data/"
+          cp "$RUNNER_TEMP/v38-clone-data/market_inputs.json" "$KIT/repo_data/"
+          cp "$RUNNER_TEMP/v38-clone-data/mc57.json" "$KIT/repo_data/"
+          if [ -f "$RUNNER_TEMP/v38-clone-data/theme_membership.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/theme_membership.json" "$KIT/repo_data/"; fi
+          if [ -f "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" "$KIT/repo_data/"; fi
 
           cp "$RUNNER_TEMP/v38-clone-live/ohlcv.csv" "$KIT/raw_input/ohlcv.csv"
           cp scripts/build_exact_source_mc57_clone.py "$KIT/code/"
@@ -154,7 +274,7 @@ jobs:
 
           cat > "$KIT/README-FIRST.txt" <<'EOF'
           V38 Exact Source MC57 preservation kit
-          Session: 2026-09-16
+          Session: current isolated clone refresh
           Purpose: preserve every input and generated cache needed to reproduce source-mc57.html.
           Canonical source SHA256: ee306726ee4b629f92c5d2d6687c06869702030f60922c93f44ead713bc8bb80
           Market Condition source: repo_data/mc57.json
@@ -168,7 +288,7 @@ jobs:
       - name: Upload exact reproduction preservation kit
         uses: actions/upload-artifact@v4
         with:
-          name: exact-source-mc57-preservation-2026-09-16
+          name: exact-source-mc57-preservation-${{ github.run_id }}
           path: ${{ runner.temp }}/mc57-preservation
           retention-days: 90
           if-no-files-found: error
