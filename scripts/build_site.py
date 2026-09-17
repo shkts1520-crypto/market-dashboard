@@ -18,7 +18,7 @@ _RULES_SECTION = re.compile(r'(<section[^>]+id="t-rules"[^>]*>).*?(</section>)',
 
 
 def _restore_section_0905(out: Path, section_id: str, fragment: Path) -> bool:
-    """Keep recovered DOM slots; visual authority is applied later from build_dashboard(2).py."""
+    """Keep recovered DOM slots; visual authority is applied later from build_dashboard(3).py."""
     if not fragment.is_file():
         return False
     source = out.read_text(encoding="utf-8")
@@ -139,7 +139,7 @@ def _copy_restored_data(out: Path) -> dict[str, bool]:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Build live-bound V38 production UI; build_dashboard(2).py owns every non-options display")
+    p = argparse.ArgumentParser(description="Build live-bound V38 production UI; build_dashboard(3).py owns every non-options display")
     p.add_argument("--canonical", default="V38_Command_Center_mock_v5.html")
     p.add_argument("--output", default="index.html")
     args = p.parse_args()
@@ -186,8 +186,11 @@ def main() -> int:
     py_source_authority_enabled = _inject_external_extension(out, Path("assets/v38-py-source-authority.js"))
     # Positions keeps the source hierarchy while binding only current V38 live cards.
     py_source_positions_enabled = _inject_external_extension(out, Path("assets/v38-py-source-positions.js"))
-    # Must be last: wait for canonical binder completion, then finalize Regime/VIX/FTD/Rules.
+    # Must follow the canonical binder: wait for completion, then finalize Regime/VIX/FTD/Rules.
     py_source_finalizer_enabled = _inject_external_extension(out, Path("assets/v38-py-source-finalizer.js"))
+    # Last non-options owner: audit build_dashboard(3) placement/counts, restore MC57 detail,
+    # and keep exactly one RRG in Rotation. It never queries or mutates t-options.
+    build_dashboard3_fidelity_enabled = _inject_external_extension(out, Path("assets/v38-build-dashboard3-fidelity.js"))
 
     source_fidelity_enabled = False
     source_fidelity_contract_enabled = False
@@ -203,7 +206,7 @@ def main() -> int:
     print(json.dumps({
         "status": "PY_SOURCE_UI_READY",
         "output": str(out),
-        "ui_authority": "build_dashboard(2).py",
+        "ui_authority": "build_dashboard(3).py",
         "ui_authority_scope": "all_non_options_tabs",
         "options_ui_authority": "current_options_implementation",
         "trading_logic_changed": False,
@@ -224,6 +227,7 @@ def main() -> int:
         "py_source_authority": py_source_authority_enabled,
         "py_source_positions": py_source_positions_enabled,
         "py_source_finalizer": py_source_finalizer_enabled,
+        "build_dashboard3_fidelity": build_dashboard3_fidelity_enabled,
         "py_source_display_materialized": py_source_display_materialized,
         "setups_0905_restored_as_slots": setups_0905_enabled,
         "movers_0905_restored_as_slots": movers_0905_enabled,
