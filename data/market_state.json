@@ -1,9 +1,9 @@
 {
   "breadth200": 55.57667934093789,
-  "breadth50": 36.5050867743866,
+  "breadth50": 36.475164572112504,
   "calculation_version": "v38-market-engine-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-17T05:26:16Z",
+  "generated_at": "2026-09-17T09:14:15Z",
   "market_mode": "STOP",
   "max_new_total_slots": 0,
   "mode_reason": "NQSAR_YELLOW",

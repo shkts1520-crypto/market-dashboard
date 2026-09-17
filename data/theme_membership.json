@@ -3,14 +3,14 @@
   "coverage": 1.0,
   "coverage_detail": {
     "exact": 3169,
-    "inferred": 102,
-    "manual": 115,
+    "inferred": 103,
+    "manual": 114,
     "override_tickers": 120,
     "rows": 3386,
     "source_map_tickers": 5197,
     "unmapped": 0
   },
-  "generated_at": "2026-09-17T05:26:16Z",
+  "generated_at": "2026-09-17T09:14:15Z",
   "note": "Legacy exact tags remain authoritative. Researched overrides are allowed only for legacy-map gaps and may reference only fine themes already present in the legacy taxonomy. Remaining gaps may use same-industry inference only with >=60% agreement and >=2 mapped peers.",
   "override_policy": "Only current-universe legacy-map gaps; existing legacy fine themes only. Each value=[theme_id, confidence, evidence].",
   "rows": [
@@ -40433,20 +40433,6 @@
       "ticker": "MPTI"
     },
     {
-      "industry": "Internet Software/Services",
-      "major_theme": "9. 消費者・小売りテーマ",
-      "sector": "Technology Services",
-      "tag_confidence": 0.94,
-      "tag_evidence": "Mega Matrix operates a global short-drama streaming platform; its digital-asset treasury strategy is secondary to the operating media business for theme classification.",
-      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
-      "tag_peer_count": null,
-      "tag_researched_at": "2026-09-17",
-      "tag_source_kind": "SEC/Nasdaq/issuer cross-check",
-      "theme_id": "メディア・エンタメ（総合）",
-      "theme_name": "メディア・エンタメ（総合）",
-      "ticker": "MPU"
-    },
-    {
       "industry": "Regional Banks",
       "major_theme": "12. 金融・銀行・保険",
       "sector": "Finance",
@@ -47277,6 +47263,20 @@
       "theme_id": "AIエンタープライズSaaS",
       "theme_name": "AIエンタープライズSaaS",
       "ticker": "XZO"
+    },
+    {
+      "industry": "Pharmaceuticals: Major",
+      "major_theme": "6. バイオ・ヘルスケア",
+      "sector": "Health Technology",
+      "tag_confidence": 0.7368421052631579,
+      "tag_evidence": null,
+      "tag_method": "INFERRED_INDUSTRY_PEERS",
+      "tag_peer_count": 152,
+      "tag_researched_at": null,
+      "tag_source_kind": null,
+      "theme_id": "臨床段階・中小型バイオ",
+      "theme_name": "臨床段階・中小型バイオ",
+      "ticker": "YARW"
     },
     {
       "industry": "Medical Specialties",

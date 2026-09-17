@@ -1,7 +1,7 @@
 {
   "calculation_version": "v38-supplemental-engine-1.0.1",
   "coverage": 1.0,
-  "generated_at": "2026-09-17T05:26:16Z",
+  "generated_at": "2026-09-17T09:14:15Z",
   "loo_required": true,
   "ordering": "authoritative source order; dashboard does not re-rank themes",
   "rows": [
@@ -330,11 +330,11 @@
       "ticker": "ABCB"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -348,11 +348,11 @@
       "ticker": "ABCL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -492,11 +492,11 @@
       "ticker": "ABTC"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -564,11 +564,11 @@
       "ticker": "ACAA"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -708,11 +708,11 @@
       "ticker": "ACHR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -762,11 +762,11 @@
       "ticker": "ACIC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -906,11 +906,11 @@
       "ticker": "ACRE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -1158,11 +1158,11 @@
       "ticker": "ADM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -1741,11 +1741,11 @@
       "ticker": "AGCO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -1759,11 +1759,11 @@
       "ticker": "AGEN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -2374,11 +2374,11 @@
       "ticker": "ALDF"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -2536,11 +2536,11 @@
       "ticker": "ALK"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -2680,11 +2680,11 @@
       "ticker": "ALM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -2698,11 +2698,11 @@
       "ticker": "ALMR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -2950,11 +2950,11 @@
       "ticker": "ALV"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3134,11 +3134,11 @@
       "ticker": "AMBQ"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 64.77449343564102,
+      "peer_count": 21,
+      "peer_theme_score": 63.83654249769009,
       "rank_acceleration_score": 82.15339233038348,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3350,11 +3350,11 @@
       "ticker": "AMP"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3440,11 +3440,11 @@
       "ticker": "AMRC"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3624,11 +3624,11 @@
       "ticker": "AN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3750,11 +3750,11 @@
       "ticker": "ANGO"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 64.77449343564102,
+      "peer_count": 21,
+      "peer_theme_score": 63.83654249769009,
       "rank_acceleration_score": 82.15339233038348,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3768,11 +3768,11 @@
       "ticker": "ANGX"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3786,11 +3786,11 @@
       "ticker": "ANIK"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3822,11 +3822,11 @@
       "ticker": "ANNA"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3840,11 +3840,11 @@
       "ticker": "ANNX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -3858,11 +3858,11 @@
       "ticker": "ANRO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -4110,11 +4110,11 @@
       "ticker": "APLE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -4272,11 +4272,11 @@
       "ticker": "APXT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -4676,11 +4676,11 @@
       "ticker": "ARQQ"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -4766,11 +4766,11 @@
       "ticker": "ARTNA"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -4784,11 +4784,11 @@
       "ticker": "ARTV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -4820,11 +4820,11 @@
       "ticker": "ARW"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5018,11 +5018,11 @@
       "ticker": "ASLE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5036,11 +5036,11 @@
       "ticker": "ASMB"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5504,11 +5504,11 @@
       "ticker": "ATRO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -5612,11 +5612,11 @@
       "ticker": "AUNA"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5648,11 +5648,11 @@
       "ticker": "AUR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5756,11 +5756,11 @@
       "ticker": "AVBH"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5810,11 +5810,11 @@
       "ticker": "AVGO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5828,11 +5828,11 @@
       "ticker": "AVIR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -5972,11 +5972,11 @@
       "ticker": "AVTR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -5990,11 +5990,11 @@
       "ticker": "AVTX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6318,11 +6318,11 @@
       "ticker": "AZO"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6682,11 +6682,11 @@
       "ticker": "BBDC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6718,11 +6718,11 @@
       "ticker": "BBNX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6862,11 +6862,11 @@
       "ticker": "BCAL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -6970,11 +6970,11 @@
       "ticker": "BCPC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -7657,11 +7657,11 @@
       "ticker": "BIO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -8147,11 +8147,11 @@
       "ticker": "BLSH"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -8399,11 +8399,11 @@
       "ticker": "BNL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -8921,11 +8921,11 @@
       "ticker": "BRUN"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -9644,11 +9644,11 @@
       "ticker": "CAAP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -9716,11 +9716,11 @@
       "ticker": "CACI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -9914,11 +9914,11 @@
       "ticker": "CALY"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -9968,11 +9968,11 @@
       "ticker": "CAPL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -10310,11 +10310,11 @@
       "ticker": "CBC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -10652,11 +10652,11 @@
       "ticker": "CCC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -11140,11 +11140,11 @@
       "ticker": "CEG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -11266,11 +11266,11 @@
       "ticker": "CEPV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -11482,11 +11482,11 @@
       "ticker": "CGCF"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -11500,11 +11500,11 @@
       "ticker": "CGEM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -12155,11 +12155,11 @@
       "ticker": "CLDT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -12389,11 +12389,11 @@
       "ticker": "CLX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -12587,11 +12587,11 @@
       "ticker": "CMPR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -12803,11 +12803,11 @@
       "ticker": "CNH"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 67.81200529416344,
+      "peer_count": 21,
+      "peer_theme_score": 66.94620442836258,
       "rank_acceleration_score": 85.84070796460178,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -13019,11 +13019,11 @@
       "ticker": "CNXN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -13109,11 +13109,11 @@
       "ticker": "COFS"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -13235,11 +13235,11 @@
       "ticker": "COLD"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -13361,11 +13361,11 @@
       "ticker": "COR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -13991,11 +13991,11 @@
       "ticker": "CRM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -14171,11 +14171,11 @@
       "ticker": "CRVL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -14351,11 +14351,11 @@
       "ticker": "CSR"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -14531,11 +14531,11 @@
       "ticker": "CTGO"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -14549,11 +14549,11 @@
       "ticker": "CTKB"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -14567,11 +14567,11 @@
       "ticker": "CTMX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -14783,11 +14783,11 @@
       "ticker": "CUBI"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -15309,11 +15309,11 @@
       "ticker": "CYH"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -15345,11 +15345,11 @@
       "ticker": "CYRX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -15975,11 +15975,11 @@
       "ticker": "DELL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -16029,11 +16029,11 @@
       "ticker": "DFIN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -16281,11 +16281,11 @@
       "ticker": "DIOD"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 61.776630132325245,
+      "peer_count": 21,
+      "peer_theme_score": 60.838679194374315,
       "rank_acceleration_score": 73.74631268436578,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -16317,11 +16317,11 @@
       "ticker": "DJCO"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 64.12468965994515,
+      "peer_count": 21,
+      "peer_theme_score": 63.25888879414429,
       "rank_acceleration_score": 74.77876106194691,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -16407,11 +16407,11 @@
       "ticker": "DKS"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 66.92993307323881,
+      "peer_count": 21,
+      "peer_theme_score": 66.06413220743795,
       "rank_acceleration_score": 84.66076696165192,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -16515,11 +16515,11 @@
       "ticker": "DMAA"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -16587,11 +16587,11 @@
       "ticker": "DMLP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -16681,11 +16681,11 @@
       "ticker": "DNOW"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -17026,11 +17026,11 @@
       "ticker": "DSAC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -17350,11 +17350,11 @@
       "ticker": "DY"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -17494,11 +17494,11 @@
       "ticker": "EBF"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -17944,11 +17944,11 @@
       "ticker": "EIG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -18034,11 +18034,11 @@
       "ticker": "ELAN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -18160,11 +18160,11 @@
       "ticker": "ELV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -18376,11 +18376,11 @@
       "ticker": "ENSG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -18412,11 +18412,11 @@
       "ticker": "ENTG"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -18736,11 +18736,11 @@
       "ticker": "EQX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -19136,11 +19136,11 @@
       "ticker": "ETN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -19372,11 +19372,11 @@
       "ticker": "EVLV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -19498,11 +19498,11 @@
       "ticker": "EWBC"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -19732,11 +19732,11 @@
       "ticker": "EYE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -19894,11 +19894,11 @@
       "ticker": "FAST"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -20326,11 +20326,11 @@
       "ticker": "FDMM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -20470,11 +20470,11 @@
       "ticker": "FELE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -20704,11 +20704,11 @@
       "ticker": "FHN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -21535,11 +21535,11 @@
       "ticker": "FOUR"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 61.776630132325245,
+      "peer_count": 21,
+      "peer_theme_score": 60.838679194374315,
       "rank_acceleration_score": 73.74631268436578,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -22111,11 +22111,11 @@
       "ticker": "FTDR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -22309,11 +22309,11 @@
       "ticker": "FUL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -22471,11 +22471,11 @@
       "ticker": "FWDI"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 67.81200529416344,
+      "peer_count": 21,
+      "peer_theme_score": 66.94620442836258,
       "rank_acceleration_score": 85.84070796460178,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -22615,11 +22615,11 @@
       "ticker": "GAIN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -23105,11 +23105,11 @@
       "ticker": "GEN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -23177,11 +23177,11 @@
       "ticker": "GEO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -23339,11 +23339,11 @@
       "ticker": "GH"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 64.12468965994515,
+      "peer_count": 21,
+      "peer_theme_score": 63.25888879414429,
       "rank_acceleration_score": 74.77876106194691,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -23375,11 +23375,11 @@
       "ticker": "GHM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -23609,11 +23609,11 @@
       "ticker": "GLBE"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 66.28964495079254,
+      "peer_count": 21,
+      "peer_theme_score": 65.42384408499167,
       "rank_acceleration_score": 82.15339233038348,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -23735,11 +23735,11 @@
       "ticker": "GLRE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -23753,11 +23753,11 @@
       "ticker": "GLSI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -24948,11 +24948,11 @@
       "ticker": "GXO"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -26392,11 +26392,11 @@
       "ticker": "HRL"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -26410,11 +26410,11 @@
       "ticker": "HRMY"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27548,11 +27548,11 @@
       "ticker": "IFF"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27710,11 +27710,11 @@
       "ticker": "IIPR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27782,11 +27782,11 @@
       "ticker": "ILPT"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 65.4147815580873,
+      "peer_count": 21,
+      "peer_theme_score": 64.47683062013637,
       "rank_acceleration_score": 84.66076696165192,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27854,11 +27854,11 @@
       "ticker": "IMMR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27872,11 +27872,11 @@
       "ticker": "IMMX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27908,11 +27908,11 @@
       "ticker": "IMPP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27944,11 +27944,11 @@
       "ticker": "IMSR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -27962,11 +27962,11 @@
       "ticker": "IMTX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -28016,11 +28016,11 @@
       "ticker": "INBK"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -28092,11 +28092,11 @@
       "ticker": "INDI"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -28110,11 +28110,11 @@
       "ticker": "INDP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -28434,11 +28434,11 @@
       "ticker": "INTU"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -28686,11 +28686,11 @@
       "ticker": "IPI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -28902,11 +28902,11 @@
       "ticker": "IRMD"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -28956,11 +28956,11 @@
       "ticker": "IRTC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -29356,11 +29356,11 @@
       "ticker": "JAN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -29446,11 +29446,11 @@
       "ticker": "JBI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -29914,11 +29914,11 @@
       "ticker": "KALU"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -30472,11 +30472,11 @@
       "ticker": "KLIC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -30526,11 +30526,11 @@
       "ticker": "KMB"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -30688,11 +30688,11 @@
       "ticker": "KNOP"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -30778,11 +30778,11 @@
       "ticker": "KO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -31087,11 +31087,11 @@
       "ticker": "KRO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -31123,11 +31123,11 @@
       "ticker": "KRP"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -31195,11 +31195,11 @@
       "ticker": "KRUS"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -31393,11 +31393,11 @@
       "ticker": "KYIV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -31411,11 +31411,11 @@
       "ticker": "KYMR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -31699,11 +31699,11 @@
       "ticker": "LBRT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -31811,11 +31811,11 @@
       "ticker": "LCNB"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -32084,11 +32084,11 @@
       "ticker": "LGN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -32318,11 +32318,11 @@
       "ticker": "LINE"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 64.12468965994515,
+      "peer_count": 21,
+      "peer_theme_score": 63.25888879414429,
       "rank_acceleration_score": 74.77876106194691,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -32858,11 +32858,11 @@
       "ticker": "LPX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -32912,11 +32912,11 @@
       "ticker": "LRCX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -33042,11 +33042,11 @@
       "ticker": "LTC"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -33320,11 +33320,11 @@
       "ticker": "LWLG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -33374,11 +33374,11 @@
       "ticker": "LXP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -33428,11 +33428,11 @@
       "ticker": "LYB"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -33756,11 +33756,11 @@
       "ticker": "MAN"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -33972,11 +33972,11 @@
       "ticker": "MAX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -34134,11 +34134,11 @@
       "ticker": "MBWM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -34350,11 +34350,11 @@
       "ticker": "MCRI"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 67.42042174528615,
+      "peer_count": 21,
+      "peer_theme_score": 66.55462087948528,
       "rank_acceleration_score": 85.54572271386431,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -34426,11 +34426,11 @@
       "ticker": "MDB"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -34862,11 +34862,11 @@
       "ticker": "MGNI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -34934,11 +34934,11 @@
       "ticker": "MGRT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -35096,11 +35096,11 @@
       "ticker": "MIR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -35402,11 +35402,11 @@
       "ticker": "MLR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -35420,11 +35420,11 @@
       "ticker": "MLTX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -35564,11 +35564,11 @@
       "ticker": "MNDY"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -35582,11 +35582,11 @@
       "ticker": "MNKD"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -35924,11 +35924,11 @@
       "ticker": "MPC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -35994,24 +35994,6 @@
       "theme_rs63_score": 24.926686217008797,
       "theme_status": "STRICT_LOO_READY",
       "ticker": "MPTI"
-    },
-    {
-      "above_ema21_score": 40.90909090909091,
-      "major_theme": "9. 消費者・小売りテーマ",
-      "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 64.77449343564102,
-      "rank_acceleration_score": 82.15339233038348,
-      "tag_confidence": 0.94,
-      "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
-      "theme_id": "メディア・エンタメ（総合）",
-      "theme_name": "メディア・エンタメ（総合）",
-      "theme_rank_acceleration_raw": 20.52785923753666,
-      "theme_rs63_20d_raw_loo": 46.599264705882355,
-      "theme_rs63_raw_loo": 63.91465677179963,
-      "theme_rs63_score": 71.26099706744868,
-      "theme_status": "STRICT_LOO_READY",
-      "ticker": "MPU"
     },
     {
       "above_ema21_score": 0.0,
@@ -36230,11 +36212,11 @@
       "ticker": "MRTN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -37166,11 +37148,11 @@
       "ticker": "NAGE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -37872,11 +37854,11 @@
       "ticker": "NG"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -38196,11 +38178,11 @@
       "ticker": "NKSH"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -38214,11 +38196,11 @@
       "ticker": "NKTR"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -38268,11 +38250,11 @@
       "ticker": "NLY"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 66.92993307323881,
+      "peer_count": 21,
+      "peer_theme_score": 66.06413220743795,
       "rank_acceleration_score": 84.66076696165192,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -38448,11 +38430,11 @@
       "ticker": "NNN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -38844,11 +38826,11 @@
       "ticker": "NRIM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -39262,11 +39244,11 @@
       "ticker": "NUTX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -39334,11 +39316,11 @@
       "ticker": "NVCR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -39640,11 +39622,11 @@
       "ticker": "NWPX"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 66.92993307323881,
+      "peer_count": 21,
+      "peer_theme_score": 66.06413220743795,
       "rank_acceleration_score": 84.66076696165192,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -39805,11 +39787,11 @@
       "ticker": "NXT"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 62.60953814479364,
+      "peer_count": 21,
+      "peer_theme_score": 61.6715872068427,
       "rank_acceleration_score": 74.77876106194691,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -39841,11 +39823,11 @@
       "ticker": "O"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -39913,11 +39895,11 @@
       "ticker": "OBDC"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -39967,11 +39949,11 @@
       "ticker": "OBT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -40021,11 +40003,11 @@
       "ticker": "OCFC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -40075,11 +40057,11 @@
       "ticker": "OCTV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -40147,11 +40129,11 @@
       "ticker": "ODFL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -40528,11 +40510,11 @@
       "ticker": "OLLI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -40636,11 +40618,11 @@
       "ticker": "OMDA"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -40942,11 +40924,11 @@
       "ticker": "OPI"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -41122,11 +41104,11 @@
       "ticker": "ORI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -41140,11 +41122,11 @@
       "ticker": "ORIC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -41522,11 +41504,11 @@
       "ticker": "OVBC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -41882,11 +41864,11 @@
       "ticker": "PAII"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -42264,11 +42246,11 @@
       "ticker": "PBI"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -42300,11 +42282,11 @@
       "ticker": "PBT"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -42408,11 +42390,11 @@
       "ticker": "PCOR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -42462,11 +42444,11 @@
       "ticker": "PCTY"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -42804,11 +42786,11 @@
       "ticker": "PEP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -43020,11 +43002,11 @@
       "ticker": "PGC"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -43110,11 +43092,11 @@
       "ticker": "PH"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -43200,11 +43182,11 @@
       "ticker": "PHR"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -43636,11 +43618,11 @@
       "ticker": "PLPC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -43729,11 +43711,11 @@
       "ticker": "PLUS"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -44197,11 +44179,11 @@
       "ticker": "PPL"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 64.12468965994515,
+      "peer_count": 21,
+      "peer_theme_score": 63.25888879414429,
       "rank_acceleration_score": 74.77876106194691,
       "tag_confidence": 0.92,
       "tag_method": "MANUAL_RESEARCHED_OVERRIDE",
@@ -44269,11 +44251,11 @@
       "ticker": "PRAA"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -44506,11 +44488,11 @@
       "ticker": "PRLB"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -44578,11 +44560,11 @@
       "ticker": "PRME"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -44596,11 +44578,11 @@
       "ticker": "PROK"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -44632,11 +44614,11 @@
       "ticker": "PRSU"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -44816,11 +44798,11 @@
       "ticker": "PSIX"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 62.66158588453764,
+      "peer_count": 21,
+      "peer_theme_score": 61.72363494658671,
       "rank_acceleration_score": 76.40117994100295,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -44996,11 +44978,11 @@
       "ticker": "PTC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -45032,11 +45014,11 @@
       "ticker": "PTEN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -45158,11 +45140,11 @@
       "ticker": "PUMP"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -45194,11 +45176,11 @@
       "ticker": "PVH"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -45629,11 +45611,11 @@
       "ticker": "QSR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -45701,11 +45683,11 @@
       "ticker": "QUBT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -45845,11 +45827,11 @@
       "ticker": "RAMP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -46151,11 +46133,11 @@
       "ticker": "RCMT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -46497,11 +46479,11 @@
       "ticker": "RELY"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -46677,11 +46659,11 @@
       "ticker": "RGA"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -46753,11 +46735,11 @@
       "ticker": "RGLD"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -46915,11 +46897,11 @@
       "ticker": "RIG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -47099,11 +47081,11 @@
       "ticker": "RL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -47171,11 +47153,11 @@
       "ticker": "RLJ"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -47315,11 +47297,11 @@
       "ticker": "RMR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -47495,11 +47477,11 @@
       "ticker": "ROG"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -47909,11 +47891,11 @@
       "ticker": "RSKD"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 66.28964495079254,
+      "peer_count": 21,
+      "peer_theme_score": 65.42384408499167,
       "rank_acceleration_score": 82.15339233038348,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -48035,11 +48017,11 @@
       "ticker": "RVLV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -48233,11 +48215,11 @@
       "ticker": "RYN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -48272,11 +48254,11 @@
       "ticker": "RYZ"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -48362,11 +48344,11 @@
       "ticker": "SABR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -48542,11 +48524,11 @@
       "ticker": "SAMO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -49028,11 +49010,11 @@
       "ticker": "SCSC"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -49283,11 +49265,11 @@
       "ticker": "SENS"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -49571,11 +49553,11 @@
       "ticker": "SGML"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -49589,11 +49571,11 @@
       "ticker": "SGMT"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -49952,11 +49934,11 @@
       "ticker": "SIG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -50024,11 +50006,11 @@
       "ticker": "SIND"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -50262,11 +50244,11 @@
       "ticker": "SLBT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -50334,11 +50316,11 @@
       "ticker": "SLG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -50442,11 +50424,11 @@
       "ticker": "SLRC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -50912,11 +50894,11 @@
       "ticker": "SNDR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -51456,11 +51438,11 @@
       "ticker": "SPOT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -51510,11 +51492,11 @@
       "ticker": "SPT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -51654,11 +51636,11 @@
       "ticker": "SRPT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -52014,11 +51996,11 @@
       "ticker": "STGW"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -52104,11 +52086,11 @@
       "ticker": "STNG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -52158,11 +52140,11 @@
       "ticker": "STRL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -52212,11 +52194,11 @@
       "ticker": "STRW"
     },
     {
-      "above_ema21_score": 45.45454545454545,
+      "above_ema21_score": 42.857142857142854,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 66.28964495079254,
+      "peer_count": 21,
+      "peer_theme_score": 65.42384408499167,
       "rank_acceleration_score": 82.15339233038348,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -52248,11 +52230,11 @@
       "ticker": "STT"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -52464,11 +52446,11 @@
       "ticker": "SUNC"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -52554,11 +52536,11 @@
       "ticker": "SVIV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53022,11 +53004,11 @@
       "ticker": "TAP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53040,11 +53022,11 @@
       "ticker": "TARA"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53202,11 +53184,11 @@
       "ticker": "TBN"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53562,11 +53544,11 @@
       "ticker": "TECH"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -53814,11 +53796,11 @@
       "ticker": "TGT"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -54215,11 +54197,11 @@
       "ticker": "TLS"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -54453,11 +54435,11 @@
       "ticker": "TNET"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -54507,11 +54489,11 @@
       "ticker": "TNL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -54730,11 +54712,11 @@
       "ticker": "TR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -55190,11 +55172,11 @@
       "ticker": "TRV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -55550,11 +55532,11 @@
       "ticker": "TTMI"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -55640,11 +55622,11 @@
       "ticker": "TVIV"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -55914,11 +55896,11 @@
       "ticker": "TYL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -56551,11 +56533,11 @@
       "ticker": "UNTY"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -56659,11 +56641,11 @@
       "ticker": "URBN"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -57318,11 +57300,11 @@
       "ticker": "VELO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -57626,11 +57608,11 @@
       "ticker": "VINP"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -57878,11 +57860,11 @@
       "ticker": "VMRK"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -57968,11 +57950,11 @@
       "ticker": "VNT"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.7368421052631579,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -58058,11 +58040,11 @@
       "ticker": "VPG"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -58224,11 +58206,11 @@
       "ticker": "VRTX"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 0.75,
       "tag_method": "INFERRED_INDUSTRY_PEERS",
@@ -58332,11 +58314,11 @@
       "ticker": "VST"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -58714,11 +58696,11 @@
       "ticker": "WAY"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 62.60953814479364,
+      "peer_count": 21,
+      "peer_theme_score": 61.6715872068427,
       "rank_acceleration_score": 74.77876106194691,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -59200,11 +59182,11 @@
       "ticker": "WHR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -59870,11 +59852,11 @@
       "ticker": "WSO"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60086,11 +60068,11 @@
       "ticker": "WULF"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60248,11 +60230,11 @@
       "ticker": "XEL"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60266,11 +60248,11 @@
       "ticker": "XENE"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60284,11 +60266,11 @@
       "ticker": "XERS"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60374,11 +60356,11 @@
       "ticker": "XMTR"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60698,11 +60680,29 @@
       "ticker": "XZO"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
+      "rank_acceleration_score": 36.87315634218289,
+      "tag_confidence": 0.7368421052631579,
+      "tag_method": "INFERRED_INDUSTRY_PEERS",
+      "theme_id": "臨床段階・中小型バイオ",
+      "theme_name": "臨床段階・中小型バイオ",
+      "theme_rank_acceleration_raw": -5.8651026392961825,
+      "theme_rs63_20d_raw_loo": 81.15808823529412,
+      "theme_rs63_raw_loo": 77.55102040816327,
+      "theme_rs63_score": 85.04398826979472,
+      "theme_status": "STRICT_LOO_READY",
+      "ticker": "YARW"
+    },
+    {
+      "above_ema21_score": 19.924812030075188,
+      "major_theme": "6. バイオ・ヘルスケア",
+      "missing_components": [],
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60935,11 +60935,11 @@
       "ticker": "ZBH"
     },
     {
-      "above_ema21_score": 19.62264150943396,
+      "above_ema21_score": 19.548872180451127,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.17992870713719,
+      "peer_count": 266,
+      "peer_theme_score": 47.155338930809584,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -60971,11 +60971,11 @@
       "ticker": "ZBRA"
     },
     {
-      "above_ema21_score": 40.90909090909091,
+      "above_ema21_score": 38.095238095238095,
       "major_theme": "9. 消費者・小売りテーマ",
       "missing_components": [],
-      "peer_count": 22,
-      "peer_theme_score": 65.4147815580873,
+      "peer_count": 21,
+      "peer_theme_score": 64.47683062013637,
       "rank_acceleration_score": 84.66076696165192,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -61097,11 +61097,11 @@
       "ticker": "ZM"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -61173,11 +61173,11 @@
       "ticker": "ZUMZ"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -61191,11 +61191,11 @@
       "ticker": "ZURA"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",
@@ -61227,11 +61227,11 @@
       "ticker": "ZWS"
     },
     {
-      "above_ema21_score": 20.0,
+      "above_ema21_score": 19.924812030075188,
       "major_theme": "6. バイオ・ヘルスケア",
       "missing_components": [],
-      "peer_count": 265,
-      "peer_theme_score": 47.30571487065921,
+      "peer_count": 266,
+      "peer_theme_score": 47.28065221401761,
       "rank_acceleration_score": 36.87315634218289,
       "tag_confidence": 1.0,
       "tag_method": "EXACT_SECTOR_SNAPSHOT",

@@ -1,12 +1,12 @@
 {
   "calculation_version": "v38-vix-fear-cycle-1.0.0",
   "current": {
-    "high": 18.030001,
-    "lwma10": 17.185455,
-    "lwma5": 17.932,
+    "high": 18.940001,
+    "lwma10": 17.595273,
+    "lwma5": 18.328,
     "plus1_sigma": 33.173301,
     "plus2_sigma": 47.658412,
-    "vix": 17.200001
+    "vix": 17.709999
   },
   "distribution": {
     "completed_months": 440,
@@ -97,7 +97,7 @@
       "roll": "2025-04-11"
     }
   ],
-  "generated_at": "2026-09-16T15:01:21Z",
+  "generated_at": "2026-09-17T09:14:15Z",
   "markers": [
     {
       "date": "2018-02-06",
@@ -230,13 +230,6 @@
   },
   "schema_version": "v38.vix_fear_cycle.1",
   "series": [
-    {
-      "close": 12.51,
-      "date": "2016-09-08",
-      "high": 12.6,
-      "lwma10": 13.450727,
-      "lwma5": 12.933333
-    },
     {
       "close": 17.5,
       "date": "2016-09-09",
@@ -17869,9 +17862,16 @@
       "high": 18.030001,
       "lwma10": 17.185455,
       "lwma5": 17.932
+    },
+    {
+      "close": 17.709999,
+      "date": "2026-09-16",
+      "high": 18.940001,
+      "lwma10": 17.595273,
+      "lwma5": 18.328
     }
   ],
-  "session_date": "2026-09-15",
+  "session_date": "2026-09-16",
   "source": "Yahoo Finance ^VIX daily High/Close from 1990; completed-month log10 distribution",
   "state": "NORMAL",
   "status": "READY",

@@ -1,7 +1,7 @@
 {
   "breadth200": 55.57667934093789,
   "breadth200_status": "FULL",
-  "breadth50": 36.5050867743866,
+  "breadth50": 36.475164572112504,
   "calculation_version": "v38-stock-adapter-1.2.0",
   "coverage": 1.0,
   "coverage_detail": {
@@ -12,7 +12,7 @@
     "valid_sma50_count": 3342
   },
   "excluded": [],
-  "generated_at": "2026-09-17T05:26:16Z",
+  "generated_at": "2026-09-17T09:14:15Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,

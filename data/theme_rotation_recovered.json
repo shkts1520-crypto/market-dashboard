@@ -2,7 +2,7 @@
   "calculation_version": "v38-recovered-theme-1.1.0",
   "coverage": 1.0,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-17T05:26:16Z",
+  "generated_at": "2026-09-17T09:14:15Z",
   "rows": [
     {
       "leaders": [
@@ -519,10 +519,10 @@
         "PLSE"
       ],
       "major_theme": "6. バイオ・ヘルスケア",
-      "member_count": 266,
+      "member_count": 267,
       "raw_strength": 75.15424774560987,
-      "ret1_median": -0.0005751305185183742,
-      "ret20_median": -0.0803746984396338,
+      "ret1_median": -0.0005633931764414957,
+      "ret20_median": -0.0808823626088847,
       "rs189_median": 72.75747508305648,
       "rs63_median": 77.55102040816327,
       "theme_id": "臨床段階・中小型バイオ",
@@ -2248,10 +2248,10 @@
         "NWS"
       ],
       "major_theme": "9. 消費者・小売りテーマ",
-      "member_count": 23,
+      "member_count": 22,
       "raw_strength": 52.29430038400138,
-      "ret1_median": 0.001427007035278649,
-      "ret20_median": -0.014396062289399714,
+      "ret1_median": -0.001034732685038453,
+      "ret20_median": -0.01958192079955734,
       "rs189_median": 40.673943996203135,
       "rs63_median": 63.91465677179963,
       "theme_id": "メディア・エンタメ（総合）",
