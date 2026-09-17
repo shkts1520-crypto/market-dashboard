@@ -47,6 +47,20 @@ def _assert_canonical_binder(page) -> None:
         raise AssertionError(f"canonical binder state={state}")
 
 
+def _assert_build_dashboard3_fidelity(page) -> None:
+    page.wait_for_function("document.documentElement.dataset.v38BuildDashboard3Audit !== undefined")
+    state = page.evaluate("document.documentElement.dataset.v38BuildDashboard3Audit")
+    report = page.evaluate("window.V38BuildDashboard3Audit")
+    if state != "ready":
+        raise AssertionError(f"build_dashboard(3) fidelity state={state}; report={report}")
+    assert report["source"] == "build_dashboard(3).py"
+    assert report["options_touched"] is False
+    assert report["missing"] == [], report
+    assert report["duplicates"] == [], report
+    assert len(report["rrg"]) == 1 and report["rrg"][0].startswith("t-rotation:"), report
+    assert page.locator("#t-market #mri-bd").count() == 1
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:8000/")
@@ -67,6 +81,7 @@ def main() -> int:
                 page.wait_for_function("document.body.dataset.v38BindingStatus === 'ready'")
                 _assert_canonical_binder(page)
                 page.wait_for_function("document.body.dataset.v38PySourceFinal === 'ready'")
+                _assert_build_dashboard3_fidelity(page)
 
                 tabs = page.locator("a.tabx")
                 assert tabs.count() == 11
