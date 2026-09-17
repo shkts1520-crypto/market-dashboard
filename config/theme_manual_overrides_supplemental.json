@@ -5,6 +5,11 @@
       0.95,
       "HUB Cyber Security provides confidential-computing, secured-data-fabric, cybersecurity and compliance infrastructure."
     ],
+    "MPU": [
+      "メディア・エンタメ（総合）",
+      0.94,
+      "Mega Matrix operates a global short-drama streaming platform; its digital-asset treasury strategy is secondary to the operating media business for theme classification."
+    ],
     "OPTT": [
       "防衛（ドローン/C4ISR）",
       0.92,
@@ -22,7 +27,7 @@
     ]
   },
   "policy": "Supplemental researched overrides for current-universe legacy-map gaps only; values must use existing fine-theme IDs.",
-  "researched_at": "2026-09-16",
+  "researched_at": "2026-09-17",
   "schema_version": "v38.theme_manual_overrides.supplemental.1",
   "source_kind": "SEC/Nasdaq/issuer cross-check"
 }
