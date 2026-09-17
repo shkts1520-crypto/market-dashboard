@@ -36,17 +36,19 @@ def test_uploaded_py_owns_every_non_options_tab() -> None:
 def test_rotation_order_is_the_uploaded_py_order() -> None:
     js = (ROOT / "assets" / "v38-py-source-authority.js").read_text(encoding="utf-8")
     labels = [
-        "① どこに資金が向かっているか",
-        "② その資金は広いか、数銘柄か",
-        "③ 自ユニバースで主導しているのは誰か",
-        "④ その中で買える銘柄はどれか",
-        "⑤ 一覧で確認する",
+        "① ローテーションの向き（RRG）",
+        "② どこに資金が向かっているか",
+        "③ その資金は広いか、数銘柄か",
+        "④ 自ユニバースで主導しているのは誰か",
+        "⑤ その中で買える銘柄はどれか",
+        "⑥ 一覧で確認する",
     ]
     positions = [js.index(label) for label in labels]
     assert positions == sorted(positions)
     for card in (
-        "資金フロー", "セクター温度マップ", "指数と中身の乖離",
-        "主導セクター・業種", "強い業種の主導株", "セクターETF強弱", "サブテーマ別RS",
+        "セクター・ローテーション（テーマETF）", "資金フロー", "セクター温度マップ",
+        "指数と中身の乖離", "主導セクター・業種", "強い業種の主導株",
+        "セクターETF強弱", "サブテーマ別RS",
     ):
         assert card in js
 
