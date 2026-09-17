@@ -1,6 +1,11 @@
 name: Exact Source MC57 Clone
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/source-mc57-clone.yml
   workflow_run:
     workflows:
       - V38 Production Full Pipeline
@@ -24,6 +29,7 @@ jobs:
   append-clone-and-deploy:
     if: >-
       ${{
+        github.event_name == 'push' ||
         github.event_name == 'workflow_dispatch' ||
         (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
       }}
@@ -60,8 +66,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Recover current Pages artifact for manual run
-        if: github.event_name == 'workflow_dispatch'
+      - name: Recover current Pages artifact for direct or manual run
+        if: github.event_name != 'workflow_run'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
