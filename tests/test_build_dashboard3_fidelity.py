@@ -29,14 +29,16 @@ def test_mc57_detail_table_is_restored_from_live_view_model():
     assert "restoreMc57" in js
 
 
-def test_rrg_is_single_owner_in_rotation_and_reuses_source_rank_flow():
+def test_rrg_stays_publish_only_and_top_level_duplicates_are_hidden():
     js = ASSET.read_text(encoding="utf-8")
-    assert "function repairRrg" in js
-    assert "rotation-rrg" in js
+    assert "function repairRrg(){rrgBlocks().forEach(hide);}" in js
+    assert "function publishRrgCount" in js
     assert "順位フロー（大分類）" in js
-    assert "#bump,#rrg" in js
-    assert "rr.length!==1" in js
-    assert "rr[0]?.closest('section')?.id!=='t-rotation'" in js
+    assert "id=\"bump\"" in js
+    assert "RRG_TOPLEVEL" in js
+    assert "publish_rrg" in js
+    assert "if(pubRrg<1)" in js
+    assert "if(pubRrg>1)" in js
 
 
 def test_guard_waits_until_py_source_finalizer_finishes():
