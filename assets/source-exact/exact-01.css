@@ -1,7 +1,4 @@
 /* exact source CSS chunk 1/7 from build_dashboard(2).py */
-html,body{background:#eceae3;color:#1b1d1c}
-body::before{content:"";position:fixed;inset:0;background:#eceae3;z-index:-1;pointer-events:none}
-nav{background:rgba(236,234,227,.93);border-bottom:1px solid #d6d2c5}
 @scope (body) to (#t-options) {
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -53,7 +50,7 @@ nav{background:rgba(236,234,227,.93);border-bottom:1px solid #d6d2c5}
 .w30row-m{font-size:11px;color:#5a5850;margin-top:3px}
 .w30t{display:inline-block;margin-left:4px;font-size:10px;font-weight:900;border-radius:4px;padding:0 5px;vertical-align:middle}
 .w30hi td{background:rgba(161,98,7,.10)}
-.w30hi td:nth-child(n+3){color:#806319;font-weight:800}
+.w30hi td:nth-child(n/**/+3){color:#806319;font-weight:800}
 .w30t-s{background:#8d5e1b;color:#ebdb98}
 .w30s{display:inline-block;margin-left:4px;font-size:10px;font-weight:700;border-radius:4px;padding:0 5px}
 .w30s-new{background:#1e3a5f;color:#82a7e3}.w30s-adv{background:#d8d5cc;color:#56544c}
@@ -97,10 +94,5 @@ h1{font-size:18px;font-weight:800;letter-spacing:.01em}
 .sar{border-radius:14px;padding:12px 16px;margin:10px 0 4px;border:1px solid rgba(27,29,28,.10);
      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .sar .lhs{display:flex;align-items:center;gap:11px}
-.sar .dot{width:16px;height:16px;border-radius:50%;box-shadow:0 0 0 3px rgba(27,29,28,.15),0 0 10px rgba(0,0,0,.4);flex:0 0 auto}
-.sar .lab{font-size:11px;color:#242320;opacity:.9;letter-spacing:.04em}
-.sar .col{font-size:22px;font-weight:800;line-height:1.05}
-.sar .rhs{text-align:right}
-.sar .jud{font-size:20px;font-weight:800;line-height:1.05}
 
 }
