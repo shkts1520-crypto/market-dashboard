@@ -4,8 +4,8 @@
   "components": [
     {
       "calculation_version": "v38-market-engine-1.0.0",
-      "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "coverage": 0.999410551134689,
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "market_state.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.market_state.1",
@@ -15,8 +15,8 @@
     },
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
-      "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "coverage": 0.999410551134689,
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "breadth.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.breadth.1",
@@ -37,8 +37,8 @@
     },
     {
       "calculation_version": "v38-f123-engine-1.1.0",
-      "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "coverage": 0.999410551134689,
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "f123.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.f123.1",
@@ -48,8 +48,8 @@
     },
     {
       "calculation_version": "v38-market-engine-1.0.0",
-      "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "coverage": 0.999410551134689,
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "core12.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.core12.1",
@@ -60,7 +60,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "positions.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.positions.1",
@@ -71,7 +71,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "rotation.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rotation.1",
@@ -81,8 +81,8 @@
     },
     {
       "calculation_version": "v38-stock-adapter-1.2.0",
-      "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "coverage": 0.999410551134689,
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "rs.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rs.1",
@@ -93,7 +93,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "weekly.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.weekly.1",
@@ -104,7 +104,7 @@
     {
       "calculation_version": "v38-options-live-1.2.0",
       "coverage": 1.0,
-      "generated_at": "2026-09-17T09:19:31Z",
+      "generated_at": "2026-09-17T14:04:27Z",
       "name": "options/index.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.options.1",
@@ -115,7 +115,7 @@
     {
       "calculation_version": "v38-supplemental-engine-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "rules.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.rules.1",
@@ -126,7 +126,7 @@
     {
       "calculation_version": "v38-tqqq-panic-state-1.0.1",
       "coverage": 1.0,
-      "generated_at": "2026-09-17T09:14:15Z",
+      "generated_at": "2026-09-17T13:59:18Z",
       "name": "tqqq_panic.json",
       "reason": "CURRENT_SESSION",
       "schema_version": "v38.tqqq_panic_state.1",
@@ -137,7 +137,7 @@
   ],
   "coverage": 1.0,
   "full_v38_ready": true,
-  "generated_at": "2026-09-17T09:14:15Z",
+  "generated_at": "2026-09-17T13:59:18Z",
   "note": "This shard reports publication readiness; READY means the report itself is current, not that every trading dependency is available.",
   "publish_extension_version": "v38-publish-tqqq-extension-1.0.0",
   "ready_count": 12,

@@ -2,7 +2,7 @@
   "calculation_version": "v38-display-observation-history-1.0.0",
   "coverage": 1.0,
   "definition": "100 * count(close >= SMA200*1.45) / count(valid SMA200)",
-  "generated_at": "2026-09-17T09:14:15Z",
+  "generated_at": "2026-09-17T13:59:18Z",
   "schema_version": "v38.parabolic_rate_history.1",
   "series": [
     {
@@ -3332,8 +3332,8 @@
     {
       "count": 139,
       "date": "2026-09-16",
-      "denominator": 3156,
-      "value": 4.404309252217997
+      "denominator": 3160,
+      "value": 4.39873417721519
     }
   ],
   "session_date": "2026-09-16",

@@ -4,7 +4,7 @@
   "calculation_version": "v38-tqqq-panic-state-1.0.1",
   "coverage": 1.0,
   "current_target_pct": 30,
-  "generated_at": "2026-09-17T09:14:15Z",
+  "generated_at": "2026-09-17T13:59:18Z",
   "holding_sessions_completed": 0,
   "mc57": 23.75315906605245,
   "normal_tqqq_pct": 30,
@@ -12,8 +12,8 @@
   "panic_entry_session": null,
   "panic_tqqq_pct": 80,
   "qqq_4h": {
-    "current_rsi14": 40.81207805664296,
-    "prior_rsi14": 46.136651175522324,
+    "current_rsi14": 40.81787220803031,
+    "prior_rsi14": 46.14313316114718,
     "status": "READY",
     "touch30": false,
     "trading_gate_eligible": true
