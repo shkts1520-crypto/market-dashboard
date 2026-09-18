@@ -105,6 +105,13 @@ jobs:
           export PREVIOUS_CLONE_ZIP
           echo "previous published clone session: ${PREVIOUS_CLONE_SESSION:-none}"
 
+          # Reuse the last successful sector-history cache as a seed. This keeps
+          # Publish history continuous even if Yahoo temporarily misses one ETF.
+          rm -f "$CLONE_WORK/previous_market_inputs.json"
+          if [ -n "$PREVIOUS_CLONE_ZIP" ] && [ -f "$PREVIOUS_CLONE_ZIP" ]; then
+            unzip -p "$PREVIOUS_CLONE_ZIP" repo_data/market_inputs.json > "$CLONE_WORK/previous_market_inputs.json" 2>/dev/null || rm -f "$CLONE_WORK/previous_market_inputs.json"
+          fi
+
           PYTHONPATH=src python - <<'PY'
           import json
           import os
@@ -115,14 +122,17 @@ jobs:
 
           from v38.live_acquisition import (
               choose_completed_session,
+              _download,
               download_market_inputs,
               download_stock_ohlcv,
               fetch_benchmark_frames,
+              market_rows,
               fetch_tradingview_response,
               frame_dates,
               parse_tradingview_universe,
               prevent_session_regression,
               previous_active_universe,
+              select_yfinance_symbol_frame,
               state_object,
               validate_universe_count,
               write_json,
@@ -285,6 +295,121 @@ jobs:
               yf,
               target_session=session,
               generated_at=generated_at,
+          )
+
+          # Publish/Sector Rotation uses the 11 equal-weight GICS ETFs.
+          # The production market-input set contains cap-weighted XLB/XLK/etc.,
+          # so the original Publish code received MAJ=[] and drew blank panels.
+          # Fetch the exact RSP* histories expected by build_dashboard(4).py,
+          # merge with the last successful preservation, and refuse to publish
+          # unless all 11 have enough history for RS189.
+          publish_sector_symbols = (
+              "RSPT", "RSPF", "RSPN", "RSPD", "RSPM", "RSPC",
+              "RSPU", "RSPS", "RSPH", "RSPR", "RSPG",
+          )
+          previous_publish_market = {}
+          previous_publish_path = work_dir / "previous_market_inputs.json"
+          if previous_publish_path.is_file():
+              try:
+                  previous_publish_market = json.loads(
+                      previous_publish_path.read_text(encoding="utf-8")
+                  )
+              except Exception:
+                  previous_publish_market = {}
+
+          try:
+              publish_raw = _download(
+                  yf, list(publish_sector_symbols), period="2y", threads=False
+              )
+          except Exception:
+              publish_raw = None
+
+          publish_fresh = {}
+          for symbol in publish_sector_symbols:
+              rows = market_rows(
+                  select_yfinance_symbol_frame(publish_raw, symbol)
+                  if publish_raw is not None else None,
+                  target_session=session,
+                  max_rows=520,
+              )
+              if not rows or rows[-1]["date"] != session:
+                  try:
+                      retry_raw = _download(yf, [symbol], period="2y", threads=False)
+                  except Exception:
+                      retry_raw = None
+                  retried = market_rows(
+                      select_yfinance_symbol_frame(retry_raw, symbol)
+                      if retry_raw is not None else None,
+                      target_session=session,
+                      max_rows=520,
+                  )
+                  if retried:
+                      rows = retried
+              publish_fresh[symbol] = rows
+
+          previous_publish_series = (
+              previous_publish_market.get("series")
+              if isinstance(previous_publish_market.get("series"), dict)
+              else {}
+          )
+          for symbol in publish_sector_symbols:
+              by_date = {}
+              old_rows = previous_publish_series.get(symbol)
+              new_rows = publish_fresh.get(symbol)
+              if isinstance(old_rows, list):
+                  for row in old_rows:
+                      if isinstance(row, dict) and isinstance(row.get("date"), str):
+                          by_date[row["date"]] = row
+              if isinstance(new_rows, list):
+                  for row in new_rows:
+                      if isinstance(row, dict) and isinstance(row.get("date"), str):
+                          by_date[row["date"]] = row
+              merged = [
+                  by_date[d]
+                  for d in sorted(by_date)
+                  if d <= session
+              ][-520:]
+              market_inputs.setdefault("series", {})[symbol] = merged
+
+          publish_sector_counts = {
+              symbol: len(market_inputs.get("series", {}).get(symbol) or [])
+              for symbol in publish_sector_symbols
+          }
+          publish_sector_latest = {
+              symbol: (
+                  (market_inputs.get("series", {}).get(symbol) or [{}])[-1].get("date")
+                  if market_inputs.get("series", {}).get(symbol)
+                  else None
+              )
+              for symbol in publish_sector_symbols
+          }
+          publish_sector_bad = [
+              symbol for symbol in publish_sector_symbols
+              if publish_sector_counts[symbol] < 190
+              or publish_sector_latest[symbol] != session
+          ]
+          if publish_sector_bad:
+              raise RuntimeError(
+                  "Publish major-sector history incomplete: "
+                  + json.dumps(
+                      {
+                          "bad": publish_sector_bad,
+                          "counts": publish_sector_counts,
+                          "latest": publish_sector_latest,
+                          "session": session,
+                      },
+                      sort_keys=True,
+                  )
+              )
+          print(
+              json.dumps(
+                  {
+                      "publish_major_sector_history": "READY",
+                      "counts": publish_sector_counts,
+                      "latest": publish_sector_latest,
+                  },
+                  sort_keys=True,
+              )
           )
 
           # Preserve valid prior history while replacing same-date rows with the
