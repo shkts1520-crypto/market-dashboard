@@ -65,16 +65,84 @@ def reconstruct_source(source_dir: Path, target: Path) -> Path:
     return target
 
 
-def write_universe_from_rs(data_dir: Path, output: Path) -> list[str]:
+def load_market_caps(data_dir: Path, work_dir: Path) -> dict[str, float]:
+    """Use already-acquired TradingView market caps first; fall back to the
+    preserved clone snapshot. Never depend on a second Yahoo Ticker.info pass."""
+    caps: dict[str, float] = {}
+
+    universe_csv = work_dir / "universe.csv"
+    if universe_csv.is_file():
+        try:
+            with universe_csv.open("r", encoding="utf-8", newline="") as fh:
+                for raw in csv.DictReader(fh):
+                    if not isinstance(raw, dict):
+                        continue
+                    row = {
+                        str(key or "").strip().lower().replace(" ", "_"): value
+                        for key, value in raw.items()
+                    }
+                    ticker = str(row.get("ticker") or "").strip().upper()
+                    value = (
+                        _finite(row.get("market_cap"))
+                        or _finite(row.get("market_cap_basic"))
+                        or _finite(row.get("mktcap"))
+                    )
+                    if ticker and value is not None and value > 0:
+                        caps[ticker] = float(value)
+        except Exception as exc:
+            raise CloneBuildError(f"cannot read acquired TradingView market caps: {exc}") from exc
+
+    saved = data_dir / "mktcap.json"
+    if saved.is_file():
+        try:
+            obj = json.loads(saved.read_text(encoding="utf-8"))
+        except Exception as exc:
+            raise CloneBuildError(f"cannot read preserved market-cap snapshot: {exc}") from exc
+        if isinstance(obj, dict):
+            for ticker, rec in obj.items():
+                if str(ticker).strip().upper() in caps:
+                    continue
+                value = rec.get("value") if isinstance(rec, dict) else rec
+                number = _finite(value)
+                if number is not None and number > 0:
+                    caps[str(ticker).strip().upper()] = float(number)
+
+    return caps
+
+
+def write_market_cap_snapshot(caps: dict[str, float], output: Path, session: str) -> Path:
+    payload = {
+        ticker: {"value": float(value), "checked_at": session, "status": "ok"}
+        for ticker, value in sorted(caps.items())
+        if _finite(value) is not None and float(value) > 0
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return output
+
+
+def write_universe_from_rs(
+    data_dir: Path,
+    output: Path,
+    *,
+    market_caps: dict[str, float] | None = None,
+) -> list[str]:
     rs = _load_json(data_dir / "rs.json")
     rows = rs.get("rows")
     if not isinstance(rows, list) or not rows:
         raise CloneBuildError("data/rs.json rows are required")
+    market_caps = market_caps or {}
     output.parent.mkdir(parents=True, exist_ok=True)
     tickers: list[str] = []
     seen: set[str] = set()
     with output.open("w", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=["Ticker", "Name"])
+        writer = csv.DictWriter(
+            fh,
+            fieldnames=["Ticker", "Name", "market cap", "Sector", "Industry"],
+        )
         writer.writeheader()
         for row in rows:
             if not isinstance(row, dict):
@@ -84,7 +152,15 @@ def write_universe_from_rs(data_dir: Path, output: Path) -> list[str]:
                 continue
             seen.add(ticker)
             tickers.append(ticker)
-            writer.writerow({"Ticker": ticker, "Name": str(row.get("name") or "").strip()})
+            writer.writerow(
+                {
+                    "Ticker": ticker,
+                    "Name": str(row.get("name") or "").strip(),
+                    "market cap": market_caps.get(ticker, ""),
+                    "Sector": str(row.get("sector") or "").strip(),
+                    "Industry": str(row.get("industry") or "").strip(),
+                }
+            )
     if not tickers:
         raise CloneBuildError("current universe resolved to zero tickers")
     return tickers
@@ -274,7 +350,15 @@ def _ensure_ohlcv(data_dir: Path, work_dir: Path, session: str, tickers: list[st
     return candidate
 
 
-def _isolated_env(temp: Path, *, universe: Path, sector: Path, cache: Path, output: Path) -> dict[str, str]:
+def _isolated_env(
+    temp: Path,
+    *,
+    universe: Path,
+    sector: Path,
+    cache: Path,
+    mktcap: Path,
+    output: Path,
+) -> dict[str, str]:
     return {
         "V38_UNIVERSE_CSV": str(universe),
         "V38_SECTOR_JSON": str(sector),
@@ -289,7 +373,7 @@ def _isolated_env(temp: Path, *, universe: Path, sector: Path, cache: Path, outp
         "V38_TREND_JSON": str(temp / "trend_history.json"),
         "V38_EQUITY_CSV": str(temp / "equity.csv"),
         "V38_ER_JSON": str(temp / "earnings.json"),
-        "V38_MKTCAP_JSON": str(temp / "mktcap.json"),
+        "V38_MKTCAP_JSON": str(mktcap),
         "V38_OPT_JSON": str(temp / "options.json"),
         "V38_OPT_SCAN_HISTORY": str(temp / "options_scan_history.json"),
         "V38_OPT_TARGETS": str(temp / "options_targets.json"),
@@ -443,6 +527,43 @@ def validate_output(output: Path, data_dir: Path, session: str) -> None:
     if missing_scripts:
         raise CloneBuildError(f"clone ticker chart scripts missing from output: {missing_scripts}")
 
+    # Preserve the full pre-merge page shape. These markers are static UI
+    # contracts; values may change by session, but the cards/tabs must not vanish.
+    required_shape = (
+        '<section id="t-market"',
+        '<section id="t-alloc"',
+        '<section id="t-port"',
+        '<section id="t-today"',
+        '<section id="t-rotation"',
+        '<section id="t-movers"',
+        '<section id="t-rs"',
+        '<section id="t-weekly"',
+        '<section id="t-post1"',
+        '<section id="t-rules"',
+        '今日のマーケット',
+        '個別株スリーブ',
+        '発火前',
+        'エントリー候補ボード',
+        'Multi VWAPセットアップ',
+        '底打ち（構造ピボット）',
+        '値動き 上位・下位',
+        'RSマルチタイムフレーム比較',
+        '今週の結論',
+        'マーケット概略',
+        'セクター・ローテーション',
+        'Core 12 システムルール',
+    )
+    missing_shape = [marker for marker in required_shape if marker not in text]
+    if missing_shape:
+        raise CloneBuildError(f"pre-merge page shape regression: {missing_shape}")
+
+    if '投資対象ユニバース（0銘柄' in text or '対象銘柄なし' in text:
+        raise CloneBuildError(
+            "Movers universe collapsed to zero; refusing to publish a broken clone"
+        )
+    if text.count('class="postframe"') < 2:
+        raise CloneBuildError("Publish tab regression: expected two share-card frames")
+
 
 def build(args: argparse.Namespace) -> dict[str, Any]:
     repo_root = Path(args.repo_root).resolve()
@@ -458,8 +579,30 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
 
     temp = Path(tempfile.mkdtemp(prefix="v38-exact-mc57-clone-"))
     source_path = reconstruct_source(source_dir, temp / "build_dashboard_4.py")
+
+    market_caps = load_market_caps(data_dir, work_dir)
     universe_path = temp / "universe.csv"
-    tickers = write_universe_from_rs(data_dir, universe_path)
+    tickers = write_universe_from_rs(
+        data_dir,
+        universe_path,
+        market_caps=market_caps,
+    )
+    valid_mcap = sum(
+        1 for ticker in tickers
+        if _finite(market_caps.get(ticker)) is not None and float(market_caps[ticker]) > 0
+    )
+    mcap_coverage = valid_mcap / len(tickers)
+    if mcap_coverage < 0.95:
+        raise CloneBuildError(
+            f"market-cap coverage regression: {valid_mcap}/{len(tickers)} "
+            f"({mcap_coverage:.1%}) < 95%; refusing to publish collapsed Setup/Movers"
+        )
+    mktcap_path = write_market_cap_snapshot(
+        market_caps,
+        temp / "mktcap.json",
+        session,
+    )
+
     sector_path = write_sector_snapshot(data_dir, temp / "sector_snapshot.json")
     ohlcv_path = _ensure_ohlcv(data_dir, work_dir, session, tickers)
     cache_path = write_source_cache(ohlcv_path, data_dir, temp / "prices.pkl", session)
@@ -467,7 +610,14 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
     output.parent.mkdir(parents=True, exist_ok=True)
     module = import_source(
         source_path,
-        _isolated_env(temp, universe=universe_path, sector=sector_path, cache=cache_path, output=output),
+        _isolated_env(
+            temp,
+            universe=universe_path,
+            sector=sector_path,
+            cache=cache_path,
+            mktcap=mktcap_path,
+            output=output,
+        ),
     )
     _install_mc57_score_patch(module, data_dir, session)
 
@@ -488,6 +638,7 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         "session_date": session,
         "market_condition_source": "data/mc57.json",
         "mc57": current,
+        "market_cap_coverage": mcap_coverage,
         "existing_index_modified": False,
         "display_rearranged": False,
         "data_route": "existing V38 TradingView/Yahoo acquisition adapted to source cache schema",
