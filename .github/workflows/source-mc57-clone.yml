@@ -1,4 +1,5 @@
 name: Exact Source MC57 Clone
+# Final regression-guard run: market-cap snapshot is preserved for Setup/Movers.
 
 on:
   push:
