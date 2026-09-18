@@ -374,7 +374,10 @@ jobs:
           path: _site
 
   deploy:
-    if: github.event_name != 'pull_request'
+    # Root production page is intentionally retired. Keep building the
+    # production artifact because source-mc57 reuses its assets/data, but
+    # never deploy that artifact directly to Pages.
+    if: ${{ false }}
     permissions:
       contents: read
       pages: write
