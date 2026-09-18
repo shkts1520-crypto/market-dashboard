@@ -1,0 +1,171 @@
+name: Complete Macro Inputs Now
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/complete-macro-inputs-now.yml
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+jobs:
+  complete-and-deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout current repair code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
+
+      - name: Recover last good Run 66 state
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf _site /tmp/r66 /tmp/r66-pages /tmp/clone-data /tmp/clone-work
+          mkdir -p _site /tmp/r66 /tmp/r66-pages /tmp/clone-data /tmp/clone-work
+
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/10548020707/zip" > /tmp/r66-pages.zip
+          unzip -q /tmp/r66-pages.zip -d /tmp/r66-pages
+          tar -xf /tmp/r66-pages/artifact.tar -C _site
+          rm -f _site/index.html
+
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/10547523085/zip" > /tmp/r66-preservation.zip
+          unzip -q /tmp/r66-preservation.zip -d /tmp/r66
+          cp -a /tmp/r66/repo_data/. /tmp/clone-data/
+          cp /tmp/r66/raw_input/ohlcv.csv /tmp/clone-work/ohlcv.csv
+          if [ -f /tmp/r66/raw_input/universe.csv ]; then
+            cp /tmp/r66/raw_input/universe.csv /tmp/clone-work/universe.csv
+          fi
+          test -s /tmp/clone-data/state.json
+          test -s /tmp/clone-data/market_inputs.json
+          test -s /tmp/clone-work/ohlcv.csv
+
+      - name: Complete Yahoo macro inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          import yfinance as yf
+
+          from v38.live_acquisition import download_market_inputs
+
+          data = Path('/tmp/clone-data')
+          old = json.loads((data/'market_inputs.json').read_text(encoding='utf-8'))
+          session = old['session_date']
+          generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
+          fresh = download_market_inputs(
+              yf,
+              target_session=session,
+              generated_at=generated_at,
+          )
+
+          old_series = old.get('series') if isinstance(old.get('series'), dict) else {}
+          fresh_series = fresh.get('series') if isinstance(fresh.get('series'), dict) else {}
+          merged = {}
+          for symbol in sorted(set(old_series) | set(fresh_series)):
+              by_date = {}
+              for rows in (old_series.get(symbol), fresh_series.get(symbol)):
+                  if isinstance(rows, list):
+                      for row in rows:
+                          if isinstance(row, dict) and isinstance(row.get('date'), str):
+                              by_date[row['date']] = row
+              merged[symbol] = [by_date[d] for d in sorted(by_date) if d <= session][-520:]
+
+          # Keep Publish's RSP* histories and all old valid series while adding
+          # the formerly omitted source macros.
+          old['series'] = merged
+          old['symbols'] = sorted(set(old.get('symbols') or []) | set(fresh.get('symbols') or []) | set(merged))
+          old['generated_at'] = generated_at
+          (data/'market_inputs.json').write_text(
+              json.dumps(old, ensure_ascii=False, sort_keys=True, indent=2) + '\n',
+              encoding='utf-8',
+          )
+
+          expected = (
+              '^VIX','^VIX3M','^VVIX','^VXN','QQQ','QQQE','SPY','HYG','LQD','IEI','JPY=X',
+              'RSP','IWM','^TNX','^FVX','^TYX','TLT','^MOVE','DX-Y.NYB',
+              'RSPN','RSPT','RSPF','RSPM','RSPU','RSPD','RSPH','RSPR','RSPS','RSPG','RSPC',
+              '^SKEW','TQQQ','SQQQ','SOXL','SOXS','SOXX','SMH',
+          )
+          present = {s for s in expected if merged.get(s)}
+          missing = [s for s in expected if s not in present]
+          hard_missing = [s for s in missing if s != '^MOVE']
+          if hard_missing:
+              raise RuntimeError('Yahoo macro inputs still missing: ' + ','.join(hard_missing))
+          if '^MOVE' in missing and not merged.get('TLT'):
+              raise RuntimeError('MOVE missing and TLT fallback missing')
+          print(json.dumps({
+              'session': session,
+              'expected': len(expected),
+              'present': len(present),
+              'missing': missing,
+              'move_fallback': '^MOVE' in missing,
+          }, sort_keys=True))
+          PY
+
+      - name: Rebuild with FRED API and complete macro cache
+        shell: bash
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$FRED_API_KEY"
+          PYTHONPATH=src python scripts/build_exact_source_mc57_clone.py             --repo-root .             --data-dir /tmp/clone-data             --work-dir /tmp/clone-work             --source-dir sources/build_dashboard_4             --output _site/source-mc57.html
+
+      - name: Verify completed macro/FRED page
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s _site/source-mc57.html
+          test ! -e _site/index.html
+          ! grep -q 'var MAJ=\[\]' _site/source-mc57.html
+          test -s /tmp/clone-data/fred_cache.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f=json.loads(Path('/tmp/clone-data/fred_cache.json').read_text(encoding='utf-8'))
+          required=(
+              'DGS2','DFII10','T10YIE','T10Y2Y','DGS10','DGS3MO',
+              'BAMLH0A0HYM2','DTWEXBGS','NFCI',
+              'WALCL','RRPONTSYD','WTREGEN',
+              'T10Y3M','BAMLC0A0CM','T5YIFR','ICSA','CCSA','SOFR',
+          )
+          missing=[x for x in required if not (isinstance(f.get(x),dict) and f[x].get('vals'))]
+          assert not missing, missing
+          print('FRED complete:', len(required))
+          PY
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload completed Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy completed macro page
+        id: deployment
+        uses: actions/deploy-pages@v4
