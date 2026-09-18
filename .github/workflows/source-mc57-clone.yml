@@ -450,6 +450,14 @@ jobs:
           retention-days: 90
           if-no-files-found: error
 
+      - name: Remove retired root page from Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s _site/source-mc57.html
+          rm -f _site/index.html
+          test ! -e _site/index.html
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
