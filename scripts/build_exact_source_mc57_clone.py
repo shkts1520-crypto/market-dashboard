@@ -16,6 +16,7 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import Any
+from datetime import date, timedelta
 
 import pandas as pd
 
@@ -357,6 +358,7 @@ def _isolated_env(
     sector: Path,
     cache: Path,
     mktcap: Path,
+    fred_cache: Path,
     output: Path,
 ) -> dict[str, str]:
     return {
@@ -367,7 +369,7 @@ def _isolated_env(
         "V38_OUT_HTML": str(output),
         "V38_UNIVERSE_AUTO": "0",
         "V38_FMP_REFERENCE_BUDGET": "0",
-        "V38_FRED_CACHE": str(temp / "fred_cache.json"),
+        "V38_FRED_CACHE": str(fred_cache),
         "V38_STATE_JSON": str(temp / "state.json"),
         "V38_LOG_CSV": str(temp / "daily_log.csv"),
         "V38_TREND_JSON": str(temp / "trend_history.json"),
@@ -403,6 +405,117 @@ def import_source(source_path: Path, env: dict[str, str]):
             else:
                 os.environ[key] = value
         raise
+
+
+def refresh_fred_cache(module: Any, data_dir: Path) -> tuple[Path, dict[str, Any]]:
+    """Refresh every FRED series required by the preserved source using the
+    repository secret. Fall back only to the last successful preserved cache."""
+    api_key = os.environ.get("FRED_API_KEY")
+    if not api_key:
+        raise CloneBuildError("FRED_API_KEY is not available to the clone build")
+
+    cache_path = data_dir / "fred_cache.json"
+    try:
+        cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.is_file() else {}
+    except Exception:
+        cache = {}
+    if not isinstance(cache, dict):
+        cache = {}
+
+    series = getattr(module, "FRED_ALL_SERIES", {})
+    if not isinstance(series, dict) or not series:
+        raise CloneBuildError("preserved source exposes no FRED_ALL_SERIES")
+
+    start = (date.today() - timedelta(days=1600)).isoformat()
+    today = date.today().isoformat()
+    status: dict[str, Any] = {}
+    missing: list[str] = []
+
+    for sid in series:
+        prior = cache.get(sid) if isinstance(cache.get(sid), dict) else {}
+        vals = None
+        src = None
+        try:
+            vals, src = module._fred_fetch_one(
+                sid,
+                api_key=api_key,
+                timeout=12,
+                start=start,
+                retry=True,
+                deadline=None,
+            )
+        except Exception:
+            vals, src = None, None
+
+        if vals:
+            vals = [(str(d), float(v)) for d, v in vals if _finite(v) is not None]
+            if vals:
+                cache[sid] = {
+                    "vals": vals[-1200:],
+                    "cached_at": today,
+                    "src": src or "api",
+                    "last_date": vals[-1][0],
+                    "last": vals[-1][1],
+                }
+                status[sid] = {
+                    "src": src or "api",
+                    "last_date": vals[-1][0],
+                    "count": len(vals),
+                }
+                continue
+
+        if prior.get("vals"):
+            status[sid] = {
+                "src": "cache",
+                "last_date": prior.get("last_date"),
+                "count": len(prior.get("vals") or []),
+                "cached_at": prior.get("cached_at"),
+            }
+        else:
+            missing.append(sid)
+            status[sid] = {"src": "none", "last_date": None, "count": 0}
+
+    if missing:
+        raise CloneBuildError(
+            "FRED required series unavailable with no preserved fallback: "
+            + ",".join(missing)
+        )
+
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text(
+        json.dumps(cache, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return cache_path, status
+
+
+SOURCE_MACRO_EXPECTED = (
+    "^VIX", "^VIX3M", "^VVIX", "^VXN", "QQQ", "QQQE", "SPY", "HYG", "LQD", "IEI", "JPY=X",
+    "RSP", "IWM", "^TNX", "^FVX", "^TYX", "TLT", "^MOVE", "DX-Y.NYB",
+    "RSPN", "RSPT", "RSPF", "RSPM", "RSPU", "RSPD", "RSPH", "RSPR", "RSPS", "RSPG", "RSPC",
+    "^SKEW", "TQQQ", "SQQQ", "SOXL", "SOXS", "SOXX", "SMH",
+)
+
+
+def validate_source_macro_inputs(data_dir: Path, session: str) -> dict[str, Any]:
+    macro = build_macro_from_market_inputs(data_dir, session)
+    missing = [symbol for symbol in SOURCE_MACRO_EXPECTED if symbol not in macro]
+    # ^MOVE is explicitly optional in the preserved source: it falls back to
+    # TLT 20-day realised volatility and must never be fabricated.
+    hard_missing = [symbol for symbol in missing if symbol != "^MOVE"]
+    if hard_missing:
+        raise CloneBuildError(
+            "source macro inputs still missing after Yahoo/cache recovery: "
+            + ",".join(hard_missing)
+        )
+    if "^MOVE" in missing and "TLT" not in macro:
+        raise CloneBuildError("both ^MOVE and its preserved TLT fallback are missing")
+    return {
+        "expected": len(SOURCE_MACRO_EXPECTED),
+        "present": len(SOURCE_MACRO_EXPECTED) - len(missing),
+        "missing": missing,
+        "move_fallback": "^MOVE" in missing,
+    }
 
 
 def _install_mc57_score_patch(module: Any, data_dir: Path, session: str) -> None:
@@ -609,8 +722,10 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
 
     sector_path = write_sector_snapshot(data_dir, temp / "sector_snapshot.json")
     ohlcv_path = _ensure_ohlcv(data_dir, work_dir, session, tickers)
+    macro_status = validate_source_macro_inputs(data_dir, session)
     cache_path = write_source_cache(ohlcv_path, data_dir, temp / "prices.pkl", session)
 
+    fred_cache_path = data_dir / "fred_cache.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     module = import_source(
         source_path,
@@ -620,9 +735,11 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
             sector=sector_path,
             cache=cache_path,
             mktcap=mktcap_path,
+            fred_cache=fred_cache_path,
             output=output,
         ),
     )
+    fred_cache_path, fred_status = refresh_fred_cache(module, data_dir)
     _install_mc57_score_patch(module, data_dir, session)
 
     old_argv = list(sys.argv)
@@ -643,6 +760,8 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         "market_condition_source": "data/mc57.json",
         "mc57": current,
         "market_cap_coverage": mcap_coverage,
+        "macro_inputs": macro_status,
+        "fred_series": fred_status,
         "existing_index_modified": False,
         "display_rearranged": False,
         "data_route": "existing V38 TradingView/Yahoo acquisition adapted to source cache schema",
