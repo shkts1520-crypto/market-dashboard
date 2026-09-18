@@ -384,7 +384,6 @@ def install_clone_ticker_chart(repo_root: Path, output: Path) -> None:
     """
     asset_names = (
         "source-mc57-options-tab.js",
-        "source-mc57-navigation.js",
         "source-mc57-restored-chart.js",
         "source-mc57-tradingview-fallback.js",
     )
@@ -399,7 +398,6 @@ def install_clone_ticker_chart(repo_root: Path, output: Path) -> None:
     text = output.read_text(encoding="utf-8")
     tags = (
         '<script src="assets/source-mc57-options-tab.js"></script>\n'
-        '<script src="assets/source-mc57-navigation.js"></script>\n'
         '<script src="assets/source-mc57-restored-chart.js"></script>\n'
         '<script src="assets/source-mc57-tradingview-fallback.js"></script>\n'
     )
@@ -438,7 +436,6 @@ def validate_output(output: Path, data_dir: Path, session: str) -> None:
         raise CloneBuildError(f"rendered market-condition value is not current MC57 ({current:.4f})")
     required_clone_scripts = (
         'assets/source-mc57-options-tab.js',
-        'assets/source-mc57-navigation.js',
         'assets/source-mc57-restored-chart.js',
         'assets/source-mc57-tradingview-fallback.js',
     )
