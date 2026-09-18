@@ -7,6 +7,8 @@ on:
     paths:
       - .github/workflows/source-mc57-clone.yml
       - scripts/build_exact_source_mc57_clone.py
+      - assets/source-mc57-restored-chart.js
+      - assets/source-mc57-tradingview-fallback.js
   schedule:
     # 06:45 JST every morning (GitHub cron is UTC).
     - cron: '45 21 * * *'
@@ -67,11 +69,36 @@ jobs:
         env:
           CLONE_DATA: ${{ runner.temp }}/v38-clone-data
           CLONE_WORK: ${{ runner.temp }}/v38-clone-live
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           rm -rf "$CLONE_DATA" "$CLONE_WORK"
           cp -a data "$CLONE_DATA"
           mkdir -p "$CLONE_WORK"
+
+          # Never let a transient benchmark response move the clone backward.
+          # Read the maximum session from recent successful clone preservation
+          # artifacts; if the provider cannot still serve that session, the run
+          # fails before deployment and the existing published page is retained.
+          PREVIOUS_CLONE_SESSION=""
+          mkdir -p "$RUNNER_TEMP/v38-clone-session-history"
+          while read -r RUN_ID; do
+            test -n "$RUN_ID" || continue
+            ARTIFACT_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
+              --jq '.artifacts[] | select(.name | startswith("exact-source-mc57-preservation-")) | .id' | head -n1 || true)"
+            test -n "$ARTIFACT_ID" || continue
+            ZIP="$RUNNER_TEMP/v38-clone-session-history/${RUN_ID}.zip"
+            if gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > "$ZIP"; then
+              SESSION="$(unzip -p "$ZIP" repo_data/state.json 2>/dev/null | python -c 'import json,sys; print(json.load(sys.stdin).get("session_date",""))' 2>/dev/null || true)"
+              if [[ "$SESSION" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+                if [[ -z "$PREVIOUS_CLONE_SESSION" || "$SESSION" > "$PREVIOUS_CLONE_SESSION" ]]; then
+                  PREVIOUS_CLONE_SESSION="$SESSION"
+                fi
+              fi
+            fi
+          done < <(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/source-mc57-clone.yml/runs?branch=main&status=success&per_page=6" --jq '.workflow_runs[].id')
+          export PREVIOUS_CLONE_SESSION
+          echo "previous published clone session: ${PREVIOUS_CLONE_SESSION:-none}"
 
           PYTHONPATH=src python - <<'PY'
           import json
@@ -89,6 +116,7 @@ jobs:
               fetch_tradingview_response,
               frame_dates,
               parse_tradingview_universe,
+              prevent_session_regression,
               previous_active_universe,
               state_object,
               validate_universe_count,
@@ -107,10 +135,26 @@ jobs:
           )
 
           benchmarks = fetch_benchmark_frames(yf)
-          session = choose_completed_session(
+          observed_session = choose_completed_session(
               frame_dates(benchmarks["QQQ"]),
               frame_dates(benchmarks["SPY"]),
           )
+          previous_clone_session = os.environ.get("PREVIOUS_CLONE_SESSION") or None
+          session = prevent_session_regression(
+              observed_session,
+              previous_clone_session,
+          )
+          if previous_clone_session and session != observed_session:
+              print(
+                  json.dumps(
+                      {
+                          "benchmark_observed_session": observed_session,
+                          "retained_published_session": session,
+                          "session_regression_prevented": True,
+                      },
+                      sort_keys=True,
+                  )
+              )
 
           tv_response = fetch_tradingview_response()
           universe_rows, _ = parse_tradingview_universe(
