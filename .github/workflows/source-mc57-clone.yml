@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/source-mc57-clone.yml
       - scripts/build_exact_source_mc57_clone.py
+      - assets/source-mc57-options-tab.js
       - assets/source-mc57-restored-chart.js
       - assets/source-mc57-tradingview-fallback.js
   schedule:
@@ -390,6 +391,9 @@ jobs:
 
           cp "$RUNNER_TEMP/v38-clone-live/ohlcv.csv" "$KIT/raw_input/ohlcv.csv"
           cp scripts/build_exact_source_mc57_clone.py "$KIT/code/"
+          cp assets/source-mc57-options-tab.js "$KIT/code/"
+          cp assets/source-mc57-restored-chart.js "$KIT/code/"
+          cp assets/source-mc57-tradingview-fallback.js "$KIT/code/"
           cp src/v38/live_acquisition.py "$KIT/code/"
           cp pyproject.toml "$KIT/code/"
           cp .github/workflows/source-mc57-clone.yml "$KIT/code/"
