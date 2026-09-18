@@ -17,6 +17,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 from datetime import date, timedelta
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 
@@ -431,21 +432,29 @@ def refresh_fred_cache(module: Any, data_dir: Path) -> tuple[Path, dict[str, Any
     status: dict[str, Any] = {}
     missing: list[str] = []
 
-    for sid in series:
-        prior = cache.get(sid) if isinstance(cache.get(sid), dict) else {}
-        vals = None
-        src = None
+    def _fetch(sid: str):
         try:
-            vals, src = module._fred_fetch_one(
+            return sid, module._fred_fetch_one(
                 sid,
                 api_key=api_key,
-                timeout=12,
+                timeout=8,
                 start=start,
-                retry=True,
+                retry=False,
                 deadline=None,
             )
         except Exception:
-            vals, src = None, None
+            return sid, (None, None)
+
+    fetched: dict[str, tuple[Any, Any]] = {}
+    with ThreadPoolExecutor(max_workers=min(6, len(series))) as pool:
+        futures = [pool.submit(_fetch, sid) for sid in series]
+        for fut in as_completed(futures):
+            sid, result = fut.result()
+            fetched[sid] = result
+
+    for sid in series:
+        prior = cache.get(sid) if isinstance(cache.get(sid), dict) else {}
+        vals, src = fetched.get(sid, (None, None))
 
         if vals:
             vals = [(str(d), float(v)) for d, v in vals if _finite(v) is not None]
