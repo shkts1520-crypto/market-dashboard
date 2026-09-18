@@ -1,0 +1,168 @@
+name: Complete FRED Yahoo Inputs Now
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/complete-macro-now.yml
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+jobs:
+  complete-and-deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout current recovery code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
+
+      - name: Recover last good site and preservation data
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf _site /tmp/p66 /tmp/p66-pages /tmp/clone-data /tmp/clone-work
+          mkdir -p _site /tmp/p66 /tmp/p66-pages /tmp/clone-data /tmp/clone-work
+
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/10548020707/zip" > /tmp/p66-pages.zip
+          unzip -q /tmp/p66-pages.zip -d /tmp/p66-pages
+          tar -xf /tmp/p66-pages/artifact.tar -C _site
+          rm -f _site/index.html
+
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/10547523085/zip" > /tmp/p66-preservation.zip
+          unzip -q /tmp/p66-preservation.zip -d /tmp/p66
+          cp -a /tmp/p66/repo_data/. /tmp/clone-data/
+          cp /tmp/p66/raw_input/ohlcv.csv /tmp/clone-work/ohlcv.csv
+          if [ -f /tmp/p66/raw_input/universe.csv ]; then
+            cp /tmp/p66/raw_input/universe.csv /tmp/clone-work/universe.csv
+          fi
+          test -s /tmp/clone-data/state.json
+          test -s /tmp/clone-data/market_inputs.json
+          test -s /tmp/clone-work/ohlcv.csv
+
+      - name: Complete Yahoo diagnostic macro histories
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python - <<'PY'
+          import json
+          import time
+          from pathlib import Path
+          import yfinance as yf
+          from v38.live_acquisition import _download, market_rows, select_yfinance_symbol_frame
+
+          data=Path('/tmp/clone-data')
+          path=data/'market_inputs.json'
+          obj=json.loads(path.read_text(encoding='utf-8'))
+          session=obj['session_date']
+          series=obj.setdefault('series', {})
+          symbols=(
+              '^VVIX','LQD','IEI','JPY=X','^TYX','TLT','^MOVE','^SKEW',
+              'SQQQ','SOXS','SOXX','SMH',
+          )
+
+          result={}
+          for symbol in symbols:
+              old=series.get(symbol) if isinstance(series.get(symbol), list) else []
+              fresh=[]
+              for attempt in range(3):
+                  try:
+                      raw=_download(yf,[symbol],period='2y',threads=False)
+                  except Exception:
+                      raw=None
+                  fresh=market_rows(
+                      select_yfinance_symbol_frame(raw,symbol) if raw is not None else None,
+                      target_session=session,
+                      max_rows=520,
+                  )
+                  if fresh and fresh[-1]['date']==session:
+                      break
+                  time.sleep(2*(attempt+1))
+              by_date={}
+              for rows in (old,fresh):
+                  if isinstance(rows,list):
+                      for row in rows:
+                          if isinstance(row,dict) and isinstance(row.get('date'),str):
+                              by_date[row['date']]=row
+              merged=[by_date[d] for d in sorted(by_date) if d<=session][-520:]
+              series[symbol]=merged
+              result[symbol]={
+                  'rows':len(merged),
+                  'latest':merged[-1]['date'] if merged else None,
+                  'fresh_current':bool(fresh and fresh[-1]['date']==session),
+              }
+
+          obj['symbols']=list(dict.fromkeys(list(obj.get('symbols') or [])+list(symbols)))
+          path.write_text(json.dumps(obj,ensure_ascii=False,sort_keys=True),encoding='utf-8')
+          print(json.dumps({'yahoo_macro_recovery':result,'session':session},sort_keys=True))
+          PY
+
+      - name: Rebuild with FRED API and macro validation
+        shell: bash
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$FRED_API_KEY"
+          PYTHONPATH=src python scripts/build_exact_source_mc57_clone.py             --repo-root .             --data-dir /tmp/clone-data             --work-dir /tmp/clone-work             --source-dir sources/build_dashboard_4             --output _site/source-mc57.html
+
+      - name: Verify completed data and page
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s _site/source-mc57.html
+          test ! -e _site/index.html
+          ! grep -q 'var MAJ=\[\]' _site/source-mc57.html
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('/tmp/clone-data/market_inputs.json').read_text(encoding='utf-8'))
+          expected=(
+              '^VIX','^VIX3M','^VVIX','^VXN','QQQ','QQQE','SPY','HYG','LQD','IEI','JPY=X',
+              'RSP','IWM','^TNX','^FVX','^TYX','TLT',
+              'RSPN','RSPT','RSPF','RSPM','RSPU','RSPD','RSPH','RSPR','RSPS','RSPG','RSPC',
+              '^SKEW','TQQQ','SQQQ','SOXL','SOXS','SOXX','SMH',
+          )
+          missing=[s for s in expected if not (m.get('series',{}).get(s) or [])]
+          assert not missing, missing
+          f=Path('/tmp/clone-data/fred_cache.json')
+          assert f.is_file(), 'fred_cache missing'
+          fred=json.loads(f.read_text(encoding='utf-8'))
+          empty=[k for k,v in fred.items() if not isinstance(v,dict) or not v.get('vals')]
+          assert not empty, empty
+          print('Yahoo required macro series present:',len(expected))
+          print('FRED cached series:',len(fred))
+          print('MOVE direct rows:',len(m.get('series',{}).get('^MOVE') or []))
+          PY
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload completed Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy completed data page
+        id: deployment
+        uses: actions/deploy-pages@v4
