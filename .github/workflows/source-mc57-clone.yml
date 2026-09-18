@@ -148,6 +148,32 @@ jobs:
               )
           except Exception as exc:
               if previous_clone_session and previous_clone_zip:
+                  # Benchmark/Yahoo failure must not erase market caps used by
+                  # Setup/Movers. TradingView already provides market_cap_basic,
+                  # so preserve that route even when the rest of the session is
+                  # reused from the last successful preservation artifact.
+                  try:
+                      tv_response = fetch_tradingview_response()
+                      universe_rows, _ = parse_tradingview_universe(
+                          tv_response,
+                          session_date=previous_clone_session,
+                      )
+                      previous_count = previous_active_universe(data_dir / "rs.json")
+                      validate_universe_count(len(universe_rows), previous_count)
+                      write_universe_csv(
+                          work_dir / "universe.csv",
+                          universe_rows,
+                      )
+                  except Exception as tv_exc:
+                      print(
+                          json.dumps(
+                              {
+                                  "market_cap_route_failed": True,
+                                  "market_cap_error": str(tv_exc),
+                              },
+                              sort_keys=True,
+                          )
+                      )
                   print(
                       json.dumps(
                           {
@@ -170,6 +196,30 @@ jobs:
               previous_clone_session,
           )
           if previous_clone_session and session != observed_session:
+              # Keep current TradingView market-cap data even while retaining
+              # the prior completed price session.
+              try:
+                  tv_response = fetch_tradingview_response()
+                  universe_rows, _ = parse_tradingview_universe(
+                      tv_response,
+                      session_date=session,
+                  )
+                  previous_count = previous_active_universe(data_dir / "rs.json")
+                  validate_universe_count(len(universe_rows), previous_count)
+                  write_universe_csv(
+                      work_dir / "universe.csv",
+                      universe_rows,
+                  )
+              except Exception as tv_exc:
+                  print(
+                      json.dumps(
+                          {
+                              "market_cap_route_failed": True,
+                              "market_cap_error": str(tv_exc),
+                          },
+                          sort_keys=True,
+                      )
+                  )
               print(
                   json.dumps(
                       {
@@ -407,10 +457,12 @@ jobs:
           cp "$RUNNER_TEMP/v38-clone-data/rs.json" "$KIT/repo_data/"
           cp "$RUNNER_TEMP/v38-clone-data/market_inputs.json" "$KIT/repo_data/"
           cp "$RUNNER_TEMP/v38-clone-data/mc57.json" "$KIT/repo_data/"
+          if [ -f "$SOURCE_TMP/mktcap.json" ]; then cp "$SOURCE_TMP/mktcap.json" "$KIT/repo_data/mktcap.json"; fi
           if [ -f "$RUNNER_TEMP/v38-clone-data/theme_membership.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/theme_membership.json" "$KIT/repo_data/"; fi
           if [ -f "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" "$KIT/repo_data/"; fi
 
           cp "$RUNNER_TEMP/v38-clone-live/ohlcv.csv" "$KIT/raw_input/ohlcv.csv"
+          if [ -f "$RUNNER_TEMP/v38-clone-live/universe.csv" ]; then cp "$RUNNER_TEMP/v38-clone-live/universe.csv" "$KIT/raw_input/universe.csv"; fi
           cp scripts/build_exact_source_mc57_clone.py "$KIT/code/"
           cp assets/source-mc57-options-tab.js "$KIT/code/"
           cp assets/source-mc57-restored-chart.js "$KIT/code/"
