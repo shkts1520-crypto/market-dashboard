@@ -39,8 +39,10 @@ SPECIAL_SECURITY_RE = re.compile(
 PRIMARY_MARKET_SYMBOLS = ("QQQ", "TQQQ", "^VIX", "NQ=F", "SPY")
 MARKET_SYMBOLS = (
     "QQQ", "TQQQ", "SPY", "RSP", "IWD", "IWF", "IWM", "MDY", "QQQE", "SOXL",
-    "^VIX", "^VIX3M", "^VXN", "NQ=F",
-    "HYG", "IEF", "^TNX", "^FVX", "DX-Y.NYB", "CL=F", "GC=F",
+    "^VIX", "^VIX3M", "^VVIX", "^VXN", "NQ=F",
+    "HYG", "LQD", "IEF", "IEI", "^TNX", "^FVX", "^TYX",
+    "JPY=X", "TLT", "^MOVE", "DX-Y.NYB", "CL=F", "GC=F",
+    "^SKEW", "SQQQ", "SOXS", "SOXX", "SMH",
     "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE",
     "XLU", "XLV", "XLY",
 )
