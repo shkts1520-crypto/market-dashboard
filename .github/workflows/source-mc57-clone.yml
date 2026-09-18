@@ -416,9 +416,14 @@ jobs:
           # newly acquired session. The exact source UI calculates legacy
           # diagnostics from overlapping QQQ/SPY/HYG/LQD/RSP/IWM/VIX history;
           # a provider may return only a short current slice for one symbol.
-          prior_series = (
+          repo_prior_series = (
               previous_market.get("series")
               if isinstance(previous_market.get("series"), dict)
+              else {}
+          )
+          preserved_prior_series = (
+              previous_publish_market.get("series")
+              if isinstance(previous_publish_market.get("series"), dict)
               else {}
           )
           fresh_series = (
@@ -427,18 +432,19 @@ jobs:
               else {}
           )
           merged_series = {}
-          for symbol in sorted(set(prior_series) | set(fresh_series)):
+          for symbol in sorted(
+              set(repo_prior_series) | set(preserved_prior_series) | set(fresh_series)
+          ):
               by_date = {}
-              old_rows = prior_series.get(symbol)
-              new_rows = fresh_series.get(symbol)
-              if isinstance(old_rows, list):
-                  for row in old_rows:
-                      if isinstance(row, dict) and isinstance(row.get("date"), str):
-                          by_date[row["date"]] = row
-              if isinstance(new_rows, list):
-                  for row in new_rows:
-                      if isinstance(row, dict) and isinstance(row.get("date"), str):
-                          by_date[row["date"]] = row
+              for source_rows in (
+                  repo_prior_series.get(symbol),
+                  preserved_prior_series.get(symbol),
+                  fresh_series.get(symbol),
+              ):
+                  if isinstance(source_rows, list):
+                      for row in source_rows:
+                          if isinstance(row, dict) and isinstance(row.get("date"), str):
+                              by_date[row["date"]] = row
               merged_series[symbol] = [
                   by_date[d]
                   for d in sorted(by_date)
@@ -545,6 +551,8 @@ jobs:
 
       - name: Build separate exact source page with MC57 only
         shell: bash
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/v38-clone-live"
@@ -583,6 +591,7 @@ jobs:
           cp "$RUNNER_TEMP/v38-clone-data/rs.json" "$KIT/repo_data/"
           cp "$RUNNER_TEMP/v38-clone-data/market_inputs.json" "$KIT/repo_data/"
           cp "$RUNNER_TEMP/v38-clone-data/mc57.json" "$KIT/repo_data/"
+          if [ -f "$RUNNER_TEMP/v38-clone-data/fred_cache.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/fred_cache.json" "$KIT/repo_data/fred_cache.json"; fi
           if [ -f "$SOURCE_TMP/mktcap.json" ]; then cp "$SOURCE_TMP/mktcap.json" "$KIT/repo_data/mktcap.json"; fi
           if [ -f "$RUNNER_TEMP/v38-clone-data/theme_membership.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/theme_membership.json" "$KIT/repo_data/"; fi
           if [ -f "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" "$KIT/repo_data/"; fi
