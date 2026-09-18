@@ -563,6 +563,10 @@ def validate_output(output: Path, data_dir: Path, session: str) -> None:
         )
     if text.count('class="postframe"') < 2:
         raise CloneBuildError("Publish tab regression: expected two share-card frames")
+    if "var MAJ=[]" in text:
+        raise CloneBuildError(
+            "Publish Sector Rotation regression: major-sector history resolved to MAJ=[]"
+        )
 
 
 def build(args: argparse.Namespace) -> dict[str, Any]:
