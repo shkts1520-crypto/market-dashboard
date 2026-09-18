@@ -11,6 +11,7 @@ import json
 import math
 import os
 import pickle
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -373,6 +374,40 @@ def _install_mc57_score_patch(module: Any, data_dir: Path, session: str) -> None
     module.mri_frame = mc57_mri_frame
 
 
+
+def install_clone_ticker_chart(repo_root: Path, output: Path) -> None:
+    """Install only the source-mc57 ticker-tap chart extension.
+
+    The production index is deliberately untouched. The clone reuses the same
+    chart interaction model as the production allocation page, adds EMA21, and
+    displays Options levels only when existing Options data contains the ticker.
+    """
+    asset_names = (
+        "source-mc57-restored-chart.js",
+        "source-mc57-tradingview-fallback.js",
+    )
+    asset_dir = output.parent / "assets"
+    asset_dir.mkdir(parents=True, exist_ok=True)
+    for name in asset_names:
+        source = repo_root / "assets" / name
+        if not source.is_file():
+            raise CloneBuildError(f"clone ticker chart asset missing: {source}")
+        shutil.copy2(source, asset_dir / name)
+
+    text = output.read_text(encoding="utf-8")
+    tags = (
+        '<script src="assets/source-mc57-restored-chart.js"></script>\n'
+        '<script src="assets/source-mc57-tradingview-fallback.js"></script>\n'
+    )
+    if tags not in text:
+        lower = text.lower()
+        pos = lower.rfind("</body>")
+        if pos < 0:
+            raise CloneBuildError("clone HTML has no closing body tag for ticker chart injection")
+        text = text[:pos] + tags + text[pos:]
+        output.write_text(text, encoding="utf-8")
+
+
 def validate_output(output: Path, data_dir: Path, session: str) -> None:
     if not output.is_file() or output.stat().st_size < 100_000:
         raise CloneBuildError(f"clone output missing or unexpectedly small: {output}")
@@ -397,6 +432,13 @@ def validate_output(output: Path, data_dir: Path, session: str) -> None:
     expected = f'<div class="val">{current:.0f}<span style="font-size:15px;font-weight:600">/100</span></div>'
     if expected not in text:
         raise CloneBuildError(f"rendered market-condition value is not current MC57 ({current:.4f})")
+    required_clone_scripts = (
+        'assets/source-mc57-restored-chart.js',
+        'assets/source-mc57-tradingview-fallback.js',
+    )
+    missing_scripts = [src for src in required_clone_scripts if src not in text]
+    if missing_scripts:
+        raise CloneBuildError(f"clone ticker chart scripts missing from output: {missing_scripts}")
 
 
 def build(args: argparse.Namespace) -> dict[str, Any]:
@@ -433,6 +475,7 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
     finally:
         sys.argv = old_argv
 
+    install_clone_ticker_chart(repo_root, output)
     validate_output(output, data_dir, session)
     current = float(mc57_series(data_dir, session).iloc[-1])
     return {
