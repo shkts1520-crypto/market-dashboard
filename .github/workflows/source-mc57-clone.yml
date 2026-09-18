@@ -138,12 +138,33 @@ jobs:
               .replace("+00:00", "Z")
           )
 
-          benchmarks = fetch_benchmark_frames(yf)
-          observed_session = choose_completed_session(
-              frame_dates(benchmarks["QQQ"]),
-              frame_dates(benchmarks["SPY"]),
-          )
           previous_clone_session = os.environ.get("PREVIOUS_CLONE_SESSION") or None
+          previous_clone_zip = os.environ.get("PREVIOUS_CLONE_ZIP") or None
+          try:
+              benchmarks = fetch_benchmark_frames(yf)
+              observed_session = choose_completed_session(
+                  frame_dates(benchmarks["QQQ"]),
+                  frame_dates(benchmarks["SPY"]),
+              )
+          except Exception as exc:
+              if previous_clone_session and previous_clone_zip:
+                  print(
+                      json.dumps(
+                          {
+                              "benchmark_acquisition_failed": True,
+                              "benchmark_error": str(exc),
+                              "retained_published_session": previous_clone_session,
+                              "reuse_previous_preservation": True,
+                          },
+                          sort_keys=True,
+                      )
+                  )
+                  (work_dir / ".reuse_previous_preservation").write_text(
+                      previous_clone_session,
+                      encoding="utf-8",
+                  )
+                  raise SystemExit(0)
+              raise
           session = prevent_session_regression(
               observed_session,
               previous_clone_session,
