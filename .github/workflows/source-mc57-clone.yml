@@ -81,6 +81,7 @@ jobs:
           # artifacts; if the provider cannot still serve that session, the run
           # fails before deployment and the existing published page is retained.
           PREVIOUS_CLONE_SESSION=""
+          PREVIOUS_CLONE_ZIP=""
           mkdir -p "$RUNNER_TEMP/v38-clone-session-history"
           while read -r RUN_ID; do
             test -n "$RUN_ID" || continue
@@ -93,11 +94,13 @@ jobs:
               if [[ "$SESSION" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
                 if [[ -z "$PREVIOUS_CLONE_SESSION" || "$SESSION" > "$PREVIOUS_CLONE_SESSION" ]]; then
                   PREVIOUS_CLONE_SESSION="$SESSION"
+                  PREVIOUS_CLONE_ZIP="$ZIP"
                 fi
               fi
             fi
           done < <(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/source-mc57-clone.yml/runs?branch=main&status=success&per_page=6" --jq '.workflow_runs[].id')
           export PREVIOUS_CLONE_SESSION
+          export PREVIOUS_CLONE_ZIP
           echo "previous published clone session: ${PREVIOUS_CLONE_SESSION:-none}"
 
           PYTHONPATH=src python - <<'PY'
@@ -151,10 +154,16 @@ jobs:
                           "benchmark_observed_session": observed_session,
                           "retained_published_session": session,
                           "session_regression_prevented": True,
+                          "reuse_previous_preservation": True,
                       },
                       sort_keys=True,
                   )
               )
+              (work_dir / ".reuse_previous_preservation").write_text(
+                  session,
+                  encoding="utf-8",
+              )
+              raise SystemExit(0)
 
           tv_response = fetch_tradingview_response()
           universe_rows, _ = parse_tradingview_universe(
@@ -281,11 +290,24 @@ jobs:
           )
           PY
 
-          PYTHONPATH=src python scripts/calculate_mc57_live.py \
-            --data-dir "$CLONE_DATA" \
-            --reference config/mc57_reference.json \
-            --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json \
-            --force
+          if [ -f "$CLONE_WORK/.reuse_previous_preservation" ]; then
+            test -n "$PREVIOUS_CLONE_ZIP"
+            REUSE_DIR="$RUNNER_TEMP/v38-clone-preservation-reuse"
+            rm -rf "$REUSE_DIR" "$CLONE_DATA"
+            mkdir -p "$REUSE_DIR" "$CLONE_DATA" "$CLONE_WORK"
+            unzip -q "$PREVIOUS_CLONE_ZIP" 'repo_data/*' 'raw_input/ohlcv.csv' -d "$REUSE_DIR"
+            cp -a "$REUSE_DIR/repo_data/." "$CLONE_DATA/"
+            cp "$REUSE_DIR/raw_input/ohlcv.csv" "$CLONE_WORK/ohlcv.csv"
+            RESTORED_SESSION="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("session_date",""))' "$CLONE_DATA/state.json")"
+            test "$RESTORED_SESSION" = "$PREVIOUS_CLONE_SESSION"
+            echo "reused successful clone preservation for session $RESTORED_SESSION"
+          else
+            PYTHONPATH=src python scripts/calculate_mc57_live.py \
+              --data-dir "$CLONE_DATA" \
+              --reference config/mc57_reference.json \
+              --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json \
+              --force
+          fi
 
       - name: Recover exact Pages artifact from Production
         if: github.event_name == 'workflow_run'
