@@ -1,0 +1,163 @@
+name: Repair Publish Now
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/repair-publish-now.yml
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+jobs:
+  repair-and-deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout current repair code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
+
+      - name: Recover last good site and preservation data
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf _site /tmp/p63 /tmp/p63-pages /tmp/clone-data /tmp/clone-work
+          mkdir -p _site /tmp/p63 /tmp/p63-pages /tmp/clone-data /tmp/clone-work
+
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/10545494700/zip" > /tmp/p63-pages.zip
+          unzip -q /tmp/p63-pages.zip -d /tmp/p63-pages
+          tar -xf /tmp/p63-pages/artifact.tar -C _site
+          rm -f _site/index.html
+
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/10545429969/zip" > /tmp/p63-preservation.zip
+          unzip -q /tmp/p63-preservation.zip -d /tmp/p63
+          cp -a /tmp/p63/repo_data/. /tmp/clone-data/
+          cp /tmp/p63/raw_input/ohlcv.csv /tmp/clone-work/ohlcv.csv
+          if [ -f /tmp/p63/raw_input/universe.csv ]; then
+            cp /tmp/p63/raw_input/universe.csv /tmp/clone-work/universe.csv
+          fi
+          test -s /tmp/clone-data/state.json
+          test -s /tmp/clone-data/market_inputs.json
+          test -s /tmp/clone-work/ohlcv.csv
+
+      - name: Restore exact Publish major-sector histories
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python - <<'PY'
+          import json
+          from pathlib import Path
+          import yfinance as yf
+          from v38.live_acquisition import _download, market_rows, select_yfinance_symbol_frame
+
+          data = Path('/tmp/clone-data')
+          obj = json.loads((data/'market_inputs.json').read_text(encoding='utf-8'))
+          session = obj['session_date']
+          symbols = ('RSPT','RSPF','RSPN','RSPD','RSPM','RSPC','RSPU','RSPS','RSPH','RSPR','RSPG')
+
+          try:
+              raw = _download(yf, list(symbols), period='2y', threads=False)
+          except Exception:
+              raw = None
+
+          details = {}
+          for symbol in symbols:
+              rows = market_rows(
+                  select_yfinance_symbol_frame(raw, symbol) if raw is not None else None,
+                  target_session=session,
+                  max_rows=520,
+              )
+              if not rows or rows[-1]['date'] != session:
+                  try:
+                      rr = _download(yf, [symbol], period='2y', threads=False)
+                  except Exception:
+                      rr = None
+                  retry = market_rows(
+                      select_yfinance_symbol_frame(rr, symbol) if rr is not None else None,
+                      target_session=session,
+                      max_rows=520,
+                  )
+                  if retry:
+                      rows = retry
+              if len(rows) < 190 or rows[-1]['date'] != session:
+                  raise RuntimeError(f'{symbol}: insufficient Publish history rows={len(rows)} latest={rows[-1]["date"] if rows else None}')
+              obj.setdefault('series', {})[symbol] = rows
+              details[symbol] = {'rows': len(rows), 'latest': rows[-1]['date']}
+
+          obj['symbols'] = list(dict.fromkeys(list(obj.get('symbols') or []) + list(symbols)))
+          (data/'market_inputs.json').write_text(json.dumps(obj, ensure_ascii=False, sort_keys=True), encoding='utf-8')
+          print(json.dumps({'publish_major_sector_history':'READY','session':session,'details':details}, sort_keys=True))
+          PY
+
+      - name: Rebuild source page only
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/build_exact_source_mc57_clone.py             --repo-root .             --data-dir /tmp/clone-data             --work-dir /tmp/clone-work             --source-dir sources/build_dashboard_4             --output _site/source-mc57.html
+
+      - name: Verify Publish is populated
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s _site/source-mc57.html
+          test ! -e _site/index.html
+          ! grep -q 'var MAJ=\[\]' _site/source-mc57.html
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.docs=[]
+              def handle_starttag(self, tag, attrs):
+                  if tag == 'iframe':
+                      d=dict(attrs)
+                      if 'postframe' in d.get('class','') and d.get('srcdoc'):
+                          self.docs.append(d['srcdoc'])
+
+          text=Path('_site/source-mc57.html').read_text(encoding='utf-8')
+          p=P(); p.feed(text)
+          assert len(p.docs) == 2, len(p.docs)
+          js=re.search(r'<script>(.*?)</script>', p.docs[1], re.S).group(1)
+          m=re.search(r'var\s+MAJ\s*=\s*(\[[\s\S]*?\])\s*\.map', js)
+          assert m, 'MAJ populated definition not found'
+          rows=re.findall(r"\['[^']*','[^']*',\d+,\d+,\d+,\d+\]", m.group(1))
+          assert len(rows) == 11, len(rows)
+          assert 'var MAJ=[]' not in js
+          assert 'var SUB=[]' not in js
+          print('Publish MAJ rows:', len(rows))
+          PY
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload repaired Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy repaired Publish
+        id: deployment
+        uses: actions/deploy-pages@v4
