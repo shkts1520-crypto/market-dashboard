@@ -1,4 +1,4 @@
-name: Exact Source MC57 Clone
+name: Exact Site Mirror Backup
 
 on:
   push:
@@ -6,10 +6,6 @@ on:
       - main
     paths:
       - .github/workflows/source-mc57-clone.yml
-      - scripts/build_exact_source_mc57_clone.py
-      - assets/source-mc57-options-tab.js
-      - assets/source-mc57-restored-chart.js
-      - assets/source-mc57-tradingview-fallback.js
   schedule:
     # 06:45 JST every morning (GitHub cron is UTC).
     - cron: '45 21 * * *'
@@ -29,11 +25,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: exact-source-mc57-pages
+  group: exact-site-mirror-pages
   cancel-in-progress: false
 
 jobs:
-  append-clone-and-deploy:
+  mirror-and-deploy:
     if: >-
       ${{
         github.event_name == 'push' ||
@@ -42,7 +38,7 @@ jobs:
         (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
       }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -54,306 +50,27 @@ jobs:
           ref: main
           fetch-depth: 1
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install clone dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
-
-      - name: Refresh isolated clone data from the existing live acquisition route
+      - name: Recover Production Pages artifact
         shell: bash
         env:
-          CLONE_DATA: ${{ runner.temp }}/v38-clone-data
-          CLONE_WORK: ${{ runner.temp }}/v38-clone-live
           GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           set -euo pipefail
-          rm -rf "$CLONE_DATA" "$CLONE_WORK"
-          cp -a data "$CLONE_DATA"
-          mkdir -p "$CLONE_WORK"
-
-          # Never let a transient benchmark response move the clone backward.
-          # Read the maximum session from recent successful clone preservation
-          # artifacts; if the provider cannot still serve that session, the run
-          # fails before deployment and the existing published page is retained.
-          PREVIOUS_CLONE_SESSION=""
-          PREVIOUS_CLONE_ZIP=""
-          mkdir -p "$RUNNER_TEMP/v38-clone-session-history"
-          while read -r RUN_ID; do
-            test -n "$RUN_ID" || continue
-            ARTIFACT_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
-              --jq '.artifacts[] | select(.name | startswith("exact-source-mc57-preservation-")) | .id' | head -n1 || true)"
-            test -n "$ARTIFACT_ID" || continue
-            ZIP="$RUNNER_TEMP/v38-clone-session-history/${RUN_ID}.zip"
-            if gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > "$ZIP"; then
-              SESSION="$(unzip -p "$ZIP" repo_data/state.json 2>/dev/null | python -c 'import json,sys; print(json.load(sys.stdin).get("session_date",""))' 2>/dev/null || true)"
-              if [[ "$SESSION" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-                if [[ -z "$PREVIOUS_CLONE_SESSION" || "$SESSION" > "$PREVIOUS_CLONE_SESSION" ]]; then
-                  PREVIOUS_CLONE_SESSION="$SESSION"
-                  PREVIOUS_CLONE_ZIP="$ZIP"
-                fi
-              fi
-            fi
-          done < <(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/source-mc57-clone.yml/runs?branch=main&status=success&per_page=6" --jq '.workflow_runs[].id')
-          export PREVIOUS_CLONE_SESSION
-          export PREVIOUS_CLONE_ZIP
-          echo "previous published clone session: ${PREVIOUS_CLONE_SESSION:-none}"
-
-          PYTHONPATH=src python - <<'PY'
-          import json
-          import os
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          import yfinance as yf
-
-          from v38.live_acquisition import (
-              choose_completed_session,
-              download_market_inputs,
-              download_stock_ohlcv,
-              fetch_benchmark_frames,
-              fetch_tradingview_response,
-              frame_dates,
-              parse_tradingview_universe,
-              prevent_session_regression,
-              previous_active_universe,
-              state_object,
-              validate_universe_count,
-              write_json,
-              write_universe_csv,
-          )
-          from v38.stock_adapter import calculate_from_files
-
-          data_dir = Path(os.environ["CLONE_DATA"])
-          work_dir = Path(os.environ["CLONE_WORK"])
-          generated_at = (
-              datetime.now(timezone.utc)
-              .replace(microsecond=0)
-              .isoformat()
-              .replace("+00:00", "Z")
-          )
-
-          previous_clone_session = os.environ.get("PREVIOUS_CLONE_SESSION") or None
-          previous_clone_zip = os.environ.get("PREVIOUS_CLONE_ZIP") or None
-          try:
-              benchmarks = fetch_benchmark_frames(yf)
-              observed_session = choose_completed_session(
-                  frame_dates(benchmarks["QQQ"]),
-                  frame_dates(benchmarks["SPY"]),
-              )
-          except Exception as exc:
-              if previous_clone_session and previous_clone_zip:
-                  print(
-                      json.dumps(
-                          {
-                              "benchmark_acquisition_failed": True,
-                              "benchmark_error": str(exc),
-                              "retained_published_session": previous_clone_session,
-                              "reuse_previous_preservation": True,
-                          },
-                          sort_keys=True,
-                      )
-                  )
-                  (work_dir / ".reuse_previous_preservation").write_text(
-                      previous_clone_session,
-                      encoding="utf-8",
-                  )
-                  raise SystemExit(0)
-              raise
-          session = prevent_session_regression(
-              observed_session,
-              previous_clone_session,
-          )
-          if previous_clone_session and session != observed_session:
-              print(
-                  json.dumps(
-                      {
-                          "benchmark_observed_session": observed_session,
-                          "retained_published_session": session,
-                          "session_regression_prevented": True,
-                          "reuse_previous_preservation": True,
-                      },
-                      sort_keys=True,
-                  )
-              )
-              (work_dir / ".reuse_previous_preservation").write_text(
-                  session,
-                  encoding="utf-8",
-              )
-              raise SystemExit(0)
-
-          tv_response = fetch_tradingview_response()
-          universe_rows, _ = parse_tradingview_universe(
-              tv_response,
-              session_date=session,
-          )
-          previous_count = previous_active_universe(data_dir / "rs.json")
-          validate_universe_count(len(universe_rows), previous_count)
-
-          universe_path = write_universe_csv(
-              work_dir / "universe.csv",
-              universe_rows,
-          )
-          ohlcv_path = work_dir / "ohlcv.csv"
-          yahoo_stats = download_stock_ohlcv(
-              yf,
-              [row["ticker"] for row in universe_rows],
-              target_session=session,
-              output_path=ohlcv_path,
-          )
-
-          source = (
-              "TradingView america/scan universe + Yahoo Finance/yfinance "
-              "0.2.66 adjusted by Adj Close"
-          )
-          calculate_from_files(
-              ohlcv_path,
-              universe_path,
-              data_dir,
-              session_date=session,
-              generated_at=generated_at,
-              source=source,
-          )
-
-          previous_market_path = data_dir / "market_inputs.json"
-          previous_market = {}
-          if previous_market_path.is_file():
-              try:
-                  previous_market = json.loads(
-                      previous_market_path.read_text(encoding="utf-8")
-                  )
-              except Exception:
-                  previous_market = {}
-
-          market_inputs = download_market_inputs(
-              yf,
-              target_session=session,
-              generated_at=generated_at,
-          )
-
-          # Preserve valid prior history while replacing same-date rows with the
-          # newly acquired session. The exact source UI calculates legacy
-          # diagnostics from overlapping QQQ/SPY/HYG/LQD/RSP/IWM/VIX history;
-          # a provider may return only a short current slice for one symbol.
-          prior_series = (
-              previous_market.get("series")
-              if isinstance(previous_market.get("series"), dict)
-              else {}
-          )
-          fresh_series = (
-              market_inputs.get("series")
-              if isinstance(market_inputs.get("series"), dict)
-              else {}
-          )
-          merged_series = {}
-          for symbol in sorted(set(prior_series) | set(fresh_series)):
-              by_date = {}
-              old_rows = prior_series.get(symbol)
-              new_rows = fresh_series.get(symbol)
-              if isinstance(old_rows, list):
-                  for row in old_rows:
-                      if isinstance(row, dict) and isinstance(row.get("date"), str):
-                          by_date[row["date"]] = row
-              if isinstance(new_rows, list):
-                  for row in new_rows:
-                      if isinstance(row, dict) and isinstance(row.get("date"), str):
-                          by_date[row["date"]] = row
-              merged_series[symbol] = [
-                  by_date[d]
-                  for d in sorted(by_date)
-                  if d <= session
-              ][-520:]
-          market_inputs["series"] = merged_series
-
-          required_history = ("QQQ", "SPY", "HYG", "LQD", "RSP", "IWM", "^VIX")
-          history_counts = {
-              symbol: len(merged_series.get(symbol) or [])
-              for symbol in required_history
-          }
-          if history_counts["QQQ"] < 200 or history_counts["SPY"] < 200:
-              raise RuntimeError(
-                  "clone market history too short after merge: "
-                  + json.dumps(history_counts, sort_keys=True)
-              )
-
-          write_json(data_dir / "market_inputs.json", market_inputs)
-          print(
-              json.dumps(
-                  {
-                      "clone_market_history_counts": history_counts,
-                      "clone_market_history_merged": True,
-                  },
-                  sort_keys=True,
-              )
-          )
-          write_json(
-              data_dir / "state.json",
-              state_object(
-                  session_date=session,
-                  generated_at=generated_at,
-                  coverage=float(yahoo_stats["target_session_coverage"]),
-              ),
-          )
-
-          print(
-              json.dumps(
-                  {
-                      "session_date": session,
-                      "active_universe": len(universe_rows),
-                      "stock_coverage": float(yahoo_stats["target_session_coverage"]),
-                  },
-                  sort_keys=True,
-              )
-          )
-          PY
-
-          if [ -f "$CLONE_WORK/.reuse_previous_preservation" ]; then
-            test -n "$PREVIOUS_CLONE_ZIP"
-            REUSE_DIR="$RUNNER_TEMP/v38-clone-preservation-reuse"
-            rm -rf "$REUSE_DIR" "$CLONE_DATA"
-            mkdir -p "$REUSE_DIR" "$CLONE_DATA" "$CLONE_WORK"
-            unzip -q "$PREVIOUS_CLONE_ZIP" 'repo_data/*' 'raw_input/ohlcv.csv' -d "$REUSE_DIR"
-            cp -a "$REUSE_DIR/repo_data/." "$CLONE_DATA/"
-            cp "$REUSE_DIR/raw_input/ohlcv.csv" "$CLONE_WORK/ohlcv.csv"
-            RESTORED_SESSION="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("session_date",""))' "$CLONE_DATA/state.json")"
-            test "$RESTORED_SESSION" = "$PREVIOUS_CLONE_SESSION"
-            echo "reused successful clone preservation for session $RESTORED_SESSION"
+          if [ "$EVENT_NAME" = "workflow_run" ]; then
+            RUN_ID="$WORKFLOW_RUN_ID"
           else
-            PYTHONPATH=src python scripts/calculate_mc57_live.py \
-              --data-dir "$CLONE_DATA" \
-              --reference config/mc57_reference.json \
-              --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json \
-              --force
+            RUN_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production.yml/runs?branch=main&status=success&per_page=1" --jq '.workflow_runs[0].id')"
           fi
-
-      - name: Recover exact Pages artifact from Production
-        if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: /tmp/v38-pages-artifact
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
-
-      - name: Recover current Pages artifact for direct or manual run
-        if: github.event_name != 'workflow_run'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          RUN_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production.yml/runs?branch=main&status=success&per_page=1" --jq '.workflow_runs[0].id')"
           test -n "$RUN_ID"
           ARTIFACT_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" --jq '.artifacts[] | select(.name=="github-pages") | .id' | head -n1)"
           test -n "$ARTIFACT_ID"
+          rm -rf /tmp/v38-pages-artifact /tmp/v38-pages.zip
           mkdir -p /tmp/v38-pages-artifact
           gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > /tmp/v38-pages.zip
           unzip -q /tmp/v38-pages.zip -d /tmp/v38-pages-artifact
+          printf '%s\n' "$RUN_ID" > /tmp/production-run-id.txt
 
       - name: Unpack Production Pages byte-for-byte
         shell: bash
@@ -365,99 +82,40 @@ jobs:
           test -n "$TAR"
           tar -xf "$TAR" -C _site
           test -s _site/index.html
-          sha256sum _site/index.html | tee /tmp/index.before.sha256
+          sha256sum _site/index.html | tee /tmp/index.sha256
 
-      - name: Build separate exact source page with MC57 only
+      - name: Mirror index to source page byte-for-byte
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/v38-clone-live"
-          PYTHONPATH=src python scripts/build_exact_source_mc57_clone.py \
-            --repo-root . \
-            --data-dir "$RUNNER_TEMP/v38-clone-data" \
-            --source-dir sources/build_dashboard_4 \
-            --work-dir "$RUNNER_TEMP/v38-clone-live" \
-            --output _site/source-mc57.html
+          cp _site/index.html _site/source-mc57.html
           test -s _site/source-mc57.html
+          cmp --silent _site/index.html _site/source-mc57.html
+          sha256sum _site/source-mc57.html | tee /tmp/source-mc57.sha256
+          INDEX_SHA="$(cut -d' ' -f1 /tmp/index.sha256)"
+          SOURCE_SHA="$(cut -d' ' -f1 /tmp/source-mc57.sha256)"
+          test "$INDEX_SHA" = "$SOURCE_SHA"
+          echo "exact mirror sha256: $INDEX_SHA"
 
-      - name: Prove existing page was not changed
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha256sum _site/index.html | tee /tmp/index.after.sha256
-          cmp /tmp/index.before.sha256 /tmp/index.after.sha256
-          grep -q 'マーケットステータス（地合いスコア）' _site/source-mc57.html
-          grep -q '地合いスコアの内訳（4本柱）' _site/source-mc57.html
-
-      - name: Assemble exact reproduction preservation kit
-        shell: bash
-        run: |
-          set -euo pipefail
-          KIT="$RUNNER_TEMP/mc57-preservation"
-          rm -rf "$KIT"
-          mkdir -p "$KIT"/{source,repo_data,raw_input,code,output,frozen_runtime,environment}
-
-          cp -a sources/build_dashboard_4/. "$KIT/source/archive_parts/"
-          SOURCE_TMP="$(find /tmp -maxdepth 1 -type d -name 'v38-exact-mc57-clone-*' | sort | tail -n1)"
-          test -n "$SOURCE_TMP"
-          cp -a "$SOURCE_TMP/." "$KIT/frozen_runtime/"
-          cp "$SOURCE_TMP/build_dashboard_4.py" "$KIT/source/build_dashboard(4).py"
-
-          cp "$RUNNER_TEMP/v38-clone-data/state.json" "$KIT/repo_data/"
-          cp "$RUNNER_TEMP/v38-clone-data/rs.json" "$KIT/repo_data/"
-          cp "$RUNNER_TEMP/v38-clone-data/market_inputs.json" "$KIT/repo_data/"
-          cp "$RUNNER_TEMP/v38-clone-data/mc57.json" "$KIT/repo_data/"
-          if [ -f "$RUNNER_TEMP/v38-clone-data/theme_membership.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/theme_membership.json" "$KIT/repo_data/"; fi
-          if [ -f "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" ]; then cp "$RUNNER_TEMP/v38-clone-data/acquisition_manifest.json" "$KIT/repo_data/"; fi
-
-          cp "$RUNNER_TEMP/v38-clone-live/ohlcv.csv" "$KIT/raw_input/ohlcv.csv"
-          cp scripts/build_exact_source_mc57_clone.py "$KIT/code/"
-          cp assets/source-mc57-options-tab.js "$KIT/code/"
-          cp assets/source-mc57-restored-chart.js "$KIT/code/"
-          cp assets/source-mc57-tradingview-fallback.js "$KIT/code/"
-          cp src/v38/live_acquisition.py "$KIT/code/"
-          cp pyproject.toml "$KIT/code/"
-          cp .github/workflows/source-mc57-clone.yml "$KIT/code/"
-
-          cp _site/source-mc57.html "$KIT/output/"
-          if [ -f _site/source-mc57_share.html ]; then cp _site/source-mc57_share.html "$KIT/output/"; fi
-          cp /tmp/index.before.sha256 "$KIT/output/original-index.sha256"
-
-          python -m pip freeze > "$KIT/environment/pip-freeze.txt"
-          python --version > "$KIT/environment/python-version.txt" 2>&1
-          uname -a > "$KIT/environment/runner-uname.txt"
-          printf '%s\n' "6ce79cb01e6430ff70208daa0adbfdfbfb7f0559" > "$KIT/environment/reference-main-commit.txt"
-          printf '%s\n' "ee306726ee4b629f92c5d2d6687c06869702030f60922c93f44ead713bc8bb80" > "$KIT/source/EXPECTED_SOURCE_SHA256.txt"
-
-          cat > "$KIT/README-FIRST.txt" <<'EOF'
-          V38 Exact Source MC57 preservation kit
-          Session: current isolated clone refresh
-          Purpose: preserve every input and generated cache needed to reproduce source-mc57.html.
-          Canonical source SHA256: ee306726ee4b629f92c5d2d6687c06869702030f60922c93f44ead713bc8bb80
-          Market Condition source: repo_data/mc57.json
-          Existing index.html was not modified; its SHA is output/original-index.sha256.
-          raw_input/ohlcv.csv is the full Yahoo OHLCV snapshot acquired by the successful clone build.
-          frozen_runtime/ contains the exact temporary runtime cache generated by build_dashboard(4).py.
-          EOF
-
-          (cd "$KIT" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
-
-      - name: Upload exact reproduction preservation kit
+      - name: Upload mirror proof
         uses: actions/upload-artifact@v4
         with:
-          name: exact-source-mc57-preservation-${{ github.run_id }}
-          path: ${{ runner.temp }}/mc57-preservation
-          retention-days: 90
+          name: exact-site-mirror-proof-${{ github.run_id }}
+          path: |
+            /tmp/index.sha256
+            /tmp/source-mc57.sha256
+            /tmp/production-run-id.txt
           if-no-files-found: error
+          retention-days: 30
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload Pages artifact with separate clone
+      - name: Upload Pages artifact with exact mirror
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
-      - name: Deploy unchanged Production artifact plus clone
+      - name: Deploy unchanged Production plus exact mirror
         id: deployment
         uses: actions/deploy-pages@v4
