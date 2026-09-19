@@ -72,3 +72,22 @@ def test_production_checks_canonical_and_source_extension_javascript():
     workflow = PRODUCTION.read_text(encoding="utf-8")
     assert "node --check assets/v38-canonical-binder.js" in workflow
     assert "node --check assets/source-mc57-options-tab.js" in workflow
+
+
+def test_retain_rebuild_recovers_exact_session_display_observations():
+    workflow = PRODUCTION.read_text(encoding="utf-8")
+    assert "Restore retained display observations" in workflow
+    assert "validate_retained_display_observations" in workflow
+    assert "display_observations.json" in workflow
+    assert "github-pages" in workflow
+    assert "ui_view_model.json" in workflow
+
+
+def test_acquire_commit_persists_display_observations_and_rejects_stale_main():
+    workflow = PRODUCTION.read_text(encoding="utf-8")
+    assert "data/display_observations.json" in workflow
+    assert 'BASE_SHA="$(git rev-parse HEAD)"' in workflow
+    assert 'git fetch --no-tags --depth=1 origin main' in workflow
+    assert 'REMOTE_SHA="$(git rev-parse origin/main)"' in workflow
+    assert 'if [ "$REMOTE_SHA" != "$BASE_SHA" ]; then' in workflow
+    assert "refusing stale data commit/push" in workflow
