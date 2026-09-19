@@ -163,10 +163,18 @@ def test_f3_queue_below_3_has_no_judgment():
     assert out["f3"]["severity"] == "NO_JUDGMENT"
 
 
-def test_f3_missing_ret20_or_dist52_is_data_incomplete_not_false():
-    rows = [row("AAA", rs189=95), row("BBB", rs189=94), row("CCC", rs189=93, dist52=None)]
+def test_f3_missing_constituent_data_keeps_original_full_queue_denominator():
+    rows = [
+        row("AAA", rs189=95),
+        row("BBB", rs189=94, ret20=-0.01),
+        row("CCC", rs189=93, dist52=None),
+    ]
     out = calculate_f123(rs_obj(rows), generated_at=GENERATED)
-    assert out["f3"]["queue_count"] == 3
-    assert out["f3"]["observable_count"] == 2
-    assert out["f3"]["value"] is None
-    assert out["f3"]["status"] == "DATA_INCOMPLETE"
+    f3 = out["f3"]
+    assert f3["queue_count"] == 3
+    assert f3["observable_count"] == 2
+    assert f3["unknown_count"] == 1
+    assert f3["observation_coverage"] == pytest.approx(2 / 3)
+    assert f3["break_count"] == 1
+    assert f3["value"] == pytest.approx(1 / 3)
+    assert f3["status"] == "OK"
