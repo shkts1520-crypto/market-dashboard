@@ -532,7 +532,10 @@ def _rotation_money_flow(market_series: dict[str, list[dict[str, Any]]]) -> dict
 
 
 def _ratio_observation(
-    market_series: dict[str, list[dict[str, Any]]], left: str, right: str
+    market_series: dict[str, list[dict[str, Any]]],
+    left: str,
+    right: str,
+    session: str,
 ) -> dict[str, Any]:
     right_by_date = {
         str(row.get("date")): _finite(row.get("close"))
@@ -546,10 +549,12 @@ def _ratio_observation(
         lhs, rhs = _finite(row.get("close")), right_by_date.get(date)
         if date and lhs is not None and rhs is not None and rhs != 0:
             rows.append({"date": date, "value": lhs / rhs})
+    current = rows[-1]["value"] if rows and rows[-1].get("date") == session else None
     return {
-        "status": READY if len(rows) >= 2 else DATA_REQUIRED,
+        "status": READY if len(rows) >= 2 and current is not None else DATA_REQUIRED,
+        "reason": "CURRENT_SESSION_RATIO" if current is not None else "SESSION_BAR_MISSING",
         "rows": rows,
-        "current": rows[-1]["value"] if rows else None,
+        "current": current,
         "source": f"market_inputs.json completed daily close: {left}/{right}",
     }
 
@@ -664,14 +669,19 @@ def build_ui_view_model(data_dir: str | Path) -> dict[str, Any]:
         for symbol, rows in market_series.items()
         if rows
     }
-    vix = _finite((market_summaries.get("^VIX") or {}).get("close"))
-    vxn = _finite((market_summaries.get("^VXN") or {}).get("close"))
+    vix_rows = market_series.get("^VIX", [])
+    vxn_rows = market_series.get("^VXN", [])
+    vix_current = bool(vix_rows and vix_rows[-1].get("date") == session)
+    vxn_current = bool(vxn_rows and vxn_rows[-1].get("date") == session)
+    vix = _finite((market_summaries.get("^VIX") or {}).get("close")) if vix_current else None
+    vxn = _finite((market_summaries.get("^VXN") or {}).get("close")) if vxn_current else None
     daily_card_observations = {
-        "risk_rotation": _ratio_observation(market_series, "XLY", "XLP"),
-        "credit_ratio": _ratio_observation(market_series, "HYG", "IEF"),
-        "vix_term": _ratio_observation(market_series, "^VIX", "^VIX3M"),
+        "risk_rotation": _ratio_observation(market_series, "XLY", "XLP", session),
+        "credit_ratio": _ratio_observation(market_series, "HYG", "IEF", session),
+        "vix_term": _ratio_observation(market_series, "^VIX", "^VIX3M", session),
         "expected_move": {
             "status": READY if vix is not None and vxn is not None else DATA_REQUIRED,
+            "reason": "CURRENT_SESSION_IV" if vix is not None and vxn is not None else "SESSION_BAR_MISSING",
             "spy_1m_pct": vix / math.sqrt(12.0) if vix is not None else None,
             "qqq_1m_pct": vxn / math.sqrt(12.0) if vxn is not None else None,
             "source": "market_inputs.json VIX/VXN annualized IV divided by sqrt(12)",
