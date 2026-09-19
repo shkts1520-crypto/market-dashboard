@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from v38.retained_publication import RetainedPublicationError, validate_retained_publication
+from v38.retained_publication import (\n    RetainedPublicationError,\n    validate_retained_display_observations,\n    validate_retained_publication,\n)
 
 
 SESSION = "2026-09-11"
@@ -134,3 +134,48 @@ def test_retained_publication_rejects_incomplete_market_coverage(tmp_path: Path)
     _write(tmp_path / "market_inputs.json", market)
     with pytest.raises(RetainedPublicationError, match="market_inputs.required_coverage"):
         validate_retained_publication(tmp_path, session_date=SESSION)
+
+
+def _display_fixture(root: Path, *, session: str = SESSION, coverage: float = 1.0) -> None:
+    _write(
+        root / "display_observations.json",
+        {
+            **_meta("v38.display_observations.1", "v38-display-observations-1.0.0"),
+            "session_date": session,
+            "coverage": coverage,
+            "status": "READY",
+            "blocked_sections": [],
+            "regime_history": {"status": "READY"},
+            "net_liquidity": {"status": "READY"},
+            "sentiment": {"status": "READY"},
+            "reversal_leaders": {"status": "READY"},
+            "ftd_proxy": {"status": "READY"},
+        },
+    )
+
+
+def test_retained_display_observations_accept_exact_ready_snapshot(tmp_path: Path) -> None:
+    _display_fixture(tmp_path)
+    result = validate_retained_display_observations(tmp_path, session_date=SESSION)
+    assert result["coverage"] == 1.0
+    assert result["blocked_sections"] == []
+
+
+def test_retained_display_observations_reject_missing_file(tmp_path: Path) -> None:
+    with pytest.raises(RetainedPublicationError, match="display_observations.json"):
+        validate_retained_display_observations(tmp_path, session_date=SESSION)
+
+
+def test_retained_display_observations_reject_stale_session(tmp_path: Path) -> None:
+    _display_fixture(tmp_path, session="2026-09-10")
+    with pytest.raises(RetainedPublicationError, match="session mismatch"):
+        validate_retained_display_observations(tmp_path, session_date=SESSION)
+
+
+def test_retained_display_observations_reject_incomplete_sections(tmp_path: Path) -> None:
+    _display_fixture(tmp_path)
+    obj = json.loads((tmp_path / "display_observations.json").read_text(encoding="utf-8"))
+    obj["sentiment"]["status"] = "DATA_REQUIRED"
+    _write(tmp_path / "display_observations.json", obj)
+    with pytest.raises(RetainedPublicationError, match="sentiment"):
+        validate_retained_display_observations(tmp_path, session_date=SESSION)
