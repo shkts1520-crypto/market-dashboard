@@ -6,6 +6,7 @@ BUILD = Path("scripts/build_site.py")
 VALIDATOR = Path("scripts/validate_display_completeness.py")
 MATERIALIZER = Path("scripts/materialize_restored_experience.py")
 WORKFLOW = Path(".github/workflows/production.yml")
+MC57_WORKFLOW = Path(".github/workflows/source-mc57-clone.yml")
 BROWSER = Path("scripts/browser_data_completeness.py")
 
 
@@ -71,3 +72,12 @@ def test_production_runs_completeness_before_browser_smoke_acceptance():
     assert validator in workflow
     assert browser in workflow
     assert workflow.index(validator) < workflow.index(browser)
+
+
+def test_mc57_pages_deploy_preserves_production_root_and_skips_expired_artifacts():
+    workflow = MC57_WORKFLOW.read_text(encoding="utf-8")
+    assert 'select(.name=="github-pages" and .expired==false)' in workflow
+    assert "No non-expired Production github-pages artifact is available" in workflow
+    assert "rm -f _site/index.html" not in workflow
+    assert "test -s _site/index.html" in workflow
+    assert "cmp /tmp/index.before.sha256 /tmp/index.deploy.sha256" in workflow
