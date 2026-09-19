@@ -8,7 +8,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-CALCULATION_VERSION = "v38-f123-engine-1.2.0"
+CALCULATION_VERSION = "v38-f123-engine-1.3.0"
 SCHEMA_VERSION = "v38.f123.1"
 
 PRICE_MIN = 5.0
@@ -328,13 +328,17 @@ def calculate_f123(
         and float(r["price"]) > float(r["sma200"])
     ]
     queue_obs = [r for r in queue if _finite(r.get("ret20")) is not None and _finite(r.get("dist52")) is not None]
-    broken = [r for r in queue_obs if float(r["ret20"]) <= 0.0 or float(r["dist52"]) < -0.15]
+    broken = [
+        r for r in queue_obs
+        if float(r["ret20"]) <= 0.0 or float(r["dist52"]) < -0.15
+    ]
+    # Original V38 F3 contract: denominator is the full qualified queue.
+    # Missing ret20/dist52 observations do not turn the whole indicator into
+    # DATA_INCOMPLETE; they simply cannot satisfy the break condition. Preserve
+    # the observation coverage explicitly so consumers can see any data gaps.
     if len(queue) < 3:
         f3_value = None
         f3_status = "NO_JUDGMENT"
-    elif len(queue_obs) != len(queue):
-        f3_value = None
-        f3_status = "DATA_INCOMPLETE"
     else:
         f3_value = len(broken) / len(queue)
         f3_status = "OK"
@@ -348,6 +352,8 @@ def calculate_f123(
         "severity": _severity(f3_value, 0.40, 0.60),
         "queue_count": len(queue),
         "observable_count": len(queue_obs),
+        "observation_coverage": (len(queue_obs) / len(queue)) if queue else None,
+        "unknown_count": len(queue) - len(queue_obs),
         "break_count": len(broken),
         "broken": [str(r["ticker"]) for r in broken_sorted[:8]],
     }
@@ -369,7 +375,7 @@ def calculate_f123(
             "f1_coverage": ">=90% FULL; 70%-<90% PARTIAL; <70% DATA_INCOMPLETE",
             "f1_source_policy": "prefer authoritative archived session snapshots; until 21 snapshots accumulate, recover the original current-universe historical-OHLC F1 from retained stock history and expose survivorship provenance",
             "f2": "current base-pool RS189 Top24; fraction of RS63-observable names with RS63<85",
-            "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; break=Ret20<=0 OR Dist52<-15%; queue<3 no judgment",
+            "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; denominator=full queue; break=Ret20<=0 OR Dist52<-15%; missing constituent observations do not count as breaks; queue<3 no judgment",
             "f123_normal_stock_hard_gate": False,
         },
     }
