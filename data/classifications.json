@@ -6,7 +6,7 @@
     "revenue_ttm_available": 3223,
     "rs_rows": 3393
   },
-  "generated_at": "2026-09-19T02:21:30Z",
+  "generated_at": "2026-09-19T03:13:30Z",
   "rows": [
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -8746,6 +8746,14 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Restaurants",
+      "market_cap": 33124793479.1082,
+      "revenue_ttm": 9699000000.048592,
+      "structural_clinical_biotech": false,
+      "ticker": "QSR"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Electric Utilities",
       "market_cap": 65327689463.24617,
       "revenue_ttm": 22723700000.0,
@@ -8991,14 +8999,6 @@
       "revenue_ttm": 1292840000.0,
       "structural_clinical_biotech": false,
       "ticker": "NWN"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Restaurants",
-      "market_cap": 33124793479.1082,
-      "revenue_ttm": 9699000000.048592,
-      "structural_clinical_biotech": false,
-      "ticker": "QSR"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -16226,19 +16226,19 @@
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
-      "industry": "Packaged Software",
-      "market_cap": 3228252180.749876,
-      "revenue_ttm": 572558000.0,
-      "structural_clinical_biotech": false,
-      "ticker": "LIF"
-    },
-    {
-      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Tobacco",
       "market_cap": 1366133528.7724822,
       "revenue_ttm": 507230000.0,
       "structural_clinical_biotech": false,
       "ticker": "TPB"
+    },
+    {
+      "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
+      "industry": "Packaged Software",
+      "market_cap": 3228252180.749876,
+      "revenue_ttm": 572558000.0,
+      "structural_clinical_biotech": false,
+      "ticker": "LIF"
     },
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",

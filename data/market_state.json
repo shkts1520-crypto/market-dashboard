@@ -1,9 +1,9 @@
 {
-  "breadth200": 54.657794676806084,
-  "breadth50": 35.34688995215311,
+  "breadth200": 54.6721571111815,
+  "breadth50": 35.366218236173395,
   "calculation_version": "v38-market-engine-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-19T02:21:30Z",
+  "generated_at": "2026-09-19T03:13:30Z",
   "market_mode": "STOP",
   "max_new_total_slots": 0,
   "mode_reason": "BLUE_GREEN_BREADTH_LT_50",

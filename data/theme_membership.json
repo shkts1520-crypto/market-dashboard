@@ -10,7 +10,7 @@
     "source_map_tickers": 5197,
     "unmapped": 5
   },
-  "generated_at": "2026-09-19T02:21:30Z",
+  "generated_at": "2026-09-19T03:13:30Z",
   "note": "Legacy exact tags remain authoritative. Researched overrides are allowed only for legacy-map gaps and may reference only fine themes already present in the legacy taxonomy. Remaining gaps may use same-industry inference only with >=60% agreement and >=2 mapped peers.",
   "override_policy": "Only current-universe legacy-map gaps; existing legacy fine themes only. Each value=[theme_id, confidence, evidence].",
   "rows": [
@@ -15303,6 +15303,20 @@
       "ticker": "MOS"
     },
     {
+      "industry": "Restaurants",
+      "major_theme": "9. 消費者・小売りテーマ",
+      "sector": "Consumer Services",
+      "tag_confidence": 1.0,
+      "tag_evidence": null,
+      "tag_method": "EXACT_SECTOR_SNAPSHOT",
+      "tag_peer_count": null,
+      "tag_researched_at": null,
+      "tag_source_kind": null,
+      "theme_id": "レストラン",
+      "theme_name": "レストラン",
+      "ticker": "QSR"
+    },
+    {
       "industry": "Electric Utilities",
       "major_theme": "15. ディフェンシブ（公益・通信・大手医薬）",
       "sector": "Utilities",
@@ -15735,20 +15749,6 @@
       "theme_id": "公益事業（ガス）",
       "theme_name": "公益事業（ガス）",
       "ticker": "NWN"
-    },
-    {
-      "industry": "Restaurants",
-      "major_theme": "9. 消費者・小売りテーマ",
-      "sector": "Consumer Services",
-      "tag_confidence": 1.0,
-      "tag_evidence": null,
-      "tag_method": "EXACT_SECTOR_SNAPSHOT",
-      "tag_peer_count": null,
-      "tag_researched_at": null,
-      "tag_source_kind": null,
-      "theme_id": "レストラン",
-      "theme_name": "レストラン",
-      "ticker": "QSR"
     },
     {
       "industry": "Regional Banks",
@@ -28393,20 +28393,6 @@
       "ticker": "CHWY"
     },
     {
-      "industry": "Packaged Software",
-      "major_theme": "8. デジタルインフラ・先進テック",
-      "sector": "Technology Services",
-      "tag_confidence": 1.0,
-      "tag_evidence": null,
-      "tag_method": "EXACT_SECTOR_SNAPSHOT",
-      "tag_peer_count": null,
-      "tag_researched_at": null,
-      "tag_source_kind": null,
-      "theme_id": "ソフトウェア（デスクトップ）",
-      "theme_name": "ソフトウェア（デスクトップ）",
-      "ticker": "LIF"
-    },
-    {
       "industry": "Tobacco",
       "major_theme": "9. 消費者・小売りテーマ",
       "sector": "Consumer Non-Durables",
@@ -28419,6 +28405,20 @@
       "theme_id": "タバコ",
       "theme_name": "タバコ",
       "ticker": "TPB"
+    },
+    {
+      "industry": "Packaged Software",
+      "major_theme": "8. デジタルインフラ・先進テック",
+      "sector": "Technology Services",
+      "tag_confidence": 1.0,
+      "tag_evidence": null,
+      "tag_method": "EXACT_SECTOR_SNAPSHOT",
+      "tag_peer_count": null,
+      "tag_researched_at": null,
+      "tag_source_kind": null,
+      "theme_id": "ソフトウェア（デスクトップ）",
+      "theme_name": "ソフトウェア（デスクトップ）",
+      "ticker": "LIF"
     },
     {
       "industry": "Internet Retail",

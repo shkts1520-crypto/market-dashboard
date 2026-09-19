@@ -2,7 +2,7 @@
   "calculation_version": "v38-rs-history-1.1.0",
   "coverage": 1.0,
   "first_observed_session": "2025-06-11",
-  "generated_at": "2026-09-19T02:21:30Z",
+  "generated_at": "2026-09-19T03:13:30Z",
   "history_kind": "CURRENT_UNIVERSE_RECONSTRUCTED",
   "history_policy": "Historical RS ranks are recomputed from downloaded split-adjusted Yahoo OHLC using the current universe; exact PIT membership is unavailable for reconstructed dates. Exact observed sessions override reconstructed windows.",
   "latest_observed_session": "2026-09-18",
@@ -273493,7 +273493,7 @@
           },
           {
             "rank": 12,
-            "rs126": 54.19175544233441,
+            "rs126": 54.14543770264011,
             "rs189": 99.48598130841123,
             "rs63": 99.0419708029197,
             "ticker": "FTH"
@@ -273682,7 +273682,7 @@
           },
           {
             "rank": 39,
-            "rs126": 53.9601667438629,
+            "rs126": 53.913849004168604,
             "rs189": 98.22429906542057,
             "rs63": 2.18978102189781,
             "ticker": "UCTT"

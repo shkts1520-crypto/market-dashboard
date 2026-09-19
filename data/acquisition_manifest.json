@@ -35,7 +35,7 @@
   "calculation_version": "v38-live-acquisition-1.3.0",
   "coverage": 1.0,
   "gap_repair_version": "v38-stock-gap-repair-exact-1.0.0",
-  "generated_at": "2026-09-19T02:21:30Z",
+  "generated_at": "2026-09-19T03:13:30Z",
   "mc57_status": "READY",
   "nqsar_status": "READY",
   "options_status": "READY",
@@ -53,7 +53,7 @@
   "session_selection": {
     "benchmark_observed_session": "2026-09-18",
     "non_regression_applied": false,
-    "previous_published_session": "2026-09-17",
+    "previous_published_session": "2026-09-18",
     "selected_session": "2026-09-18",
     "selected_session_still_requires_normal_coverage_guards": true
   },
@@ -77,14 +77,14 @@
     "acquisition_policy": "50x4 -> missing 20x2 -> missing 5x1 -> bounded single-symbol until 80% guard",
     "adaptive_retry_rounds": [
       {
-        "attempted": 1618,
-        "recovered": 646,
-        "remaining": 972,
+        "attempted": 1,
+        "recovered": 0,
+        "remaining": 1,
         "stage": "small_batch"
       },
       {
-        "attempted": 972,
-        "recovered": 971,
+        "attempted": 1,
+        "recovered": 0,
         "remaining": 1,
         "stage": "tiny_batch"
       }
