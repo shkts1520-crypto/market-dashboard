@@ -183,6 +183,13 @@ jobs:
           echo "::error::No exact-session Production handoff or same-session successful preservation is available. Refusing a duplicate full-universe Yahoo acquisition."
           exit 1
 
+      - name: Restore clone canonical F1 from retained stock history
+        shell: bash
+        env:
+          CLONE_DATA: ${{ runner.temp }}/v38-clone-data
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/restore_f1_from_retained_history.py --data-dir "$CLONE_DATA"
 
       - name: Recover exact Pages artifact from Production
         if: github.event_name == 'workflow_run'
