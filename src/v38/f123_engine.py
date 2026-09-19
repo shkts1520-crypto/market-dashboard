@@ -8,7 +8,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-CALCULATION_VERSION = "v38-f123-engine-1.1.0"
+CALCULATION_VERSION = "v38-f123-engine-1.2.0"
 SCHEMA_VERSION = "v38.f123.1"
 
 PRICE_MIN = 5.0
@@ -201,7 +201,7 @@ def _old_top24_tickers(
         return [], {"status": "DATA_REQUIRED", "reason": "PIT_OLD_TOP24_EMPTY"}
     if len(tickers) > TOP_N:
         raise F123Error("old_top24 contains more than 24 unique tickers")
-    return tickers, {
+    meta = {
         "status": "OK",
         "session_date": old_session,
         "target_session_date": current_session_date,
@@ -213,6 +213,10 @@ def _old_top24_tickers(
         "session_sequence_count": len(session_sequence),
         "count": len(tickers),
     }
+    provenance = old_top24.get("provenance")
+    if isinstance(provenance, dict):
+        meta["provenance"] = dict(provenance)
+    return tickers, meta
 
 
 def calculate_f123(
@@ -352,7 +356,7 @@ def calculate_f123(
         "session_date": session_date,
         "generated_at": generated_at,
         "coverage": rs.get("coverage"),
-        "source": "derived:rs+pit_old_top24",
+        "source": "derived:rs+frozen_lagged_top24",
         "schema_version": SCHEMA_VERSION,
         "calculation_version": CALCULATION_VERSION,
         "base_pool_count": len(pool),
@@ -361,8 +365,9 @@ def calculate_f123(
         "f3": f3,
         "rules": {
             "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
-            "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
+            "f1": "20-session-ago frozen Top24 from the best validated retained history source; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown; source provenance is exposed in f1.dependency",
             "f1_coverage": ">=90% FULL; 70%-<90% PARTIAL; <70% DATA_INCOMPLETE",
+            "f1_source_policy": "prefer authoritative archived session snapshots; until 21 snapshots accumulate, recover the original current-universe historical-OHLC F1 from retained stock history and expose survivorship provenance",
             "f2": "current base-pool RS189 Top24; fraction of RS63-observable names with RS63<85",
             "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; break=Ret20<=0 OR Dist52<-15%; queue<3 no judgment",
             "f123_normal_stock_hard_gate": False,
