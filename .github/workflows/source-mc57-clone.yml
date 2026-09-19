@@ -3,18 +3,6 @@ name: Exact Source MC57 Clone
 # Final regression-guard run: market-cap snapshot is preserved for Setup/Movers.
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/source-mc57-clone.yml
-      - scripts/build_exact_source_mc57_clone.py
-      - assets/source-mc57-options-tab.js
-      - assets/source-mc57-restored-chart.js
-      - assets/source-mc57-tradingview-fallback.js
-  schedule:
-    # 06:45 JST every morning (GitHub cron is UTC).
-    - cron: '45 21 * * *'
   workflow_run:
     workflows:
       - V38 Production Full Pipeline
@@ -38,8 +26,6 @@ jobs:
   append-clone-and-deploy:
     if: >-
       ${{
-        github.event_name == 'push' ||
-        github.event_name == 'schedule' ||
         github.event_name == 'workflow_dispatch' ||
         (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
       }}
@@ -65,7 +51,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
+          python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3' 'playwright==1.55.0'
+          node --check assets/source-mc57-options-tab.js
+          node --check assets/source-mc57-restored-chart.js
+          node --check assets/source-mc57-tradingview-fallback.js
 
       - name: Recover Production raw acquisition handoff
         shell: bash
@@ -191,406 +180,9 @@ jobs:
             exit 0
           fi
 
-          PYTHONPATH=src python - <<'PY'
-          import json
-          import os
-          from datetime import datetime, timezone
-          from pathlib import Path
+          echo "::error::No exact-session Production handoff or same-session successful preservation is available. Refusing a duplicate full-universe Yahoo acquisition."
+          exit 1
 
-          import yfinance as yf
-
-          from v38.live_acquisition import (
-              choose_completed_session,
-              _download,
-              download_market_inputs,
-              download_stock_ohlcv,
-              fetch_benchmark_frames,
-              market_rows,
-              fetch_tradingview_response,
-              frame_dates,
-              parse_tradingview_universe,
-              prevent_session_regression,
-              previous_active_universe,
-              select_yfinance_symbol_frame,
-              state_object,
-              validate_universe_count,
-              write_json,
-              write_universe_csv,
-          )
-          from v38.stock_adapter import calculate_from_files
-
-          data_dir = Path(os.environ["CLONE_DATA"])
-          work_dir = Path(os.environ["CLONE_WORK"])
-          generated_at = (
-              datetime.now(timezone.utc)
-              .replace(microsecond=0)
-              .isoformat()
-              .replace("+00:00", "Z")
-          )
-
-          previous_clone_session = os.environ.get("PREVIOUS_CLONE_SESSION") or None
-          previous_clone_zip = os.environ.get("PREVIOUS_CLONE_ZIP") or None
-          try:
-              benchmarks = fetch_benchmark_frames(yf)
-              observed_session = choose_completed_session(
-                  frame_dates(benchmarks["QQQ"]),
-                  frame_dates(benchmarks["SPY"]),
-              )
-          except Exception as exc:
-              if previous_clone_session and previous_clone_zip:
-                  # Benchmark/Yahoo failure must not erase market caps used by
-                  # Setup/Movers. TradingView already provides market_cap_basic,
-                  # so preserve that route even when the rest of the session is
-                  # reused from the last successful preservation artifact.
-                  try:
-                      tv_response = fetch_tradingview_response()
-                      universe_rows, _ = parse_tradingview_universe(
-                          tv_response,
-                          session_date=previous_clone_session,
-                      )
-                      previous_count = previous_active_universe(data_dir / "rs.json")
-                      validate_universe_count(len(universe_rows), previous_count)
-                      write_universe_csv(
-                          work_dir / "universe.csv",
-                          universe_rows,
-                      )
-                  except Exception as tv_exc:
-                      print(
-                          json.dumps(
-                              {
-                                  "market_cap_route_failed": True,
-                                  "market_cap_error": str(tv_exc),
-                              },
-                              sort_keys=True,
-                          )
-                      )
-                  print(
-                      json.dumps(
-                          {
-                              "benchmark_acquisition_failed": True,
-                              "benchmark_error": str(exc),
-                              "retained_published_session": previous_clone_session,
-                              "reuse_previous_preservation": True,
-                          },
-                          sort_keys=True,
-                      )
-                  )
-                  (work_dir / ".reuse_previous_preservation").write_text(
-                      previous_clone_session,
-                      encoding="utf-8",
-                  )
-                  raise SystemExit(0)
-              raise
-          session = prevent_session_regression(
-              observed_session,
-              previous_clone_session,
-          )
-          if previous_clone_session and session != observed_session:
-              # Keep current TradingView market-cap data even while retaining
-              # the prior completed price session.
-              try:
-                  tv_response = fetch_tradingview_response()
-                  universe_rows, _ = parse_tradingview_universe(
-                      tv_response,
-                      session_date=session,
-                  )
-                  previous_count = previous_active_universe(data_dir / "rs.json")
-                  validate_universe_count(len(universe_rows), previous_count)
-                  write_universe_csv(
-                      work_dir / "universe.csv",
-                      universe_rows,
-                  )
-              except Exception as tv_exc:
-                  print(
-                      json.dumps(
-                          {
-                              "market_cap_route_failed": True,
-                              "market_cap_error": str(tv_exc),
-                          },
-                          sort_keys=True,
-                      )
-                  )
-              print(
-                  json.dumps(
-                      {
-                          "benchmark_observed_session": observed_session,
-                          "retained_published_session": session,
-                          "session_regression_prevented": True,
-                          "reuse_previous_preservation": True,
-                      },
-                      sort_keys=True,
-                  )
-              )
-              (work_dir / ".reuse_previous_preservation").write_text(
-                  session,
-                  encoding="utf-8",
-              )
-              raise SystemExit(0)
-
-          tv_response = fetch_tradingview_response()
-          universe_rows, _ = parse_tradingview_universe(
-              tv_response,
-              session_date=session,
-          )
-          previous_count = previous_active_universe(data_dir / "rs.json")
-          validate_universe_count(len(universe_rows), previous_count)
-
-          universe_path = write_universe_csv(
-              work_dir / "universe.csv",
-              universe_rows,
-          )
-          ohlcv_path = work_dir / "ohlcv.csv"
-          yahoo_stats = download_stock_ohlcv(
-              yf,
-              [row["ticker"] for row in universe_rows],
-              target_session=session,
-              output_path=ohlcv_path,
-          )
-
-          source = (
-              "TradingView america/scan universe + Yahoo Finance/yfinance "
-              "0.2.66 adjusted by Adj Close"
-          )
-          calculate_from_files(
-              ohlcv_path,
-              universe_path,
-              data_dir,
-              session_date=session,
-              generated_at=generated_at,
-              source=source,
-          )
-
-          previous_market_path = data_dir / "market_inputs.json"
-          previous_market = {}
-          if previous_market_path.is_file():
-              try:
-                  previous_market = json.loads(
-                      previous_market_path.read_text(encoding="utf-8")
-                  )
-              except Exception:
-                  previous_market = {}
-
-          market_inputs = download_market_inputs(
-              yf,
-              target_session=session,
-              generated_at=generated_at,
-          )
-
-          # Publish/Sector Rotation uses the 11 equal-weight GICS ETFs.
-          # The production market-input set contains cap-weighted XLB/XLK/etc.,
-          # so the original Publish code received MAJ=[] and drew blank panels.
-          # Fetch the exact RSP* histories expected by build_dashboard(4).py,
-          # merge with the last successful preservation, and refuse to publish
-          # unless all 11 have enough history for RS189.
-          publish_sector_symbols = (
-              "RSPT", "RSPF", "RSPN", "RSPD", "RSPM", "RSPC",
-              "RSPU", "RSPS", "RSPH", "RSPR", "RSPG",
-          )
-          previous_publish_market = {}
-          previous_publish_path = work_dir / "previous_market_inputs.json"
-          if previous_publish_path.is_file():
-              try:
-                  previous_publish_market = json.loads(
-                      previous_publish_path.read_text(encoding="utf-8")
-                  )
-              except Exception:
-                  previous_publish_market = {}
-
-          try:
-              publish_raw = _download(
-                  yf, list(publish_sector_symbols), period="2y", threads=False
-              )
-          except Exception:
-              publish_raw = None
-
-          publish_fresh = {}
-          for symbol in publish_sector_symbols:
-              rows = market_rows(
-                  select_yfinance_symbol_frame(publish_raw, symbol)
-                  if publish_raw is not None else None,
-                  target_session=session,
-                  max_rows=520,
-              )
-              if not rows or rows[-1]["date"] != session:
-                  try:
-                      retry_raw = _download(yf, [symbol], period="2y", threads=False)
-                  except Exception:
-                      retry_raw = None
-                  retried = market_rows(
-                      select_yfinance_symbol_frame(retry_raw, symbol)
-                      if retry_raw is not None else None,
-                      target_session=session,
-                      max_rows=520,
-                  )
-                  if retried:
-                      rows = retried
-              publish_fresh[symbol] = rows
-
-          previous_publish_series = (
-              previous_publish_market.get("series")
-              if isinstance(previous_publish_market.get("series"), dict)
-              else {}
-          )
-          for symbol in publish_sector_symbols:
-              by_date = {}
-              old_rows = previous_publish_series.get(symbol)
-              new_rows = publish_fresh.get(symbol)
-              if isinstance(old_rows, list):
-                  for row in old_rows:
-                      if isinstance(row, dict) and isinstance(row.get("date"), str):
-                          by_date[row["date"]] = row
-              if isinstance(new_rows, list):
-                  for row in new_rows:
-                      if isinstance(row, dict) and isinstance(row.get("date"), str):
-                          by_date[row["date"]] = row
-              merged = [
-                  by_date[d]
-                  for d in sorted(by_date)
-                  if d <= session
-              ][-520:]
-              market_inputs.setdefault("series", {})[symbol] = merged
-
-          publish_sector_counts = {
-              symbol: len(market_inputs.get("series", {}).get(symbol) or [])
-              for symbol in publish_sector_symbols
-          }
-          publish_sector_latest = {
-              symbol: (
-                  (market_inputs.get("series", {}).get(symbol) or [{}])[-1].get("date")
-                  if market_inputs.get("series", {}).get(symbol)
-                  else None
-              )
-              for symbol in publish_sector_symbols
-          }
-          publish_sector_bad = [
-              symbol for symbol in publish_sector_symbols
-              if publish_sector_counts[symbol] < 190
-              or publish_sector_latest[symbol] != session
-          ]
-          if publish_sector_bad:
-              raise RuntimeError(
-                  "Publish major-sector history incomplete: "
-                  + json.dumps(
-                      {
-                          "bad": publish_sector_bad,
-                          "counts": publish_sector_counts,
-                          "latest": publish_sector_latest,
-                          "session": session,
-                      },
-                      sort_keys=True,
-                  )
-              )
-          print(
-              json.dumps(
-                  {
-                      "publish_major_sector_history": "READY",
-                      "counts": publish_sector_counts,
-                      "latest": publish_sector_latest,
-                  },
-                  sort_keys=True,
-              )
-          )
-
-          # Preserve valid prior history while replacing same-date rows with the
-          # newly acquired session. The exact source UI calculates legacy
-          # diagnostics from overlapping QQQ/SPY/HYG/LQD/RSP/IWM/VIX history;
-          # a provider may return only a short current slice for one symbol.
-          repo_prior_series = (
-              previous_market.get("series")
-              if isinstance(previous_market.get("series"), dict)
-              else {}
-          )
-          preserved_prior_series = (
-              previous_publish_market.get("series")
-              if isinstance(previous_publish_market.get("series"), dict)
-              else {}
-          )
-          fresh_series = (
-              market_inputs.get("series")
-              if isinstance(market_inputs.get("series"), dict)
-              else {}
-          )
-          merged_series = {}
-          for symbol in sorted(
-              set(repo_prior_series) | set(preserved_prior_series) | set(fresh_series)
-          ):
-              by_date = {}
-              for source_rows in (
-                  repo_prior_series.get(symbol),
-                  preserved_prior_series.get(symbol),
-                  fresh_series.get(symbol),
-              ):
-                  if isinstance(source_rows, list):
-                      for row in source_rows:
-                          if isinstance(row, dict) and isinstance(row.get("date"), str):
-                              by_date[row["date"]] = row
-              merged_series[symbol] = [
-                  by_date[d]
-                  for d in sorted(by_date)
-                  if d <= session
-              ][-520:]
-          market_inputs["series"] = merged_series
-
-          required_history = ("QQQ", "SPY", "HYG", "LQD", "RSP", "IWM", "^VIX")
-          history_counts = {
-              symbol: len(merged_series.get(symbol) or [])
-              for symbol in required_history
-          }
-          if history_counts["QQQ"] < 200 or history_counts["SPY"] < 200:
-              raise RuntimeError(
-                  "clone market history too short after merge: "
-                  + json.dumps(history_counts, sort_keys=True)
-              )
-
-          write_json(data_dir / "market_inputs.json", market_inputs)
-          print(
-              json.dumps(
-                  {
-                      "clone_market_history_counts": history_counts,
-                      "clone_market_history_merged": True,
-                  },
-                  sort_keys=True,
-              )
-          )
-          write_json(
-              data_dir / "state.json",
-              state_object(
-                  session_date=session,
-                  generated_at=generated_at,
-                  coverage=float(yahoo_stats["target_session_coverage"]),
-              ),
-          )
-
-          print(
-              json.dumps(
-                  {
-                      "session_date": session,
-                      "active_universe": len(universe_rows),
-                      "stock_coverage": float(yahoo_stats["target_session_coverage"]),
-                  },
-                  sort_keys=True,
-              )
-          )
-          PY
-
-          if [ -f "$CLONE_WORK/.reuse_previous_preservation" ]; then
-            test -n "$PREVIOUS_CLONE_ZIP"
-            REUSE_DIR="$RUNNER_TEMP/v38-clone-preservation-reuse"
-            rm -rf "$REUSE_DIR" "$CLONE_DATA"
-            mkdir -p "$REUSE_DIR" "$CLONE_DATA" "$CLONE_WORK"
-            unzip -q "$PREVIOUS_CLONE_ZIP" 'repo_data/*' 'raw_input/ohlcv.csv' -d "$REUSE_DIR"
-            cp -a "$REUSE_DIR/repo_data/." "$CLONE_DATA/"
-            cp "$REUSE_DIR/raw_input/ohlcv.csv" "$CLONE_WORK/ohlcv.csv"
-            RESTORED_SESSION="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("session_date",""))' "$CLONE_DATA/state.json")"
-            test "$RESTORED_SESSION" = "$PREVIOUS_CLONE_SESSION"
-            echo "reused successful clone preservation for session $RESTORED_SESSION"
-          else
-            PYTHONPATH=src python scripts/calculate_mc57_live.py \
-              --data-dir "$CLONE_DATA" \
-              --reference config/mc57_reference.json \
-              --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json \
-              --force
-          fi
 
       - name: Recover exact Pages artifact from Production
         if: github.event_name == 'workflow_run'
@@ -667,6 +259,22 @@ jobs:
           cmp /tmp/index.before.sha256 /tmp/index.after.sha256
           grep -q 'マーケットステータス（地合いスコア）' _site/source-mc57.html
           grep -q '地合いスコアの内訳（4本柱）' _site/source-mc57.html
+
+      - name: Install Chromium for source page acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m playwright install --with-deps chromium
+
+      - name: Browser acceptance source-mc57 375 390 430
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --directory _site > "$RUNNER_TEMP/source-mc57-http.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 2
+          python scripts/browser_source_mc57_acceptance.py --url http://127.0.0.1:8000/source-mc57.html
 
       - name: Assemble exact reproduction preservation kit
         shell: bash
