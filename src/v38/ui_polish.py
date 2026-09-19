@@ -51,7 +51,7 @@ def _display_component(
         out["trading_gate_eligible"] = False
         return out
 
-    if isinstance(reconstructed, dict) and _finite(reconstructed.get("value")) is not None:
+    if key == "f1" and isinstance(reconstructed, dict) and _finite(reconstructed.get("value")) is not None:
         out = dict(reconstructed)
         out["status"] = READY
         out["display_provenance"] = "CURRENT_UNIVERSE_RECONSTRUCTED_DISPLAY_ONLY"
