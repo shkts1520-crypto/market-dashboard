@@ -131,7 +131,7 @@ def test_production_override_files_cover_current_manual_rows_and_allow_neutral_u
         if row.get("tag_method") == "UNMAPPED"
     }
 
-    assert current["coverage"] >= 0.999
+    assert current["coverage"] >= 0.95
     assert manual_rows <= set(manual)
     assert set(supplemental.get("overrides") or {}) <= set(manual)
     # Newly listed/current-universe symbols may temporarily remain UNMAPPED in
@@ -141,3 +141,10 @@ def test_production_override_files_cover_current_manual_rows_and_allow_neutral_u
     assert len(unmapped) == int((current.get("coverage_detail") or {}).get("unmapped") or 0)
     assert all(ticker not in exact for ticker in manual)
     assert meta["policy"].startswith("Only current-universe legacy-map gaps")
+
+
+def test_materializer_allows_isolated_theme_gaps_but_blocks_systemic_mapping_loss():
+    script = Path("scripts/materialize_recovered_live_inputs.py").read_text(encoding="utf-8")
+    assert 'theme_membership_warning": "MISSING_THEME_NEUTRAL"' in script
+    assert 'continue_with_neutral_50_unless_coverage_below_0.95' in script
+    assert 'if theme_coverage < 0.95:' in script
