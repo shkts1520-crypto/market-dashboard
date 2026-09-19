@@ -277,7 +277,8 @@ def _pct_change(rows: list[dict[str, Any]], lag: int) -> float | None:
 
 
 def _market_summary(rows: list[dict[str, Any]], session: str) -> dict[str, Any]:
-    latest = _finite(rows[-1].get("close")) if rows else None
+    current = bool(rows and rows[-1].get("date") == session)
+    latest = _finite(rows[-1].get("close")) if current else None
     same_year = [row for row in rows if row["date"][:4] == session[:4]]
     ytd = None
     if latest is not None and same_year:
@@ -290,14 +291,16 @@ def _market_summary(rows: list[dict[str, Any]], session: str) -> dict[str, Any]:
     high52 = max(highs) if highs else None
     position52 = latest / high52 if latest is not None and high52 and high52 > 0 else None
     return {
+        "status": READY if current else DATA_REQUIRED,
+        "reason": "CURRENT_SESSION_CLOSE" if current else "SESSION_BAR_MISSING",
         "close": latest,
-        "change_1d": _pct_change(rows, 1),
-        "change_1w": _pct_change(rows, 5),
-        "change_1m": _pct_change(rows, 21),
-        "change_3m": _pct_change(rows, 63),
-        "change_1y": _pct_change(rows, 252),
-        "change_ytd": ytd,
-        "position_52w": position52,
+        "change_1d": _pct_change(rows, 1) if current else None,
+        "change_1w": _pct_change(rows, 5) if current else None,
+        "change_1m": _pct_change(rows, 21) if current else None,
+        "change_3m": _pct_change(rows, 63) if current else None,
+        "change_1y": _pct_change(rows, 252) if current else None,
+        "change_ytd": ytd if current else None,
+        "position_52w": position52 if current else None,
     }
 
 
