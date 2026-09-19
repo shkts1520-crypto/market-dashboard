@@ -17,7 +17,9 @@ permissions:
 
 concurrency:
   group: v38-production-${{ github.ref }}
-  cancel-in-progress: false
+  # A new main push supersedes an older build. Scheduled retries wait instead of
+  # cancelling a code/data publication already in flight.
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   verify-build:
@@ -30,6 +32,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Scheduled/push runs must start from the latest main after waiting in
+          # concurrency. PRs still validate the exact PR head.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
           fetch-depth: 1
 
       - name: Setup Python
@@ -65,6 +70,10 @@ jobs:
           node --check assets/v38-observables.js
           node --check assets/v38-options-chart.js
           node --check assets/v38-data-completeness-fallback.js
+          node --check assets/v38-canonical-binder.js
+          node --check assets/source-mc57-options-tab.js
+          node --check assets/source-mc57-restored-chart.js
+          node --check assets/source-mc57-tradingview-fallback.js
 
       - name: Revalidate retained session or select live acquisition
         id: session-mode
@@ -103,7 +112,7 @@ jobs:
           done
 
       - name: Calculate fixed-57 MC57
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
         shell: bash
         run: |
           set -euo pipefail
@@ -113,7 +122,7 @@ jobs:
             --golden-fixture tests/fixtures/mc57_recovery_golden_20260909_11.json
 
       - name: Recover remaining non-options live inputs
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
         shell: bash
         run: |
           set -euo pipefail
@@ -166,13 +175,14 @@ jobs:
           if-no-files-found: error
 
       - name: Calculate live options positioning
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
         shell: bash
         run: |
           set -euo pipefail
           PYTHONPATH=src python scripts/calculate_options_live.py --data-dir data --all-universe
 
       - name: Materialize current supplemental shards
+        if: github.event_name == 'pull_request' || steps.session-mode.outputs.mode == 'acquire'
         shell: bash
         run: |
           set -euo pipefail
@@ -291,11 +301,11 @@ jobs:
           rs = json.loads((root / 'rs.json').read_text(encoding='utf-8'))
           assert int(rs['coverage_detail']['active_universe']) > 0
           assert int(rs['coverage_detail']['current_valid_ohlcv']) > 0
-          assert float(rs['coverage']) >= 0.80
+          assert float(rs['coverage']) >= 0.98
 
           publish = json.loads((root / 'publish.json').read_text(encoding='utf-8'))
-          assert isinstance(publish.get('full_v38_ready'), bool)
-          assert isinstance(publish.get('blockers'), list)
+          assert publish.get('full_v38_ready') is True, publish
+          assert publish.get('blockers') == [], publish.get('blockers')
           print(json.dumps({
               'session_date': session,
               'stock_coverage': rs['coverage'],
@@ -374,7 +384,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Commit scheduled or manually acquired data
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
         shell: bash
         run: |
           set -euo pipefail
