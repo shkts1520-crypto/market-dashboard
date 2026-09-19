@@ -1,12 +1,12 @@
 {
   "calculation_version": "v38-vix-fear-cycle-1.0.0",
   "current": {
-    "high": 18.940001,
-    "lwma10": 17.595273,
-    "lwma5": 18.328,
+    "high": 15.63,
+    "lwma10": 17.238728,
+    "lwma5": 16.957334,
     "plus1_sigma": 33.173301,
     "plus2_sigma": 47.658412,
-    "vix": 17.709999
+    "vix": 14.81
   },
   "distribution": {
     "completed_months": 440,
@@ -97,7 +97,7 @@
       "roll": "2025-04-11"
     }
   ],
-  "generated_at": "2026-09-17T09:14:15Z",
+  "generated_at": "2026-09-19T02:21:30Z",
   "markers": [
     {
       "date": "2018-02-06",
@@ -230,20 +230,6 @@
   },
   "schema_version": "v38.vix_fear_cycle.1",
   "series": [
-    {
-      "close": 17.5,
-      "date": "2016-09-09",
-      "high": 17.540001,
-      "lwma10": 14.132909,
-      "lwma5": 14.347334
-    },
-    {
-      "close": 15.16,
-      "date": "2016-09-12",
-      "high": 20.51,
-      "lwma10": 15.292364,
-      "lwma5": 16.556
-    },
     {
       "close": 17.85,
       "date": "2016-09-13",
@@ -17869,9 +17855,23 @@
       "high": 18.940001,
       "lwma10": 17.595273,
       "lwma5": 18.328
+    },
+    {
+      "close": 15.44,
+      "date": "2026-09-17",
+      "high": 16.290001,
+      "lwma10": 17.484728,
+      "lwma5": 17.690001
+    },
+    {
+      "close": 14.81,
+      "date": "2026-09-18",
+      "high": 15.63,
+      "lwma10": 17.238728,
+      "lwma5": 16.957334
     }
   ],
-  "session_date": "2026-09-16",
+  "session_date": "2026-09-18",
   "source": "Yahoo Finance ^VIX daily High/Close from 1990; completed-month log10 distribution",
   "state": "NORMAL",
   "status": "READY",

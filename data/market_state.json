@@ -1,14 +1,14 @@
 {
-  "breadth200": 55.79847908745247,
-  "breadth50": 38.038277511961724,
+  "breadth200": 54.657794676806084,
+  "breadth50": 35.34688995215311,
   "calculation_version": "v38-market-engine-1.0.0",
   "coverage": 1.0,
-  "generated_at": "2026-09-19T00:46:21Z",
+  "generated_at": "2026-09-19T02:21:30Z",
   "market_mode": "STOP",
   "max_new_total_slots": 0,
-  "mode_reason": "NQSAR_YELLOW",
+  "mode_reason": "BLUE_GREEN_BREADTH_LT_50",
   "normal_stock_target_max_pct": 70,
-  "nqsar": "Yellow",
+  "nqsar": "Green",
   "rules": {
     "attack": "Blue/Green + Breadth50>=60 -> max 12",
     "defense": "Red -> new 0 and normal stocks exit next open",
@@ -19,7 +19,7 @@
     "stop": "Yellow or Blue/Green + Breadth50<50 -> new 0"
   },
   "schema_version": "v38.market_state.1",
-  "session_date": "2026-09-17",
+  "session_date": "2026-09-18",
   "source": "derived:rs+breadth+nqsar",
   "status": "READY",
   "tqqq_normal_target_pct": 30

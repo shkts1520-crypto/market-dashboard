@@ -1,5 +1,5 @@
 {
-  "base_pool_count": 1474,
+  "base_pool_count": 1479,
   "calculation_version": "v38-f123-engine-1.1.0",
   "coverage": 1.0,
   "display_completion_policy": {
@@ -10,26 +10,26 @@
   "display_completion_version": "v38-f123-display-completion-1.1.0",
   "display_overrides": {
     "f3": {
-      "break_count": 172,
+      "break_count": 183,
       "broken": [
         "ASST",
-        "VOR",
+        "AAOI",
         "VSH",
         "FCEL",
         "AXTI",
-        "WDC",
+        "UCTT",
         "ACMR",
-        "GLW"
+        "BLZE"
       ],
-      "coverage": 0.98989898989899,
+      "coverage": 0.9900662251655629,
       "display_only": true,
       "display_source": "OBSERVED_BREAKS_OVER_FULL_QUEUE_WITH_UNKNOWN_COVERAGE_REPORTED",
-      "observable_count": 294,
-      "queue_count": 297,
-      "severity": "CAUTION",
+      "observable_count": 299,
+      "queue_count": 302,
+      "severity": "SEVERE",
       "status": "PARTIAL",
       "trading_gate_eligible": false,
-      "value": 0.5791245791245792
+      "value": 0.6059602649006622
     }
   },
   "f1": {
@@ -55,38 +55,38 @@
     "severity": "SEVERE",
     "status": "OK",
     "top24_count": 24,
-    "value": 0.5,
+    "value": 0.4583333333333333,
     "weak": [
       "SNDK",
-      "AGL",
       "AXTI",
-      "ERAS",
+      "AGL",
       "MXL",
       "MU",
       "AEHR",
+      "ERAS",
       "IBRX"
     ],
-    "weak_count": 12
+    "weak_count": 11
   },
   "f3": {
-    "break_count": 172,
+    "break_count": 183,
     "broken": [
       "ASST",
-      "VOR",
+      "AAOI",
       "VSH",
       "FCEL",
       "AXTI",
-      "WDC",
+      "UCTT",
       "ACMR",
-      "GLW"
+      "BLZE"
     ],
-    "observable_count": 294,
-    "queue_count": 297,
+    "observable_count": 299,
+    "queue_count": 302,
     "severity": "NO_JUDGMENT",
     "status": "DATA_INCOMPLETE",
     "value": null
   },
-  "generated_at": "2026-09-19T00:46:21Z",
+  "generated_at": "2026-09-19T02:21:30Z",
   "rules": {
     "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
     "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
@@ -96,6 +96,6 @@
     "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; break=Ret20<=0 OR Dist52<-15%; queue<3 no judgment"
   },
   "schema_version": "v38.f123.1",
-  "session_date": "2026-09-17",
+  "session_date": "2026-09-18",
   "source": "derived:rs+pit_old_top24"
 }
