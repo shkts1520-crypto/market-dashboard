@@ -48,6 +48,9 @@ function installStyle(){
     #t-options .v38-canonical-options .v38-options-list{grid-template-columns:1fr}
     #t-options .v38-canonical-options .v38-upward-groups{grid-template-columns:1fr}
     #t-options .v38-canonical-options .v38-upward-row{grid-template-columns:22px minmax(48px,.7fr) 44px minmax(0,1.6fr);gap:5px}
+    #t-port,#t-port .card,#t-port .v38-table-wrap{box-sizing:border-box;min-width:0;max-width:100%}
+    #t-port .v38-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain}
+    #t-port table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain}
   }`;
   document.head.appendChild(s);
 }

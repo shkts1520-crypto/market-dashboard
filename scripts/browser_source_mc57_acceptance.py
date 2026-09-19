@@ -19,13 +19,35 @@ FORBIDDEN_PUBLIC_TEXT = (
 
 
 def assert_no_overflow(page, width: int, href: str) -> None:
-    overflow = page.evaluate(
+    result = page.evaluate(
         """() => {
           const root=document.documentElement;
-          return Math.max(root.scrollWidth, document.body.scrollWidth) - root.clientWidth;
+          const viewport=root.clientWidth;
+          const overflow=Math.max(root.scrollWidth, document.body.scrollWidth) - viewport;
+          const offenders=[...document.querySelectorAll('body *')].map(el => {
+            const r=el.getBoundingClientRect();
+            return {
+              tag: el.tagName,
+              id: el.id || '',
+              cls: typeof el.className === 'string' ? el.className : '',
+              left: Math.round(r.left),
+              right: Math.round(r.right),
+              width: Math.round(r.width),
+              scrollWidth: el.scrollWidth || 0,
+              clientWidth: el.clientWidth || 0,
+            };
+          }).filter(x => x.right > viewport + 3 || x.left < -3)
+            .sort((a,b) => (b.right-viewport) - (a.right-viewport))
+            .slice(0,8);
+          return {overflow, viewport, offenders};
         }"""
     )
-    assert overflow <= 3, (width, href, "unexpected horizontal overflow", overflow)
+    assert result["overflow"] <= 3, (
+        width,
+        href,
+        "unexpected horizontal overflow",
+        result,
+    )
 
 
 def assert_no_internal_text(page, width: int) -> None:
