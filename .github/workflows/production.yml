@@ -119,6 +119,52 @@ jobs:
           set -euo pipefail
           PYTHONPATH=src python scripts/materialize_recovered_live_inputs.py --data-dir data
 
+      - name: Prepare Production raw acquisition handoff
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/v38-live/ohlcv.csv"
+          test -s "$RUNNER_TEMP/v38-live/universe.csv"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path("data")
+          work = Path(os.environ["RUNNER_TEMP"]) / "v38-live"
+          state = json.loads((root / "state.json").read_text(encoding="utf-8"))
+          rs = json.loads((root / "rs.json").read_text(encoding="utf-8"))
+          manifest = json.loads((root / "acquisition_manifest.json").read_text(encoding="utf-8"))
+          payload = {
+              "schema_version": "v38.production_handoff.1",
+              "session_date": state["session_date"],
+              "state_coverage": state["coverage"],
+              "stock_coverage": rs["coverage"],
+              "active_universe": rs["coverage_detail"]["active_universe"],
+              "current_valid_ohlcv": rs["coverage_detail"]["current_valid_ohlcv"],
+              "manifest_coverage": manifest.get("coverage"),
+              "source": "V38 Production post-gap-repair raw acquisition handoff",
+          }
+          (work / "handoff.json").write_text(
+              json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(payload, sort_keys=True))
+          PY
+
+      - name: Upload Production raw acquisition handoff
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
+        uses: actions/upload-artifact@v4
+        with:
+          name: v38-production-live-handoff
+          path: |
+            ${{ runner.temp }}/v38-live/ohlcv.csv
+            ${{ runner.temp }}/v38-live/universe.csv
+            ${{ runner.temp }}/v38-live/handoff.json
+          retention-days: 14
+          if-no-files-found: error
+
       - name: Calculate live options positioning
         if: github.event_name != 'pull_request'
         shell: bash
