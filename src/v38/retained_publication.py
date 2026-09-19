@@ -65,6 +65,45 @@ def _coverage(value: Any, *, label: str) -> float:
     return coverage
 
 
+
+def validate_retained_display_observations(
+    data_dir: str | Path,
+    *,
+    session_date: str,
+) -> dict[str, Any]:
+    """Require a complete exact-session display-observation snapshot for retain rebuilds."""
+    root = Path(data_dir)
+    obj = _load_object(root / "display_observations.json")
+    _check_metadata(obj, name="display_observations.json", session_date=session_date)
+    if obj.get("status") != "READY":
+        raise RetainedPublicationError("display_observations.json: retained snapshot is not READY")
+    coverage = _number(obj.get("coverage"), label="display_observations.coverage")
+    if not math.isclose(coverage, 1.0, rel_tol=0.0, abs_tol=1e-12):
+        raise RetainedPublicationError(
+            f"display_observations.coverage must be 1.0, got {coverage:.3f}"
+        )
+    blocked = obj.get("blocked_sections")
+    if blocked != []:
+        raise RetainedPublicationError(
+            f"display_observations.blocked_sections must be empty, got {blocked!r}"
+        )
+    required = ("regime_history", "net_liquidity", "sentiment", "reversal_leaders", "ftd_proxy")
+    missing = [
+        name for name in required
+        if not isinstance(obj.get(name), dict) or obj[name].get("status") != "READY"
+    ]
+    if missing:
+        raise RetainedPublicationError(
+            "display_observations sections not READY: " + ",".join(missing)
+        )
+    return {
+        "session_date": session_date,
+        "coverage": coverage,
+        "blocked_sections": [],
+        "required_sections": list(required),
+        "retained_generated_at": obj.get("generated_at"),
+    }
+
 def validate_retained_publication(
     data_dir: str | Path,
     *,
