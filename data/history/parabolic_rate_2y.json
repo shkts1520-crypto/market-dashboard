@@ -2,7 +2,7 @@
   "calculation_version": "v38-display-observation-history-1.0.0",
   "coverage": 1.0,
   "definition": "100 * count(close >= SMA200*1.45) / count(valid SMA200)",
-  "generated_at": "2026-09-17T13:59:18Z",
+  "generated_at": "2026-09-19T00:46:21Z",
   "schema_version": "v38.parabolic_rate_history.1",
   "series": [
     {
@@ -3334,9 +3334,15 @@
       "date": "2026-09-16",
       "denominator": 3160,
       "value": 4.39873417721519
+    },
+    {
+      "count": 157,
+      "date": "2026-09-17",
+      "denominator": 3156,
+      "value": 4.974651457541191
     }
   ],
-  "session_date": "2026-09-16",
+  "session_date": "2026-09-17",
   "source": "same adjusted 3y full-universe OHLC used by display reconstruction",
   "status": "READY",
   "trading_gate_eligible": false

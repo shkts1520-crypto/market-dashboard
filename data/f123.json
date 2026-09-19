@@ -1,7 +1,7 @@
 {
   "base_pool_count": 1474,
   "calculation_version": "v38-f123-engine-1.1.0",
-  "coverage": 0.999410551134689,
+  "coverage": 1.0,
   "display_completion_policy": {
     "f1": "Strict f1 remains unchanged. If PIT is unavailable, the current-universe reconstructed value is display-only.",
     "f3": "Strict f3 remains unchanged. If >=90% of the queue is observable, observed breaks/full queue may be displayed with coverage.",
@@ -10,26 +10,26 @@
   "display_completion_version": "v38-f123-display-completion-1.1.0",
   "display_overrides": {
     "f3": {
-      "break_count": 177,
+      "break_count": 172,
       "broken": [
         "ASST",
-        "FCEL",
         "VOR",
-        "AXTI",
         "VSH",
-        "ACMR",
+        "FCEL",
+        "AXTI",
         "WDC",
-        "PENG"
+        "ACMR",
+        "GLW"
       ],
-      "coverage": 0.9898648648648649,
+      "coverage": 0.98989898989899,
       "display_only": true,
       "display_source": "OBSERVED_BREAKS_OVER_FULL_QUEUE_WITH_UNKNOWN_COVERAGE_REPORTED",
-      "observable_count": 293,
-      "queue_count": 296,
+      "observable_count": 294,
+      "queue_count": 297,
       "severity": "CAUTION",
       "status": "PARTIAL",
       "trading_gate_eligible": false,
-      "value": 0.597972972972973
+      "value": 0.5791245791245792
     }
   },
   "f1": {
@@ -55,7 +55,7 @@
     "severity": "SEVERE",
     "status": "OK",
     "top24_count": 24,
-    "value": 0.4583333333333333,
+    "value": 0.5,
     "weak": [
       "SNDK",
       "AGL",
@@ -66,27 +66,27 @@
       "AEHR",
       "IBRX"
     ],
-    "weak_count": 11
+    "weak_count": 12
   },
   "f3": {
-    "break_count": 177,
+    "break_count": 172,
     "broken": [
       "ASST",
-      "FCEL",
       "VOR",
-      "AXTI",
       "VSH",
-      "ACMR",
+      "FCEL",
+      "AXTI",
       "WDC",
-      "PENG"
+      "ACMR",
+      "GLW"
     ],
-    "observable_count": 293,
-    "queue_count": 296,
+    "observable_count": 294,
+    "queue_count": 297,
     "severity": "NO_JUDGMENT",
     "status": "DATA_INCOMPLETE",
     "value": null
   },
-  "generated_at": "2026-09-17T13:59:18Z",
+  "generated_at": "2026-09-19T00:46:21Z",
   "rules": {
     "base_pool": "SMA50>SMA200 AND Price>=5 AND DDV20>=10M AND RS189 observable",
     "f1": "20-session-ago PIT Top24 proven by a 21-session authoritative calendar sequence; denominator=current observable old Top24; drop=current base-pool loss OR current RS189 rank>36; missing is unknown",
@@ -96,6 +96,6 @@
     "f3": "queue=base pool AND RS189>=85 AND Close>SMA200; break=Ret20<=0 OR Dist52<-15%; queue<3 no judgment"
   },
   "schema_version": "v38.f123.1",
-  "session_date": "2026-09-16",
+  "session_date": "2026-09-17",
   "source": "derived:rs+pit_old_top24"
 }

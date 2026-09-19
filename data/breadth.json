@@ -1,37 +1,24 @@
 {
-  "breadth200": 55.56962025316456,
+  "breadth200": 55.79847908745247,
   "breadth200_status": "FULL",
-  "breadth50": 36.48043023603227,
+  "breadth50": 38.038277511961724,
   "calculation_version": "v38-stock-adapter-1.2.0",
-  "coverage": 0.999410551134689,
+  "coverage": 1.0,
   "coverage_detail": {
     "active_universe": 3393,
-    "current_valid_ohlcv": 3391,
+    "current_valid_ohlcv": 3393,
     "min_sma200_count": 2036,
-    "valid_sma200_count": 3160,
-    "valid_sma50_count": 3347
+    "valid_sma200_count": 3156,
+    "valid_sma50_count": 3344
   },
-  "excluded": [
-    {
-      "reasons": [
-        "NO_OHLCV"
-      ],
-      "ticker": "CATL"
-    },
-    {
-      "reasons": [
-        "NO_OHLCV"
-      ],
-      "ticker": "MTAK"
-    }
-  ],
-  "generated_at": "2026-09-17T13:59:18Z",
+  "excluded": [],
+  "generated_at": "2026-09-19T00:46:21Z",
   "rules": {
     "breadth200_min_valid": "max(30, ceil(0.60*active_universe))",
     "missing_sma_excluded_from_denominator": true,
     "pit_universe_required": true
   },
   "schema_version": "v38.breadth.1",
-  "session_date": "2026-09-16",
+  "session_date": "2026-09-17",
   "source": "TradingView america/scan universe + Yahoo Finance/yfinance 0.2.66 adjusted by Adj Close"
 }
