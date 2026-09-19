@@ -175,6 +175,22 @@ jobs:
             exit 0
           fi
 
+          CURRENT_REPO_SESSION="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("session_date",""))' "$CLONE_DATA/state.json")"
+          if [ -n "$PREVIOUS_CLONE_ZIP" ] && [ -f "$PREVIOUS_CLONE_ZIP" ] && [ "$CURRENT_REPO_SESSION" = "$PREVIOUS_CLONE_SESSION" ]; then
+            REUSE_DIR="$RUNNER_TEMP/v38-clone-same-session-reuse"
+            rm -rf "$REUSE_DIR"
+            mkdir -p "$REUSE_DIR"
+            unzip -q "$PREVIOUS_CLONE_ZIP" 'repo_data/market_inputs.json' 'raw_input/ohlcv.csv' 'raw_input/universe.csv' -d "$REUSE_DIR"
+            cp "$REUSE_DIR/repo_data/market_inputs.json" "$CLONE_DATA/market_inputs.json"
+            cp "$REUSE_DIR/raw_input/ohlcv.csv" "$CLONE_WORK/ohlcv.csv"
+            cp "$REUSE_DIR/raw_input/universe.csv" "$CLONE_WORK/universe.csv"
+            test -s "$CLONE_DATA/market_inputs.json"
+            test -s "$CLONE_WORK/ohlcv.csv"
+            test -s "$CLONE_WORK/universe.csv"
+            echo "source-mc57 reused same-session preservation for $CURRENT_REPO_SESSION; full-universe Yahoo re-download skipped"
+            exit 0
+          fi
+
           PYTHONPATH=src python - <<'PY'
           import json
           import os
