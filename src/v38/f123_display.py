@@ -7,7 +7,7 @@ from typing import Any
 
 from .freshness import atomic_write_json
 
-CALCULATION_VERSION = "v38-f123-display-completion-1.1.0"
+CALCULATION_VERSION = "v38-f123-display-completion-1.2.0"
 
 
 class F123DisplayError(RuntimeError):
@@ -52,13 +52,10 @@ def complete_f123_for_display(
     session_date: str,
     generated_at: str,
 ) -> dict[str, Any]:
-    """Attach display-only F1/F3 alternatives without mutating strict authority.
+    """Attach a display-only F1 fallback when canonical F1 cannot be restored.
 
-    The current-universe historical reconstruction is useful for the restored
-    dashboard but is not PIT evidence. Therefore f1/f2/f3 remain exactly as the
-    strict engine produced them. Display fallbacks live under display_overrides,
-    making it impossible for downstream trading code to mistake them for exact
-    current-session authority.
+    F3 is no longer patched in the display layer: the canonical engine itself
+    follows the original V38 full-queue denominator contract.
     """
     out = dict(f123)
     if out.get("session_date") != session_date:
@@ -91,30 +88,12 @@ def complete_f123_for_display(
         display_f1["trading_gate_eligible"] = False
         overrides["f1"] = display_f1
 
-    f3 = out.get("f3") if isinstance(out.get("f3"), dict) else {}
-    if _finite(f3.get("value")) is None:
-        queue = int(f3.get("queue_count") or 0)
-        observed = int(f3.get("observable_count") or 0)
-        broken = int(f3.get("break_count") or 0)
-        coverage = observed / queue if queue > 0 else None
-        if queue >= 3 and coverage is not None and coverage >= 0.90:
-            value = broken / queue
-            display_f3 = dict(f3)
-            display_f3["value"] = value
-            display_f3["status"] = "PARTIAL"
-            display_f3["coverage"] = coverage
-            display_f3["severity"] = _severity(value, 0.40, 0.60)
-            display_f3["display_source"] = "OBSERVED_BREAKS_OVER_FULL_QUEUE_WITH_UNKNOWN_COVERAGE_REPORTED"
-            display_f3["display_only"] = True
-            display_f3["trading_gate_eligible"] = False
-            overrides["f3"] = display_f3
-
     out["generated_at"] = generated_at
     out["display_overrides"] = overrides
     out["display_completion_version"] = CALCULATION_VERSION
     out["display_completion_policy"] = {
-        "f1": "Strict f1 remains unchanged. If PIT is unavailable, the current-universe reconstructed value is display-only.",
-        "f3": "Strict f3 remains unchanged. If >=90% of the queue is observable, observed breaks/full queue may be displayed with coverage.",
+        "f1": "Canonical F1 is preferred; current-universe reconstructed F1 is display-only only when canonical restoration is unavailable.",
+        "f3": "No display override. Canonical F3 uses the original full qualified-queue denominator.",
         "hard_gate": False,
     }
     return out
