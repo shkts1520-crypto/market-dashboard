@@ -246,3 +246,43 @@ def test_ratio_and_expected_move_ready_only_on_current_session(tmp_path):
     assert obs["vix_term"]["status"] == READY
     assert obs["expected_move"]["status"] == READY
     assert obs["expected_move"]["reason"] == "CURRENT_SESSION_IV"
+
+
+def test_market_summary_hides_stale_current_values(tmp_path):
+    fixtures(tmp_path)
+    dump(
+        tmp_path,
+        "market_inputs.json",
+        meta(series={
+            "QQQ": [
+                {"date": "2026-09-08", "close": 100, "high": 101},
+                {"date": "2026-09-09", "close": 102, "high": 103},
+            ]
+        }),
+    )
+    out = build_ui_view_model(tmp_path)
+    summary = out["daily"]["market_summaries"]["QQQ"]
+    assert summary["status"] == DATA_REQUIRED
+    assert summary["reason"] == "SESSION_BAR_MISSING"
+    assert summary["close"] is None
+    assert summary["change_1d"] is None
+
+
+def test_market_summary_is_ready_on_exact_session(tmp_path):
+    fixtures(tmp_path)
+    dump(
+        tmp_path,
+        "market_inputs.json",
+        meta(series={
+            "QQQ": [
+                {"date": "2026-09-09", "close": 100, "high": 101},
+                {"date": SESSION, "close": 102, "high": 103},
+            ]
+        }),
+    )
+    out = build_ui_view_model(tmp_path)
+    summary = out["daily"]["market_summaries"]["QQQ"]
+    assert summary["status"] == READY
+    assert summary["reason"] == "CURRENT_SESSION_CLOSE"
+    assert summary["close"] == pytest.approx(102)
+    assert summary["change_1d"] == pytest.approx(0.02)
