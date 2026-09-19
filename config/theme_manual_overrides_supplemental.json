@@ -24,10 +24,15 @@
       "地方銀行（西部）",
       0.99,
       "West Coast Community Bancorp is the California-based parent of West Coast Community Bank, a community bank serving California's Central Coast and Silicon Valley; Nasdaq listing began September 16, 2026."
+    ],
+    "CEPL": [
+      "電力設備/送配電",
+      0.95,
+      "Capstone Energy+ provides behind-the-meter distributed power solutions using microturbine energy systems for commercial, industrial and data-center applications."
     ]
   },
   "policy": "Supplemental researched overrides for current-universe legacy-map gaps only; values must use existing fine-theme IDs.",
-  "researched_at": "2026-09-17",
+  "researched_at": "2026-09-19",
   "schema_version": "v38.theme_manual_overrides.supplemental.1",
   "source_kind": "SEC/Nasdaq/issuer cross-check"
 }
