@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+import math
 
 from .freshness import atomic_write_json
 
-CALCULATION_VERSION = "v38-history-archive-1.1.0"
+CALCULATION_VERSION = "v38-history-archive-1.2.0"
 SNAPSHOT_SCHEMA_VERSION = "v38.history.snapshot.1"
 INDEX_SCHEMA_VERSION = "v38.history.index.1"
 OLD_TOP24_SCHEMA_VERSION = "v38.old_top24.1"
@@ -189,6 +190,123 @@ def stage_session_snapshot(
     return session_path, index_path
 
 
+def _finite_number(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _materialize_old_top24_from_reconstructed_history(
+    history_dir: Path,
+    output_path: Path,
+    *,
+    target_session: str,
+    generated_at: str,
+) -> Path | None:
+    """Recover the original F1 lagged Top24 from retained historical stock metrics.
+
+    Before 21 authoritative daily session snapshots have accumulated, Production
+    still has a much longer retained OHLC-derived history.  Each historical row
+    stores the top RS189 names together with the price/DDV/SMA fields required to
+    re-evaluate the historical base pool.  Because rs_top is already sorted by
+    RS189, filtering it by the historical eligibility fields preserves the exact
+    order.  We only accept the reconstruction when at least 24 eligible names are
+    present inside the retained Top100; otherwise we fail closed.
+
+    This is the same current-universe historical reconstruction used by the
+    original Command Center F1 calculation.  It freezes the lagged list, but it
+    is not a historical-universe membership snapshot, so provenance records that
+    limitation explicitly.
+    """
+    reconstructed = _read(history_dir / "reconstructed_stock_metrics.json")
+    if (
+        reconstructed is None
+        or reconstructed.get("status") != "READY"
+        or reconstructed.get("history_kind") != "CURRENT_UNIVERSE_RECONSTRUCTED"
+    ):
+        return None
+    raw_rows = reconstructed.get("rows")
+    if not isinstance(raw_rows, list):
+        return None
+
+    rows_by_date: dict[str, dict[str, Any]] = {}
+    for row in raw_rows:
+        if not isinstance(row, dict):
+            continue
+        day = row.get("date")
+        if isinstance(day, str) and day <= target_session:
+            rows_by_date[day] = row
+
+    sequence = sorted({*rows_by_date.keys(), target_session})
+    sequence = [day for day in sequence if day <= target_session]
+    if len(sequence) < 21 or sequence[-1] != target_session:
+        return None
+    sequence = sequence[-21:]
+    old_session = sequence[0]
+    old = rows_by_date.get(old_session)
+    rs_top = old.get("rs_top") if old else None
+    if not isinstance(rs_top, list):
+        return None
+
+    eligible: list[tuple[float, str]] = []
+    for raw in rs_top:
+        if not isinstance(raw, dict):
+            continue
+        ticker = str(raw.get("ticker") or "").strip().upper()
+        price = _finite_number(raw.get("price"))
+        ddv20 = _finite_number(raw.get("ddv20"))
+        sma50 = _finite_number(raw.get("sma50"))
+        sma200 = _finite_number(raw.get("sma200"))
+        rs189 = _finite_number(raw.get("rs189"))
+        if (
+            ticker
+            and price is not None and price >= 5.0
+            and ddv20 is not None and ddv20 >= 10_000_000.0
+            and sma50 is not None and sma200 is not None and sma50 > sma200
+            and rs189 is not None
+        ):
+            eligible.append((rs189, ticker))
+
+    eligible.sort(key=lambda item: (-item[0], item[1]))
+    tickers = [ticker for _, ticker in eligible[:24]]
+    if len(tickers) != 24 or len(set(tickers)) != 24:
+        return None
+
+    reconstructed_provenance = reconstructed.get("provenance")
+    membership_scope = (
+        reconstructed_provenance.get("membership_scope")
+        if isinstance(reconstructed_provenance, dict)
+        else None
+    )
+    payload = {
+        "session_date": old_session,
+        "target_session_date": target_session,
+        "generated_at": generated_at,
+        "coverage": old.get("coverage") if old else None,
+        "source": "derived:retained-current-universe-historical-stock-metrics",
+        "calendar_source": "retained reconstructed completed Yahoo daily sessions",
+        "schema_version": OLD_TOP24_SCHEMA_VERSION,
+        "calculation_version": CALCULATION_VERSION,
+        "lag_sessions": 20,
+        "pit_frozen": True,
+        "session_sequence": sequence,
+        "rows": [{"ticker": ticker} for ticker in tickers],
+        "provenance": {
+            "history_kind": reconstructed.get("history_kind"),
+            "pit_universe": False,
+            "membership_scope": membership_scope,
+            "survivorship_warning": bool(reconstructed.get("survivorship_warning")),
+            "reconstruction_source": reconstructed.get("source"),
+            "selection_guard": "historical rs_top contains at least 24 base-pool-eligible names",
+        },
+    }
+    return atomic_write_json(output_path, payload)
+
+
 def materialize_old_top24_from_history(
     history_dir: str | Path,
     current_rs_path: str | Path,
@@ -210,13 +328,23 @@ def materialize_old_top24_from_history(
     sequence = sorted({*sessions.keys(), target_session})
     sequence = [day for day in sequence if day <= target_session]
     if len(sequence) < 21 or sequence[-1] != target_session:
-        return None
+        return _materialize_old_top24_from_reconstructed_history(
+            root,
+            Path(output_path),
+            target_session=target_session,
+            generated_at=generated_at,
+        )
     sequence = sequence[-21:]
     old_session = sequence[0]
     old = sessions.get(old_session)
     rows = old.get("rs_top") if old else None
     if not isinstance(rows, list) or len(rows) < 24:
-        return None
+        return _materialize_old_top24_from_reconstructed_history(
+            root,
+            Path(output_path),
+            target_session=target_session,
+            generated_at=generated_at,
+        )
     tickers = []
     for row in rows[:24]:
         ticker = row.get("ticker") if isinstance(row, dict) else None

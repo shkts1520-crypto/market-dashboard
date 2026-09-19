@@ -10,13 +10,13 @@ Implemented:
 - normal-stock Eligibility + Attack/Selective ranking contract -> `core12.json`
 - staged calculate pipeline: calculate all outputs first, validate common contract/session, then publish files
 - compact session archive under `data/history/` for Breadth, market closes, F1/F2/F3, RS Top 100, acquisition quality, and authority readiness
-- automatic PIT `old_top24.json` materialization after 20 prior archived sessions are available
+- automatic frozen `old_top24.json` materialization: authoritative archived session snapshots are preferred; while that archive is still accumulating, retained historical OHLC reconstruction supplies the original current-universe F1 baseline with explicit survivorship provenance
 
 Deliberately not invented:
 
 - NQSAR FSM calculation (golden fixture still required)
 - MC57 value (fixed 57-ETF membership + golden fixture still required)
-- F1 old Top24 when a verified 20-session PIT snapshot is absent
+- F1 old Top24 when neither archived session snapshots nor retained historical OHLC can prove a complete 20-session-lag Top24
 - Structural Clinical Biotech classifications when source/version is absent
 - Peer Theme scores when fine-grained PIT theme membership/LOO inputs are absent
 - Options upstream engine, Positions upstream schema, and the remaining dashboard shards
@@ -41,6 +41,6 @@ PYTHONPATH=src python scripts/calculate_all.py \
   --stock-source PIT_PROVIDER_NAME
 ```
 
-Optional verified dependencies can be supplied with `--old-top24`, `--classifications`, and `--theme-scores`. Missing optional dependencies result in `DATA_REQUIRED`; they are not backfilled from current/static data.
+Optional verified dependencies can be supplied with `--old-top24`, `--classifications`, and `--theme-scores`. Production may recover `old_top24` from retained historical OHLC using the original F1 formula and records that reconstruction provenance; classifications and theme scores are never fabricated from current/static substitutes.
 
 Each successful live run writes one idempotent `data/history/sessions/YYYY-MM-DD.json` snapshot and rebuilds `data/history/index.json`. Re-running the same session replaces that session instead of duplicating it. Position rows are deliberately excluded from this public historical archive.

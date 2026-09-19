@@ -1,9 +1,7 @@
-import pytest
-
 from v38.f123_display import complete_f123_for_display
 
 
-def test_reconstructed_f1_and_partial_f3_are_display_overrides_only():
+def test_only_reconstructed_f1_is_a_display_override():
     session = "2026-09-11"
     f123 = {
         "session_date": session,
@@ -59,11 +57,8 @@ def test_reconstructed_f1_and_partial_f3_are_display_overrides_only():
     assert f1_display["trading_gate_eligible"] is False
     assert f1_display["display_source"] == "CURRENT_UNIVERSE_RECONSTRUCTED_OHLC_NOT_PIT"
 
-    f3_display = out["display_overrides"]["f3"]
-    assert f3_display["status"] == "PARTIAL"
-    assert f3_display["value"] == pytest.approx(185 / 307)
-    assert f3_display["coverage"] == pytest.approx(304 / 307)
-    assert f3_display["display_only"] is True
+    assert "f3" not in out["display_overrides"]
+    assert out["display_completion_policy"]["f3"].startswith("No display override")
     assert out["display_completion_policy"]["hard_gate"] is False
 
 

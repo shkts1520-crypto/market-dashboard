@@ -177,6 +177,28 @@ jobs:
             echo "::error::Retained core publication is valid but no exact-session READY display observations could be recovered."
             exit 1
           fi
+
+      - name: Restore canonical F1 from retained stock history
+        if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'retain'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python scripts/restore_f1_from_retained_history.py --data-dir data
+          python - <<'PY'
+          import json
+          f1 = json.load(open('data/f123.json', encoding='utf-8'))['f1']
+          assert f1.get('status') in {'FULL', 'PARTIAL'}, f1
+          assert f1.get('value') is not None, f1
+          dep = f1.get('dependency') or {}
+          assert dep.get('source'), dep
+          print(json.dumps({
+              'f1_status': f1.get('status'),
+              'f1_value': f1.get('value'),
+              'f1_coverage': f1.get('coverage'),
+              'f1_source': dep.get('source'),
+          }, sort_keys=True))
+          PY
+
       - name: Fetch and calculate current V38 session
         if: github.event_name != 'pull_request' && steps.session-mode.outputs.mode == 'acquire'
         shell: bash

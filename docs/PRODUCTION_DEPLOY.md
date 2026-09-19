@@ -13,7 +13,7 @@ Production behavior:
 - no browser-side trading calculation is introduced
 - Pages deployment runs only after the complete Python/JavaScript suite and real-browser checks at 375, 390, and 430 px pass
 - if no authoritative data directory exists, the deployed site remains usable but fail-closed with `DATA_REQUIRED`; no values are invented
-- every successful acquisition stores a compact session snapshot in `data/history/`; after 20 prior sessions exist it can produce the PIT old Top24 needed by F1
+- every successful acquisition stores a compact session snapshot in `data/history/`; F1 prefers 20-session-lag archived snapshots, and before 21 snapshots accumulate it recovers the original current-universe historical-OHLC Top24 from retained history with explicit survivorship provenance
 
 Section input contract:
 
@@ -26,3 +26,10 @@ Section input contract:
 - Options: `options/index.json`
 - Publish: `publish.json`
 - Rules: `rules.json`
+
+
+F1/F3 restoration contract:
+
+- F1 uses the original 20-session leader-drop formula. Missing current observations remain unknown and are excluded from its observable denominator.
+- F3 uses the original full qualified-queue denominator. Missing constituent Ret20/Dist52 values do not invalidate the whole F3; they are exposed through observation coverage and do not count as breaks.
+- Current F2/F3 values are never silently recomputed in the browser/display layer. `f123.json` is the canonical source.
