@@ -276,6 +276,12 @@ def _materialize_old_top24_from_reconstructed_history(
     if len(tickers) != 24 or len(set(tickers)) != 24:
         return None
 
+    reconstructed_provenance = reconstructed.get("provenance")
+    membership_scope = (
+        reconstructed_provenance.get("membership_scope")
+        if isinstance(reconstructed_provenance, dict)
+        else None
+    )
     payload = {
         "session_date": old_session,
         "target_session_date": target_session,
@@ -292,7 +298,7 @@ def _materialize_old_top24_from_reconstructed_history(
         "provenance": {
             "history_kind": reconstructed.get("history_kind"),
             "pit_universe": False,
-            "membership_scope": reconstructed.get("provenance", {}).get("membership_scope"),
+            "membership_scope": membership_scope,
             "survivorship_warning": bool(reconstructed.get("survivorship_warning")),
             "reconstruction_source": reconstructed.get("source"),
             "selection_guard": "historical rs_top contains at least 24 base-pool-eligible names",
