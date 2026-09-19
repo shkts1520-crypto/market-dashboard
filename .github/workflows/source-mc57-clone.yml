@@ -67,6 +67,58 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check -e . 'yfinance==0.2.66' 'pandas<3'
 
+      - name: Recover Production raw acquisition handoff
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRODUCTION_HANDOFF: ${{ runner.temp }}/v38-production-handoff
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          rm -rf "$PRODUCTION_HANDOFF"
+          mkdir -p "$PRODUCTION_HANDOFF"
+
+          find_artifact() {
+            local run_id="$1"
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts" \
+              --jq '.artifacts[] | select(.name=="v38-production-live-handoff" and .expired==false) | .id' \
+              | head -n1 || true
+          }
+
+          RUN_ID=""
+          ARTIFACT_ID=""
+          if [ -n "${TRIGGER_RUN_ID:-}" ]; then
+            CANDIDATE="$(find_artifact "$TRIGGER_RUN_ID")"
+            if [ -n "$CANDIDATE" ]; then
+              RUN_ID="$TRIGGER_RUN_ID"
+              ARTIFACT_ID="$CANDIDATE"
+            fi
+          fi
+
+          if [ -z "$ARTIFACT_ID" ]; then
+            while read -r CANDIDATE_RUN_ID; do
+              test -n "$CANDIDATE_RUN_ID" || continue
+              CANDIDATE="$(find_artifact "$CANDIDATE_RUN_ID")"
+              if [ -n "$CANDIDATE" ]; then
+                RUN_ID="$CANDIDATE_RUN_ID"
+                ARTIFACT_ID="$CANDIDATE"
+                break
+              fi
+            done < <(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production.yml/runs?branch=main&status=success&per_page=20" --jq '.workflow_runs[].id')
+          fi
+
+          if [ -z "$ARTIFACT_ID" ]; then
+            echo "::warning::No Production raw handoff artifact is available; clone will use the preserved legacy acquisition fallback."
+            exit 0
+          fi
+
+          echo "Using Production raw handoff from run $RUN_ID artifact $ARTIFACT_ID"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > "$RUNNER_TEMP/v38-production-handoff.zip"
+          unzip -q "$RUNNER_TEMP/v38-production-handoff.zip" -d "$PRODUCTION_HANDOFF"
+          test -s "$PRODUCTION_HANDOFF/ohlcv.csv"
+          test -s "$PRODUCTION_HANDOFF/universe.csv"
+          test -s "$PRODUCTION_HANDOFF/handoff.json"
+
       - name: Refresh isolated clone data from the existing live acquisition route
         shell: bash
         env:
@@ -111,6 +163,16 @@ jobs:
           rm -f "$CLONE_WORK/previous_market_inputs.json"
           if [ -n "$PREVIOUS_CLONE_ZIP" ] && [ -f "$PREVIOUS_CLONE_ZIP" ]; then
             unzip -p "$PREVIOUS_CLONE_ZIP" repo_data/market_inputs.json > "$CLONE_WORK/previous_market_inputs.json" 2>/dev/null || rm -f "$CLONE_WORK/previous_market_inputs.json"
+          fi
+
+          if [ -s "$RUNNER_TEMP/v38-production-handoff/handoff.json" ]; then
+            PYTHONPATH=src python scripts/prepare_source_clone_from_production.py \
+              --data-dir "$CLONE_DATA" \
+              --work-dir "$CLONE_WORK" \
+              --handoff-dir "$RUNNER_TEMP/v38-production-handoff" \
+              --previous-market-inputs "$CLONE_WORK/previous_market_inputs.json"
+            echo "source-mc57 reused Production stock OHLCV and Production MC57; full-universe Yahoo re-download skipped"
+            exit 0
           fi
 
           PYTHONPATH=src python - <<'PY'
