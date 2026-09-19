@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 
@@ -193,6 +194,25 @@ def main() -> int:
             theme_overrides_path.unlink(missing_ok=True)
 
     theme_membership = _load(membership_path)
+    theme_coverage_raw = theme_membership.get("coverage")
+    if isinstance(theme_coverage_raw, bool) or not isinstance(theme_coverage_raw, (int, float)):
+        raise SystemExit("theme membership coverage missing")
+    theme_coverage = float(theme_coverage_raw)
+    if not math.isfinite(theme_coverage):
+        raise SystemExit("theme membership coverage invalid")
+    if theme_coverage < 0.95:
+        raise SystemExit(
+            f"theme membership systemic coverage failure: {theme_coverage:.6f} < 0.95"
+        )
+    theme_unmapped = int((theme_membership.get("coverage_detail") or {}).get("unmapped") or 0)
+    if theme_unmapped:
+        print(json.dumps({
+            "theme_membership_warning": "MISSING_THEME_NEUTRAL",
+            "coverage": theme_coverage,
+            "unmapped": theme_unmapped,
+            "policy": "continue_with_neutral_50_unless_coverage_below_0.95",
+        }, sort_keys=True))
+
     theme_scores_path = write_strict_loo_peer_theme_scores(
         root / "rs.json",
         membership_path,

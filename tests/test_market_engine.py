@@ -104,14 +104,16 @@ def test_missing_classification_is_data_required_not_assumed_false():
     assert core["ranking_status"] == "DATA_REQUIRED"
 
 
-def test_attack_requires_peer_theme_coverage_and_does_not_neutral_fill_missing():
+def test_attack_neutral_fills_isolated_missing_peer_theme_without_blocking_ranking():
     themes = themes_fixture()
     themes["rows"] = [x for x in themes["rows"] if x["ticker"] != "BBB"]
     _, core = calculate_market_outputs(rs_fixture(), breadth_fixture(65), nq_fixture(), classifications=classes_fixture(), theme_scores=themes, generated_at=GENERATED)
     assert core["market_mode"] == "ATTACK"
-    assert core["ranking_status"] == "DATA_REQUIRED"
-    assert core["ranking_reason"] == "PEER_THEME_COVERAGE_INCOMPLETE"
-    assert core["ranking"] == []
+    assert core["ranking_status"] == "OK"
+    by = {r["ticker"]: r for r in core["ranking"]}
+    assert by["BBB"]["peer_theme_score"] == 50.0
+    assert by["BBB"]["peer_theme_status"] == "MISSING_NEUTRAL"
+    assert by["BBB"]["final_score"] == pytest.approx(.7 * 92 + .3 * 50)
 
 
 def test_attack_formula_is_70_rs189_30_theme_and_tiebreaks():
