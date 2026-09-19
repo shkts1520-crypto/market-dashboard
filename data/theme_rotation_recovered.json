@@ -2,7 +2,7 @@
   "calculation_version": "v38-recovered-theme-1.1.0",
   "coverage": 0.9985263778367227,
   "definition": "median(RS63) and median(RS189), equal-weight blend; percentile across themes with >=2 members",
-  "generated_at": "2026-09-19T03:13:30Z",
+  "generated_at": "2026-09-19T04:29:22Z",
   "rows": [
     {
       "leaders": [
@@ -5710,7 +5710,7 @@
       "member_count": 201,
       "raw_strength": null,
       "ret1_median": 0.0,
-      "ret20_median": 0.0020040539760575182,
+      "ret20_median": 0.002005968260150759,
       "rs189_median": null,
       "rs63_median": 86.4963503649635,
       "theme_id": "SPAC・ブランクチェック",

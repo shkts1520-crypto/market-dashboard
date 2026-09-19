@@ -4,7 +4,7 @@
   "calculation_version": "v38-tqqq-panic-state-1.0.1",
   "coverage": 1.0,
   "current_target_pct": 30,
-  "generated_at": "2026-09-19T03:13:30Z",
+  "generated_at": "2026-09-19T04:29:22Z",
   "holding_sessions_completed": 0,
   "mc57": 31.36425852891003,
   "normal_tqqq_pct": 30,
@@ -36,11 +36,11 @@
   "seed_consumed": false,
   "seed_inputs": {
     "condition": false,
-    "qqq_atr14": 9.286321532191579,
+    "qqq_atr14": 9.286321532191469,
     "qqq_close": 721.4500122070312,
     "qqq_dd10": 0.0,
     "qqq_sma50": 709.9511975097656,
-    "qqq_sma50_atr_deviation": 1.238252913966452,
+    "qqq_sma50_atr_deviation": 1.2382529139664666,
     "reason": "CURRENT_SESSION",
     "status": "READY",
     "vix_close": 14.8100004196167

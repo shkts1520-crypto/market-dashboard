@@ -76875,7 +76875,7 @@
     "trading_gate_eligible": false
   },
   "eligible_count": 302,
-  "generated_at": "2026-09-19T03:21:55Z",
+  "generated_at": "2026-09-19T04:38:37Z",
   "inception_bootstrap_attempted": 0,
   "inception_bootstrap_ready": 0,
   "inception_pending": 0,
@@ -86913,19 +86913,19 @@
       "ticker": "PBAM",
       "vwap252": {
         "break": false,
-        "dist": 0.07750051874445107,
+        "dist": 0.07748478510050782,
         "label": "—",
         "near": false,
         "touch": false,
-        "value": 82.67281572620907
+        "value": 82.67402293086236
       },
       "vwap63": {
         "break": false,
-        "dist": -0.0024730895733064973,
+        "dist": -0.002474086152045918,
         "label": "—",
         "near": false,
         "touch": false,
-        "value": 89.30085083414
+        "value": 89.30094005019757
       },
       "vwap_life": {
         "dist": null,

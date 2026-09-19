@@ -6,7 +6,7 @@
     "revenue_ttm_available": 3223,
     "rs_rows": 3393
   },
-  "generated_at": "2026-09-19T03:13:30Z",
+  "generated_at": "2026-09-19T04:29:22Z",
   "rows": [
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
@@ -7723,7 +7723,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Electronic Equipment/Instruments",
-      "market_cap": 11318234516.96366,
+      "market_cap": 11326491866.569511,
       "revenue_ttm": 937498000.000774,
       "structural_clinical_biotech": false,
       "ticker": "NVMI"
@@ -9931,7 +9931,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Regional Banks",
-      "market_cap": 5431119390.015049,
+      "market_cap": 5226862269.145485,
       "revenue_ttm": 2770161000.0,
       "structural_clinical_biotech": false,
       "ticker": "OZK"
@@ -20435,7 +20435,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Packaged Software",
-      "market_cap": 386981725.98,
+      "market_cap": 386981450.0,
       "revenue_ttm": 46416132.0000403,
       "structural_clinical_biotech": false,
       "ticker": "EPOW"
@@ -20707,7 +20707,7 @@
     {
       "classification_reason": "NOT_EXCLUDED_OR_REVENUE_MISSING_FAIL_OPEN",
       "industry": "Investment Trusts/Mutual Funds",
-      "market_cap": 734796490.5222279,
+      "market_cap": 769958939.6586612,
       "revenue_ttm": 162264000.0,
       "structural_clinical_biotech": false,
       "ticker": "FDUS"

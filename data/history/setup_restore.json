@@ -968,7 +968,7 @@
     }
   ],
   "failed": [],
-  "generated_at": "2026-09-19T03:24:23Z",
+  "generated_at": "2026-09-19T04:40:55Z",
   "patterns": {
     "cup_handle": [
       {
@@ -12175,7 +12175,7 @@
       "confluence": [],
       "contractions": 2,
       "cup_handle": false,
-      "ddv20": 12400727.644165803,
+      "ddv20": 12404010.242233276,
       "ema21_touch": false,
       "flat_base": false,
       "high_tight_flag": false,
@@ -35035,7 +35035,7 @@
       "confluence": [],
       "contractions": 2,
       "cup_handle": false,
-      "ddv20": 12400727.644165803,
+      "ddv20": 12404010.242233276,
       "ema21_touch": false,
       "flat_base": false,
       "high_tight_flag": false,
