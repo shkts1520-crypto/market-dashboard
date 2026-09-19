@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-CALCULATION_VERSION = "v38-live-acquisition-1.2.0"
+CALCULATION_VERSION = "v38-live-acquisition-1.3.0"
 STATE_SCHEMA_VERSION = "v38.state.1"
 MANIFEST_SCHEMA_VERSION = "v38.acquisition.1"
 MARKET_INPUT_SCHEMA_VERSION = "v38.market_inputs.1"
@@ -299,62 +299,187 @@ def fetch_benchmark_frames(yf: Any) -> dict[str, pd.DataFrame]:
     return {s: select_yfinance_symbol_frame(raw, s) for s in ("QQQ", "SPY")}
 
 
-def download_stock_ohlcv(yf: Any, tickers: list[str], *, target_session: str, output_path: str | Path, chunk_size: int = 100):
+def download_stock_ohlcv(
+    yf: Any,
+    tickers: list[str],
+    *,
+    target_session: str,
+    output_path: str | Path,
+    chunk_size: int = 50,
+):
+    """Download current-universe OHLCV with adaptive Yahoo throttling.
+
+    The first pass intentionally uses smaller batches and low concurrency. Missing
+    target-session tickers are retried globally in progressively smaller batches
+    after cooldowns, rather than immediately hammering the same failed 100-name
+    batch. If coverage is still below the existing production guard, a bounded
+    single-symbol recovery pass is attempted. No stale bar is ever relabelled as
+    the target session.
+    """
     if not tickers:
         raise LiveAcquisitionError("no tickers supplied to Yahoo")
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    fields = ("ticker", "date", "open", "high", "low", "close", "volume", "is_complete", "split_checked", "split_anomaly")
-    target_ok, history_ok, failed = 0, 0, []
+    fields = (
+        "ticker", "date", "open", "high", "low", "close", "volume",
+        "is_complete", "split_checked", "split_anomaly",
+    )
+    requested = [str(t).strip().upper() for t in tickers if str(t).strip()]
+    if not requested:
+        raise LiveAcquisitionError("no valid tickers supplied to Yahoo")
+
+    target_success: set[str] = set()
+    history_written: set[str] = set()
+    retry_rounds: list[dict[str, Any]] = []
+
+    def has_target(rows: list[dict[str, Any]]) -> bool:
+        return any(
+            row.get("date") == target_session and row.get("close") is not None
+            for row in rows
+        )
+
+    def fetch_batch(batch: list[str], *, threads: int | bool) -> dict[str, list[dict[str, Any]]]:
+        symbol_map = {ticker: yahoo_symbol(ticker) for ticker in batch}
+        try:
+            raw = _download(
+                yf,
+                list(symbol_map.values()),
+                period="2y",
+                threads=threads,
+            )
+        except Exception:
+            raw = pd.DataFrame()
+        return {
+            ticker: adjusted_ohlcv_rows(
+                select_yfinance_symbol_frame(raw, symbol),
+                ticker=ticker,
+                target_session=target_session,
+            )
+            for ticker, symbol in symbol_map.items()
+        }
+
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fields)
         writer.writeheader()
-        for offset in range(0, len(tickers), chunk_size):
-            originals = tickers[offset:offset + chunk_size]
-            symbol_map = {t: yahoo_symbol(t) for t in originals}
-            try:
-                raw = _download(yf, list(symbol_map.values()), period="2y", threads=16)
-            except Exception:
-                raw = pd.DataFrame()
-            rows_by = {}
-            missing = []
-            for ticker, symbol in symbol_map.items():
-                rows = adjusted_ohlcv_rows(select_yfinance_symbol_frame(raw, symbol), ticker=ticker, target_session=target_session)
-                rows_by[ticker] = rows
-                if not any(r["date"] == target_session and r["close"] is not None for r in rows):
-                    missing.append(ticker)
-            for round_no in range(2):
-                if not missing:
-                    break
-                retry_map = {t: yahoo_symbol(t) for t in missing}
-                try:
-                    retry = _download(yf, list(retry_map.values()), period="2y", threads=16)
-                except Exception:
-                    retry = pd.DataFrame()
-                next_missing = []
-                for ticker, symbol in retry_map.items():
-                    rows = adjusted_ohlcv_rows(select_yfinance_symbol_frame(retry, symbol), ticker=ticker, target_session=target_session)
-                    if any(r["date"] == target_session and r["close"] is not None for r in rows):
-                        rows_by[ticker] = rows
-                    else:
+
+        def persist(ticker: str, rows: list[dict[str, Any]]) -> None:
+            if not rows:
+                return
+            if ticker in history_written:
+                # A prior pass already wrote the full historical dependency. On
+                # retry append only the exact target-session observation so the
+                # CSV never gains duplicate historical dates.
+                fresh = [
+                    row for row in rows
+                    if row.get("date") == target_session and row.get("close") is not None
+                ]
+                if fresh:
+                    writer.writerows(fresh[-1:])
+            else:
+                writer.writerows(rows)
+                history_written.add(ticker)
+            if has_target(rows):
+                target_success.add(ticker)
+
+        # First pass: deliberately lower Yahoo concurrency than the previous
+        # 100-name / 16-thread burst pattern that triggered provider throttling.
+        for offset in range(0, len(requested), chunk_size):
+            batch = requested[offset:offset + chunk_size]
+            rows_by = fetch_batch(batch, threads=4)
+            for ticker in batch:
+                persist(ticker, rows_by.get(ticker) or [])
+
+        missing = [ticker for ticker in requested if ticker not in target_success]
+
+        # Global retries only for the missing set. Each round backs off and lowers
+        # both batch width and concurrency.
+        stages: tuple[tuple[str, int, int | bool, float, float], ...] = (
+            ("small_batch", 20, 2, 5.0, 0.10),
+            ("tiny_batch", 5, False, 12.0, 0.20),
+        )
+        for name, batch_width, threads, cooldown, inter_batch_pause in stages:
+            if not missing:
+                break
+            time.sleep(cooldown)
+            before = len(target_success)
+            next_missing: list[str] = []
+            for offset in range(0, len(missing), batch_width):
+                batch = missing[offset:offset + batch_width]
+                rows_by = fetch_batch(batch, threads=threads)
+                for ticker in batch:
+                    rows = rows_by.get(ticker) or []
+                    persist(ticker, rows)
+                    if ticker not in target_success:
                         next_missing.append(ticker)
-                missing = next_missing
-                if missing:
-                    time.sleep(1.5 * (round_no + 1))
-            for ticker in originals:
-                rows = rows_by.get(ticker) or []
-                if rows:
-                    history_ok += 1
-                    writer.writerows(rows)
-                if any(r["date"] == target_session and r["close"] is not None for r in rows):
-                    target_ok += 1
-                else:
-                    failed.append(ticker)
-    coverage = target_ok / len(tickers)
+                if inter_batch_pause and offset + batch_width < len(missing):
+                    time.sleep(inter_batch_pause)
+            retry_rounds.append({
+                "stage": name,
+                "attempted": len(missing),
+                "recovered": len(target_success) - before,
+                "remaining": len(next_missing),
+            })
+            missing = next_missing
+
+        # Emergency path: only when the production coverage guard is still at
+        # risk. Single-symbol requests use a different request shape and stop as
+        # soon as the existing 80% guard is satisfied. Remaining gaps are then
+        # handled by the already-audited isolated gap-repair stage.
+        minimum_required = int(math.ceil(MIN_CURRENT_FETCH_COVERAGE * len(requested)))
+        if len(target_success) < minimum_required and missing:
+            time.sleep(20.0)
+            before = len(target_success)
+            attempted = 0
+            for ticker in list(missing):
+                if len(target_success) >= minimum_required:
+                    break
+                attempted += 1
+                symbol = yahoo_symbol(ticker)
+                rows = fetch_batch([ticker], threads=False).get(ticker) or []
+                if not has_target(rows):
+                    try:
+                        frame = yf.Ticker(symbol).history(
+                            period="2y",
+                            interval="1d",
+                            auto_adjust=False,
+                            actions=False,
+                        )
+                    except Exception:
+                        frame = pd.DataFrame()
+                    rows = adjusted_ohlcv_rows(
+                        frame,
+                        ticker=ticker,
+                        target_session=target_session,
+                    )
+                persist(ticker, rows)
+                if attempted % 25 == 0 and len(target_success) < minimum_required:
+                    time.sleep(1.0)
+            missing = [ticker for ticker in requested if ticker not in target_success]
+            retry_rounds.append({
+                "stage": "single_symbol_guard_recovery",
+                "attempted": attempted,
+                "recovered": len(target_success) - before,
+                "remaining": len(missing),
+            })
+
+    target_ok = len(target_success)
+    history_ok = len(history_written)
+    failed = [ticker for ticker in requested if ticker not in target_success]
+    coverage = target_ok / len(requested)
     if coverage < MIN_CURRENT_FETCH_COVERAGE:
-        raise LiveAcquisitionError(f"Yahoo current-session coverage too low: {target_ok}/{len(tickers)}={coverage:.3f}")
-    return {"requested": len(tickers), "history_received": history_ok, "target_session_received": target_ok,
-            "target_session_coverage": coverage, "failed_tickers": failed}
+        raise LiveAcquisitionError(
+            f"Yahoo current-session coverage too low after adaptive retries: "
+            f"{target_ok}/{len(requested)}={coverage:.3f}"
+        )
+    return {
+        "requested": len(requested),
+        "history_received": history_ok,
+        "target_session_received": target_ok,
+        "target_session_coverage": coverage,
+        "failed_tickers": failed,
+        "adaptive_retry_rounds": retry_rounds,
+        "acquisition_policy": "50x4 -> missing 20x2 -> missing 5x1 -> bounded single-symbol until 80% guard",
+    }
 
 
 def download_market_inputs(yf: Any, *, target_session: str, generated_at: str) -> dict[str, Any]:
