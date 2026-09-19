@@ -92,3 +92,4 @@ def test_workflows_publish_and_reuse_raw_handoff():
     assert "Recover Production raw acquisition handoff" in clone
     assert "prepare_source_clone_from_production.py" in clone
     assert "full-universe Yahoo re-download skipped" in clone
+    assert "reused same-session preservation" in clone
