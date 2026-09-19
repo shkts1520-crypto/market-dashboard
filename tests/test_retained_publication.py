@@ -5,7 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from v38.retained_publication import (\n    RetainedPublicationError,\n    validate_retained_display_observations,\n    validate_retained_publication,\n)
+from v38.retained_publication import (
+    RetainedPublicationError,
+    validate_retained_display_observations,
+    validate_retained_publication,
+)
 
 
 SESSION = "2026-09-11"
