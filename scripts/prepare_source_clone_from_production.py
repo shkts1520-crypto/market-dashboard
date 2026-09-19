@@ -12,7 +12,7 @@ from typing import Any
 import pandas as pd
 
 from v38.live_acquisition import (
-    MIN_CURRENT_FETCH_COVERAGE,
+    MIN_PUBLICATION_STOCK_COVERAGE,
     _download,
     market_rows,
     select_yfinance_symbol_frame,
@@ -72,7 +72,7 @@ def validate_production_handoff(
     active = int(rs.get("coverage_detail", {}).get("active_universe") or 0)
     current_valid = int(rs.get("coverage_detail", {}).get("current_valid_ohlcv") or 0)
     stock_coverage = float(rs.get("coverage") or 0.0)
-    if active <= 0 or current_valid <= 0 or stock_coverage < MIN_CURRENT_FETCH_COVERAGE:
+    if active <= 0 or current_valid <= 0 or stock_coverage < MIN_PUBLICATION_STOCK_COVERAGE:
         raise ProductionHandoffError(
             f"Production stock coverage invalid: {current_valid}/{active}={stock_coverage:.3f}"
         )
@@ -111,7 +111,7 @@ def validate_production_handoff(
             if ticker and close is not None and close > 0:
                 target_tickers.add(ticker)
     raw_coverage = len(target_tickers) / active
-    if len(target_tickers) != current_valid or raw_coverage < MIN_CURRENT_FETCH_COVERAGE:
+    if len(target_tickers) != current_valid or raw_coverage < MIN_PUBLICATION_STOCK_COVERAGE:
         raise ProductionHandoffError(
             f"handoff raw OHLCV mismatch: {len(target_tickers)}/{active}={raw_coverage:.3f}; "
             f"Production current_valid_ohlcv={current_valid}"

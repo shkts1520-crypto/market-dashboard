@@ -192,3 +192,97 @@ def test_writer_emits_strict_json_without_nan(tmp_path):
     assert "NaN" not in text
     obj = json.loads(text)
     assert obj["session_date"] == SESSION
+
+
+def test_ratio_observations_require_current_session_rows(tmp_path):
+    fixtures(tmp_path)
+    prior = "2026-09-09"
+    dump(
+        tmp_path,
+        "market_inputs.json",
+        meta(series={
+            "XLY": [{"date": "2026-09-08", "close": 100}, {"date": prior, "close": 101}],
+            "XLP": [{"date": "2026-09-08", "close": 50}, {"date": prior, "close": 51}],
+            "HYG": [{"date": prior, "close": 80}],
+            "IEF": [{"date": prior, "close": 90}],
+            "^VIX": [{"date": prior, "close": 15}],
+            "^VIX3M": [{"date": prior, "close": 17}],
+            "^VXN": [{"date": prior, "close": 18}],
+        }),
+    )
+    out = build_ui_view_model(tmp_path)
+    obs = out["daily"]["card_observations"]
+    assert obs["risk_rotation"]["status"] == DATA_REQUIRED
+    assert obs["risk_rotation"]["current"] is None
+    assert obs["risk_rotation"]["reason"] == "SESSION_BAR_MISSING"
+    assert obs["credit_ratio"]["status"] == DATA_REQUIRED
+    assert obs["vix_term"]["status"] == DATA_REQUIRED
+    assert obs["expected_move"]["status"] == DATA_REQUIRED
+    assert obs["expected_move"]["spy_1m_pct"] is None
+    assert obs["expected_move"]["qqq_1m_pct"] is None
+
+
+def test_ratio_and_expected_move_ready_only_on_current_session(tmp_path):
+    fixtures(tmp_path)
+    prior = "2026-09-09"
+    dump(
+        tmp_path,
+        "market_inputs.json",
+        meta(series={
+            "XLY": [{"date": prior, "close": 100}, {"date": SESSION, "close": 102}],
+            "XLP": [{"date": prior, "close": 50}, {"date": SESSION, "close": 51}],
+            "HYG": [{"date": prior, "close": 80}, {"date": SESSION, "close": 81}],
+            "IEF": [{"date": prior, "close": 90}, {"date": SESSION, "close": 90.5}],
+            "^VIX": [{"date": prior, "close": 15}, {"date": SESSION, "close": 16}],
+            "^VIX3M": [{"date": prior, "close": 17}, {"date": SESSION, "close": 18}],
+            "^VXN": [{"date": prior, "close": 18}, {"date": SESSION, "close": 19}],
+        }),
+    )
+    out = build_ui_view_model(tmp_path)
+    obs = out["daily"]["card_observations"]
+    assert obs["risk_rotation"]["status"] == READY
+    assert obs["risk_rotation"]["current"] == pytest.approx(102 / 51)
+    assert obs["credit_ratio"]["status"] == READY
+    assert obs["vix_term"]["status"] == READY
+    assert obs["expected_move"]["status"] == READY
+    assert obs["expected_move"]["reason"] == "CURRENT_SESSION_IV"
+
+
+def test_market_summary_hides_stale_current_values(tmp_path):
+    fixtures(tmp_path)
+    dump(
+        tmp_path,
+        "market_inputs.json",
+        meta(series={
+            "QQQ": [
+                {"date": "2026-09-08", "close": 100, "high": 101},
+                {"date": "2026-09-09", "close": 102, "high": 103},
+            ]
+        }),
+    )
+    out = build_ui_view_model(tmp_path)
+    summary = out["daily"]["market_summaries"]["QQQ"]
+    assert summary["status"] == DATA_REQUIRED
+    assert summary["reason"] == "SESSION_BAR_MISSING"
+    assert summary["close"] is None
+    assert summary["change_1d"] is None
+
+
+def test_market_summary_is_ready_on_exact_session(tmp_path):
+    fixtures(tmp_path)
+    dump(
+        tmp_path,
+        "market_inputs.json",
+        meta(series={
+            "QQQ": [
+                {"date": "2026-09-09", "close": 100, "high": 101},
+                {"date": SESSION, "close": 102, "high": 103},
+            ]
+        }),
+    )
+    out = build_ui_view_model(tmp_path)
+    summary = out["daily"]["market_summaries"]["QQQ"]
+    assert summary["status"] == READY
+    assert summary["reason"] == "CURRENT_SESSION_CLOSE"
+    assert summary["close"] == pytest.approx(102)
+    assert summary["change_1d"] == pytest.approx(0.02)
