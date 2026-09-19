@@ -11,6 +11,7 @@ CALCULATION_VERSION = "v38-market-engine-1.0.0"
 MARKET_STATE_SCHEMA_VERSION = "v38.market_state.1"
 CORE12_SCHEMA_VERSION = "v38.core12.1"
 VALID_NQSAR = {"Blue", "Green", "Yellow", "Red"}
+NEUTRAL_THEME_SCORE = 50.0
 
 
 class MarketEngineError(RuntimeError):
@@ -263,19 +264,16 @@ def calculate_market_outputs(
         ranking_status = "DATA_REQUIRED"
         ranking_reason = "CLASSIFICATION_COVERAGE_INCOMPLETE"
     elif mode == "ATTACK":
-        missing_theme = [r["ticker"] for r in eligible if r["ticker"] not in theme_map]
-        if missing_theme:
-            ranking_status = "DATA_REQUIRED"
-            ranking_reason = "PEER_THEME_COVERAGE_INCOMPLETE"
-        else:
-            for row in eligible:
-                score = 0.70 * float(row["rs189"]) + 0.30 * theme_map[row["ticker"]]
-                out = row.copy()
-                out["peer_theme_score"] = theme_map[row["ticker"]]
-                out["final_score"] = score
-                ranking.append(out)
-            ranking.sort(key=lambda r: (-float(r["final_score"]), -float(r["rs189"]), r["ticker"]))
-            ranking = ranking[:12]
+        for row in eligible:
+            theme_score = theme_map.get(row["ticker"], NEUTRAL_THEME_SCORE)
+            score = 0.70 * float(row["rs189"]) + 0.30 * theme_score
+            out = row.copy()
+            out["peer_theme_score"] = theme_score
+            out["peer_theme_status"] = "READY" if row["ticker"] in theme_map else "MISSING_NEUTRAL"
+            out["final_score"] = score
+            ranking.append(out)
+        ranking.sort(key=lambda r: (-float(r["final_score"]), -float(r["rs189"]), r["ticker"]))
+        ranking = ranking[:12]
     else:
         # Selective is RS189-only. Stop/Defense still expose the same diagnostic order,
         # but max_new_total_slots=0 ensures it is not an entry instruction.
@@ -306,7 +304,7 @@ def calculate_market_outputs(
         },
         "rules": {
             "eligibility": "Price>=5 AND DDV20>=10M AND SMA50>SMA200 AND Close>SMA200 AND RS189>=85 AND RS63>=85 AND NOT StructuralClinicalBiotech",
-            "attack_final": "0.70*RS189 + 0.30*PeerThemeScore",
+            "attack_final": "0.70*RS189 + 0.30*PeerThemeScore; missing PeerThemeScore=50 neutral",
             "selective_final": "RS189 only",
             "attack_tiebreak": "final desc, RS189 desc, ticker asc",
             "selective_tiebreak": "RS189 desc, ticker asc",
