@@ -141,7 +141,7 @@ def test_old_top24_falls_back_to_retained_reconstructed_history(tmp_path: Path):
         {"session_date": "2026-09-09", "coverage": 1.0, "rs_top": []},
     )
     sequence = [
-        "2026-08-13", "2026-08-14", "2026-08-17", "2026-08-18", "2026-08-19",
+        "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-17", "2026-08-18", "2026-08-19",
         "2026-08-20", "2026-08-21", "2026-08-24", "2026-08-25", "2026-08-26",
         "2026-08-27", "2026-08-28", "2026-08-31", "2026-09-01", "2026-09-02",
         "2026-09-03", "2026-09-04", "2026-09-08", "2026-09-09", "2026-09-10",
@@ -188,7 +188,7 @@ def test_old_top24_falls_back_to_retained_reconstructed_history(tmp_path: Path):
     )
     assert out is not None
     payload = json.loads(out.read_text(encoding="utf-8"))
-    assert payload["session_date"] == "2026-08-13"
+    assert payload["session_date"] == "2026-08-12"
     assert payload["target_session_date"] == SESSION
     assert payload["source"] == "derived:retained-current-universe-historical-stock-metrics"
     assert payload["provenance"]["pit_universe"] is False
