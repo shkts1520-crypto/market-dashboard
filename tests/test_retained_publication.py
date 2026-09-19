@@ -28,8 +28,8 @@ def _write(path: Path, obj: dict) -> None:
 
 
 def _fixture(root: Path) -> None:
-    active = 10
-    valid = 9
+    active = 100
+    valid = 99
     coverage = valid / active
     _write(
         root / "state.json",
@@ -71,12 +71,15 @@ def _fixture(root: Path) -> None:
             },
         },
     )
-    symbols = ("QQQ", "TQQQ", "^VIX", "NQ=F", "SPY")
+    required_symbols = ("QQQ", "TQQQ", "^VIX", "NQ=F", "SPY")
+    symbols = required_symbols + ("RSP", "HYG")
     _write(
         root / "market_inputs.json",
         {
             **_meta("v38.market_inputs.1", "test"),
             "coverage": 1.0,
+            "required_coverage": 1.0,
+            "required_symbols": list(required_symbols),
             "symbols": list(symbols),
             "series": {
                 symbol: [{"date": SESSION, "close": 100.0 + i}]
@@ -89,18 +92,18 @@ def _fixture(root: Path) -> None:
 def test_valid_retained_publication_is_accepted(tmp_path: Path) -> None:
     _fixture(tmp_path)
     result = validate_retained_publication(tmp_path, session_date=SESSION)
-    assert result["active_universe"] == 10
-    assert result["current_valid_ohlcv"] == 9
-    assert result["stock_coverage"] == pytest.approx(0.9)
+    assert result["active_universe"] == 100
+    assert result["current_valid_ohlcv"] == 99
+    assert result["stock_coverage"] == pytest.approx(0.99)
     assert result["required_market_coverage"] == 1.0
 
 
 def test_retained_publication_rejects_low_actual_stock_coverage(tmp_path: Path) -> None:
     _fixture(tmp_path)
     rs = json.loads((tmp_path / "rs.json").read_text(encoding="utf-8"))
-    rs["coverage"] = 0.7
-    rs["coverage_detail"]["current_valid_ohlcv"] = 7
-    rs["rows"] = rs["rows"][:7]
+    rs["coverage"] = 0.97
+    rs["coverage_detail"]["current_valid_ohlcv"] = 97
+    rs["rows"] = rs["rows"][:97]
     _write(tmp_path / "rs.json", rs)
     with pytest.raises(RetainedPublicationError):
         validate_retained_publication(tmp_path, session_date=SESSION)
@@ -118,16 +121,16 @@ def test_retained_publication_rejects_missing_required_market_session(tmp_path: 
 def test_retained_publication_rejects_market_symbol_contract_mismatch(tmp_path: Path) -> None:
     _fixture(tmp_path)
     market = json.loads((tmp_path / "market_inputs.json").read_text(encoding="utf-8"))
-    market["symbols"] = ["QQQ", "TQQQ", "^VIX", "NQ=F"]
+    market["required_symbols"] = ["QQQ", "TQQQ", "^VIX", "NQ=F"]
     _write(tmp_path / "market_inputs.json", market)
-    with pytest.raises(RetainedPublicationError, match="market_inputs.symbols"):
+    with pytest.raises(RetainedPublicationError, match="market_inputs.required_symbols"):
         validate_retained_publication(tmp_path, session_date=SESSION)
 
 
 def test_retained_publication_rejects_incomplete_market_coverage(tmp_path: Path) -> None:
     _fixture(tmp_path)
     market = json.loads((tmp_path / "market_inputs.json").read_text(encoding="utf-8"))
-    market["coverage"] = 0.8
+    market["required_coverage"] = 0.8
     _write(tmp_path / "market_inputs.json", market)
-    with pytest.raises(RetainedPublicationError, match="market_inputs.coverage"):
+    with pytest.raises(RetainedPublicationError, match="market_inputs.required_coverage"):
         validate_retained_publication(tmp_path, session_date=SESSION)
