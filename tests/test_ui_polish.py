@@ -141,3 +141,38 @@ def test_exact_f1_wins_over_reconstructed_display_value(tmp_path):
     assert detail["display_provenance"] == "CURRENT_SESSION_EXACT"
     assert metric["value"] == 0.125
     assert metric["display"] == "12.5%"
+
+
+def test_f3_is_not_silently_reconstructed_when_canonical_value_is_missing(tmp_path):
+    session = "2026-09-11"
+    _write_reconstruction(tmp_path, session)
+    (tmp_path / "f123.json").write_text(
+        json.dumps(
+            {
+                "session_date": session,
+                "f1": {"value": 0.10, "status": "FULL"},
+                "f2": {"value": 0.20, "status": "OK"},
+                "f3": {
+                    "value": None,
+                    "status": "DATA_INCOMPLETE",
+                    "queue_count": 10,
+                    "observable_count": 9,
+                    "break_count": 5,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    view = _base_view(session)
+    f3_metric = next(row for row in view["daily"]["metrics"] if row["key"] == "f3")
+    f3_metric.update(value=None, display="—", status="DATA_REQUIRED")
+
+    out = attach_reconstructed_stock_ui(view, tmp_path)
+    detail = out["daily"]["f123_detail"]["f3"]
+    metric = next(row for row in out["daily"]["metrics"] if row["key"] == "f3")
+    assert detail["value"] is None
+    assert detail["status"] == "DATA_REQUIRED"
+    assert detail["display_provenance"] == "UNAVAILABLE"
+    assert metric["value"] is None
+    assert metric["status"] == "DATA_REQUIRED"
+    assert out["daily"]["status"] == "DATA_REQUIRED"
