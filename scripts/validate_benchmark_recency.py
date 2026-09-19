@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import yfinance as yf
@@ -39,29 +40,70 @@ def _dates(symbol: str) -> set[str]:
     return found
 
 
-def main() -> int:
-    state_path = Path("data/state.json")
-    state = json.loads(state_path.read_text(encoding="utf-8"))
+def _load_object(path: Path) -> dict[str, Any]:
+    try:
+        obj = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise SystemExit(f"required session-lock file invalid: {path}: {exc}") from exc
+    if not isinstance(obj, dict):
+        raise SystemExit(f"required session-lock file must be an object: {path}")
+    return obj
+
+
+def validate_benchmark_recency(data_dir: str | Path = "data") -> dict[str, Any]:
+    root = Path(data_dir)
+    state = _load_object(root / "state.json")
+    manifest = _load_object(root / "acquisition_manifest.json")
+
     published = str(state.get("session_date") or "")
-    if not published:
-        raise SystemExit("state.session_date is required")
+    manifest_session = str(manifest.get("session_date") or "")
+    selection = manifest.get("session_selection")
+    if not isinstance(selection, dict):
+        raise SystemExit("acquisition_manifest.session_selection is required")
+
+    locked = str(selection.get("selected_session") or "")
+    observed_at_lock = str(selection.get("benchmark_observed_session") or "")
+    if not published or not manifest_session or not locked or not observed_at_lock:
+        raise SystemExit("state/manifest session lock fields are required")
+    if manifest_session != published or locked != published:
+        raise SystemExit(
+            "session lock mismatch: "
+            f"state={published}, manifest={manifest_session}, selected={locked}"
+        )
+    if pd.Timestamp(observed_at_lock) > pd.Timestamp(locked):
+        raise SystemExit(
+            "invalid session lock: "
+            f"observed_at_lock={observed_at_lock} > selected={locked}"
+        )
 
     qqq = _dates("QQQ")
     spy = _dates("SPY")
-    if not qqq or not spy:
-        raise SystemExit("benchmark recency guard could not observe QQQ/SPY")
-    observed = choose_completed_session(qqq, spy)
-    if pd.Timestamp(observed) > pd.Timestamp(published):
-        raise SystemExit(
-            f"publication session regression: state={published}, independently observed={observed}"
-        )
-    print(json.dumps({
-        "status": "READY",
+    observed_now = choose_completed_session(qqq, spy) if qqq and spy else None
+
+    status = "READY"
+    reason = "SESSION_LOCK_MATCH"
+    if observed_now is None:
+        status = "READY_SESSION_LOCKED"
+        reason = "LIVE_RECHECK_UNAVAILABLE_AFTER_SESSION_LOCK"
+    elif pd.Timestamp(observed_now) > pd.Timestamp(locked):
+        status = "READY_SESSION_LOCKED"
+        reason = "NEWER_SESSION_OBSERVED_AFTER_RUN_LOCK"
+
+    return {
+        "status": status,
+        "reason": reason,
         "published_session": published,
-        "independently_observed_session": observed,
+        "locked_selected_session": locked,
+        "benchmark_observed_at_lock": observed_at_lock,
+        "independently_observed_session": observed_now,
         "qqq_sessions": len(qqq),
         "spy_sessions": len(spy),
-    }, sort_keys=True))
+    }
+
+
+def main() -> int:
+    result = validate_benchmark_recency("data")
+    print(json.dumps(result, sort_keys=True))
     return 0
 
 
