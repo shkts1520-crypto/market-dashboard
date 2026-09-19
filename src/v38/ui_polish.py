@@ -30,16 +30,6 @@ def _finite(value: Any) -> float | None:
     return number if math.isfinite(number) else None
 
 
-def _severity(value: float | None, warn: float, severe: float) -> str:
-    if value is None:
-        return "NO_JUDGMENT"
-    if value >= severe:
-        return "SEVERE"
-    if value >= warn:
-        return "CAUTION"
-    return "NORMAL"
-
-
 def _good_component(component: Any) -> bool:
     if not isinstance(component, dict):
         return False
@@ -60,25 +50,6 @@ def _display_component(
         out["display_provenance"] = "CURRENT_SESSION_EXACT"
         out["trading_gate_eligible"] = False
         return out
-
-    # Final V38 defines F3 as break_count / queue_count with only queue<3 as
-    # no-judgment.  The strict shard may still fail closed when a handful of
-    # constituent ret20/dist52 observations are missing.  For the display layer,
-    # preserve the final formula from the available current-session counts while
-    # leaving data/f123.json and every trading gate untouched.
-    if key == "f3" and isinstance(exact, dict):
-        queue_count = _finite(exact.get("queue_count"))
-        break_count = _finite(exact.get("break_count"))
-        if queue_count is not None and queue_count >= 3 and break_count is not None:
-            value = break_count / queue_count
-            out = dict(exact)
-            out["value"] = value
-            out["status"] = READY
-            out["severity"] = _severity(value, 0.40, 0.60)
-            out["display_provenance"] = "CURRENT_SESSION_FINAL_F3_COUNTS_DISPLAY_ONLY"
-            out["trading_gate_eligible"] = False
-            out["reason"] = "FINAL_F3_BREAK_COUNT_OVER_QUEUE_COUNT_DISPLAY_ONLY"
-            return out
 
     if isinstance(reconstructed, dict) and _finite(reconstructed.get("value")) is not None:
         out = dict(reconstructed)
@@ -194,11 +165,10 @@ def attach_reconstructed_stock_ui(
 ) -> dict[str, Any]:
     """Attach reconstructed stock history for display only.
 
-    Strict current F1 authority stays in data/f123.json.  If that exact PIT input is
-    unavailable, the visible F1 card may use the already-approved current-universe
-    historical reconstruction.  F3 may use its final break/queue formula from the
-    current-session counts when the strict shard is fail-closed for minor missing
-    observations.  Neither display fallback is promoted into trading authority.
+    Canonical current-session F1/F2/F3 stay in data/f123.json. If canonical F1
+    restoration is unavailable, the visible F1 card may use the already-approved
+    current-universe historical reconstruction. F3 has no display-side formula:
+    the canonical engine owns the original full-queue calculation.
     """
     if not isinstance(view, dict):
         return view
